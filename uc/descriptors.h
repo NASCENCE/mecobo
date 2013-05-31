@@ -139,7 +139,7 @@ static const uint8_t configDesc[] __attribute__ ((aligned(4)))=
   USB_INTERFACE_DESCRIPTOR,/* bDescriptorType      */
   1,                      /* bInterfaceNumber      */
   0,                      /* bAlternateSetting     */
-  2,                      /* bNumEndpoints         */
+  4,                      /* bNumEndpoints         */
   USB_CLASS_CDC_DATA,     /* bInterfaceClass       */
   0,                      /* bInterfaceSubClass    */
   0,                      /* bInterfaceProtocol    */
@@ -148,7 +148,15 @@ static const uint8_t configDesc[] __attribute__ ((aligned(4)))=
   /*** CDC Data interface endpoint descriptors ***/
   USB_ENDPOINT_DESCSIZE,  /* bLength               */
   USB_ENDPOINT_DESCRIPTOR,/* bDescriptorType       */
-  EP_DATA_IN,             /* bEndpointAddress (IN) */
+  EP_DATA_IN1,             /* bEndpointAddress (IN) */
+  USB_EPTYPE_BULK,        /* bmAttributes          */
+  BULK_EP_SIZE,           /* wMaxPacketSize (LSB)  */
+  0,                      /* wMaxPacketSize (MSB)  */
+  0,                      /* bInterval             */
+  
+  USB_ENDPOINT_DESCSIZE,  /* bLength               */
+  USB_ENDPOINT_DESCRIPTOR,/* bDescriptorType       */
+  EP_DATA_IN2,             /* bEndpointAddress (IN) */
   USB_EPTYPE_BULK,        /* bmAttributes          */
   BULK_EP_SIZE,           /* wMaxPacketSize (LSB)  */
   0,                      /* wMaxPacketSize (MSB)  */
@@ -156,7 +164,15 @@ static const uint8_t configDesc[] __attribute__ ((aligned(4)))=
 
   USB_ENDPOINT_DESCSIZE,  /* bLength               */
   USB_ENDPOINT_DESCRIPTOR,/* bDescriptorType       */
-  EP_DATA_OUT,            /* bEndpointAddress (OUT)*/
+  EP_DATA_OUT1,             /* bEndpointAddress (IN) */
+  USB_EPTYPE_BULK,        /* bmAttributes          */
+  BULK_EP_SIZE,           /* wMaxPacketSize (LSB)  */
+  0,                      /* wMaxPacketSize (MSB)  */
+  0,                      /* bInterval             */
+
+  USB_ENDPOINT_DESCSIZE,  /* bLength               */
+  USB_ENDPOINT_DESCRIPTOR,/* bDescriptorType       */
+  EP_DATA_OUT2,            /* bEndpointAddress (OUT)*/
   USB_EPTYPE_BULK,        /* bmAttributes          */
   BULK_EP_SIZE,           /* wMaxPacketSize (LSB)  */
   0,                      /* wMaxPacketSize (MSB)  */
@@ -164,8 +180,8 @@ static const uint8_t configDesc[] __attribute__ ((aligned(4)))=
 };
 
 STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
-STATIC_CONST_STRING_DESC( iManufacturer, L"Energy Micro AS" );
-STATIC_CONST_STRING_DESC( iProduct     , L"EFM32 USB CDC serial port device" );
+STATIC_CONST_STRING_DESC( iManufacturer, L"NTNU CARD" );
+STATIC_CONST_STRING_DESC( iProduct     , L"Mecobo v3" );
 
 static const void * const strings[] =
 {
@@ -177,13 +193,13 @@ static const void * const strings[] =
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = triple buffering ...  */
 /* Use double buffering on the BULK endpoints.                        */
-static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 1, 2, 2 };
+static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 2, 2, 2, 2, 2 };
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
   .usbReset        = NULL,
-  .usbStateChange  = StateChange,
-  .setupCmd        = SetupCmd,
+  .usbStateChange  = NULL,
+  .setupCmd        = NULL,
   .isSelfPowered   = NULL,
   .sofInt          = NULL
 };

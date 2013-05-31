@@ -41,12 +41,13 @@ extern "C" {
 
 #define USB_DEVICE        /* Compile stack for device mode. */
 
+#define DEBUG_USB_API
 /****************************************************************************
 **                                                                         **
 ** Specify number of endpoints used (in addition to EP0).                  **
 **                                                                         **
 *****************************************************************************/
-#define NUM_EP_USED 3
+#define NUM_EP_USED 5
 
 /****************************************************************************
 **                                                                         **
