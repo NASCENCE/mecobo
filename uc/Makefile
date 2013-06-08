@@ -141,7 +141,9 @@ usb/src/em_usbhal.c \
 usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
-main.c
+main.c \
+mecobo.c \
+queue.c
 
 s_SRC += 
 
