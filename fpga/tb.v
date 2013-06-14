@@ -24,10 +24,12 @@ initial begin
   ebi_cs = 1'b1;
   ebi_data = 16'h000F;
  
-  //hold at least 1 FPGA cycle
+  //cs and wr has to be held for at least 1 FPGA cycle
   #11
   ebi_cs = 1'b0;
   ebi_wr = 1'b0;
+  //hold address at least 2 FPGA cycles 
+  #25
   ebi_addr = 0;
 
 end
