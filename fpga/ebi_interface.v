@@ -62,7 +62,11 @@ always @ (*) begin
           next_state <= ebi_read_data;
           ram_enable  <= 1'b1;
           ram_we <= 1'b0;
-        end
+        end 
+      end else begin
+        next_state <= idle;
+        ram_enable <= 1'b0;
+        ram_we <= 1'b0;
       end
     end
 
