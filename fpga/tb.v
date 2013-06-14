@@ -17,13 +17,15 @@ initial begin
   sample = 1;
   ebi_rd = 1'b0;
 
-  #10
+  #5
   reset = 0;
+  ebi_addr = 1;
   ebi_wr = 1'b1;
   ebi_cs = 1'b1;
   ebi_data = 16'h000F;
-  ebi_addr = 1;
-  #10
+ 
+  //hold at least 1 FPGA cycle
+  #11
   ebi_cs = 1'b0;
   ebi_wr = 1'b0;
   ebi_addr = 0;
