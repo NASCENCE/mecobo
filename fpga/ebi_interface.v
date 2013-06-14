@@ -52,25 +52,21 @@ always @ (*) begin
   next_state <= state;
   case (state)
     idle: begin
-      if (cs && wr) begin
+      if (cs && wr)
         next_state <= ebi_write_data;
-        //Outputs from fsm
-        ram_enable <= 1'b1; 
-        ram_we <= 1'b1;
-      end else if (cs && rd) begin 
+      else if (cs && rd)
           next_state <= ebi_read_data;
-          ram_enable  <= 1'b1;
-          ram_we <= 1'b0;
-      end else begin
+      else
         next_state <= idle;
-        ram_enable <= 1'b0;
-        ram_we <= 1'b0;
-      end
+
+      ram_enable <= 1'b0;
+      ram_we <= 1'b0;
+
     end
 
     ebi_write_data: begin
       next_state <= idle;
-      //Out
+      //Pulse this one cycle. 
       ram_enable  <= 1'b1;
       ram_we <= 1'b1;
     end
