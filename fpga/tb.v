@@ -29,7 +29,18 @@ initial begin
   ebi_cs = 1'b0;
   ebi_wr = 1'b0;
   //hold address at least 2 FPGA cycles 
-  #25
+  #11
+  ebi_addr = 0;
+
+  //Wait some time
+  #42
+  ebi_cs = 1'b1;
+  ebi_addr = 1'b1;
+  ebi_rd = 1'b1;
+  #11
+  ebi_cs = 1'b0;
+  ebi_rd = 1'b0;
+  #11
   ebi_addr = 0;
 
 end
