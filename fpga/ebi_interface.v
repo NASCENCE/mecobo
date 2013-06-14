@@ -57,12 +57,10 @@ always @ (*) begin
         //Outputs from fsm
         ram_enable <= 1'b1; 
         ram_we <= 1'b1;
-      end else begin 
-        if (cs && rd) begin
+      end else if (cs && rd) begin 
           next_state <= ebi_read_data;
           ram_enable  <= 1'b1;
           ram_we <= 1'b0;
-        end 
       end else begin
         next_state <= idle;
         ram_enable <= 1'b0;
