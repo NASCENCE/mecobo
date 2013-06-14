@@ -78,11 +78,12 @@ always @ (*) begin
     ebi_read_data : begin
       next_state <= idle;
       ram_enable  <= 1'b1;
+      ram_we <= 1'b0;
     end
     default: begin
       next_state <= idle;
       //out
-      ram_enable <= 0;
+      ram_enable <= 1'b0;
       ram_we <= 1'b0;
     end
   endcase
