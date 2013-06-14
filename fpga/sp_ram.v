@@ -6,7 +6,7 @@ input [11:0] addr;
 input [15:0] di;
 output [15:0] do;
 
-reg [11:0] RAM [15:0];
+reg [15:0] RAM [15:0];
 reg [15:0] do;
 
 always @(posedge clk) begin

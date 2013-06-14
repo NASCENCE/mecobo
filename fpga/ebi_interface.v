@@ -55,7 +55,7 @@ always @ (*) begin
       if (cs && wr)
         next_state <= ebi_write_data;
       else if (cs && rd)
-          next_state <= ebi_read_data;
+        next_state <= ebi_read_data;
       else
         next_state <= idle;
 
