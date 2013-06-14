@@ -20,6 +20,7 @@ ebi_interface ebi0 (
   .addr(ebi_addr),
   .wr(ebi_wr),
   .rd(ebi_rd),
-  .cs(ebi_cs));
+  .cs(ebi_cs)
+);
 
-endmodule;
+endmodule

@@ -8,11 +8,6 @@ input wr;
 input rd;
 input cs;
 
-inout [15:0] data;
-
-//reg [15:0] data_in;
-//reg [15:0] data_out;
-
 wire [20:0] addr;
 wire wr;
 wire rd;
