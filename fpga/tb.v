@@ -23,7 +23,7 @@ initial begin
   ebi_cs = 1'b1;
   ebi_data = 16'h000F;
   ebi_addr = 1;
-  #5
+  #10
   ebi_cs = 1'b0;
   ebi_wr = 1'b0;
   ebi_addr = 0;
