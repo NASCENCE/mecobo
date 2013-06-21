@@ -51,7 +51,7 @@ static struct mecoPack packToSend;
 static int sendPackReady;
 
 //Store some pin configs
-static struct pinConfig[12];
+//static struct pinConfig pinConfigs[12];
 
 //Temporary map for routing some pins for a early experiment.
 struct ucPin routeThroughMap[13];
@@ -99,14 +99,6 @@ int main(void)
         if(sendPackReady) {
             USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
         }
-
-        //GPIO_PinOutToggle(gpioPortE, 8);
-        //GPIO_PinOutToggle(gpioPortE, 9);
-        if(configRegister == 0) 
-            GPIO_PinOutClear(gpioPortE, 8);
-        else 
-            GPIO_PinOutSet(gpioPortE, 8);
- 
     }
 }
 
@@ -151,7 +143,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 void buildMap(struct ucPin * map)
 {
   //This here is really the FPGA_DATA bus
-  map[FPGA_D14] = {.port = gpioPortE, .pin = 8};
+  map[FPGA_D14] = (struct ucPin){.port = gpioPortE, .pin = 8};
 }
 
 //The purpose of this function is to configure the FPGA
@@ -159,10 +151,10 @@ void buildMap(struct ucPin * map)
 int fpgaConfigPin(struct pinConfig * p)
 {
   //Get the pin we're setting.
-  ucPin pin = routeThroughMap[p->pin];
+  struct ucPin pin = routeThroughMap[p->fpgaPin];
 
   if (p->pinType == PINTYPE_OUT) {
-    GPIO_PinModeSet(pin.port, pin.pin, gpioModePushPull, pin->constantVal);
+    GPIO_PinModeSet(pin.port, pin.pin, gpioModePushPull, p->constantVal);
   }
 
   if (p->pinType == PINTYPE_IN) {
@@ -191,12 +183,6 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
-        }
-
-        //Do stuff with the data part.
-        if(currentPack.command == 23) {
-            uint32_t gotConf = (uint32_t)(*currentPack.data);
-            configRegister = gotConf;
         }
         //Read pin 9
         if(currentPack.command == 3) {
