@@ -148,7 +148,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 
 void buildMap(struct ucPin * map)
 {
-  map[FPGA_DATA_0] = {.port = gpioPortE, .pin = 8};
+  map[FPGA_DATA_0] = (struct ucPin){.port = gpioPortE, .pin = 8};
 }
 //The purpose of this function is to configure the FPGA
 //with the data found in the pin config structure. 
