@@ -28,9 +28,11 @@ typedef enum {
 } EBI_Data_Port_TypeDef;
 
 struct ucPin {
-  GPIO_Port_Typedef port;
+  GPIO_Port_TypeDef port;
   uint32_t pin;
 };
+
+void buildMap(struct ucPin * map);
 
 struct mecoPack {
     uint32_t size;
@@ -50,7 +52,7 @@ struct pinConfig {
   //If pin is to be a DAC pin
   uint32_t nSamples;
   uint32_t * samples; //points to allocated data of samples. (12 bit samples)
-}
+};
 
 //Programs the FPGA via the slave serial interface.
 int progFPGA(uint8_t * data);

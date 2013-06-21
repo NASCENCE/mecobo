@@ -146,7 +146,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
     return USB_STATUS_OK;
 }
 
-void buildMap(struct ucPin * map) 
+void buildMap(struct ucPin * map)
 {
   map[FPGA_DATA_0] = {.port = gpioPortE, .pin = 8};
 }
