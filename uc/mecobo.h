@@ -20,7 +20,7 @@
 #define COMMAND_REG_OFFSET 0
 
 struct mecoPack {
-    uint16_t size;
+    uint32_t size;
     uint8_t command;
     uint8_t * data;
 };
@@ -62,7 +62,12 @@ void DmaUsbRxDone(unsigned int channel, int primary, void *user);
 int UsbDataReceived(USB_Status_TypeDef status,
                             uint32_t xf,
                             uint32_t remaining);
+int UsbHeaderReceived(USB_Status_TypeDef status,
+                            uint32_t xf,
+                            uint32_t remaining);
+
 int UsbDataSent(USB_Status_TypeDef status,
         uint32_t xf,
         uint32_t remaining);
 
+void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);

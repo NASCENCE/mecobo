@@ -198,7 +198,7 @@ static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 2, 2, 2, 2, 2
 static const USBD_Callbacks_TypeDef callbacks =
 {
   .usbReset        = NULL,
-  .usbStateChange  = NULL,
+  .usbStateChange  = UsbStateChange,
   .setupCmd        = NULL,
   .isSelfPowered   = NULL,
   .sofInt          = NULL

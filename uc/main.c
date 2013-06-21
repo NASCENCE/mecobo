@@ -11,6 +11,7 @@
 #include "bsp_trace.h"
 
 #include <stdlib.h>
+#include <string.h>
 #include "mecobo.h"
 #include "queue.h"
 
@@ -32,96 +33,167 @@ struct queue dataIn;
 
 static DMA_CB_TypeDef DmaUsbRxCB;
 static int usbTxActive, usbRxActive;
+
+//Receiving buffer. 
+struct queue dataInBuffer;
+
+//Try again.
+static uint32_t inBufferTop;
+static uint8_t * inBuffer;
+
+//sending buffer
+static uint32_t outBufferTop;
+static uint8_t * outBuffer;
+
+static struct mecoPack currentPack;
+static struct mecoPack packToSend;
+static int sendPackReady;
+
+static int configRegister = 0;
 /**************************************************************************//**
  * @brief main - the entrypoint after reset.
  *****************************************************************************/
 int main(void)
 {
-    BSP_Init(BSP_INIT_DEFAULT);
-    /* Enable HFXO as high frequency clock, HFCLK (depending on external oscillator this will probably be 48MHz) */
-    //CMU->OSCENCMD = CMU_OSCENCMD_HFXOEN;
-    //while (!(CMU->STATUS & CMU_STATUS_HFXORDY)) ;
-    //CMU->CMD = CMU_CMD_HFCLKSEL_HFXO;
-    /* No LE clock source selected */
+    CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+   
+    CMU_ClockEnable(cmuClock_GPIO, true);
+    GPIO_PinModeSet(gpioPortE, 8, gpioModePushPull, 0); 
+    GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
+   
+        /* Setup DMA */
+//    setupDma();
+    //Initialize a queue to 2K
+    //queueInit(&dataInBuffer, 1024*2);
 
-    /* Enable GPIO clock */
-    //        CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
+    inBufferTop = 0;
+    inBuffer = (uint8_t*)malloc(32*1024);
+   
+    outBufferTop = 0;
+    outBuffer = (uint8_t*)malloc(32*1024);
 
     USBD_Init(&initstruct);
 
     /*
      * When using a debugger it is practical to uncomment the following three
      * lines to force host to re-enumerate the device.
-     */
+    */
     USBD_Disconnect();
-    USBTIMER_DelayMs(1000);
+    USBTIMER_DelayMs(100);
     USBD_Connect();
 
-    /* Setup DMA */
-//    setupDma();
 
-    //queueInit(&dataIn, 1024*2);
-    int bufferSize = 47;
-    uint8_t * byteBuffer = malloc(bufferSize);
-    int i;
-    for(i = 0; i < bufferSize; i++) {
-        byteBuffer[i] = 0;
-    }
-    int bufferPos = 0;
-
-    uint8_t * sendBuff = malloc(bufferSize);
-    
+    sendPackReady = 0;
     //read and write in loop	
     for (;;)
     {
-        //Read head
-        usbRxActive = 1;
-        int readCount = 0;
-        while(usbRxActive) {
-            //This essentially attempts to fill the byteBuffer until it succeeds.
-            USBD_Read(EP_DATA_OUT1, byteBuffer, bufferSize, UsbDataReceived);
-            readCount++;
+        if(sendPackReady) {
+            USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
         }
-        
-        int b;
-        for(b = 0; b < bufferSize; b++) {
-            sendBuff[b] = byteBuffer[b] + 1;
-        }
-        sendBuff[0] = readCount;
-        usbTxActive = 1;
-        while(usbTxActive) {
-            //Try to write data until success!
-            USBD_Write(EP_DATA_IN1, sendBuff, bufferSize, UsbDataSent);
+
+        //GPIO_PinOutToggle(gpioPortE, 8);
+        //GPIO_PinOutToggle(gpioPortE, 9);
+        if(configRegister == 0) 
+            GPIO_PinOutClear(gpioPortE, 8);
+        else 
+            GPIO_PinOutSet(gpioPortE, 8);
+ 
+    }
+}
+
+
+
+int UsbHeaderReceived(USB_Status_TypeDef status,
+                            uint32_t xf,
+                            uint32_t remaining) 
+{
+    (void) remaining;
+    int gotHeader = 0;
+    if ((status == USB_STATUS_OK) && (xf > 0)) {
+        //Got some data, check if we have header.
+        if (xf == 8) {
+            if (inBuffer[0] == 0xa) {
+
+                uint32_t * inBuffer32 = (uint32_t *)inBuffer;
+                currentPack.size = inBuffer32[1]; //TODO: blaaaah
+
+                currentPack.command = inBuffer[3];
+                currentPack.data = malloc(currentPack.size);
+            } 
+            gotHeader = 1;
+        } else {
+            //Some kind of error here.
         }
     }
+
+    //Check that we're still good, and get some data for this pack.
+    if (USBD_GetUsbState() == USBD_STATE_CONFIGURED) {
+        if(gotHeader) {
+            USBD_Read(EP_DATA_OUT1, currentPack.data, currentPack.size, UsbDataReceived);
+        } else {
+            USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
+        }
+    }
+
+    return USB_STATUS_OK;
 }
 
 int UsbDataReceived(USB_Status_TypeDef status,
                             uint32_t xf,
                             uint32_t remaining) 
 {
-    //(void) xf;
     (void) remaining;
     if ((status == USB_STATUS_OK) && (xf > 0)) {
-        usbRxActive = 0;
-    } 
-    return USB_STATUS_OK;
+        //Do stuff with the data part.
+        if(currentPack.command == 23) {
+            uint32_t gotConf = (uint32_t)(*currentPack.data);
+            configRegister = gotConf;  
+        }
+
+        //Read pin 9
+        if(currentPack.command == 3) {
+            struct mecoPack pack;
+            pack.size = 4;
+            pack.data = malloc(4);
+            *pack.data = GPIO_PinInGet(gpioPortE, 9);
+            packToSend = pack;
+            sendPackReady = 1;
+        }
+        //For now, we will just make a mecoPack and queue it for sending.
+        /*
+        struct mecoPack pack;
+        pack.size = currentPack.size; //send back the same amount of data
+        pack.command = currentPack.command;
+        pack.data = malloc(currentPack.size); //allocate 4 bytes for the data.
+        //This loops back back!
+        packToSend = pack; 
+        sendPackReady = 1; //ship it as soon as we can!
+        */
+        free(currentPack.data); //we've sent the data back, no need to store it.
+    }
+
+    //Check that we're still good, and get a new header.
+    if (USBD_GetUsbState() == USBD_STATE_CONFIGURED) {
+        USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived); //get new header.
+    }
 }
 
 int UsbDataSent(USB_Status_TypeDef status,
         uint32_t xf,
         uint32_t remaining)
 {
-    (void) xf;
     (void) remaining;
 
-    if (status == USB_STATUS_OK) 
+    if ((status == USB_STATUS_OK) && (xf > 0)) 
     {
-        usbTxActive = 0;
+        //we probably sent some data :-)
+        sendPackReady = 0;  //reset this for next packet.
+        free(packToSend.data);
     }
 
     return USB_STATUS_OK;
 }
+
 void DmaUsbRxDone(unsigned int channel, int primary, void *user)
 {
     (void) channel;
@@ -168,3 +240,10 @@ int setupDma(void)
 }
 */
 
+
+void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
+{
+    if (newState == USBD_STATE_CONFIGURED) {
+        USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
+    }
+}
