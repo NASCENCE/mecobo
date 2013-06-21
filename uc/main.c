@@ -150,7 +150,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 //This is a temporary map for this experiment
 void buildMap(struct ucPin * map)
 {
-                    //This here is really the FPGA_DATA bus
+  //This here is really the FPGA_DATA bus
   map[FPGA_D14] = {.port = gpioPortE, .pin = 8};
 }
 
