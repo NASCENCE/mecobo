@@ -14,6 +14,7 @@
 #include <string.h>
 #include "mecobo.h"
 #include "queue.h"
+#include "mecoprot.h"
 
 
 /*** Typedef's and defines. ***/
@@ -138,18 +139,31 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
     return USB_STATUS_OK;
 }
 
+//The purpose of this function is to configure the FPGA
+//with the data found in the pin config structure. 
+int fpgaConfigPin(struct pinConfig * p)
+{
+  //TODO: support everything :-)
+  return 0;
+}
+
+
 int UsbDataReceived(USB_Status_TypeDef status,
                             uint32_t xf,
                             uint32_t remaining) 
 {
     (void) remaining;
     if ((status == USB_STATUS_OK) && (xf > 0)) {
+
+
+        if(currentPack.command == CMD_CONFIG_PIN) {
+        }
+
         //Do stuff with the data part.
         if(currentPack.command == 23) {
             uint32_t gotConf = (uint32_t)(*currentPack.data);
-            configRegister = gotConf;  
+            configRegister = gotConf;
         }
-
         //Read pin 9
         if(currentPack.command == 3) {
             struct mecoPack pack;

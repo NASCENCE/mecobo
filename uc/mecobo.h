@@ -25,6 +25,20 @@ struct mecoPack {
     uint8_t * data;
 };
 
+struct pinConfig {
+  uint32_t pin;
+  uint32_t pinType;
+  uint32_t constantVal;
+  uint32_t waveform;
+  uint32_t freq;
+  uint32_t phase;
+  uint32_t duty;
+
+  //If pin is to be a DAC pin
+  uint32_t nSamples;
+  uint32_t * samples; //points to allocated data of samples. (12 bit samples)
+}
+
 //Programs the FPGA via the slave serial interface.
 int progFPGA(uint8_t * data);
 
