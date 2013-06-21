@@ -8,6 +8,12 @@
 #include "../uc/mecoprot.h"
 
 #define NUM_ENDPOINTS 4
+char eps[NUM_ENDPOINTS];
+
+int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value);
+int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
+static inline uint32_t get_bit(uint32_t val, uint32_t bit);
+int experiment_foo();
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
@@ -38,7 +44,7 @@ int main(int argc, char ** argv) {
   //Command line arguments
   if (argc > 1) {
     pinVal = atoi(argv[1]); 
-  }
+ }
 
 
   libusb_context * ctx = NULL;
@@ -62,7 +68,6 @@ int main(int argc, char ** argv) {
     printf("Could not claim interface 0 of Mecobo\n");
   }
 
-  char eps[NUM_ENDPOINTS];
   getEndpoints(eps, mecobo, 0x1);
 
   const int bytes = 4;
@@ -70,44 +75,14 @@ int main(int argc, char ** argv) {
   struct timespec t0;
   struct timespec t1;
 
-  //Now we have the enpoint addresses and we can start pushing data.
-  uint8_t * data = malloc(bytes);
-  uint8_t * rcv = malloc(bytes);
-  int transfered = 0;
-  int packets = 0;
-
-  uint8_t header[8];
-  header[0] = 0xa;
-  header[1] = 255;
-  header[2] = 2;
-  header[3] = 0x4;
-  uint32_t * h32 = (uint32_t *)header;
-  h32[1] = bytes;
-
-  uint32_t * d32 = (uint32_t*)data;
-  *d32 = pinVal;
-
-  //send header
   double start = omp_get_wtime();
   
-  setPin(FPGA_D14, 1);
+  experiment_foo();
 
-  struct mecoPack pack;
-  createMecoPack(&pack, data, bytes, 23);
-  sendPacket(&pack, eps[2]);
 
-  //Create a getPin command (cmd == 3)
-  createMecoPack(&pack, data, 4, 3);
-  sendPacket(&pack, eps[2]);
-  //Get some data back (just the data part)
-  bytesRemaining = 4;
-  while(bytesRemaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
-    bytesRemaining -= transfered;
-    uint32_t * r32 = (uint32_t*)rcv;
-    printf("received:%d bytes.\n", transfered);
-    printf("PinVal: %u\n", *rcv);
-  }
+  uint32_t val = 42;
+  getPin(FPGA_C15, &val);
+  printf("pinVal: %u\n", val);
 
   double end = omp_get_wtime();
   /*	
@@ -139,15 +114,34 @@ int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize,
   return 0;
 }
 
-int setPin(FPGA_IO_Pins_Typedef pin, uint32_t value) 
+int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value) 
 {
   uint32_t data[3];
   data[PINCONFIG_DATA_FPGA_PIN] = pin;
   data[PINCONFIG_DATA_TYPE] = PINTYPE_OUT;
   data[PINCONFIG_DATA_CONST] = value;
   struct mecoPack p;
-  createMecoPack(&p, data, 3, CMD_CONFIG_PIN);
+  createMecoPack(&p, (uint8_t *)data, 12, CMD_CONFIG_PIN);
   sendPacket(&p, eps[2]);
+}
+
+int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val) 
+{
+    uint32_t data[1];
+    data[PINCONFIG_DATA_FPGA_PIN] = pin;
+    struct mecoPack p;
+    createMecoPack(&p, (uint8_t *)data, 4, CMD_READ_PIN);
+    sendPacket(&p, eps[2]);
+    //Get data back.
+    int bytesRemaining = 4;
+    int transfered = 0;
+    uint8_t rcv[4];
+    while(bytesRemaining > 0) {
+        libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
+    bytesRemaining -= transfered;
+    *val = (uint32_t)*rcv;
+    //printf("received:%d bytes.\n", transfered);
+  }
 }
 
 int sendPacket(struct mecoPack * packet, uint8_t endpoint) 
@@ -167,7 +161,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
   while(remaining > 0) {
     libusb_bulk_transfer(mecoboHandle, endpoint, toSend8, 8, &transfered, 0);
     remaining -= transfered;
-    printf("Sent bytes of header, %u\n", transfered);
+    //printf("Sent bytes of header, %u\n", transfered);
   } 
   //Send data afterwards.
   transfered = 0;
@@ -175,7 +169,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
   while(remaining > 0) {
     libusb_bulk_transfer(mecoboHandle, endpoint, packet->data, packet->dataSize, &transfered, 0);
     remaining -= transfered;
-    printf("Sent bytes of data, %u\n", transfered);
+    //printf("Sent bytes of data, %u\n", transfered);
   }
 
   return 0;
@@ -184,4 +178,64 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
 int getPacket(struct mecoPack * packet)
 {
   return 0;
+}
+
+int experiment_foo()
+{
+    //So, the goal is to see if we can find a 2 input NAND port.
+    //The rest is just various ways of getting stimuli.
+    //Output is pin FPGA_C15.
+
+    //Generate stimuli data (11 pins)
+    /*
+        setPin(FPGA_C14,1);
+        setPin(FPGA_F13,1);
+        setPin(FPGA_F12,1);
+        setPin(FPGA_D12,1);
+        setPin(FPGA_C11,1);
+        setPin(FPGA_F11,1);
+        setPin(FPGA_G11,1);
+        setPin(FPGA_D9, 1);
+        setPin(FPGA_F9, 1);
+        setPin(FPGA_C9, 1);
+        setPin(FPGA_G9, 1);
+    */
+    for(int i =0; i < 2048; i++) {
+        setPin(FPGA_D14, get_bit(i, 0));
+        setPin(FPGA_F13, get_bit(i, 1));
+        setPin(FPGA_F12, get_bit(i, 2));
+        setPin(FPGA_D12, get_bit(i, 3));
+        setPin(FPGA_C11, get_bit(i, 4));
+        setPin(FPGA_F11, get_bit(i, 5));
+        setPin(FPGA_G11, get_bit(i, 6));
+        setPin(FPGA_D9, get_bit(i, 7));
+        setPin(FPGA_F9, get_bit(i, 8));
+        setPin(FPGA_C9, get_bit(i, 9));
+        setPin(FPGA_G9, get_bit(i, 10));
+
+        printf("%u ",  get_bit(i, 0));
+        printf("%u ",  get_bit(i, 1));
+        printf("%u ",  get_bit(i, 2));
+        printf("%u ",  get_bit(i, 3));
+        printf("%u ",  get_bit(i, 4));
+        printf("%u ",  get_bit(i, 5));
+        printf("%u ",  get_bit(i, 6));
+        printf("%u ",  get_bit(i, 7));
+        printf("%u ",  get_bit(i, 8));
+        printf("%u ",  get_bit(i, 9));
+        printf("%u ",  get_bit(i, 10));
+        
+        //The time it takes to do these IO-calls should be plenty of time to wait.
+        uint32_t val = 42;
+        getPin(FPGA_C6, &val);
+        printf("r:%u ", val);
+
+        printf("\n");
+
+    }
+}
+
+static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
+{
+    return (val >> bit) & 0x1;
 }

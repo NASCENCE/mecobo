@@ -54,7 +54,7 @@ static int sendPackReady;
 //static struct pinConfig pinConfigs[12];
 
 //Temporary map for routing some pins for a early experiment.
-struct ucPin routeThroughMap[13];
+struct ucPin routeThroughMap[40];
 /**************************************************************************//**
  * @brief main - the entrypoint after reset.
  *****************************************************************************/
@@ -64,8 +64,8 @@ int main(void)
     CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
    
     CMU_ClockEnable(cmuClock_GPIO, true);
-    GPIO_PinModeSet(gpioPortE, 8, gpioModePushPull, 0); 
-    GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
+    //GPIO_PinModeSet(gpioPortE, 8, gpioModePushPull, 0); 
+    //GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
    
         /* Setup DMA */
 //    setupDma();
@@ -143,18 +143,20 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 void buildMap(struct ucPin * map)
 {
   //This here is really the FPGA_DATA bus, but I'm just using it.
-  map[FPGA_D14] = (struct ucPin){.port = gpioPortE, .pin = 8};
-  map[FPGA_A16] = (struct ucPin){.port = gpioPortE, .pin = 9};
-  map[FPGA_C16] = (struct ucPin){.port = gpioPortE, .pin = 10};
-  map[FPGA_A15] = (struct ucPin){.port = gpioPortE, .pin = 11};
-  map[FPGA_F13] = (struct ucPin){.port = gpioPortE, .pin = 12};
-  map[FPGA_A13] = (struct ucPin){.port = gpioPortE, .pin = 13};
-  map[FPGA_F12] = (struct ucPin){.port = gpioPortE, .pin = 14};
-  map[FPGA_B16] = (struct ucPin){.port = gpioPortE, .pin = 15};
-  map[FPGA_D12] = (struct ucPin){.port = gpioPortA, .pin = 15};
-  map[FPGA_E12] = (struct ucPin){.port = gpioPortA, .pin = 0};
-  map[FPGA_D11] = (struct ucPin){.port = gpioPortA, .pin = 1};
-  map[FPGA_C15] = (struct ucPin){.port = gpioPortA, .pin = 2};
+  map[FPGA_C14] = (struct ucPin){.port = gpioPortE, .pin = 8};  //FPGADATA0
+  map[FPGA_F13] = (struct ucPin){.port = gpioPortE, .pin = 9};  //1
+  map[FPGA_F12] = (struct ucPin){.port = gpioPortE, .pin = 10};  //2
+  map[FPGA_D12] = (struct ucPin){.port = gpioPortE, .pin = 11}; //3
+  map[FPGA_C11] = (struct ucPin){.port = gpioPortE, .pin = 12}; //4
+  map[FPGA_F11] = (struct ucPin){.port = gpioPortE, .pin = 14}; //5
+  map[FPGA_G11] = (struct ucPin){.port = gpioPortE, .pin = 13}; //6
+  map[FPGA_D9] = (struct ucPin){.port = gpioPortE, .pin = 15}; //7 
+  map[FPGA_F9] = (struct ucPin){.port = gpioPortA, .pin = 15}; //8
+  map[FPGA_C9] = (struct ucPin){.port = gpioPortA, .pin = 0}; //9
+  map[FPGA_G9] = (struct ucPin){.port = gpioPortA, .pin = 1}; //10
+  map[FPGA_C6] = (struct ucPin){.port = gpioPortA, .pin = 2}; //11  (fpga pin n7)
+
+  //hole
 }
 
 //The purpose of this function is to configure the FPGA
@@ -184,7 +186,6 @@ int UsbDataReceived(USB_Status_TypeDef status,
     (void) remaining;
     if ((status == USB_STATUS_OK) && (xf > 0)) {
 
-
         if(currentPack.command == CMD_CONFIG_PIN) {
           struct pinConfig conf;
           uint32_t * d = (uint32_t *)(currentPack.data);
@@ -195,12 +196,17 @@ int UsbDataReceived(USB_Status_TypeDef status,
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
         }
-        //Read pin 9
-        if(currentPack.command == 3) {
+        
+        if(currentPack.command == CMD_READ_PIN) {
+            uint32_t pinToRead = (uint32_t)(*currentPack.data);
             struct mecoPack pack;
             pack.size = 4;
             pack.data = malloc(4);
-            *pack.data = GPIO_PinInGet(gpioPortE, 9);
+            //read
+            struct ucPin pin = routeThroughMap[pinToRead];
+            GPIO_PinModeSet(pin.port, pin.pin, gpioModeInput, 0); 
+            *pack.data = GPIO_PinInGet(pin.port, pin.pin);
+
             packToSend = pack;
             sendPackReady = 1;
         }
@@ -214,6 +220,7 @@ int UsbDataReceived(USB_Status_TypeDef status,
         packToSend = pack; 
         sendPackReady = 1; //ship it as soon as we can!
         */
+
         free(currentPack.data); //we've sent the data back, no need to store it.
     }
 
