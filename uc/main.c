@@ -51,6 +51,9 @@ static struct mecoPack packToSend;
 static int sendPackReady;
 
 static int configRegister = 0;
+
+//Temporary map for routing some pins for a early experiment.
+struct ucPin routeThroughMap[13];
 /**************************************************************************//**
  * @brief main - the entrypoint after reset.
  *****************************************************************************/
@@ -144,6 +147,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 int fpgaConfigPin(struct pinConfig * p)
 {
   //TODO: support everything :-)
+  ucPin pin = routeThroughMap[p->pin];
   return 0;
 }
 

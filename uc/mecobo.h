@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "em_usb.h"
+#include "em_gpio.h"
 
 #define FPGA_BASE_ADDR 0
 
@@ -18,6 +19,12 @@
 #define NUM_PINS 100
 
 #define COMMAND_REG_OFFSET 0
+
+struct ucPin {
+  GPIO_Port_Typedef port;
+  uint32_t pin;
+};
+
 
 struct mecoPack {
     uint32_t size;
