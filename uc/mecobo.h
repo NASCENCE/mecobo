@@ -20,11 +20,23 @@
 
 #define COMMAND_REG_OFFSET 0
 
+
 //FPGA port enum
 typedef enum {
-  FPGA_DATA_0 = 0,
-  FPGA_DATA_1 = 1,
-  FPGA_DATA_2 = 2
+  FPGA_D14 = 0,
+  FPGA_A16 = 1,
+  FPGA_C14 = 2,
+  FPGA_A15 = 3,
+  FPGA_F13 = 4,
+  FPGA_A13 = 5,
+  FPGA_F12 = 6,
+  FPGA_B16 = 7,
+  FPGA_D12 = 8,
+  FPGA_E12 = 9,
+  FPGA_D11 = 10,
+  FPGA_C15 = 11,
+  FPGA_C11 = 12,
+  FPGA_A12 = 13
 } EBI_Data_Port_TypeDef;
 
 struct ucPin {
