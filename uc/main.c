@@ -142,8 +142,19 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 //This is a temporary map for this experiment
 void buildMap(struct ucPin * map)
 {
-  //This here is really the FPGA_DATA bus
+  //This here is really the FPGA_DATA bus, but I'm just using it.
   map[FPGA_D14] = (struct ucPin){.port = gpioPortE, .pin = 8};
+  map[FPGA_A16] = (struct ucPin){.port = gpioPortE, .pin = 9};
+  map[FPGA_C16] = (struct ucPin){.port = gpioPortE, .pin = 10};
+  map[FPGA_A15] = (struct ucPin){.port = gpioPortE, .pin = 11};
+  map[FPGA_F13] = (struct ucPin){.port = gpioPortE, .pin = 12};
+  map[FPGA_A13] = (struct ucPin){.port = gpioPortE, .pin = 13};
+  map[FPGA_F12] = (struct ucPin){.port = gpioPortE, .pin = 14};
+  map[FPGA_B16] = (struct ucPin){.port = gpioPortE, .pin = 15};
+  map[FPGA_D12] = (struct ucPin){.port = gpioPortA, .pin = 15};
+  map[FPGA_E12] = (struct ucPin){.port = gpioPortA, .pin = 0};
+  map[FPGA_D11] = (struct ucPin){.port = gpioPortA, .pin = 1};
+  map[FPGA_C15] = (struct ucPin){.port = gpioPortA, .pin = 2};
 }
 
 //The purpose of this function is to configure the FPGA
