@@ -20,11 +20,17 @@
 
 #define COMMAND_REG_OFFSET 0
 
+//FPGA port enum
+typedef enum {
+  FPGA_DATA_0 = 0,
+  FPGA_DATA_1 = 1,
+  FPGA_DATA_2 = 2
+} EBI_Data_Port_TypeDef;
+
 struct ucPin {
   GPIO_Port_Typedef port;
   uint32_t pin;
 };
-
 
 struct mecoPack {
     uint32_t size;
@@ -33,7 +39,7 @@ struct mecoPack {
 };
 
 struct pinConfig {
-  uint32_t pin;
+  uint32_t fpgaPin;
   uint32_t pinType;
   uint32_t constantVal;
   uint32_t waveform;

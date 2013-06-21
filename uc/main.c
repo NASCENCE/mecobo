@@ -57,6 +57,7 @@ struct ucPin routeThroughMap[13];
 /**************************************************************************//**
  * @brief main - the entrypoint after reset.
  *****************************************************************************/
+
 int main(void)
 {
     CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
@@ -75,6 +76,9 @@ int main(void)
    
     outBufferTop = 0;
     outBuffer = (uint8_t*)malloc(32*1024);
+
+    //Build the pin map
+    buildMap(routeThroughMap);
 
     USBD_Init(&initstruct);
 
@@ -142,12 +146,16 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
     return USB_STATUS_OK;
 }
 
+void buildMap(struct ucPin * map) 
+{
+  map[FPGA_DATA_0] = {.port = gpioPortE, .pin = 8};
+}
 //The purpose of this function is to configure the FPGA
 //with the data found in the pin config structure. 
 int fpgaConfigPin(struct pinConfig * p)
 {
   //TODO: support everything :-)
-  ucPin pin = routeThroughMap[p->pin];
+  //ucPin pin = routeThroughMap[p->pin];
   return 0;
 }
 
