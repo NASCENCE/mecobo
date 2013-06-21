@@ -1,3 +1,15 @@
+//16 bits words. 
+//Each address addresses 1 16 bit word.
+//Mecobo pin configuartion is done from address 0x32.
+//Each pin has 6 words:
+//[waveform] 1: square, 2: sawtooth 3: triangle 4: pwm (pointer)
+//[freq]
+//[phase]
+//[ticks]
+//[currentTick] -- read only
+//[lastValue]
+
+
 module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs);
 
 input clk;
@@ -22,5 +34,7 @@ ebi_interface ebi0 (
   .rd(ebi_rd),
   .cs(ebi_cs)
 );
+
+
 
 endmodule
