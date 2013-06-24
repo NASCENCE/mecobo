@@ -13,7 +13,12 @@ input ebi_cs;
 
 //Directions relative to RAM. 
 input  ram_data_in[15:0];
-output ram_data_out[15:0]
+output ram_data_out[15:0];
+
+
+output [20:0-] ram_addr;
+output ram_wr;
+output ram_en;
 
 //Tristate inout, hook up to RAM.
 assign ebi_data = (ebi_rd)? ram_data_in : 15'bZ;

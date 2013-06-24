@@ -59,7 +59,7 @@ ebi_interface ebi0 (
   .ram_addr(ebi_ram_addr),
   .ram_wr(ebi_ram_wr),
   .ram_en(ebi_ram_en)
-_);
+);
 
 wire [15:0] cmd_ram_data_in;
 wire [15:0] cmd_ram_data_out;
