@@ -1,4 +1,4 @@
-module mecoCommand (clk, reset, ram_addr, ram_data_in, ram_data_out, ram_wr, ram_en);
+module mecoCommand (clk, reset, ram_addr, ram_data_in, ram_data_out, ram_wr, ram_en, pin_out);
 
 input clk, reset;
 output [20:0] ram_addr;
@@ -6,18 +6,21 @@ input [15:0] ram_data_in;
 output [15:0] ram_data_out;
 output ram_wr;
 output ram_en;
+output [15:0] pin_out;
 
-localparam INSTRUCTION_ADDR 20'h42;
+localparam INSTRUCTION_ADDR = 20'h2;
 
-reg [15:0] read_data ;
+reg [15:0] read_data;
 
-assign ram_addr <= INSTRUCTION_ADDR;
-assign ram_en <= 1'b1;
-assign ram_wr <= 1'b0;
+assign ram_addr = INSTRUCTION_ADDR;
+assign ram_en = 1'b1;
+assign ram_wr = 1'b0;
 
 always @ (posedge clk) begin
   read_data <= ram_data_in;
 end
+
+assign pin_out = read_data;
 
 //command is essentially a small multi-cycle processor, but the instruction is
 //always at the same place.
@@ -93,4 +96,4 @@ always @ (*) begin
 end
 */
 
-endmodule;
+endmodule

@@ -31,6 +31,14 @@ wire [20:0] ebi_ram_addr;
 wire ebi_ram_wr;
 wire ebi_ram_en;
 
+
+wire [15:0] cmd_ram_data_in;
+wire [15:0] cmd_ram_data_out;
+wire [20:0] cmd_ram_addr;
+wire cmd_ram_wr;
+wire cmd_ram_en;
+
+
 dp_ram shmem (
   .clka(clk),
   .clkb(clk),
@@ -60,13 +68,6 @@ ebi_interface ebi0 (
   .ram_wr(ebi_ram_wr),
   .ram_en(ebi_ram_en)
 );
-
-wire [15:0] cmd_ram_data_in;
-wire [15:0] cmd_ram_data_out;
-wire [20:0] cmd_ram_addr;
-wire cmd_ram_wr;
-wire cmd_ram_en;
-
 mecoCommand cmd (
   .clk(clk),
   .reset(reset),

@@ -17,23 +17,23 @@ initial begin
   sample = 1;
   ebi_rd = 1'b0;
 
-  #5
+  #23
   reset = 0;
-  ebi_addr = 1;
+  ebi_addr = 20'h2;
   ebi_wr = 1'b1;
   ebi_cs = 1'b1;
   ebi_data = 16'h000F;
  
   //cs and wr has to be held for at least 1 FPGA cycle
-  #11
+  #21
   ebi_cs = 1'b0;
   ebi_wr = 1'b0;
-  //hold address at least 2 FPGA cycles 
-  #11
+  //hold address at least 1 FPGA cycle longer
+  #21
   ebi_addr = 0;
 
   //Wait some time
-  #42
+  #87
   ebi_cs = 1'b1;
   ebi_addr = 1'b1;
   ebi_rd = 1'b1;
@@ -47,7 +47,7 @@ end
 
 //clockin'
 always begin
-  #5 clk = !clk;
+  #10 clk = !clk;
 end
 
 wire [15:0] fjas;
