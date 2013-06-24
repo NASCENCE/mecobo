@@ -1,36 +1,29 @@
-module ebi_interface (clk, reset, data, addr, wr, rd, cs);
+module ebi_interface (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs,
+                                  ram_data_in, ram_data_out, ram_addr, ram_wr, ram_en);
 input clk;
 input reset;
-inout [15:0] data;
-input [20:0] addr;
 
-input wr;
-input rd;
-input cs;
+//From external world [uC]
+inout [15:0] ebi_data; //NB! Inout.
+input [20:0] ebi_addr;
 
-wire [20:0] addr;
-wire wr;
-wire rd;
-wire cs;
+input ebi_wr;
+input ebi_rd;
+input ebi_cs;
 
-reg ram_enable;
-reg ram_we;
-wire [15:0] ram_data_in;
-wire [15:0] ram_data_out;
+//Directions relative to RAM. 
+input  ram_data_in[15:0];
+output ram_data_out[15:0]
 
-assign data = (rd)? ram_data_out : 15'bZ;
-assign ram_data_in = data;
+//Tristate inout, hook up to RAM.
+assign ebi_data = (ebi_rd)? ram_data_in : 15'bZ;
+assign ram_data_out = ebi_data;
 
-sp_ram ram0 (
-  .clk(clk),
-  .en(ram_enable),
-  .we(ram_we),
-  .addr(addr[11:0]),
-  .di(ram_data_in),
-  .do(ram_data_out)
-);
+assign ram_wr = ebi_wr;
+assign ram_en = ebi_cs;
 
 //EBI FSM
+/*
 localparam [4:0]
   idle            = 5'b00001,
   ebi_read_data   = 5'b00010,
@@ -84,6 +77,6 @@ always @ (*) begin
     end
   endcase
 end
-
+*/
 
 endmodule

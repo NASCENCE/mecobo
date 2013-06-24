@@ -22,19 +22,59 @@ input ebi_cs;
 
 wire ebi_clk;
 
-
 assign ebi_clk = clk;
 // EBI module communicates with the uC.
+
+wire [15:0] ebi_ram_data_in;
+wire [15:0] ebi_ram_data_out;
+wire [20:0] ebi_ram_addr;
+wire ebi_ram_wr;
+wire ebi_ram_en;
+
+dp_ram shmem (
+  .clka(clk),
+  .clkb(clk),
+  .ena(ebi_ram_en),
+  .enb(cmd_ram_en),
+  .wea(ebi_ram_wr),
+  .web(cmd_ram_wr),
+  .addra(ebi_ram_addr),
+  .addrb(cmd_ram_addr),
+  .dia(ebi_ram_data_out),
+  .dib(cmd_ram_data_out),
+  .doa(ebi_ram_data_in),
+  .dob(cmd_ram_data_in)
+);
+
 ebi_interface ebi0 (
   .clk(ebi_clk),
   .reset(reset),
-  .data(ebi_data),
-  .addr(ebi_addr),
-  .wr(ebi_wr),
-  .rd(ebi_rd),
-  .cs(ebi_cs)
+  .ebi_data(ebi_data),
+  .ebi_addr(ebi_addr),
+  .ebi_wr(ebi_wr),
+  .ebi_rd(ebi_rd),
+  .ebi_cs(ebi_cs),
+  .ram_data_in(ebi_ram_data_in),
+  .ram_data_out(ebi_ram_data_out),
+  .ram_addr(ebi_ram_addr),
+  .ram_wr(ebi_ram_wr),
+  .ram_en(ebi_ram_en)
+_);
+
+wire [15:0] cmd_ram_data_in;
+wire [15:0] cmd_ram_data_out;
+wire [20:0] cmd_ram_addr;
+wire cmd_ram_wr;
+wire cmd_ram_en;
+
+mecoCommand cmd (
+  .clk(clk),
+  .reset(reset),
+  .ram_data_in(cmd_ram_data_in),
+  .ram_data_out(cmd_ram_data_out),
+  .ram_addr(cmd_ram_addr),
+  .ram_wr(cmd_ram_wr),
+  .ram_en(cmd_ram_en)
 );
-
-
 
 endmodule
