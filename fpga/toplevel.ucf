@@ -57,3 +57,9 @@ NET "ebi_addr[17]" LOC = R3;
 NET "ebi_addr[18]" LOC = T3;
 NET "ebi_addr[19]" LOC = T6;
 NET "ebi_addr[20]" LOC = P7;
+
+NET "ebi_select"  LOC = V14;
+NET "ebi_write"   LOC = V15;
+NET "ebi_read"    LOC = V16;
+
+NET "fpga_ready"  LOC = T12; #Output from FPGA (0 = FPGA READY)
