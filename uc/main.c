@@ -28,6 +28,7 @@ void ebi_gpio_setup(void);
 #define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
 
 #define BULK_EP_SIZE     USB_MAX_EP_SIZE  /* This is the max. ep size.    */
+#define EBI_ADDR_BASE 0x80000000
 
 #include "descriptors.h"
 
@@ -59,11 +60,39 @@ struct ucPin routeThroughMap[40];
 
 
 
-
-/* Configure TFT direct drive from EBI BANK2 */
-static const EBI_Init_TypeDef fpgaEBI =
-{
-};
+EBI_Init_TypeDef ebiConfig =
+  {   ebiModeD8A8,       /* 8 bit address, 8 bit data */
+        ebiActiveLow,      /* ARDY polarity */
+        ebiActiveLow,      /* ALE polarity */
+        ebiActiveLow,      /* WE polarity */
+        ebiActiveLow,      /* RE polarity */
+        ebiActiveLow,      /* CS polarity */
+        ebiActiveLow,      /* BL polarity */
+        false,             /* disble BL */
+        true,              /* enable NOIDLE */
+        false,             /* disable ARDY */
+        true,              /* disable ARDY timeout */
+        EBI_BANK0,         /* enable bank 0 */
+        1,                 /* chip select 1 */
+        0,                 /* addr setup cycles */
+        0,                 /* addr hold cycles */
+        false,             /* disable half cycle ALE strobe */
+        0,                 /* read setup cycles */
+        2,                 /* read strobe cycles */
+        1,                 /* read hold cycles */
+        false,             /* disable page mode */
+        false,             /* disable prefetch */
+        false,             /* disable half cycle REn strobe */
+        0,                 /* write setup cycles */
+        2,                 /* write strobe cycles */
+        1,                 /* write hold cycles */
+        false,             /* enable the write buffer */
+        false,             /* disable half cycle WEn strobe */
+        ebiALowA24,        /* ALB - Low bound, address lines */
+        ebiAHighA26,       /* APEN - High bound, address lines */
+        ebiLocation1,      /* Use Location 1 */
+        true,              /* enable EBI */
+    };
 
 
 
@@ -88,7 +117,7 @@ int main(void)
     //queueInit(&dataInBuffer, 1024*2);
     ebi_gpio_setup(); //enable GPIO bus.
     //Init EBI.
-    //EBI_Init();
+    EBI_Init(&ebiConfig);
 
     //And start writing. Nothing more to it!
 
@@ -214,7 +243,8 @@ int UsbDataReceived(USB_Status_TypeDef status,
           conf.constantVal = d[PINCONFIG_DATA_CONST];
 
           //PinVal is stored in uC-internal per-pin register
-          fpgaConfigPin(&conf); 
+          //fpgaConfigPin(&conf); 
+          *(EBI_ADDR_BASE + 0x2) = currentPack.data[0];
         }
         
         if(currentPack.command == CMD_READ_PIN) {
