@@ -23,6 +23,7 @@ input ebi_cs;
 output fpga_ready;
 output [15:0] pin_out;
 
+assign fpga_ready = 1'b0;
 wire [15:0] ebi_ram_data_in;
 wire [15:0] ebi_ram_data_out;
 wire [20:0] ebi_ram_addr;
@@ -73,8 +74,8 @@ mecoCommand cmd (
   .ram_data_out(cmd_ram_data_out),
   .ram_addr(cmd_ram_addr),
   .ram_wr(cmd_ram_wr),
-  .ram_en(cmd_ram_en)
-  .pin_out(pin_out);
+  .ram_en(cmd_ram_en),
+  .pin_out(pin_out)
 );
 
 endmodule
