@@ -243,8 +243,8 @@ int UsbDataReceived(USB_Status_TypeDef status,
           conf.constantVal = d[PINCONFIG_DATA_CONST];
 
           //PinVal is stored in uC-internal per-pin register
-          //fpgaConfigPin(&conf); 
-          *(EBI_ADDR_BASE + 0x2) = currentPack.data[0];
+          fpgaConfigPin(&conf); 
+          free(currentPack.data);
         }
         
         if(currentPack.command == CMD_READ_PIN) {
@@ -259,6 +259,11 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
             packToSend = pack;
             sendPackReady = 1;
+        }
+
+        if(currentPack.command == CMD_CONFIG_REG) {
+            *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
+            free(currentPack.data);
         }
         //For now, we will just make a mecoPack and queue it for sending.
         /*

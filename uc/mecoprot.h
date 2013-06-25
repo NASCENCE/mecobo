@@ -2,6 +2,7 @@
 
 #define CMD_CONFIG_PIN  0x1
 #define CMD_READ_PIN    0x2
+#define CMD_CONFIG_REG  0x3
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1

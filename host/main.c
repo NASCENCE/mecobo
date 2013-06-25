@@ -14,6 +14,7 @@ int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value);
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
+int setReg(uint32_t data);
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
@@ -59,7 +60,6 @@ int main(int argc, char ** argv) {
   }
   libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
 
-
   mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
   mecobo = libusb_get_device(mecoboHandle);	
 
@@ -70,19 +70,10 @@ int main(int argc, char ** argv) {
 
   getEndpoints(eps, mecobo, 0x1);
 
-  const int bytes = 4;
-  int bytesRemaining = bytes;
-  struct timespec t0;
-  struct timespec t1;
-
   double start = omp_get_wtime();
-  
-  experiment_foo();
-
-
-  uint32_t val = 42;
-  getPin(FPGA_C15, &val);
-  printf("pinVal: %u\n", val);
+ 
+  setReg(42);
+  //experiment_foo();
 
   double end = omp_get_wtime();
   /*	
@@ -91,7 +82,7 @@ int main(int argc, char ** argv) {
       }
       printf("\n");
       */
-  printf("Rate: %f KB/s\n", ((bytes)/(double)(end-start))/(double)1024);
+  //printf("Rate: %f KB/s\n", ((bytes)/(double)(end-start))/(double)1024);
 
   libusb_release_interface(mecoboHandle, 0x1);
   libusb_attach_kernel_driver(mecoboHandle, 0x1);	
@@ -112,6 +103,13 @@ int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize,
   packet->dataSize = dataSize;
   packet->command = command;
   return 0;
+}
+
+int setReg(uint32_t data) 
+{
+    struct mecoPack p;
+    createMecoPack(&p, (uint8_t *)(&data), 4, CMD_CONFIG_REG);
+    sendPacket(&p, eps[2]);
 }
 
 int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value) 
