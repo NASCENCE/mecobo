@@ -10,7 +10,7 @@
 //[lastValue]
 
 
-module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs);
+module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready);
 
 input clk;
 input reset;
@@ -20,10 +20,7 @@ input ebi_wr;
 input ebi_rd;
 input ebi_cs;
 
-wire ebi_clk;
-
-assign ebi_clk = clk;
-// EBI module communicates with the uC.
+output fpga_ready;
 
 wire [15:0] ebi_ram_data_in;
 wire [15:0] ebi_ram_data_out;
@@ -55,7 +52,7 @@ dp_ram shmem (
 );
 
 ebi_interface ebi0 (
-  .clk(ebi_clk),
+  .clk(clk),
   .reset(reset),
   .ebi_data(ebi_data),
   .ebi_addr(ebi_addr),
