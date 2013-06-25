@@ -1,12 +1,12 @@
 #include "em_device.h"
 #include "em_cmu.h"
 #include "em_dma.h"
-#include "em_dma.h"
 #include "em_gpio.h"
 #include "em_int.h"
 #include "dmactrl.h"
 #include "em_usb.h"
 #include "em_usart.h"
+#include "em_ebi.h"
 #include "bsp.h"
 #include "bsp_trace.h"
 
@@ -17,6 +17,7 @@
 #include "mecoprot.h"
 
 
+void ebi_gpio_setup(void);
 /*** Typedef's and defines. ***/
 
 /* Define USB endpoint addresses */
@@ -55,9 +56,23 @@ static int sendPackReady;
 
 //Temporary map for routing some pins for a early experiment.
 struct ucPin routeThroughMap[40];
+
+
+
+
+/* Configure TFT direct drive from EBI BANK2 */
+static const EBI_Init_TypeDef fpgaEBI =
+{
+};
+
+
+
 /**************************************************************************//**
  * @brief main - the entrypoint after reset.
  *****************************************************************************/
+
+
+
 
 int main(void)
 {
@@ -71,6 +86,11 @@ int main(void)
 //    setupDma();
     //Initialize a queue to 2K
     //queueInit(&dataInBuffer, 1024*2);
+    ebi_gpio_setup(); //enable GPIO bus.
+    //Init EBI.
+    //EBI_Init();
+
+    //And start writing. Nothing more to it!
 
     inBufferTop = 0;
     inBuffer = (uint8_t*)malloc(32*1024);
@@ -299,3 +319,114 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
         USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
     }
 }
+
+void ebi_gpio_setup(void)
+{
+  /* Using HFRCO at 14MHz as high frequency clock, HFCLK */
+  
+  /* No LE clock source selected */
+  
+  /* Enable GPIO clock */
+  CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
+  
+  /* Pin PA0 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
+  /* Pin PA1 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE1_MASK) | GPIO_P_MODEL_MODE1_PUSHPULL;
+  /* Pin PA2 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE2_MASK) | GPIO_P_MODEL_MODE2_PUSHPULL;
+  /* Pin PA3 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
+  /* Pin PA4 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE4_MASK) | GPIO_P_MODEL_MODE4_PUSHPULL;
+  /* Pin PA5 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
+  /* Pin PA6 is configured to Push-pull */
+  GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
+  /* Pin PA12 is configured to Push-pull */
+  GPIO->P[0].MODEH = (GPIO->P[0].MODEH & ~_GPIO_P_MODEH_MODE12_MASK) | GPIO_P_MODEH_MODE12_PUSHPULL;
+  /* Pin PA13 is configured to Push-pull */
+  GPIO->P[0].MODEH = (GPIO->P[0].MODEH & ~_GPIO_P_MODEH_MODE13_MASK) | GPIO_P_MODEH_MODE13_PUSHPULL;
+  /* Pin PA14 is configured to Push-pull */
+  GPIO->P[0].MODEH = (GPIO->P[0].MODEH & ~_GPIO_P_MODEH_MODE14_MASK) | GPIO_P_MODEH_MODE14_PUSHPULL;
+  /* Pin PA15 is configured to Push-pull */
+  GPIO->P[0].MODEH = (GPIO->P[0].MODEH & ~_GPIO_P_MODEH_MODE15_MASK) | GPIO_P_MODEH_MODE15_PUSHPULL;
+  /* Pin PB0 is configured to Push-pull */
+  GPIO->P[1].MODEL = (GPIO->P[1].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
+  /* Pin PB1 is configured to Push-pull */
+  GPIO->P[1].MODEL = (GPIO->P[1].MODEL & ~_GPIO_P_MODEL_MODE1_MASK) | GPIO_P_MODEL_MODE1_PUSHPULL;
+  /* Pin PB2 is configured to Push-pull */
+  GPIO->P[1].MODEL = (GPIO->P[1].MODEL & ~_GPIO_P_MODEL_MODE2_MASK) | GPIO_P_MODEL_MODE2_PUSHPULL;
+  /* Pin PB3 is configured to Push-pull */
+  GPIO->P[1].MODEL = (GPIO->P[1].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
+  /* Pin PB4 is configured to Push-pull */
+  GPIO->P[1].MODEL = (GPIO->P[1].MODEL & ~_GPIO_P_MODEL_MODE4_MASK) | GPIO_P_MODEL_MODE4_PUSHPULL;
+  /* Pin PB9 is configured to Push-pull */
+  GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  /* Pin PB10 is configured to Push-pull */
+  GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
+  /* Pin PC3 is configured to Push-pull */
+  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
+  /* Pin PC5 is configured to Push-pull */
+  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
+  /* Pin PC6 is configured to Push-pull */
+  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
+  /* Pin PC7 is configured to Push-pull */
+  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE7_MASK) | GPIO_P_MODEL_MODE7_PUSHPULL;
+  /* Pin PC8 is configured to Push-pull */
+  GPIO->P[2].MODEH = (GPIO->P[2].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
+  /* Pin PC9 is configured to Push-pull */
+  GPIO->P[2].MODEH = (GPIO->P[2].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  /* Pin PC10 is configured to Push-pull */
+  GPIO->P[2].MODEH = (GPIO->P[2].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
+  /* Pin PD9 is configured to Push-pull */
+  GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  /* Pin PE0 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
+  /* Pin PE1 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE1_MASK) | GPIO_P_MODEL_MODE1_PUSHPULL;
+  /* Pin PE4 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE4_MASK) | GPIO_P_MODEL_MODE4_PUSHPULL;
+  /* Pin PE5 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
+  /* Pin PE6 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
+  /* Pin PE7 is configured to Push-pull */
+  GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE7_MASK) | GPIO_P_MODEL_MODE7_PUSHPULL;
+  /* Pin PE8 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
+  /* Pin PE9 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  /* Pin PE10 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
+  /* Pin PE11 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE11_MASK) | GPIO_P_MODEH_MODE11_PUSHPULL;
+  /* Pin PE12 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE12_MASK) | GPIO_P_MODEH_MODE12_PUSHPULL;
+  /* Pin PE13 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE13_MASK) | GPIO_P_MODEH_MODE13_PUSHPULL;
+  /* Pin PE14 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE14_MASK) | GPIO_P_MODEH_MODE14_PUSHPULL;
+  /* Pin PE15 is configured to Push-pull */
+  GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE15_MASK) | GPIO_P_MODEH_MODE15_PUSHPULL;
+  /* Pin PF6 is configured to Push-pull */
+  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
+  /* Pin PF7 is configured to Push-pull */
+  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE7_MASK) | GPIO_P_MODEL_MODE7_PUSHPULL;
+  /* Pin PF8 is configured to Push-pull */
+  GPIO->P[5].MODEH = (GPIO->P[5].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
+  /* Pin PF9 is configured to Push-pull */
+  GPIO->P[5].MODEH = (GPIO->P[5].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  
+  /* Enable clock for EBI */
+  CMU_ClockEnable(cmuClock_EBI, true);
+  /* Module EBI is configured to location 1 */
+  EBI->ROUTE = (EBI->ROUTE & ~_EBI_ROUTE_LOCATION_MASK) | EBI_ROUTE_LOCATION_LOC1;
+  /* EBI I/O routing */
+  EBI->ROUTE |= EBI_ROUTE_APEN_A21 | EBI_ROUTE_NANDPEN | EBI_ROUTE_BLPEN | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
+  
+  /* Enable signal VBUSEN */
+  USB->ROUTE |= USB_ROUTE_VBUSENPEN;
+  
+}
+
