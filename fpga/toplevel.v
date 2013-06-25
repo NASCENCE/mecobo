@@ -10,7 +10,7 @@
 //[lastValue]
 
 
-module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready);
+module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin_out);
 
 input clk;
 input reset;
@@ -21,6 +21,7 @@ input ebi_rd;
 input ebi_cs;
 
 output fpga_ready;
+output [15:0] pin_out;
 
 wire [15:0] ebi_ram_data_in;
 wire [15:0] ebi_ram_data_out;
@@ -73,6 +74,7 @@ mecoCommand cmd (
   .ram_addr(cmd_ram_addr),
   .ram_wr(cmd_ram_wr),
   .ram_en(cmd_ram_en)
+  .pin_out(pin_out);
 );
 
 endmodule
