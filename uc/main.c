@@ -61,19 +61,19 @@ struct ucPin routeThroughMap[40];
 
 
 EBI_Init_TypeDef ebiConfig =
-  {   ebiModeD8A8,       /* 8 bit address, 8 bit data */
-        ebiActiveLow,      /* ARDY polarity */
-        ebiActiveLow,      /* ALE polarity */
-        ebiActiveLow,      /* WE polarity */
-        ebiActiveLow,      /* RE polarity */
-        ebiActiveLow,      /* CS polarity */
-        ebiActiveLow,      /* BL polarity */
+  {     ebiModeD16,       /* 8 bit address, 16 bit data */
+        ebiActiveHigh,      /* ARDY polarity */
+        ebiActiveHigh,      /* ALE polarity */
+        ebiActiveHigh,      /* WE polarity */
+        ebiActiveHigh,      /* RE polarity */
+        ebiActiveHigh,      /* CS polarity */
+        ebiActiveHigh,      /* BL polarity */
         false,             /* disble BL */
         true,              /* enable NOIDLE */
         false,             /* disable ARDY */
         true,              /* disable ARDY timeout */
         EBI_BANK0,         /* enable bank 0 */
-        1,                 /* chip select 1 */
+        0x1,                 /* chip select 0 */
         0,                 /* addr setup cycles */
         0,                 /* addr hold cycles */
         false,             /* disable half cycle ALE strobe */
@@ -85,11 +85,11 @@ EBI_Init_TypeDef ebiConfig =
         false,             /* disable half cycle REn strobe */
         0,                 /* write setup cycles */
         2,                 /* write strobe cycles */
-        1,                 /* write hold cycles */
+        2,                 /* write hold cycles */
         false,             /* enable the write buffer */
         false,             /* disable half cycle WEn strobe */
-        ebiALowA24,        /* ALB - Low bound, address lines */
-        ebiAHighA26,       /* APEN - High bound, address lines */
+        ebiALowA0,        /* ALB - Low bound, address lines */
+        ebiAHighA20,       /* APEN - High bound, address lines */
         ebiLocation1,      /* Use Location 1 */
         true,              /* enable EBI */
     };
@@ -401,9 +401,9 @@ void ebi_gpio_setup(void)
   /* Pin PB10 is configured to Push-pull */
   GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
   /* Pin PC3 is configured to Push-pull */
-  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
+  //GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
   /* Pin PC5 is configured to Push-pull */
-  GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
+  //GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
   /* Pin PC6 is configured to Push-pull */
   GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
   /* Pin PC7 is configured to Push-pull */
