@@ -61,38 +61,38 @@ struct ucPin routeThroughMap[40];
 
 
 EBI_Init_TypeDef ebiConfig =
-  {     ebiModeD16,       /* 8 bit address, 16 bit data */
-        ebiActiveHigh,      /* ARDY polarity */
-        ebiActiveHigh,      /* ALE polarity */
-        ebiActiveHigh,      /* WE polarity */
-        ebiActiveHigh,      /* RE polarity */
-        ebiActiveHigh,      /* CS polarity */
-        ebiActiveHigh,      /* BL polarity */
-        false,             /* disble BL */
-        true,              /* enable NOIDLE */
-        false,             /* disable ARDY */
-        true,              /* disable ARDY timeout */
-        EBI_BANK0,         /* enable bank 0 */
-        0x1,                 /* chip select 0 */
-        0,                 /* addr setup cycles */
-        0,                 /* addr hold cycles */
-        false,             /* disable half cycle ALE strobe */
-        0,                 /* read setup cycles */
-        2,                 /* read strobe cycles */
-        1,                 /* read hold cycles */
-        false,             /* disable page mode */
-        false,             /* disable prefetch */
-        false,             /* disable half cycle REn strobe */
-        0,                 /* write setup cycles */
-        2,                 /* write strobe cycles */
-        2,                 /* write hold cycles */
-        false,             /* enable the write buffer */
-        false,             /* disable half cycle WEn strobe */
-        ebiALowA0,        /* ALB - Low bound, address lines */
-        ebiAHighA20,       /* APEN - High bound, address lines */
-        ebiLocation1,      /* Use Location 1 */
-        true,              /* enable EBI */
-    };
+   {   ebiModeD8A8,      /* 8 bit address, 8 bit data */  \
+       ebiActiveLow,     /* ARDY polarity */              \
+           ebiActiveHigh,     /* ALE polarity */               \
+           ebiActiveHigh,     /* WE polarity */                \
+           ebiActiveHigh,     /* RE polarity */                \
+           ebiActiveHigh,     /* CS polarity */                \
+           ebiActiveHigh,     /* BL polarity */                \
+           false,            /* enable BL */                  \
+           false,            /* enable NOIDLE */              \
+           false,            /* enable ARDY */                \
+           false,            /* don't disable ARDY timeout */ \
+           EBI_BANK0,        /* enable bank 0 */              \
+           EBI_CS0,          /* enable chip select 0 */       \
+           0,                /* addr setup cycles */          \
+           1,                /* addr hold cycles */           \
+           false,            /* do not enable half cycle ALE strobe */ \
+           0,                /* read setup cycles */          \
+           0,                /* read strobe cycles */         \
+           0,                /* read hold cycles */           \
+           false,            /* disable page mode */          \
+           false,            /* disable prefetch */           \
+           false,            /* do not enable half cycle REn strobe */ \
+           0,                /* write setup cycles */         \
+           0,                /* write strobe cycles */        \
+           1,                /* write hold cycles */          \
+           false,            /* do not disable the write buffer */ \
+           false,            /* do not enable halc cycle WEn strobe */ \
+           ebiALowA0,        /* ALB - Low bound, address lines */ \
+           ebiAHighA8,       /* APEN - High bound, address lines */   \
+           ebiLocation1,     /* Use Location 0 */             \
+           true,             /* enable EBI */                 \
+       };
 
 
 
@@ -108,10 +108,13 @@ int main(void)
     CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
    
     CMU_ClockEnable(cmuClock_GPIO, true);
-    //GPIO_PinModeSet(gpioPortE, 8, gpioModePushPull, 0); 
+    /*
+    GPIO_PinModeSet(gpioPortA, 12, gpioModePushPull, 1); 
+    GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1); 
     //GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
+    */
    
-        /* Setup DMA */
+    /* Setup DMA */
 //    setupDma();
     //Initialize a queue to 2K
     //queueInit(&dataInBuffer, 1024*2);
@@ -120,6 +123,8 @@ int main(void)
     EBI_Init(&ebiConfig);
 
     //And start writing. Nothing more to it!
+    while(1)
+    *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
 
     inBufferTop = 0;
     inBuffer = (uint8_t*)malloc(32*1024);
@@ -263,7 +268,6 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
         if(currentPack.command == CMD_CONFIG_REG) {
             *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
-            free(currentPack.data);
         }
         //For now, we will just make a mecoPack and queue it for sending.
         /*
