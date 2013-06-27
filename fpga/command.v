@@ -8,7 +8,7 @@ output ram_wr;
 output ram_en;
 output [15:0] pin_out;
 
-localparam INSTRUCTION_ADDR = 20'h2;
+localparam INSTRUCTION_ADDR = 20'hF;
 
 reg [15:0] read_data;
 

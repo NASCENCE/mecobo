@@ -10,7 +10,7 @@
 //[lastValue]
 
 
-module mecobo (clk, reset, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin_out);
+module mecobo (clk, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin_out);
 
 input clk;
 input reset;
@@ -20,6 +20,7 @@ input ebi_wr;
 input ebi_rd;
 input ebi_cs;
 
+output led;
 output fpga_ready;
 output [15:0] pin_out;
 
@@ -38,6 +39,7 @@ wire [20:0] cmd_ram_addr;
 wire cmd_ram_wr;
 wire cmd_ram_en;
 
+assign led = 1'b1;
 //EBI goes straight into Block RAM, just via a thin EBI layer with tristates on data.
 dp_ram shmem (
   .clka(clk),

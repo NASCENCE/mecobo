@@ -1,5 +1,6 @@
 NET "clk" 		LOC = R10;
 
+NET "led"		LOC = N2;
 # North Header
 NET "pin_out[0]" 	LOC = F16;
 NET "pin_out[1]"	LOC = F17;
@@ -24,8 +25,8 @@ NET "ebi_data[1]" LOC = R11;
 NET "ebi_data[2]" LOC = U13;
 NET "ebi_data[3]" LOC = T10;
 NET "ebi_data[4]" LOC = U11;
-NET "ebi_data[5]" LOC = T8;
-NET "ebi_data[6]" LOC = R8;
+NET "ebi_data[6]" LOC = T8;
+NET "ebi_data[5]" LOC = R8;
 NET "ebi_data[7]" LOC = U8;
 NET "ebi_data[8]" LOC = T7;
 NET "ebi_data[9]" LOC = U7;
