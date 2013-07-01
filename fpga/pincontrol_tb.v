@@ -12,12 +12,28 @@ initial begin
 
   #35
   reset = 0;
+  addr = 4;
+  data_in = 2;
+  #21
+  addr = 8;
+  data_in = 2;
+  #21
+  addr = 12;
+  data_in = 5;
+  #21
+  addr = 16;
+  data_in = 1;
+  #21
+  addr = 0;
+  data_in = 1;
+  #21
+  data_in = 0;
 end
 
-wire [20:0] addr;
-wire [15:0] data_in;
-wire [15:0] data_out;
-wire done;
+reg [20:0] addr;
+reg [15:0] data_in;
+reg [15:0] data_out;
+reg done;
 //DUT
 pincontrol pc0 (
   .clk(clk),

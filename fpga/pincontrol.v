@@ -15,7 +15,9 @@ parameter POSITION = 0;
 localparam [20:0] 
   ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
   ADDR_DUTY_CYCLE = POSITION + 4,
-  ADDR_ANTI_DUTY_CYCLE = POSITION + 8;
+  ADDR_ANTI_DUTY_CYCLE = POSITION + 8,
+  ADDR_CYCLES = POSITION + 12,
+  ADDR_RUN_INF = POSITION + 16;
 
 always @ (posedge clk) begin
   if (addr == ADDR_GLOBAL_CMD)
@@ -24,6 +26,10 @@ always @ (posedge clk) begin
     duty_cycle <= data_in;
   if (addr == ADDR_ANTI_DUTY_CYCLE)
     anti_duty_cycle <= data_in;
+  if (addr == ADDR_CYCLES)
+	 cycles <= data_in;
+  if (addr == ADDR_RUN_INF)
+    run_inf <= data_in;  
 end
 
 //Check global command for interesting stuff. 
@@ -53,6 +59,7 @@ always @ (posedge clk) begin
     cnt_duty_cycle <= 0;
     cnt_anti_duty_cycle <= 0;
     cnt_cycles <= 0;
+	 run_inf <= 0;
   end
 
   if (dec_duty_counter == 1'b1)
@@ -65,10 +72,12 @@ always @ (posedge clk) begin
   else if (res_duty_counter == 1'b1) 
     cnt_anti_duty_cycle <= anti_duty_cycle;
 
-  if (dec_cycles_counter == 1'b1)
-    cnt_cycles <= cnt_cycles - 1;
-  else if (res_duty_counter == 1'b1) 
-    cnt_cycles <= cycles;
+  if (run_inf == 0) begin
+	if (dec_cycles_counter == 1'b1)
+		cnt_cycles <= cnt_cycles - 1;
+	else if (res_cycles_counter == 1'b1) 
+		cnt_cycles <= cycles;
+  end
 end
 
 
@@ -107,13 +116,15 @@ always @ ( * ) begin
       res_duty_counter <= 1'b1;
       res_anti_duty_counter <= 1'b1;
       res_cycles_counter <= 1'b1;
+		
+		pin_output <= 1'b0;
 
-      if (running == 1'b1)
+      if ((global_command == 1) && (cnt_cycles != 0))
         next_state <= high;
     end
 
     high: begin
-      if (cnt_duty_cycle = 1) begin
+      if (cnt_duty_cycle == 1) begin
         next_state <= low;
         dec_duty_counter <= 1'b0; 
       end else
@@ -125,14 +136,13 @@ always @ ( * ) begin
       res_duty_counter <= 1'b0;
       res_anti_duty_counter <= 1'b0;
       res_cycles_counter <= 1'b0;
-      
+		pin_output <= 1'b1;
 
     end
 
     low: begin
-      if (cnt_anti_duty_cycle = 1) begin
-        //Are we done with all the cycles?
-        if (cnt_cycles = 1) begin  
+      if (cnt_anti_duty_cycle == 1) begin
+        if (cnt_cycles == 1) begin
           next_state <= idle;
           dec_anti_duty_counter <= 1'b1;
           dec_cycles_counter <= 1'b0;
@@ -156,9 +166,9 @@ always @ ( * ) begin
         res_anti_duty_counter <= 1'b0;
         res_cycles_counter <= 1'b0;
       end
-
+		pin_output <= 1'b0;
       dec_duty_counter <= 1'b0;
-      res_duty_counter <= 1'b0;
+      res_duty_counter <= 1'b1;
     end
 
   endcase
