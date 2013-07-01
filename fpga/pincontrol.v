@@ -22,13 +22,13 @@ ADDR_RUN_INF = POSITION + 16;
 always @ (posedge clk) begin
   if (addr == ADDR_GLOBAL_CMD)
     global_command <= data_in;
-  if (addr == ADDR_DUTY_CYCLE)
+  else if (addr == ADDR_DUTY_CYCLE)
     duty_cycle <= data_in;
-  if (addr == ADDR_ANTI_DUTY_CYCLE)
+  else if (addr == ADDR_ANTI_DUTY_CYCLE)
     anti_duty_cycle <= data_in;
-  if (addr == ADDR_CYCLES)
+  else if (addr == ADDR_CYCLES)
     cycles <= data_in;
-  if (addr == ADDR_RUN_INF)
+  else if (addr == ADDR_RUN_INF)
     run_inf <= data_in;  
 end
 
@@ -59,7 +59,6 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
       cnt_duty_cycle <= 0;
       cnt_anti_duty_cycle <= 0;
       cnt_cycles <= 0;
-      run_inf <= 0;
     end
 
     if (dec_duty_counter == 1'b1)
@@ -69,7 +68,7 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
 
     if (dec_anti_duty_counter == 1'b1)
       cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 1;
-    else if (res_duty_counter == 1'b1) 
+    else if (res_anti_duty_counter == 1'b1) 
       cnt_anti_duty_cycle <= anti_duty_cycle;
 
     if (run_inf == 0) begin
@@ -124,23 +123,25 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
       end
 
       high: begin
-        if (cnt_duty_cycle == 1) begin
-          next_state <= low;
-          dec_duty_counter <= 1'b0; 
-        end else
-          dec_duty_counter <= 1'b1;
-
-        dec_anti_duty_counter <= 1'b0;
+		  dec_duty_counter <= 1'b0;
+		  dec_anti_duty_counter <= 1'b0;
         dec_cycles_counter <= 1'b0;
 
-        res_duty_counter <= 1'b0;
+
         res_anti_duty_counter <= 1'b0;
         res_cycles_counter <= 1'b0;
         pin_output <= 1'b1;
-
+		  
+        if (cnt_duty_cycle == 1) begin
+          next_state <= low;
+          dec_duty_counter <= 1'b0; 
+        end
       end
 
       low: begin
+		  dec_duty_counter <= 1'b0;
+		  dec_anti_duty_counter <= 1'b1;
+		  res_duty_counter <= 1'b1;
         if (cnt_anti_duty_cycle == 1) begin
           if (cnt_cycles == 1) begin
             next_state <= idle;
@@ -166,11 +167,20 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
           res_anti_duty_counter <= 1'b0;
           res_cycles_counter <= 1'b0;
         end
-        dec_duty_counter <= 1'b0;
-        res_duty_counter <= 1'b1;
+
+        
         pin_output <= 1'b0;
       end
+		default: begin
+		  dec_duty_counter <= 1'b0;
+        dec_anti_duty_counter <= 1'b0;
+        dec_cycles_counter <= 1'b0;
 
+        res_duty_counter <= 1'b1;
+        res_anti_duty_counter <= 1'b1;
+        res_cycles_counter <= 1'b1;
+		  pin_output <= 1'b0;
+		  end
     endcase
   end
 

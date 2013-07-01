@@ -33,7 +33,7 @@ end
 reg [20:0] addr;
 reg [15:0] data_in;
 reg [15:0] data_out;
-reg pin_out;
+wire pin_out;
 //DUT
 pincontrol pc0 (
   .clk(clk),

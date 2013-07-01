@@ -17,31 +17,43 @@ initial begin
   sample = 1;
   ebi_rd = 1'b0;
 
-  #23
-  reset = 0;
-  ebi_addr = 20'h2;
-  ebi_wr = 1'b1;
-  ebi_cs = 1'b1;
-  ebi_data = 16'h000F;
- 
-  //cs and wr has to be held for at least 1 FPGA cycle
-  #21
-  ebi_cs = 1'b0;
-  ebi_wr = 1'b0;
-  //hold address at least 1 FPGA cycle longer
-  #21
-  ebi_addr = 0;
+//pin controller 0
 
-  //Wait some time
-  #87
-  ebi_cs = 1'b1;
-  ebi_addr = 1'b1;
-  ebi_rd = 1'b1;
-  #11
-  ebi_cs = 1'b0;
-  ebi_rd = 1'b0;
-  #11
+  #21
+  reset = 0;
+  ebi_wr = 1;
+  ebi_addr = 4;
+  ebi_data = 2;
+  #21
+  ebi_wr = 1;
+  ebi_addr = 8;
+  ebi_data = 2;
+  #21
+  ebi_addr = 12;
+  ebi_data = 5;
+
+
+  
+  //pin controller 1
+
+  #21
+  ebi_wr = 1;
+  ebi_addr = 32 + 4;
+  ebi_data = 4;
+  #21
+  ebi_wr = 1;
+  ebi_addr = 32 + 8;
+  ebi_data = 4;
+  #21
+  ebi_addr = 32 + 12;
+  ebi_data = 5;
+
+  #21
   ebi_addr = 0;
+  ebi_data = 1;
+  #21
+  ebi_data = 0;
+  ebi_wr = 0;
 
 end
 

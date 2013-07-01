@@ -41,6 +41,7 @@ wire cmd_ram_en;
 
 assign led = 1'b1;
 //EBI goes straight into Block RAM, just via a thin EBI layer with tristates on data.
+/*
 dp_ram shmem (
   .clka(clk),
   .clkb(clk),
@@ -55,6 +56,7 @@ dp_ram shmem (
   .doa(ebi_ram_data_in),
   .dob(cmd_ram_data_in)
 );
+*/
 
 ebi_interface ebi0 (
   .clk(clk),
@@ -85,14 +87,14 @@ mecoCommand cmd (
 
 genvar i;
 generate
-  for (i = 0; i < 10; i++) : pinControl
-    pincontrol #(.POSITION = i)
+  for (i = 0; i < 10 ; i = i + 1) begin: pinControl 
+    pincontrol #(.POSITION(i*32))
     pc (
       .clk(clk),
       .reset(reset),
       .addr(ebi_ram_addr),
-      .data_in(cmd_ram_data_in),
-      .data_out(cmd_ram_data_out),
+      .data_in(ebi_ram_data_out),
+      .data_out(ebi_ram_data_in),
       .pin_output(pin_out[i])
     );
 end
