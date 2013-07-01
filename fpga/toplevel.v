@@ -82,4 +82,7 @@ mecoCommand cmd (
   .pin_out(pin_out)
 );
 
+//Instaciate 100 pin controllers, hook them directly onto the EBI
+//interface. Eat drink and be merry.
+//
 endmodule

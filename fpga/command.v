@@ -16,41 +16,10 @@ assign ram_addr = INSTRUCTION_ADDR;
 assign ram_en = 1'b1;
 assign ram_wr = 1'b0;
 
-always @ (posedge clk) begin
-  read_data <= ram_data_in;
-end
-
-assign pin_out = read_data;
-
-//command is essentially a small multi-cycle processor, but the instruction is
-//always at the same place.
-
-// pinController X setup.
-// 1 Read a instruction from the instruction register.
-// 2 Read X bytes, depending on the instruction (instruciton includes which
-// pin to configure). 
-
-//each pinController has a slice of the memory map.
-//the uC writes to that memory area to update the config...
-//
-//problem: internal memory in pin config VS the global memory in blockRAM.
-// we can use distributed RAM for configuration data and
-// block ram for sample data that is to be sent back.
-// the EBI state machine then has to do more than what it 
-// currently does. It can actually the the one responsible for
-// everything...
-//
-// blah, this isn't really going anywhere.
-//
-// For now, the solution will be a dual port
-// RAM, accessed by two state machines. 
-//
-// This module will read the instruction register,
-// and then do whatever is needed. Usually that means
-// programming a pin to some output function.
-//
-//
 //Force 1-hot encoding.
+localparam [2:0] 
+  idle = 3'b001;
+  get  = 3'b010;
 /*
 localparam [6:0] 
 idle                     = 1;
