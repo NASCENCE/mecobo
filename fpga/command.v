@@ -18,7 +18,7 @@ assign ram_wr = 1'b0;
 
 //Force 1-hot encoding.
 localparam [2:0] 
-  idle = 3'b001;
+  idle = 3'b001,
   get  = 3'b010;
 /*
 localparam [6:0] 

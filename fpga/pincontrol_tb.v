@@ -26,4 +26,4 @@ pincontrol pc0 (
   .data_in(data_in),
   .data_out(data_out),
   .done(done));
-
+endmodule

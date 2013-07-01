@@ -4,6 +4,8 @@ input clk;
 input reset;
 input [20:0] addr;
 input [15:0] data_in;
+output [15:0] data_out;
+output done;
 
 //Input, output: PWM, SGEN, CONST
 reg [1:0] mode;
@@ -11,23 +13,23 @@ reg [1:0] mode;
 parameter POSITION = 0;
 
 localparam [20:0] 
-  ADDR_GLOBAL_CMD = 0; //Address 0 will be a global command register.
-  ADDR_DUTY_CYCLE = POSITION + 4;
+  ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
+  ADDR_DUTY_CYCLE = POSITION + 4,
   ADDR_ANTI_DUTY_CYCLE = POSITION + 8;
 
 always @ (posedge clk) begin
-  if (addr = ADDR_GLOBAL_CMD)
+  if (addr == ADDR_GLOBAL_CMD)
     global_command <= data_in;
-  if (addr = ADDR_DUTY_CYCLE)
+  if (addr == ADDR_DUTY_CYCLE)
     duty_cycle <= data_in;
-  if (addr= ADDR_ANTI_DUTY_CYCLE)
+  if (addr == ADDR_ANTI_DUTY_CYCLE)
     anti_duty_cycle <= data_in;
 end
 
 //Check global command for interesting stuff. 
 reg running = 1'b0;
 always @ (posedge clk) begin
-  if (global_command = 15'b1;) begin
+  if (global_command == 15'b1) begin
     running <= 1'b1;
   end
 end
@@ -46,26 +48,26 @@ reg [15:0] sample;
 reg [15:0] cnt_duty_cycle;
 reg [15:0] cnt_anti_duty_cycle;
 reg [15:0] cnt_cycles;
-always @ (posedge clk) 
+always @ (posedge clk) begin
   if (reset) begin
     cnt_duty_cycle <= 0;
     cnt_anti_duty_cycle <= 0;
     cnt_cycles <= 0;
   end
 
-  if (dec_duty_counter = 1'b1)
+  if (dec_duty_counter == 1'b1)
     cnt_duty_cycle <= cnt_duty_cycle - 1;
-  else if (res_duty_counter = 1'b1) 
+  else if (res_duty_counter == 1'b1) 
     cnt_duty_cycle <= duty_cycle;
 
-  if (dec_anti_duty_counter = 1'b1)
+  if (dec_anti_duty_counter == 1'b1)
     cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 1;
-  else if (res_duty_counter = 1'b1) 
+  else if (res_duty_counter == 1'b1) 
     cnt_anti_duty_cycle <= anti_duty_cycle;
 
-  if (dec_cycles_counter = 1'b1)
+  if (dec_cycles_counter == 1'b1)
     cnt_cycles <= cnt_cycles - 1;
-  else if (res_duty_counter = 1'b1) 
+  else if (res_duty_counter == 1'b1) 
     cnt_cycles <= cycles;
 end
 
@@ -84,8 +86,8 @@ reg [2:0] state;
 reg [2:0] next_state;
 
 localparam [2:0] 
-  idle = 3'b001;
-  high = 3'b010;
+  idle = 3'b001,
+  high = 3'b010,
   low  = 3'b100;
 
 always @ (posedge clk) begin
@@ -107,12 +109,12 @@ always @ ( * ) begin
       res_anti_duty_counter <= 1'b1;
       res_cycles_counter <= 1'b1;
 
-      if (running)
+      if (running == 1'b1)
         next_state <= high;
     end
 
     high: begin
-      if (cnt_duty_cycle = 0) begin
+      if (cnt_duty_cycle == 0) begin
         next_state <= low;
         dec_duty_counter <= 1'b0; 
       end else
@@ -129,8 +131,8 @@ always @ ( * ) begin
     end
 
     low: begin
-      if (cnt_anti_duty_cycle = 0) begin
-        if (cnt_cycles = 0) begin
+      if (cnt_anti_duty_cycle == 0) begin
+        if (cnt_cycles == 0) begin
           next_state <= idle;
           dec_anti_duty_counter <= 1'b1;
           dec_cycles_counter <= 1'b0;
