@@ -27,7 +27,7 @@ always @ (posedge clk) begin
   if (addr == ADDR_ANTI_DUTY_CYCLE)
     anti_duty_cycle <= data_in;
   if (addr == ADDR_CYCLES)
-	 cycles <= data_in;
+    cycles <= data_in;
   if (addr == ADDR_RUN_INF)
     run_inf <= data_in;  
 end
@@ -59,7 +59,7 @@ always @ (posedge clk) begin
     cnt_duty_cycle <= 0;
     cnt_anti_duty_cycle <= 0;
     cnt_cycles <= 0;
-	 run_inf <= 0;
+    run_inf <= 0;
   end
 
   if (dec_duty_counter == 1'b1)

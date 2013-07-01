@@ -33,7 +33,7 @@ end
 reg [20:0] addr;
 reg [15:0] data_in;
 reg [15:0] data_out;
-reg done;
+reg pin_out;
 //DUT
 pincontrol pc0 (
   .clk(clk),
@@ -41,5 +41,5 @@ pincontrol pc0 (
   .addr(addr),
   .data_in(data_in),
   .data_out(data_out),
-  .done(done));
+  .pin_output(pin_out));
 endmodule
