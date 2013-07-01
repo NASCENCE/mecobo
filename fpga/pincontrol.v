@@ -1,11 +1,11 @@
-module pincontrol (clk, reset, addr, data_in, data_out, done);
+module pincontrol (clk, reset, addr, data_in, data_out, pin_output);
 
 input clk;
 input reset;
 input [20:0] addr;
 input [15:0] data_in;
 output [15:0] data_out;
-output done;
+output reg pin_output;
 
 //Input, output: PWM, SGEN, CONST
 reg [1:0] mode;
@@ -80,7 +80,6 @@ reg dec_cycles_counter;
 reg res_duty_counter;
 reg res_anti_duty_counter;
 reg res_cycles_counter;
-reg pin_output;
 
 reg [2:0] state;
 reg [2:0] next_state;
@@ -114,7 +113,7 @@ always @ ( * ) begin
     end
 
     high: begin
-      if (cnt_duty_cycle == 0) begin
+      if (cnt_duty_cycle = 1) begin
         next_state <= low;
         dec_duty_counter <= 1'b0; 
       end else
@@ -131,8 +130,9 @@ always @ ( * ) begin
     end
 
     low: begin
-      if (cnt_anti_duty_cycle == 0) begin
-        if (cnt_cycles == 0) begin
+      if (cnt_anti_duty_cycle = 1) begin
+        //Are we done with all the cycles?
+        if (cnt_cycles = 1) begin  
           next_state <= idle;
           dec_anti_duty_counter <= 1'b1;
           dec_cycles_counter <= 1'b0;
