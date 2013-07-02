@@ -10,6 +10,10 @@ output reg pin_output;
 //Input, output: PWM, SGEN, CONST
 reg [1:0] mode;
 
+//Tie upper half of data to 0.
+data_in [15:8] = 8'b0;
+data_out[15:8] = 8'b0;
+
 parameter POSITION = 0;
 
 localparam [20:0] 
