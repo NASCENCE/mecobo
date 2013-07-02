@@ -108,11 +108,8 @@ int main(void)
     CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
    
     CMU_ClockEnable(cmuClock_GPIO, true);
-    /*
-    GPIO_PinModeSet(gpioPortA, 12, gpioModePushPull, 1); 
-    GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1); 
-    //GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
-    */
+    GPIO_PinModeSet(gpioPortD, 0, gpioModePushPull, 1); 
+    GPIO_PinModeSet(gpioPortE, 15, gpioModePushPull, 1); 
    
     /* Setup DMA */
 //    setupDma();
@@ -124,7 +121,7 @@ int main(void)
 
     //And start writing. Nothing more to it!
     while(1)
-    *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
+    *((uint8_t *)EBI_ADDR_BASE + 0xFF) = 0xAA;
 
     inBufferTop = 0;
     inBuffer = (uint8_t*)malloc(32*1024);
@@ -249,7 +246,6 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
-          free(currentPack.data);
         }
         
         if(currentPack.command == CMD_READ_PIN) {
