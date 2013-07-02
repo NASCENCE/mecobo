@@ -11,17 +11,17 @@ output reg pin_output;
 reg [1:0] mode;
 
 //Tie upper half of data to 0.
-data_in [15:8] = 8'b0;
-data_out[15:8] = 8'b0;
+//assign data_in [15:8] = 8'b0;
+assign data_out[15:0] = 8'b0;
 
 parameter POSITION = 0;
 
 localparam [20:0] 
 ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
-ADDR_DUTY_CYCLE = POSITION + 4,
-ADDR_ANTI_DUTY_CYCLE = POSITION + 8,
-ADDR_CYCLES = POSITION + 12,
-ADDR_RUN_INF = POSITION + 16;
+ADDR_DUTY_CYCLE = POSITION + 1,
+ADDR_ANTI_DUTY_CYCLE = POSITION + 2,
+ADDR_CYCLES = POSITION + 3,
+ADDR_RUN_INF = POSITION + 4;
 
 always @ (posedge clk) begin
   if (addr == ADDR_GLOBAL_CMD)
@@ -36,23 +36,15 @@ always @ (posedge clk) begin
     run_inf <= data_in;  
 end
 
-//Check global command for interesting stuff. 
-reg running = 1'b0;
-always @ (posedge clk) begin
-  if (global_command == 15'b1) begin
-    running <= 1'b1;
-  end
-end
-
 //Properties of the signal generator
-reg [15:0] global_command;
-reg [15:0] local_command;
-reg [15:0] duty_cycle; //length of duty in cyle, measured in 20ns ticks.
-reg [15:0] anti_duty_cycle; //length of anti-duty in 20ns ticks. 
-reg [15:0] cycles; //number of cycles to run
-reg [15:0] run_inf; //set to 1 if we just want to run inf.
+reg [15:0] global_command = 0;
+reg [15:0] local_command = 0;
+reg [15:0] duty_cycle = 0; //length of duty in cyle, measured in 20ns ticks.
+reg [15:0] anti_duty_cycle = 0; //length of anti-duty in 20ns ticks. 
+reg [15:0] cycles = 0; //number of cycles to run
+reg [15:0] run_inf = 0; //set to 1 if we just want to run inf.
 //Captured sample if this is a input module.
-  reg [15:0] sample;
+reg [15:0] sample = 0;
 
   //Counters for the cycles.
   reg [15:0] cnt_duty_cycle;
@@ -66,18 +58,18 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
     end
 
     if (dec_duty_counter == 1'b1)
-      cnt_duty_cycle <= cnt_duty_cycle - 1;
+      cnt_duty_cycle <= cnt_duty_cycle - 16'b1;
     else if (res_duty_counter == 1'b1) 
       cnt_duty_cycle <= duty_cycle;
 
     if (dec_anti_duty_counter == 1'b1)
-      cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 1;
+      cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 16'b1;
     else if (res_anti_duty_counter == 1'b1) 
       cnt_anti_duty_cycle <= anti_duty_cycle;
 
     if (run_inf == 0) begin
       if (dec_cycles_counter == 1'b1)
-        cnt_cycles <= cnt_cycles - 1;
+        cnt_cycles <= cnt_cycles - 16'b1;
       else if (res_cycles_counter == 1'b1) 
         cnt_cycles <= cycles;
     end
@@ -122,15 +114,16 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
 
         pin_output <= 1'b0;
 
-        if ((global_command == 1) && (cnt_cycles != 0))
+        if ((global_command == 15'b1) && (cnt_cycles != 0))
           next_state <= high;
       end
 
       high: begin
-		  dec_duty_counter <= 1'b0;
-		  dec_anti_duty_counter <= 1'b0;
-        dec_cycles_counter <= 1'b0;
+	dec_duty_counter <= 1'b1;
+        res_duty_counter <= 1'b0; 
 
+	dec_anti_duty_counter <= 1'b0;
+        dec_cycles_counter <= 1'b0;
 
         res_anti_duty_counter <= 1'b0;
         res_cycles_counter <= 1'b0;
@@ -138,40 +131,29 @@ reg [15:0] run_inf; //set to 1 if we just want to run inf.
 		  
         if (cnt_duty_cycle == 1) begin
           next_state <= low;
-          dec_duty_counter <= 1'b0; 
+          res_duty_counter <= 1'b1; 
         end
       end
 
       low: begin
-		  dec_duty_counter <= 1'b0;
-		  dec_anti_duty_counter <= 1'b1;
-		  res_duty_counter <= 1'b1;
+  	dec_duty_counter <= 1'b0;
+	res_duty_counter <= 1'b0;
+  	dec_anti_duty_counter <= 1'b1;
+
+	dec_cycles_counter <= 1'b1;
+        res_cycles_counter <= 1'b0;
+
         if (cnt_anti_duty_cycle == 1) begin
+          res_anti_duty_counter <= 1'b1;
           if (cnt_cycles == 1) begin
             next_state <= idle;
-            dec_anti_duty_counter <= 1'b1;
-            dec_cycles_counter <= 1'b0;
-
-            res_anti_duty_counter <= 1'b0;
-            res_cycles_counter <= 1'b1;
-          end else begin
+	  end else begin
             next_state <= high;
-
-            dec_anti_duty_counter <= 1'b0;
-            dec_cycles_counter <= 1'b1;
-
-            res_anti_duty_counter <= 1'b1;
-            res_cycles_counter <= 1'b0;
-
           end
         end else begin
           dec_anti_duty_counter <= 1'b1;
-          dec_cycles_counter <= 1'b0;
-
           res_anti_duty_counter <= 1'b0;
-          res_cycles_counter <= 1'b0;
         end
-
         
         pin_output <= 1'b0;
       end

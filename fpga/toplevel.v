@@ -72,6 +72,7 @@ ebi_interface ebi0 (
   .ram_wr(ebi_ram_wr),
   .ram_en(ebi_ram_en)
 );
+
 /*
 mecoCommand cmd (
   .clk(clk),
@@ -87,7 +88,7 @@ mecoCommand cmd (
 
 genvar i;
 generate
-  for (i = 0; i < 10 ; i = i + 1) begin: pinControl 
+  for (i = 0; i < 16 ; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i*32))
     pc (
       .clk(clk),
@@ -99,6 +100,7 @@ generate
     );
 end
 endgenerate
+
 //Instaciate 100 pin controllers, hook them directly onto the EBI
 //interface. Eat drink and be merry.
 //

@@ -22,14 +22,14 @@ initial begin
   #21
   reset = 0;
   ebi_wr = 1;
-  ebi_addr = 4;
+  ebi_addr = 1;
   ebi_data = 2;
   #21
   ebi_wr = 1;
-  ebi_addr = 8;
+  ebi_addr = 2;
   ebi_data = 2;
   #21
-  ebi_addr = 12;
+  ebi_addr = 3;
   ebi_data = 5;
 
 
@@ -38,14 +38,14 @@ initial begin
 
   #21
   ebi_wr = 1;
-  ebi_addr = 32 + 4;
+  ebi_addr = 32 + 1;
   ebi_data = 4;
   #21
   ebi_wr = 1;
-  ebi_addr = 32 + 8;
+  ebi_addr = 32 + 2;
   ebi_data = 4;
   #21
-  ebi_addr = 32 + 12;
+  ebi_addr = 32 + 3;
   ebi_data = 5;
 
   #21
