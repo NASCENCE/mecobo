@@ -21,10 +21,6 @@ assign pin = (mode == MODE_OUTPUT) ? pin_output : 1'bZ;
 //else we have input from pin.
 assign pin_input = (mode == MODE_INPUT) ? pin;
 
-//Tie upper half of data to 0.
-//assign data_in [15:8] = 8'b0;
-assign data_out[15:0] = 8'b0;
-
 parameter POSITION = 0;
 
 localparam [20:0] 
@@ -55,11 +51,21 @@ end
 
 
 //local command doing schmooing. 
+localparam 
+  LOCAL_CMD_READ_PIN = 1,
+  LOCAL_CMD_WRITE_PIN = 2,
+  LOCAL_CMD_START_CAPTURE = 3,
+  LOCAL_CMD_START_OUTPUT = 4;
+
+reg enable_data_out = 1'b0;
+
 always @ (posedge clk) begin
-  if (local_command == LOCAL_CMD_READ_PIN) begin
+  if (local_command == LOCAL_CMD_START_CAPTURE)
     mode <= MODE_INPUT;
-  end else if (local_command == LOCAL_CMD_WRITE_PIN) begin
+  else if (local_command == LOCAL_CMD_START_OUTPUT) begin
     mode <= MODE_OUTPUT;
+  else if (local_command == LOCAL_CMD_READ_PIN) 
+    enable_data_out <= 1'b1;
   end
 end
 
@@ -207,16 +213,8 @@ always @ ( * ) begin
   endcase
 end
 
-
 //Input state machine
-always @ (posedge clk) begin
-  if (reset)
-    data_out <= 0;
-  else
-    if (update_data_out)
-    data_out[0] = pin_input;
-end
-
+assign data_out[0] = enable_data_out ? pin_input : 1'bZ;
 reg [1:0] in_state;
 reg [1:0] in_next_state;
 
