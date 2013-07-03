@@ -50,128 +50,128 @@ reg [15:0] run_inf = 0; //set to 1 if we just want to run inf.
 //Captured sample if this is a input module.
 reg [15:0] sample = 0;
 
-  //Counters for the cycles.
-  reg [15:0] cnt_duty_cycle;
-  reg [15:0] cnt_anti_duty_cycle;
-  reg [15:0] cnt_cycles;
-  always @ (posedge clk) begin
-    if (reset) begin
-      cnt_duty_cycle <= 0;
-      cnt_anti_duty_cycle <= 0;
-      cnt_cycles <= 0;
-    end
-
-    if (dec_duty_counter == 1'b1)
-      cnt_duty_cycle <= cnt_duty_cycle - 16'b1;
-    else if (res_duty_counter == 1'b1) 
-      cnt_duty_cycle <= duty_cycle;
-
-    if (dec_anti_duty_counter == 1'b1)
-      cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 16'b1;
-    else if (res_anti_duty_counter == 1'b1) 
-      cnt_anti_duty_cycle <= anti_duty_cycle;
-
-    if (run_inf == 0) begin
-      if (dec_cycles_counter == 1'b1)
-        cnt_cycles <= cnt_cycles - 16'b1;
-      else if (res_cycles_counter == 1'b1) 
-        cnt_cycles <= cycles;
-    end
+//Counters for the cycles.
+reg [15:0] cnt_duty_cycle;
+reg [15:0] cnt_anti_duty_cycle;
+reg [15:0] cnt_cycles;
+always @ (posedge clk) begin
+  if (reset) begin
+    cnt_duty_cycle <= 0;
+    cnt_anti_duty_cycle <= 0;
+    cnt_cycles <= 0;
   end
 
+  if (dec_duty_counter == 1'b1)
+    cnt_duty_cycle <= cnt_duty_cycle - 16'b1;
+  else if (res_duty_counter == 1'b1) 
+    cnt_duty_cycle <= duty_cycle;
 
+  if (dec_anti_duty_counter == 1'b1)
+    cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 16'b1;
+  else if (res_anti_duty_counter == 1'b1) 
+    cnt_anti_duty_cycle <= anti_duty_cycle;
 
-  //outputs from state machine
-  reg dec_duty_counter;
-  reg dec_anti_duty_counter;
-  reg dec_cycles_counter;
-  reg res_duty_counter;
-  reg res_anti_duty_counter;
-  reg res_cycles_counter;
-
-  reg [2:0] state;
-  reg [2:0] next_state;
-
-  localparam [2:0] 
-  idle = 3'b001,
-    high = 3'b010,
-    low  = 3'b100;
-
-  always @ (posedge clk) begin
-    if (reset) 
-      state <= idle;
-    else 
-      state <= next_state;
+  if (run_inf == 0) begin
+    if (dec_cycles_counter == 1'b1)
+      cnt_cycles <= cnt_cycles - 16'b1;
+    else if (res_cycles_counter == 1'b1) 
+      cnt_cycles <= cycles;
   end
+end
 
-  always @ ( * ) begin
-    next_state <= state;
-    case (state)
-      idle: begin
-        dec_duty_counter <= 1'b0;
-        dec_anti_duty_counter <= 1'b0;
-        dec_cycles_counter <= 1'b0;
 
-        res_duty_counter <= 1'b1;
+
+//outputs from state machine
+reg dec_duty_counter;
+reg dec_anti_duty_counter;
+reg dec_cycles_counter;
+reg res_duty_counter;
+reg res_anti_duty_counter;
+reg res_cycles_counter;
+
+reg [2:0] state;
+reg [2:0] next_state;
+
+localparam [2:0] 
+idle = 3'b001,
+  high = 3'b010,
+  low  = 3'b100;
+
+always @ (posedge clk) begin
+  if (reset) 
+    state <= idle;
+  else 
+    state <= next_state;
+end
+
+always @ ( * ) begin
+  next_state <= state;
+  case (state)
+    idle: begin
+      dec_duty_counter <= 1'b0;
+      dec_anti_duty_counter <= 1'b0;
+      dec_cycles_counter <= 1'b0;
+
+      res_duty_counter <= 1'b1;
+      res_anti_duty_counter <= 1'b1;
+      res_cycles_counter <= 1'b1;
+
+      pin_output <= 1'b0;
+
+      if ((global_command == 15'b1) && (cnt_cycles != 0))
+        next_state <= high;
+    end
+
+    high: begin
+      dec_duty_counter <= 1'b1;
+      res_duty_counter <= 1'b0; 
+
+      dec_anti_duty_counter <= 1'b0;
+      dec_cycles_counter <= 1'b0;
+
+      res_anti_duty_counter <= 1'b0;
+      res_cycles_counter <= 1'b0;
+      pin_output <= 1'b1;
+
+      if (cnt_duty_cycle == 1) begin
+        next_state <= low;
+        res_duty_counter <= 1'b1; 
+      end
+    end
+
+    low: begin
+      dec_duty_counter <= 1'b0;
+      res_duty_counter <= 1'b0;
+      dec_anti_duty_counter <= 1'b1;
+
+      dec_cycles_counter <= 1'b1;
+      res_cycles_counter <= 1'b0;
+
+      if (cnt_anti_duty_cycle == 1) begin
         res_anti_duty_counter <= 1'b1;
-        res_cycles_counter <= 1'b1;
-
-        pin_output <= 1'b0;
-
-        if ((global_command == 15'b1) && (cnt_cycles != 0))
-          next_state <= high;
-      end
-
-      high: begin
-	dec_duty_counter <= 1'b1;
-        res_duty_counter <= 1'b0; 
-
-	dec_anti_duty_counter <= 1'b0;
-        dec_cycles_counter <= 1'b0;
-
-        res_anti_duty_counter <= 1'b0;
-        res_cycles_counter <= 1'b0;
-        pin_output <= 1'b1;
-		  
-        if (cnt_duty_cycle == 1) begin
-          next_state <= low;
-          res_duty_counter <= 1'b1; 
-        end
-      end
-
-      low: begin
-  	dec_duty_counter <= 1'b0;
-	res_duty_counter <= 1'b0;
-  	dec_anti_duty_counter <= 1'b1;
-
-	dec_cycles_counter <= 1'b1;
-        res_cycles_counter <= 1'b0;
-
-        if (cnt_anti_duty_cycle == 1) begin
-          res_anti_duty_counter <= 1'b1;
-          if (cnt_cycles == 1) begin
-            next_state <= idle;
-	  end else begin
-            next_state <= high;
-          end
+        if (cnt_cycles == 1) begin
+          next_state <= idle;
         end else begin
-          dec_anti_duty_counter <= 1'b1;
-          res_anti_duty_counter <= 1'b0;
+          next_state <= high;
         end
-        
-        pin_output <= 1'b0;
+      end else begin
+        dec_anti_duty_counter <= 1'b1;
+        res_anti_duty_counter <= 1'b0;
       end
-		default: begin
-		  dec_duty_counter <= 1'b0;
-        dec_anti_duty_counter <= 1'b0;
-        dec_cycles_counter <= 1'b0;
 
-        res_duty_counter <= 1'b1;
-        res_anti_duty_counter <= 1'b1;
-        res_cycles_counter <= 1'b1;
-		  pin_output <= 1'b0;
-		  end
-    endcase
-  end
+      pin_output <= 1'b0;
+    end
+    default: begin
+      dec_duty_counter <= 1'b0;
+      dec_anti_duty_counter <= 1'b0;
+      dec_cycles_counter <= 1'b0;
 
-  endmodule
+      res_duty_counter <= 1'b1;
+      res_anti_duty_counter <= 1'b1;
+      res_cycles_counter <= 1'b1;
+      pin_output <= 1'b0;
+    end
+  endcase
+end
+
+endmodule
