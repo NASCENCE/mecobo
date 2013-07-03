@@ -22,6 +22,7 @@ ADDR_DUTY_CYCLE = POSITION + 1,
 ADDR_ANTI_DUTY_CYCLE = POSITION + 2,
 ADDR_CYCLES = POSITION + 3,
 ADDR_RUN_INF = POSITION + 4;
+ADDR_LOCAL_COMMAND = POSITION + 5;
 
 always @ (posedge clk) begin
   if (addr == ADDR_GLOBAL_CMD)
@@ -34,7 +35,10 @@ always @ (posedge clk) begin
     cycles <= data_in;
   else if (addr == ADDR_RUN_INF)
     run_inf <= data_in;  
+  else if (addr == ADDR_LOCAL_COMMAND)
+    local_command <= data_in;
 end
+
 
 //Properties of the signal generator
 reg [15:0] global_command = 0;
