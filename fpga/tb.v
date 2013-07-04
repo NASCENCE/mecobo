@@ -10,6 +10,7 @@ reg ebi_wr;
 reg ebi_rd;
 reg ebi_cs;
 
+reg [15:0] got;
 
 initial begin
   clk = 0;
@@ -54,7 +55,24 @@ initial begin
   #21
   ebi_data = 0;
   ebi_wr = 0;
-
+  //now for some reading.
+  #500
+  ebi_addr = 6; //set sample rate register
+  ebi_data = 10; //sample every 10 cycles
+  ebi_wr = 1; 
+  #21 
+  ebi_addr = 5; //local command register
+  ebi_data = 3; //start capture command
+  #21
+  ebi_wr = 1;
+  ebi_addr = 5;
+  ebi_data = 1;
+  #21
+  ebi_wr = 0;
+  ebi_addr = 7;
+  got = ebi_data;
+  #21
+  $display ("got: %b\n", got);
 end
 
 //clockin'
@@ -65,6 +83,9 @@ end
 wire [15:0] fjas;
 assign fjas = ebi_data;
 
+wire [15:0] pins;
+assign pins[0] = 1'b1;
+
 mecobo mecobo0 (
 .clk(clk),
 .reset(reset),
@@ -72,7 +93,8 @@ mecobo mecobo0 (
 .ebi_addr(ebi_addr),
 .ebi_wr(ebi_wr),
 .ebi_rd(ebi_rd),
-.ebi_cs(ebi_cs));
+.ebi_cs(ebi_cs),
+.pin(pins));
 
 /*
 pwm pwm0 (

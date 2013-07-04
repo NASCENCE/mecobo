@@ -10,7 +10,7 @@
 //[lastValue]
 
 
-module mecobo (clk, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin_out);
+module mecobo (clk, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin);
 
 input clk;
 input reset;
@@ -22,7 +22,7 @@ input ebi_cs;
 
 output led;
 output fpga_ready;
-inout [15:0] pin_out;
+inout [15:0] pin;
 
 assign fpga_ready = 1'b0;
 
@@ -96,7 +96,7 @@ generate
       .addr(ebi_ram_addr),
       .data_in(ebi_ram_data_out),
       .data_out(ebi_ram_data_in),
-      .pin(pin_out[i])
+      .pin(pin[i])
     );
 end
 endgenerate
