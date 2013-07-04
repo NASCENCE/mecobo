@@ -13,7 +13,7 @@ reg pin_output;
 wire pin_input;
 //Input, output: PWM, SGEN, CONST
 localparam [1:0] 
-  MODE_OUTPUT = 2'b00,
+MODE_OUTPUT = 2'b00,
   MODE_INPUT  = 2'b01;
 
 reg [1:0] mode = 2'b00;
@@ -21,20 +21,22 @@ reg [1:0] mode = 2'b00;
 //Drive output pin from pin_output statemachine if mode is output
 assign pin = (mode == MODE_OUTPUT) ? pin_output : 1'bZ;
 //else we have input from pin.
-assign pin_input = pin;
+  assign pin_input = pin;
 
-parameter POSITION = 0;
+  parameter POSITION = 0;
 
-localparam [20:0] 
-ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
-ADDR_DUTY_CYCLE = POSITION + 1,
-ADDR_ANTI_DUTY_CYCLE = POSITION + 2,
-ADDR_CYCLES = POSITION + 3,
-ADDR_RUN_INF = POSITION + 4,
-ADDR_LOCAL_COMMAND = POSITION + 5,
-ADDR_SAMPLE_RATE = POSITION + 6,
-ADDR_SAMPLE_REG = POSITION + 7;
+  localparam [20:0] 
+  ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
+  ADDR_DUTY_CYCLE = POSITION + 1,
+  ADDR_ANTI_DUTY_CYCLE = POSITION + 2,
+  ADDR_CYCLES = POSITION + 3,
+  ADDR_RUN_INF = POSITION + 4,
+  ADDR_LOCAL_COMMAND = POSITION + 5,
+  ADDR_SAMPLE_RATE = POSITION + 6,
+  ADDR_SAMPLE_REG = POSITION + 7;
 
+
+//Writing to the internal memory.
 always @ (posedge clk) begin
   if (addr == ADDR_GLOBAL_CMD)
     global_command <= data_in;
@@ -47,7 +49,7 @@ always @ (posedge clk) begin
   else if (addr == ADDR_RUN_INF)
     run_inf <= data_in;  
   else if (addr == ADDR_LOCAL_COMMAND)
-   local_command <= data_in;
+    local_command <= data_in;
   else if (addr == ADDR_SAMPLE_RATE)
     sample_rate <= data_in;
   else if (addr == ADDR_SAMPLE_REG) begin
@@ -56,9 +58,9 @@ always @ (posedge clk) begin
 end
 
 
-//local command doing schmooing. 
+//Setup local command
 localparam 
-  LOCAL_CMD_READ_PIN = 1,
+LOCAL_CMD_READ_PIN = 1,
   LOCAL_CMD_WRITE_PIN = 2,
   LOCAL_CMD_START_CAPTURE = 3,
   LOCAL_CMD_START_OUTPUT = 4;
@@ -72,7 +74,6 @@ always @ (posedge clk) begin
 end
 
 
-//Properties of the signal generator
 reg [15:0] global_command = 0;
 reg [15:0] local_command = 0;
 reg [15:0] duty_cycle = 0; //length of duty in cyle, measured in 20ns ticks.
@@ -168,11 +169,14 @@ always @ ( * ) begin
       res_anti_duty_counter <= 1'b1;
       res_cycles_counter <= 1'b1;
 
+      dec_sample_counter <= 1'b0;
       res_sample_counter <= 1'b1;
+      
+      update_data_out <= 1'b0;
 
       if (mode == MODE_INPUT) begin 
         next_state <= update;
-     end else if (mode == MODE_OUTPUT) begin
+      end else if (mode == MODE_OUTPUT) begin
         if ((global_command == 15'b1) && (cnt_cycles != 0))
           next_state <= high;
       end
@@ -189,6 +193,11 @@ always @ ( * ) begin
 
       res_anti_duty_counter <= 1'b0;
       res_cycles_counter <= 1'b0;
+     
+      dec_sample_counter <= 1'b0;
+      res_sample_counter <= 1'b0;
+
+      update_data_out <= 1'b0;
       pin_output <= 1'b1;
 
       if (cnt_duty_cycle == 1) begin
@@ -203,36 +212,41 @@ always @ ( * ) begin
       dec_anti_duty_counter <= 1'b1;
       res_cycles_counter <= 1'b0;
 
+      dec_sample_counter <= 1'b0;
+      res_sample_counter <= 1'b0;
+
+      update_data_out <= 1'b0;
+
       if (cnt_anti_duty_cycle == 1) begin
         res_anti_duty_counter <= 1'b1;
         if (cnt_cycles == 1) begin
-	  //last cycle
+          //last cycle
           next_state <= idle;
-      	  dec_cycles_counter <= 1'b0;
+          dec_cycles_counter <= 1'b0;
         end else begin
           next_state <= high;
-      	  dec_cycles_counter <= 1'b1;
+          dec_cycles_counter <= 1'b1;
         end
       end else begin
         dec_anti_duty_counter <= 1'b1;
         res_anti_duty_counter <= 1'b0;
-      	
-	dec_cycles_counter <= 1'b0;
+
+        dec_cycles_counter <= 1'b0;
       end
 
       pin_output <= 1'b0;
     end
-    
+
     update: begin
       res_sample_counter <= 1'b0;
       update_data_out <= 1'b0;
       if (cnt_sample_rate == 1) begin
-          next_state <= idle;
-          update_data_out <= 1'b1;
-          dec_sample_counter <= 1'b0;
+        next_state <= idle;
+        update_data_out <= 1'b1;
+        dec_sample_counter <= 1'b0;
       end else begin
-          dec_sample_counter <= 1'b1;
-          next_state <= update;
+        dec_sample_counter <= 1'b1;
+        next_state <= update;
       end
     end
 
@@ -244,6 +258,12 @@ always @ ( * ) begin
       res_duty_counter <= 1'b1;
       res_anti_duty_counter <= 1'b1;
       res_cycles_counter <= 1'b1;
+
+      dec_sample_counter <= 1'b0;
+      res_sample_counter <= 1'b0;
+
+      update_data_out <= 1'b0;
+
       pin_output <= 1'b0;
     end
   endcase
