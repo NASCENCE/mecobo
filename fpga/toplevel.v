@@ -10,7 +10,7 @@
 //[lastValue]
 
 
-module mecobo (clk, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin_out);
+module mecobo (clk, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, pin);
 
 input clk;
 input reset;
@@ -22,7 +22,7 @@ input ebi_cs;
 
 output led;
 output fpga_ready;
-output [15:0] pin_out;
+inout [15:0] pin;
 
 assign fpga_ready = 1'b0;
 
@@ -72,6 +72,7 @@ ebi_interface ebi0 (
   .ram_wr(ebi_ram_wr),
   .ram_en(ebi_ram_en)
 );
+
 /*
 mecoCommand cmd (
   .clk(clk),
@@ -87,7 +88,7 @@ mecoCommand cmd (
 
 genvar i;
 generate
-  for (i = 0; i < 10 ; i = i + 1) begin: pinControl 
+  for (i = 0; i < 16 ; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i*32))
     pc (
       .clk(clk),
@@ -95,10 +96,11 @@ generate
       .addr(ebi_ram_addr),
       .data_in(ebi_ram_data_out),
       .data_out(ebi_ram_data_in),
-      .pin_output(pin_out[i])
+      .pin(pin[i])
     );
 end
 endgenerate
+
 //Instaciate 100 pin controllers, hook them directly onto the EBI
 //interface. Eat drink and be merry.
 //
