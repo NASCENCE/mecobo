@@ -41,7 +41,9 @@ struct pinConfig {
   uint32_t waveform;
   uint32_t freq;
   uint32_t phase;
+  uint32_t antiduty;
   uint32_t duty;
+  uint32_t cycles;
 
   //If pin is to be a DAC pin
   uint32_t nSamples;
