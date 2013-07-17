@@ -73,7 +73,7 @@ void setupSWOForPrint(void)
   ITM->TER  = 0x1;
 }
 
-void ebi_gpio_setup(void);
+void eADesigner_Init(void);
 /*** Typedef's and defines. ***/
 
 /* Define USB endpoint addresses */
@@ -163,14 +163,15 @@ EBI_Init_TypeDef ebiConfig =
 
 int main(void)
 {
-    CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+    eADesigner_Init();
+    //CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
    
-    CMU_ClockEnable(cmuClock_GPIO, true);
+    //CMU_ClockEnable(cmuClock_GPIO, true);
     
     setupSWOForPrint();
     printf("Hello world, I'm alive.\n");
     printf("Initializing EBI\n");
-    ebi_gpio_setup(); //enable GPIO bus.
+
     EBI_Init(&ebiConfig);
  
     GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
@@ -485,13 +486,12 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
     }
 }
 
-void ebi_gpio_setup(void)
+void eADesigner_Init(void)
 {
-
   /* HFXO setup */
+  /* Note: This configuration is potentially unsafe. */
+  /* Examine your crystal settings. */
   
-  CMU->CTRL    = (CMU->CTRL & ~_CMU_CTRL_HFXOBOOST_MASK) | CMU_CTRL_HFXOBOOST_100PCENT;
-          
   /* Enable HFXO as high frequency clock, HFCLK (depending on external oscillator this will probably be 32MHz) */
   CMU->OSCENCMD = CMU_OSCENCMD_HFXOEN;
   while (!(CMU->STATUS & CMU_STATUS_HFXORDY)) ;
@@ -578,10 +578,6 @@ void ebi_gpio_setup(void)
   GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE14_MASK) | GPIO_P_MODEH_MODE14_PUSHPULL;
   /* Pin PE15 is configured to Push-pull */
   GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE15_MASK) | GPIO_P_MODEH_MODE15_PUSHPULL;
-  /* Pin PF6 is configured to Push-pull */
-  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
-  /* Pin PF7 is configured to Push-pull */
-  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE7_MASK) | GPIO_P_MODEL_MODE7_PUSHPULL;
   /* Pin PF8 is configured to Push-pull */
   GPIO->P[5].MODEH = (GPIO->P[5].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
   /* Pin PF9 is configured to Push-pull */
@@ -593,13 +589,11 @@ void ebi_gpio_setup(void)
   EBI->ROUTE = (EBI->ROUTE & ~_EBI_ROUTE_LOCATION_MASK) | EBI_ROUTE_LOCATION_LOC1;
   /* EBI I/O routing */
   EBI->ROUTE |= EBI_ROUTE_APEN_A21 | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
-
- 
-  /* Enable signal VBUSEN */
-  USB->ROUTE |= USB_ROUTE_VBUSENPEN;
+  
+  /* Enable signals VBUSEN, DMPU */
+  USB->ROUTE |= USB_ROUTE_VBUSENPEN | USB_ROUTE_DMPUPEN;
   
 }
-
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
     return (val >> bit) & 0x1;
