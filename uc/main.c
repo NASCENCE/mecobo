@@ -10,14 +10,70 @@
 #include "bsp.h"
 #include "bsp_trace.h"
 
+
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "mecobo.h"
 #include "queue.h"
 #include "mecoprot.h"
 
+//override newlib function.
+int _write_r(void *reent, int fd, char *ptr, size_t len)
+{
+  (void) reent;
+  (void) fd;
+  for(size_t i = 0; i < len; i++) 
+    ITM_SendChar(ptr[i]);
 
-void ebi_gpio_setup(void);
+  return len;
+}
+
+void setupSWOForPrint(void)
+{
+  /* Enable GPIO clock. */
+  //CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
+
+  /* Enable Serial wire output pin */
+  GPIO->ROUTE |= GPIO_ROUTE_SWOPEN;
+
+#if defined(_EFM32_GIANT_FAMILY) || defined(_EFM32_LEOPARD_FAMILY) || defined(_EFM32_WONDER_FAMILY)
+  /* Set location 0 */
+  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK)) | GPIO_ROUTE_SWLOCATION_LOC0;
+
+  /* Enable output on pin - GPIO Port F, Pin 2 */
+  GPIO->P[5].MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK);
+  GPIO->P[5].MODEL |= GPIO_P_MODEL_MODE2_PUSHPULL;
+#else
+  /* Set location 1 */
+  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK)) |GPIO_ROUTE_SWLOCATION_LOC1;
+  /* Enable output on pin */
+  GPIO->P[2].MODEH &= ~(_GPIO_P_MODEH_MODE15_MASK);
+  GPIO->P[2].MODEH |= GPIO_P_MODEH_MODE15_PUSHPULL;
+#endif
+
+  /* Enable debug clock AUXHFRCO */
+  CMU->OSCENCMD = CMU_OSCENCMD_AUXHFRCOEN;
+
+  /* Wait until clock is ready */
+  while (!(CMU->STATUS & CMU_STATUS_AUXHFRCORDY));
+
+  /* Enable trace in core debug */
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  ITM->LAR  = 0xC5ACCE55;
+  ITM->TER  = 0x0;
+  ITM->TCR  = 0x0;
+  TPI->SPPR = 2;
+  TPI->ACPR = 0xf;
+  ITM->TPR  = 0x0;
+  DWT->CTRL = 0x400003FE;
+  ITM->TCR  = 0x0001000D;
+  TPI->FFCR = 0x00000100;
+  ITM->TER  = 0x1;
+}
+
+void eADesigner_Init(void);
 /*** Typedef's and defines. ***/
 
 /* Define USB endpoint addresses */
@@ -34,12 +90,15 @@ void ebi_gpio_setup(void);
 
 struct queue dataIn;
 
-static DMA_CB_TypeDef DmaUsbRxCB;
-static int usbTxActive, usbRxActive;
+//static DMA_CB_TypeDef DmaUsbRxCB;
+//static int usbTxActive, usbRxActive;
+
+int fpgaConfigPin(struct pinConfig * p);
 
 //Receiving buffer. 
 struct queue dataInBuffer;
 
+int packNum = 0;
 //Try again.
 static uint32_t inBufferTop;
 static uint8_t * inBuffer;
@@ -58,10 +117,11 @@ static int sendPackReady;
 //Temporary map for routing some pins for a early experiment.
 struct ucPin routeThroughMap[40];
 
-
+//Are we programming the FPGA
+int fpgaUnderConfiguration = 0;
 
 EBI_Init_TypeDef ebiConfig =
-   {   ebiModeD8A8,      /* 8 bit address, 8 bit data */  \
+   {   ebiModeD16,      /* 8 bit address, 8 bit data */  \
        ebiActiveLow,     /* ARDY polarity */              \
            ebiActiveHigh,     /* ALE polarity */               \
            ebiActiveHigh,     /* WE polarity */                \
@@ -78,18 +138,18 @@ EBI_Init_TypeDef ebiConfig =
            1,                /* addr hold cycles */           \
            false,            /* do not enable half cycle ALE strobe */ \
            0,                /* read setup cycles */          \
-           0,                /* read strobe cycles */         \
-           0,                /* read hold cycles */           \
+           2,                /* read strobe cycles */         \
+           1,                /* read hold cycles */           \
            false,            /* disable page mode */          \
            false,            /* disable prefetch */           \
            false,            /* do not enable half cycle REn strobe */ \
            0,                /* write setup cycles */         \
-           0,                /* write strobe cycles */        \
+           2,                /* write strobe cycles */        \
            1,                /* write hold cycles */          \
            false,            /* do not disable the write buffer */ \
            false,            /* do not enable halc cycle WEn strobe */ \
            ebiALowA0,        /* ALB - Low bound, address lines */ \
-           ebiAHighA8,       /* APEN - High bound, address lines */   \
+           ebiAHighA15,       /* APEN - High bound, address lines */   \
            ebiLocation1,     /* Use Location 0 */             \
            true,             /* enable EBI */                 \
        };
@@ -101,31 +161,37 @@ EBI_Init_TypeDef ebiConfig =
  *****************************************************************************/
 
 
-
-
 int main(void)
 {
-    CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+    eADesigner_Init();
+    //CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
    
-    CMU_ClockEnable(cmuClock_GPIO, true);
-    /*
-    GPIO_PinModeSet(gpioPortA, 12, gpioModePushPull, 1); 
-    GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1); 
-    //GPIO_PinModeSet(gpioPortE, 9, gpioModeInput, 0); 
-    */
-   
-    /* Setup DMA */
-//    setupDma();
-    //Initialize a queue to 2K
-    //queueInit(&dataInBuffer, 1024*2);
-    ebi_gpio_setup(); //enable GPIO bus.
-    //Init EBI.
+    //CMU_ClockEnable(cmuClock_GPIO, true);
+    
+    setupSWOForPrint();
+    printf("Hello world, I'm alive.\n");
+    printf("Initializing EBI\n");
+
     EBI_Init(&ebiConfig);
+ 
+    GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
+    GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
 
-    //And start writing. Nothing more to it!
-    while(1)
-    *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
+    //*((uint16_t *)EBI_ADDR_BASE) = 0; 
+    //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 6) = 1; //capture rate (every 10)
+    //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 8) = 3; //pin mode
+    //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 5) = 3; //local command start capt
 
+
+/*
+    while(1) {
+        if ((*((uint16_t *)EBI_ADDR_BASE + 256 + 7)) == 1) {
+            GPIO_PinOutSet(gpioPortD, 0);
+        } else {
+            GPIO_PinOutClear(gpioPortD, 0);
+        }
+    }
+*/
     inBufferTop = 0;
     inBuffer = (uint8_t*)malloc(32*1024);
    
@@ -133,8 +199,9 @@ int main(void)
     outBuffer = (uint8_t*)malloc(32*1024);
 
     //Build the pin map
-    buildMap(routeThroughMap);
+    //buildMap(routeThroughMap);
 
+    printf("Initializing USB\n");
     USBD_Init(&initstruct);
 
     /*
@@ -145,14 +212,30 @@ int main(void)
     USBTIMER_DelayMs(100);
     USBD_Connect();
 
-
+    printf("USB Started, entering loop\n");
     sendPackReady = 0;
     //read and write in loop	
     for (;;)
     {
-        if(sendPackReady) {
-            USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
+      //check if DONE has gone high, then we are ... uh, done
+      if(fpgaUnderConfiguration) {
+        if(GPIO_PinInGet(gpioPortD, 12)) {
+          printf("FPGA config over, DONE went high. All is well witht he world.\n");
+          fpgaUnderConfiguration = 0;
+          //Send a few 1's to make sure the device boots.
+          GPIO_PinOutSet(gpioPortA, 7); 
+          for(int j = 0; j < 64; j++) {
+            GPIO_PinOutClear(gpioPortA, 8); //clk low
+            GPIO_PinOutSet(gpioPortA, 8); //clk high
+          }
+          GPIO_PinOutSet(gpioPortD, 0); //turn on led (we're configured)
         }
+      }
+
+      //We can start the EBI interface if the FPGA is configured.
+      if(sendPackReady) {
+        USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
+      }
     }
 }
 
@@ -193,41 +276,21 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
     return USB_STATUS_OK;
 }
 
-//This is a temporary map for this experiment
-void buildMap(struct ucPin * map)
-{
-  //This here is really the FPGA_DATA bus, but I'm just using it.
-  map[FPGA_C14] = (struct ucPin){.port = gpioPortE, .pin = 8};  //FPGADATA0
-  map[FPGA_F13] = (struct ucPin){.port = gpioPortE, .pin = 9};  //1
-  map[FPGA_F12] = (struct ucPin){.port = gpioPortE, .pin = 10};  //2
-  map[FPGA_D12] = (struct ucPin){.port = gpioPortE, .pin = 11}; //3
-  map[FPGA_C11] = (struct ucPin){.port = gpioPortE, .pin = 12}; //4
-  map[FPGA_F11] = (struct ucPin){.port = gpioPortE, .pin = 14}; //5
-  map[FPGA_G11] = (struct ucPin){.port = gpioPortE, .pin = 13}; //6
-  map[FPGA_D9] = (struct ucPin){.port = gpioPortE, .pin = 15}; //7 
-  map[FPGA_F9] = (struct ucPin){.port = gpioPortA, .pin = 15}; //8
-  map[FPGA_C9] = (struct ucPin){.port = gpioPortA, .pin = 0}; //9
-  map[FPGA_G9] = (struct ucPin){.port = gpioPortA, .pin = 1}; //10
-  map[FPGA_C6] = (struct ucPin){.port = gpioPortA, .pin = 2}; //11  (fpga pin n7)
-
-  //hole
-}
-
 //The purpose of this function is to configure the FPGA
 //with the data found in the pin config structure. 
 int fpgaConfigPin(struct pinConfig * p)
 {
-  //Get the pin we're setting.
-  struct ucPin pin = routeThroughMap[p->fpgaPin];
+  uint16_t offset = p->fpgaPin << 8; //8 MSB bits is pinConfig module addr
+  //uint16_t offset = 0;
+  uint16_t * pin = ((uint16_t*)EBI_ADDR_BASE) + offset;
 
-  if (p->pinType == PINTYPE_OUT) {
-    GPIO_PinModeSet(pin.port, pin.pin, gpioModePushPull, p->constantVal);
-  }
+  *(pin + PINCONFIG_DUTY_CYCLE) = p->duty;
+  *(pin + PINCONFIG_ANTIDUTY_CYCLE) = p->antiduty;
+  //*(pin + PINCONFIG_CYCLES) = p->cycles;
+  *(pin + PINCONFIG_RUN_INF) = 1;
+  *(pin + 5) = 1; 
 
-  if (p->pinType == PINTYPE_IN) {
-    GPIO_PinModeSet(pin.port, pin.pin, gpioModeInput, 0); 
-  }
-  
+  printf("Configured pin %u, duty %u, antiduty %u, inf: %u\n\n\n", p->fpgaPin, p->duty, p->antiduty, 1);
   //TODO: support everything :-)
   return 0;
 }
@@ -244,20 +307,18 @@ int UsbDataReceived(USB_Status_TypeDef status,
           struct pinConfig conf;
           uint32_t * d = (uint32_t *)(currentPack.data);
           conf.fpgaPin = d[PINCONFIG_DATA_FPGA_PIN];
-          conf.pinType = d[PINCONFIG_DATA_TYPE];
-          conf.constantVal = d[PINCONFIG_DATA_CONST];
+          conf.duty = d[PINCONFIG_DATA_DUTY];
+          conf.antiduty = d[PINCONFIG_DATA_ANTIDUTY];
+          conf.cycles = d[PINCONFIG_DATA_CYCLES]; 
 
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
-          free(currentPack.data);
         }
         
         if(currentPack.command == CMD_READ_PIN) {
             uint32_t pinToRead = (uint32_t)(*currentPack.data);
             struct mecoPack pack;
             pack.size = 4;
-            pack.data = malloc(4);
-            //read
             struct ucPin pin = routeThroughMap[pinToRead];
             GPIO_PinModeSet(pin.port, pin.pin, gpioModeInput, 0); 
             *pack.data = GPIO_PinInGet(pin.port, pin.pin);
@@ -269,6 +330,69 @@ int UsbDataReceived(USB_Status_TypeDef status,
         if(currentPack.command == CMD_CONFIG_REG) {
             *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
         }
+
+        /*
+        if(currentPack.command == CMD_STATUS) {
+          struct mecoPack pack;
+          pack.size = 4;
+          pack.data = malloc(4);
+          if(fpgaConfigured) {
+            *pack.data = 1;
+          } else {
+            *pack.data = 0;
+          }
+          packToSend = pack;
+          sendPackReady = 1;
+        }
+        */
+        if(currentPack.command == CMD_PROGRAM_FPGA) {
+          if(!fpgaUnderConfiguration) {
+            //Start the configuration process.
+            //set the input pin modes.
+            //DONE
+            GPIO_PinModeSet(gpioPortD, 12, gpioModeInput, 0); 
+            //INIT_B = PD15, active _low_.
+            GPIO_PinModeSet(gpioPortD, 15, gpioModeInput, 0); 
+            GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
+            //Prog pins...
+            GPIO_PinModeSet(gpioPortA, 7, gpioModePushPull, 0);  
+            GPIO_PinModeSet(gpioPortA, 8, gpioModePushPull, 0);  
+
+
+            //start programming (prog b to low)
+            GPIO_PinOutClear(gpioPortC, 3);
+            //wait until init b and done are low both low.
+            while(GPIO_PinInGet(gpioPortD, 15) ||
+                  GPIO_PinInGet(gpioPortD, 12));
+
+            //set prog b high again (activate programming)
+            GPIO_PinOutSet(gpioPortC, 3);
+
+            //wait until initB goes high again (fpga ready for data)
+            while(!GPIO_PinInGet(gpioPortD, 15));
+
+            fpgaUnderConfiguration = 1;  //fpga now under configuration
+          }
+
+          int nb = 0;
+          for(uint32_t i = 0; i < currentPack.size; i++) {
+            for(int b = 7; b >= 0; b--) {
+              GPIO_PinOutClear(gpioPortA, 8); //clk low
+              //clock a bit.
+              if ((currentPack.data[i] >> b) & 0x1) {
+                GPIO_PinOutSet(gpioPortA, 7); 
+              } else {
+                GPIO_PinOutClear(gpioPortA, 7); 
+              }
+              GPIO_PinOutSet(gpioPortA, 8); //clk high
+            }
+            nb++;
+          }
+          packNum++;
+
+          printf("Sent %d bytes to FPGA, packet %d\n", nb, packNum);
+        }
+
         //For now, we will just make a mecoPack and queue it for sending.
         /*
         struct mecoPack pack;
@@ -279,14 +403,16 @@ int UsbDataReceived(USB_Status_TypeDef status,
         packToSend = pack; 
         sendPackReady = 1; //ship it as soon as we can!
         */
-
+        currentPack.command = 0;
+        currentPack.size = 0;
         free(currentPack.data); //we've sent the data back, no need to store it.
     }
 
-    //Check that we're still good, and get a new header.
+    //Check that we're still good, and wait for a new header.
     if (USBD_GetUsbState() == USBD_STATE_CONFIGURED) {
         USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived); //get new header.
     }
+    return USB_STATUS_OK;
 }
 
 int UsbDataSent(USB_Status_TypeDef status,
@@ -305,6 +431,7 @@ int UsbDataSent(USB_Status_TypeDef status,
     return USB_STATUS_OK;
 }
 
+/*
 void DmaUsbRxDone(unsigned int channel, int primary, void *user)
 {
     (void) channel;
@@ -315,7 +442,6 @@ void DmaUsbRxDone(unsigned int channel, int primary, void *user)
     INT_Enable();
 }
 
-/*
 int setupDma(void)
 {
     DMA_Init_TypeDef dmaInit;
@@ -354,14 +480,22 @@ int setupDma(void)
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
+    (void) oldState;
     if (newState == USBD_STATE_CONFIGURED) {
         USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
     }
 }
 
-void ebi_gpio_setup(void)
+void eADesigner_Init(void)
 {
-  /* Using HFRCO at 14MHz as high frequency clock, HFCLK */
+  /* HFXO setup */
+  /* Note: This configuration is potentially unsafe. */
+  /* Examine your crystal settings. */
+  
+  /* Enable HFXO as high frequency clock, HFCLK (depending on external oscillator this will probably be 32MHz) */
+  CMU->OSCENCMD = CMU_OSCENCMD_HFXOEN;
+  while (!(CMU->STATUS & CMU_STATUS_HFXORDY)) ;
+  CMU->CMD = CMU_CMD_HFCLKSEL_HFXO;
   
   /* No LE clock source selected */
   
@@ -404,10 +538,6 @@ void ebi_gpio_setup(void)
   GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
   /* Pin PB10 is configured to Push-pull */
   GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
-  /* Pin PC3 is configured to Push-pull */
-  //GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE3_MASK) | GPIO_P_MODEL_MODE3_PUSHPULL;
-  /* Pin PC5 is configured to Push-pull */
-  //GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE5_MASK) | GPIO_P_MODEL_MODE5_PUSHPULL;
   /* Pin PC6 is configured to Push-pull */
   GPIO->P[2].MODEL = (GPIO->P[2].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
   /* Pin PC7 is configured to Push-pull */
@@ -448,10 +578,6 @@ void ebi_gpio_setup(void)
   GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE14_MASK) | GPIO_P_MODEH_MODE14_PUSHPULL;
   /* Pin PE15 is configured to Push-pull */
   GPIO->P[4].MODEH = (GPIO->P[4].MODEH & ~_GPIO_P_MODEH_MODE15_MASK) | GPIO_P_MODEH_MODE15_PUSHPULL;
-  /* Pin PF6 is configured to Push-pull */
-  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE6_MASK) | GPIO_P_MODEL_MODE6_PUSHPULL;
-  /* Pin PF7 is configured to Push-pull */
-  GPIO->P[5].MODEL = (GPIO->P[5].MODEL & ~_GPIO_P_MODEL_MODE7_MASK) | GPIO_P_MODEL_MODE7_PUSHPULL;
   /* Pin PF8 is configured to Push-pull */
   GPIO->P[5].MODEH = (GPIO->P[5].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
   /* Pin PF9 is configured to Push-pull */
@@ -462,10 +588,15 @@ void ebi_gpio_setup(void)
   /* Module EBI is configured to location 1 */
   EBI->ROUTE = (EBI->ROUTE & ~_EBI_ROUTE_LOCATION_MASK) | EBI_ROUTE_LOCATION_LOC1;
   /* EBI I/O routing */
-  EBI->ROUTE |= EBI_ROUTE_APEN_A21 | EBI_ROUTE_NANDPEN | EBI_ROUTE_BLPEN | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
+  EBI->ROUTE |= EBI_ROUTE_APEN_A21 | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
   
-  /* Enable signal VBUSEN */
-  USB->ROUTE |= USB_ROUTE_VBUSENPEN;
+  /* Enable signals VBUSEN, DMPU */
+  USB->ROUTE |= USB_ROUTE_VBUSENPEN | USB_ROUTE_DMPUPEN;
   
 }
+static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
+{
+    return (val >> bit) & 0x1;
+}
+
 

@@ -10,11 +10,15 @@
 #define NUM_ENDPOINTS 4
 char eps[NUM_ENDPOINTS];
 
-int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value);
+int setPin( FPGA_IO_Pins_TypeDef pin, 
+            uint32_t duty,
+            uint32_t antiduty,
+            uint32_t cycles) ;
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
 int setReg(uint32_t data);
+int programFPGA(char * filename);
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
@@ -41,10 +45,14 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
 
 int main(int argc, char ** argv) {
 
-  uint32_t pinVal = 0;
+  uint32_t progFpga = 0;
   //Command line arguments
   if (argc > 1) {
-    pinVal = atoi(argv[1]); 
+    for(int i = 0; i < argc; i++) {
+      if(strcmp(argv[i], "-f") == 0) {
+          progFpga = 1;
+      }
+    }
  }
 
 
@@ -72,8 +80,12 @@ int main(int argc, char ** argv) {
 
   double start = omp_get_wtime();
  
-  setReg(42);
-  //experiment_foo();
+  //setReg(42);
+
+  if(progFpga) 
+    programFPGA("mecobo.bin");
+
+  experiment_foo();
 
   double end = omp_get_wtime();
   /*	
@@ -112,14 +124,20 @@ int setReg(uint32_t data)
     sendPacket(&p, eps[2]);
 }
 
-int setPin(FPGA_IO_Pins_TypeDef pin, uint32_t value) 
+int setPin( FPGA_IO_Pins_TypeDef pin, 
+            uint32_t duty,
+            uint32_t antiduty,
+            uint32_t cycles) 
 {
   uint32_t data[3];
+
   data[PINCONFIG_DATA_FPGA_PIN] = pin;
-  data[PINCONFIG_DATA_TYPE] = PINTYPE_OUT;
-  data[PINCONFIG_DATA_CONST] = value;
+  data[PINCONFIG_DATA_DUTY] = duty;
+  data[PINCONFIG_DATA_ANTIDUTY] = antiduty;
+  data[PINCONFIG_DATA_CYCLES] = cycles;
+
   struct mecoPack p;
-  createMecoPack(&p, (uint8_t *)data, 12, CMD_CONFIG_PIN);
+  createMecoPack(&p, (uint8_t *)data, 16, CMD_CONFIG_PIN);
   sendPacket(&p, eps[2]);
 }
 
@@ -180,60 +198,59 @@ int getPacket(struct mecoPack * packet)
 
 int experiment_foo()
 {
-    //So, the goal is to see if we can find a 2 input NAND port.
-    //The rest is just various ways of getting stimuli.
-    //Output is pin FPGA_C15.
-
-    //Generate stimuli data (11 pins)
-    /*
-        setPin(FPGA_C14,1);
-        setPin(FPGA_F13,1);
-        setPin(FPGA_F12,1);
-        setPin(FPGA_D12,1);
-        setPin(FPGA_C11,1);
-        setPin(FPGA_F11,1);
-        setPin(FPGA_G11,1);
-        setPin(FPGA_D9, 1);
-        setPin(FPGA_F9, 1);
-        setPin(FPGA_C9, 1);
-        setPin(FPGA_G9, 1);
-    */
-    for(int i =0; i < 2048; i++) {
-        setPin(FPGA_D14, get_bit(i, 0));
-        setPin(FPGA_F13, get_bit(i, 1));
-        setPin(FPGA_F12, get_bit(i, 2));
-        setPin(FPGA_D12, get_bit(i, 3));
-        setPin(FPGA_C11, get_bit(i, 4));
-        setPin(FPGA_F11, get_bit(i, 5));
-        setPin(FPGA_G11, get_bit(i, 6));
-        setPin(FPGA_D9, get_bit(i, 7));
-        setPin(FPGA_F9, get_bit(i, 8));
-        setPin(FPGA_C9, get_bit(i, 9));
-        setPin(FPGA_G9, get_bit(i, 10));
-
-        printf("%u ",  get_bit(i, 0));
-        printf("%u ",  get_bit(i, 1));
-        printf("%u ",  get_bit(i, 2));
-        printf("%u ",  get_bit(i, 3));
-        printf("%u ",  get_bit(i, 4));
-        printf("%u ",  get_bit(i, 5));
-        printf("%u ",  get_bit(i, 6));
-        printf("%u ",  get_bit(i, 7));
-        printf("%u ",  get_bit(i, 8));
-        printf("%u ",  get_bit(i, 9));
-        printf("%u ",  get_bit(i, 10));
-        
-        //The time it takes to do these IO-calls should be plenty of time to wait.
-        uint32_t val = 42;
-        getPin(FPGA_C6, &val);
-        printf("r:%u ", val);
-
-        printf("\n");
-
-    }
+    setPin(FPGA_F16, 0xFFF, 0x100, 0xFFFF);
+    setPin(FPGA_F17, 0x100, 0xFFF, 0xFFFF);
+    setPin(FPGA_G14, 0x300, 0x300, 0xFFFF);
+    setPin(FPGA_G16, 0x10, 0xFFFF, 0xFFFF);
+    setPin(FPGA_H16, 0x100, 0xFFFF, 0xFFFF);
+    setPin(FPGA_H17, 0xAAA, 0xBBB, 0xFFFF);
+    setPin(FPGA_J16, 0x4242, 0xA438, 0xFFFF);
+    setPin(FPGA_H15, 0xFFFF, 0xFFFF, 0xFFFF);
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
     return (val >> bit) & 0x1;
+}
+
+int programFPGA(char * filename)
+{
+  FILE * bitfile;
+
+
+  bitfile = fopen(filename, "r");
+  fseek(bitfile, 0L, SEEK_END);
+  long nBytes = ftell(bitfile);
+  rewind(bitfile);
+
+  int packsize = 32*1024;
+  int nPackets = nBytes / packsize;
+  int rest = nBytes % (packsize);
+  printf("supposed to have ballpark 6,440,432 bits. have %ld\n", nBytes * 8);
+  printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
+        nBytes, nPackets, packsize, rest);
+  uint8_t * bytes;
+  bytes = malloc(nBytes);
+
+  fread(bytes, 1, nBytes, bitfile);
+
+  struct mecoPack send;
+  int i;
+  for(i =0; i < nPackets; i++) {
+    printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
+    printf("position %u in array\n", (i * packsize));
+    createMecoPack(&send, bytes + (i*packsize), packsize, CMD_PROGRAM_FPGA);
+    sendPacket(&send, eps[2]);
+  }
+  //Send the rest if there is any.
+  if(rest > 0) {
+    printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
+    struct mecoPack lol;
+    createMecoPack(&lol, bytes + (i*packsize), rest, CMD_PROGRAM_FPGA);
+    sendPacket(&lol, eps[2]);
+  }
+
+  free(bytes);
+  printf("\n");
+  fclose(bitfile);
 }
