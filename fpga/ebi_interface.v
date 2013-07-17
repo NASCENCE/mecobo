@@ -19,8 +19,8 @@ output [20:0] ram_addr;
 output ram_wr;
 output ram_en;
 
-//Drive EBI data with output from Block RAM if reading. 
-assign ebi_data = (ebi_rd)? ram_data_in : 15'bZ;
+//Drive EBI data with output from Block RAM if reading. (real tri state)
+assign ebi_data = (ebi_rd)? ram_data_in : 16'bZ;
 assign ram_data_out = ebi_data;  //Else, just drive data out with ebi data.
 assign ram_addr = ebi_addr;
 
