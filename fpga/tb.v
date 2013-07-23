@@ -1,4 +1,4 @@
-module pwm_tb;
+		module pwm_tb;
 
 reg clk,reset;
 reg [255:0] sample;
@@ -21,58 +21,52 @@ initial begin
 //pin controller 0
 
   #21
+  //Duty cycle write
   reset = 0;
   ebi_wr = 1;
   ebi_addr = 1;
   ebi_data = 2;
   #21
-  ebi_wr = 1;
+  //Anti duty write
   ebi_addr = 2;
-  ebi_data = 2;
+  ebi_data = 2; //2 cycles low
   #21
+  //Run for 5 cycles.	
   ebi_addr = 3;
-  ebi_data = 5;
-
-
-  
-  //pin controller 1
-
+  ebi_data = 5; //total 5 cycles run
   #21
-  ebi_wr = 1;
-  ebi_addr = 32 + 1;
-  ebi_data = 4;
+  ebi_addr = 5; //local command address for pin 0
+  ebi_data = 1; //command : start
   #21
-  ebi_wr = 1;
-  ebi_addr = 32 + 2;
-  ebi_data = 4;
-  #21
-  ebi_addr = 32 + 3;
-  ebi_data = 5;
-
-  #21
-  ebi_addr = 0;
-  ebi_data = 1;
-  #21
+  ebi_wr = 0; //stop doing stuff.
   ebi_data = 0;
-  ebi_wr = 0;
-  //now for some reading.
-  #500
-  ebi_addr = 6; //set sample rate register
+  ebi_addr = 0;
+
+  /*
+  #21
+  //Send local command to start being an input!
+  ebi_addr = 16'h0106; //set sample rate register
   ebi_data = 10; //sample every 10 cycles
-  ebi_wr = 1; 
-  #21 
-  ebi_addr = 5; //local command register
-  ebi_data = 3; //start capture command
   #21
-  ebi_wr = 1;
-  ebi_addr = 5;
+  ebi_addr = 16'h0108;
+  ebi_data = 3; //set pin mode
+  #21 
+  ebi_addr[15:0] = 16'h0105; //set sample rate register
+  ebi_data = 3; //start capture command
+
+  #21
+  //Global command reg 0, start output.
+  ebi_addr = 0; 
   ebi_data = 1;
+
   #21
   ebi_wr = 0;
-  ebi_addr = 7;
+  ebi_rd = 1;
+  ebi_addr[15:0] = 16'h0107; //set sample rate register
   got = ebi_data;
-  #21
-  $display ("got: %b\n", got);
+    $display ("got: %b\n", got);
+  */
+
 end
 
 //clockin'
@@ -84,7 +78,10 @@ wire [15:0] fjas;
 assign fjas = ebi_data;
 
 wire [15:0] pins;
-assign pins[0] = 1'b1;
+wire jmp;
+assign jmp = pins[0];
+assign pins[1] = jmp;
+assign pins [15:2] = 14'b0;
 
 mecobo mecobo0 (
 .clk(clk),
