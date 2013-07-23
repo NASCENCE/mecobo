@@ -129,7 +129,7 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
             uint32_t antiduty,
             uint32_t cycles) 
 {
-  uint32_t data[3];
+  uint32_t data[5];
 
   data[PINCONFIG_DATA_FPGA_PIN] = pin;
   data[PINCONFIG_DATA_DUTY] = duty;
@@ -137,7 +137,7 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
   data[PINCONFIG_DATA_CYCLES] = cycles;
 
   struct mecoPack p;
-  createMecoPack(&p, (uint8_t *)data, 16, CMD_CONFIG_PIN);
+  createMecoPack(&p, (uint8_t *)data, 30, CMD_CONFIG_PIN);
   sendPacket(&p, eps[2]);
 }
 
@@ -198,14 +198,9 @@ int getPacket(struct mecoPack * packet)
 
 int experiment_foo()
 {
-    setPin(FPGA_F16, 0xFFF, 0x100, 0xFFFF);
-    setPin(FPGA_F17, 0x100, 0xFFF, 0xFFFF);
-    setPin(FPGA_G14, 0x300, 0x300, 0xFFFF);
-    setPin(FPGA_G16, 0x10, 0xFFFF, 0xFFFF);
-    setPin(FPGA_H16, 0x100, 0xFFFF, 0xFFFF);
-    setPin(FPGA_H17, 0xAAA, 0xBBB, 0xFFFF);
-    setPin(FPGA_J16, 0x4242, 0xA438, 0xFFFF);
-    setPin(FPGA_H15, 0xFFFF, 0xFFFF, 0xFFFF);
+    setPin(FPGA_F16, 0xFF, 0x67, 0xCC);
+    setPin(FPGA_F17, 10, 50, 0x500);
+    setPin(FPGA_G14, 0xFFFF, 0xFFFF, 0xFF);
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
