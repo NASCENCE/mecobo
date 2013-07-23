@@ -339,6 +339,7 @@ int UsbDataReceived(USB_Status_TypeDef status,
         }
         
         if(currentPack.command == CMD_READ_PIN) {
+            /*
             struct pinConfig conf;
             conf.fpgaPin = d[PINCONFIG_DATA_FPGA_PIN];
             conf.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
@@ -351,6 +352,7 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
             packToSend = pack;
             sendPackReady = 1;
+            */
         }
 
         /*

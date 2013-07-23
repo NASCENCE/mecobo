@@ -45,6 +45,7 @@ struct pinConfig {
   uint32_t duty;
   uint32_t cycles;
   uint32_t runInf;
+  uint32_t sampleRate;
 
   //If pin is to be a DAC pin
   uint32_t nSamples;
