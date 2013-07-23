@@ -1,3 +1,6 @@
+#ifndef __MECOBO_H__
+#define __MECOBO_H__
+
 // Microcontroller code
 // DMA will take care of interface-comms:
 // USB -> CPU-RAM (inputDataQueue)
@@ -11,28 +14,28 @@
 #include <stdint.h>
 #include "em_usb.h"
 #include "em_gpio.h"
+#include "mecoprot.h"
 
 #define FPGA_BASE_ADDR 0
 
-//Signal generator defines
-#define SIGNAL_GEN_OFFSET 0x4
-#define NUM_PINS 100
 
-#define COMMAND_REG_OFFSET 0
+//Address offsets for the config of a pin controller
+#define PINCONFIG_GLOBAL_CMD 0
+#define PINCONFIG_DUTY_CYCLE 1
+#define PINCONFIG_ANTIDUTY_CYCLE 2
+#define PINCONFIG_CYCLES 3
+#define PINCONFIG_RUN_INF 4
+#define PINCONFIG_LOCAL_CMD 5
+#define PINCONFIG_SAMPLE_RATE 6
+#define PINCONFIG_SAMPLE_REG 7
 
 
-struct ucPin {
-  GPIO_Port_TypeDef port;
-  uint32_t pin;
-};
+//Possible FPGA commands
+#define CMD_CONFIG_PIN  0x1
+#define CMD_READ_PIN    0x2
+#define CMD_CONFIG_REG  0x3
+#define CMD_PROGRAM_FPGA  0x4
 
-void buildMap(struct ucPin * map);
-
-struct mecoPack {
-    uint32_t size;
-    uint8_t command;
-    uint8_t * data;
-};
 
 struct pinConfig {
   uint32_t fpgaPin;
@@ -99,3 +102,6 @@ int UsbDataSent(USB_Status_TypeDef status,
         uint32_t remaining);
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+
+#endif //__MECOBO_H_
+

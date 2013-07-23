@@ -1,4 +1,7 @@
-//Common defines for host and uc
+#ifndef __MECOPROT_H__
+#define __MECOPROT_H__
+
+//This defines the fields and values for the mecobo protocol
 
 #define CMD_CONFIG_PIN  0x1
 #define CMD_READ_PIN    0x2
@@ -18,16 +21,6 @@
 #define PINCONFIG_DATA_SAMPLE_RATE 6
 #define PINCONFIG_DATA_RUN_INF 7  
 
-//Address offsets for the config of a pin controller
-#define PINCONFIG_GLOBAL_CMD 0
-#define PINCONFIG_DUTY_CYCLE 1
-#define PINCONFIG_ANTIDUTY_CYCLE 2
-#define PINCONFIG_CYCLES 3
-#define PINCONFIG_RUN_INF 4
-#define PINCONFIG_LOCAL_CMD 5
-#define PINCONFIG_SAMPLE_RATE 6
-#define PINCONFIG_SAMPLE_REG 7
-
 //TODO: Fill in the rest.
 //
 //FPGA port enum
@@ -43,3 +36,10 @@ typedef enum {
 } FPGA_IO_Pins_TypeDef;
 
 
+struct mecoPack {
+    uint32_t size;
+    uint8_t command;
+    uint8_t * data;
+};
+
+#endif //__MECOPROT_H__

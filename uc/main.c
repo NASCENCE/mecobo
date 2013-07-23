@@ -16,9 +16,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "mecobo.h"
 #include "queue.h"
 #include "mecoprot.h"
+#include "mecobo.h"
 
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
@@ -91,9 +91,6 @@ void eADesigner_Init(void);
 
 struct queue dataIn;
 
-//static DMA_CB_TypeDef DmaUsbRxCB;
-//static int usbTxActive, usbRxActive;
-
 int fpgaConfigPin(struct pinConfig * p);
 
 //Receiving buffer. 
@@ -111,12 +108,6 @@ static uint8_t * outBuffer;
 static struct mecoPack currentPack;
 static struct mecoPack packToSend;
 static int sendPackReady;
-
-//Store some pin configs
-//static struct pinConfig pinConfigs[12];
-
-//Temporary map for routing some pins for a early experiment.
-struct ucPin routeThroughMap[40];
 
 //Are we programming the FPGA
 int fpgaUnderConfiguration = 0;
