@@ -201,6 +201,7 @@ int experiment_foo()
     setPin(FPGA_F16, 0xFF, 0x67, 0xCC);
     setPin(FPGA_F17, 10, 50, 0x500);
     setPin(FPGA_G14, 0xFFFF, 0xFFFF, 0xFF);
+    setPin(FPGA_G16, 0xABCD, 0xABCD, 0xFF);
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 

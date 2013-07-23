@@ -300,19 +300,18 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 int fpgaConfigPin(struct pinConfig * p)
 {
   uint16_t offset = p->fpgaPin << 8; //8 MSB bits is pinConfig module addr
-  //uint16_t offset = 0;
   uint16_t * pin = ((uint16_t*)EBI_ADDR_BASE) + offset;
 
-  *(pin + PINCONFIG_DUTY_CYCLE) = p->duty;
+  *(pin + PINCONFIG_DUTY_CYCLE)     = p->duty;
   *(pin + PINCONFIG_ANTIDUTY_CYCLE) = p->antiduty;
-  *(pin + PINCONFIG_CYCLES) = p->cycles;
-  *(pin + PINCONFIG_RUN_INF) = 1;
-  *(pin + PINCONFIG_LOCAL_CMD) = 1; 
+  *(pin + PINCONFIG_CYCLES)         = p->cycles;
+  *(pin + PINCONFIG_RUN_INF)        = p->runInf;
+  *(pin + PINCONFIG_SAMPLE_RATE)    = p->sampleRate;
 
   //global start shit
-  *((uint16_t*)EBI_ADDR_BASE) = 1; 
+  //*((uint16_t*)EBI_ADDR_BASE) = 1; 
 
-  printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
+  //printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
   //TODO: support everything :-)
   return 0;
 }
@@ -332,13 +331,18 @@ int UsbDataReceived(USB_Status_TypeDef status,
           conf.duty = d[PINCONFIG_DATA_DUTY];
           conf.antiduty = d[PINCONFIG_DATA_ANTIDUTY];
           conf.cycles = d[PINCONFIG_DATA_CYCLES]; 
+          conf.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
+          conf.runInf = d[PINCONFIG_DATA_RUN_INF];
 
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
         }
         
         if(currentPack.command == CMD_READ_PIN) {
-            uint32_t pinToRead = (uint32_t)(*currentPack.data);
+            struct pinConfig conf;
+            conf.fpgaPin = d[PINCONFIG_DATA_FPGA_PIN];
+            conf.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
+
             struct mecoPack pack;
             pack.size = 4;
             struct ucPin pin = routeThroughMap[pinToRead];
@@ -347,10 +351,6 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
             packToSend = pack;
             sendPackReady = 1;
-        }
-
-        if(currentPack.command == CMD_CONFIG_REG) {
-            *((uint8_t *)EBI_ADDR_BASE + 0x2) = currentPack.data[0];
         }
 
         /*

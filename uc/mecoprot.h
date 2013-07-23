@@ -8,13 +8,17 @@
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
 
+//USB package data offsets for the pinconfig package
 #define PINCONFIG_DATA_FPGA_PIN 0
 #define PINCONFIG_DATA_TYPE 1
 #define PINCONFIG_DATA_CONST 2
 #define PINCONFIG_DATA_DUTY 3
 #define PINCONFIG_DATA_ANTIDUTY 4
 #define PINCONFIG_DATA_CYCLES 5
+#define PINCONFIG_DATA_SAMPLE_RATE 6
+#define PINCONFIG_DATA_RUN_INF 7  
 
+//Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
 #define PINCONFIG_DUTY_CYCLE 1
 #define PINCONFIG_ANTIDUTY_CYCLE 2

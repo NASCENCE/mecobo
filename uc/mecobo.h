@@ -44,11 +44,13 @@ struct pinConfig {
   uint32_t antiduty;
   uint32_t duty;
   uint32_t cycles;
+  uint32_t runInf;
 
   //If pin is to be a DAC pin
   uint32_t nSamples;
   uint32_t * samples; //points to allocated data of samples. (12 bit samples)
 };
+
 
 //Programs the FPGA via the slave serial interface.
 int progFPGA(uint8_t * data);
