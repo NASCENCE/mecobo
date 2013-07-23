@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include "mecobo.h"
 #include "queue.h"
 #include "mecoprot.h"
@@ -120,39 +121,40 @@ struct ucPin routeThroughMap[40];
 //Are we programming the FPGA
 int fpgaUnderConfiguration = 0;
 
-EBI_Init_TypeDef ebiConfig =
-   {   ebiModeD16,      /* 8 bit address, 8 bit data */  \
-       ebiActiveLow,     /* ARDY polarity */              \
-           ebiActiveHigh,     /* ALE polarity */               \
-           ebiActiveHigh,     /* WE polarity */                \
-           ebiActiveHigh,     /* RE polarity */                \
-           ebiActiveHigh,     /* CS polarity */                \
-           ebiActiveHigh,     /* BL polarity */                \
-           false,            /* enable BL */                  \
-           false,            /* enable NOIDLE */              \
-           false,            /* enable ARDY */                \
-           false,            /* don't disable ARDY timeout */ \
-           EBI_BANK0,        /* enable bank 0 */              \
-           EBI_CS0,          /* enable chip select 0 */       \
-           0,                /* addr setup cycles */          \
-           1,                /* addr hold cycles */           \
-           false,            /* do not enable half cycle ALE strobe */ \
-           0,                /* read setup cycles */          \
-           2,                /* read strobe cycles */         \
-           1,                /* read hold cycles */           \
-           false,            /* disable page mode */          \
-           false,            /* disable prefetch */           \
-           false,            /* do not enable half cycle REn strobe */ \
-           0,                /* write setup cycles */         \
-           2,                /* write strobe cycles */        \
-           1,                /* write hold cycles */          \
-           false,            /* do not disable the write buffer */ \
-           false,            /* do not enable halc cycle WEn strobe */ \
-           ebiALowA0,        /* ALB - Low bound, address lines */ \
-           ebiAHighA15,       /* APEN - High bound, address lines */   \
-           ebiLocation1,     /* Use Location 0 */             \
-           true,             /* enable EBI */                 \
-       };
+EBI_Init_TypeDef ebiConfig = {   
+      
+      ebiModeD16,      /* 8 bit address, 8 bit data */  \
+      ebiActiveHigh,     /* ARDY polarity */              \
+      ebiActiveHigh,     /* ALE polarity */               \
+      ebiActiveHigh,     /* WE polarity */                \
+      ebiActiveHigh,     /* RE polarity */                \
+      ebiActiveHigh,     /* CS polarity */                \
+      ebiActiveHigh,     /* BL polarity */                \
+      false,            /* enable BL */                  \
+      false,            /* enable NOIDLE */              \
+      false,            /* enable ARDY */                \
+      false,            /* don't disable ARDY timeout */ \
+      EBI_BANK0,        /* enable bank 0 */              \
+      EBI_CS0,          /* enable chip select 0 */       \
+      0,                /* addr setup cycles */          \
+      1,                /* addr hold cycles */           \
+      false,            /* do not enable half cycle ALE strobe */ \
+      0,                /* read setup cycles */          \
+      0,                /* read strobe cycles */         \
+      0,                /* read hold cycles */           \
+      false,            /* disable page mode */          \
+      false,            /* disable prefetch */           \
+      false,            /* do not enable half cycle REn strobe */ \
+      0,                /* write setup cycles */         \
+      2,                /* write strobe cycles */        \
+      0,                /* write hold cycles */          \
+      false,            /* do not disable the write buffer */ \
+      false,            /* do not enable halc cycle WEn strobe */ \
+      ebiALowA0,        /* ALB - Low bound, address lines */ \
+      ebiAHighA18,       /* APEN - High bound, address lines */   \
+      ebiLocation1,     /* Use Location 0 */             \
+      true,             /* enable EBI */                 \
+  };
 
 
 
@@ -164,10 +166,7 @@ EBI_Init_TypeDef ebiConfig =
 int main(void)
 {
     eADesigner_Init();
-    //CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
-   
-    //CMU_ClockEnable(cmuClock_GPIO, true);
-    
+
     setupSWOForPrint();
     printf("Hello world, I'm alive.\n");
     printf("Initializing EBI\n");
@@ -177,7 +176,16 @@ int main(void)
     GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
     GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
 
-    //*((uint16_t *)EBI_ADDR_BASE) = 0; 
+    /*(
+    while(1) {
+      *((uint16_t *)EBI_ADDR_BASE + 0) = 0x99; 
+      *((uint16_t *)EBI_ADDR_BASE + 1) = 0xAA; 
+      *((uint16_t *)EBI_ADDR_BASE + 2) = 0xBB; 
+      *((uint16_t *)EBI_ADDR_BASE + 3) = 0xCC; 
+      *((uint16_t *)EBI_ADDR_BASE + 4) = 0xDD; 
+
+      *((uint16_t *)EBI_ADDR_BASE + 256) = 0xFF; 
+    }*/
     //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 6) = 1; //capture rate (every 10)
     //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 8) = 3; //pin mode
     //*(((uint16_t *)EBI_ADDR_BASE) + 256 + 5) = 3; //local command start capt
@@ -192,9 +200,10 @@ int main(void)
         }
     }
 */
-    inBufferTop = 0;
     inBuffer = (uint8_t*)malloc(32*1024);
+    inBufferTop = 0;
    
+
     outBufferTop = 0;
     outBuffer = (uint8_t*)malloc(32*1024);
 
@@ -203,6 +212,9 @@ int main(void)
 
     printf("Initializing USB\n");
     USBD_Init(&initstruct);
+  
+    //Release fpga reset
+    GPIO_PinOutClear(gpioPortB, 4);
 
     /*
      * When using a debugger it is practical to uncomment the following three
@@ -211,6 +223,12 @@ int main(void)
     USBD_Disconnect();
     USBTIMER_DelayMs(100);
     USBD_Connect();
+
+    //Put FPGA out of reset
+    GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
+    GPIO_PinOutSet(gpioPortB, 5); //Reset
+    GPIO_PinOutClear(gpioPortB, 5); //Reset clear
+
 
     printf("USB Started, entering loop\n");
     sendPackReady = 0;
@@ -222,6 +240,7 @@ int main(void)
         if(GPIO_PinInGet(gpioPortD, 12)) {
           printf("FPGA config over, DONE went high. All is well witht he world.\n");
           fpgaUnderConfiguration = 0;
+          //Release FPGA reset signal from uC 
           //Send a few 1's to make sure the device boots.
           GPIO_PinOutSet(gpioPortA, 7); 
           for(int j = 0; j < 64; j++) {
@@ -286,11 +305,14 @@ int fpgaConfigPin(struct pinConfig * p)
 
   *(pin + PINCONFIG_DUTY_CYCLE) = p->duty;
   *(pin + PINCONFIG_ANTIDUTY_CYCLE) = p->antiduty;
-  //*(pin + PINCONFIG_CYCLES) = p->cycles;
+  *(pin + PINCONFIG_CYCLES) = p->cycles;
   *(pin + PINCONFIG_RUN_INF) = 1;
-  *(pin + 5) = 1; 
+  *(pin + PINCONFIG_LOCAL_CMD) = 1; 
 
-  printf("Configured pin %u, duty %u, antiduty %u, inf: %u\n\n\n", p->fpgaPin, p->duty, p->antiduty, 1);
+  //global start shit
+  *((uint16_t*)EBI_ADDR_BASE) = 1; 
+
+  printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
   //TODO: support everything :-)
   return 0;
 }
@@ -501,7 +523,7 @@ void eADesigner_Init(void)
   
   /* Enable GPIO clock */
   CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
-  
+
   /* Pin PA0 is configured to Push-pull */
   GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
   /* Pin PA1 is configured to Push-pull */
@@ -588,12 +610,13 @@ void eADesigner_Init(void)
   /* Module EBI is configured to location 1 */
   EBI->ROUTE = (EBI->ROUTE & ~_EBI_ROUTE_LOCATION_MASK) | EBI_ROUTE_LOCATION_LOC1;
   /* EBI I/O routing */
-  EBI->ROUTE |= EBI_ROUTE_APEN_A21 | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
+  EBI->ROUTE |= EBI_ROUTE_APEN_A20 | EBI_ROUTE_CS0PEN | EBI_ROUTE_EBIPEN;
   
   /* Enable signals VBUSEN, DMPU */
   USB->ROUTE |= USB_ROUTE_VBUSENPEN | USB_ROUTE_DMPUPEN;
   
 }
+
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
     return (val >> bit) & 0x1;
