@@ -3,10 +3,12 @@
 
 //This defines the fields and values for the mecobo protocol
 
-#define CMD_CONFIG_PIN  0x1
-#define CMD_READ_PIN    0x2
-#define CMD_CONFIG_REG  0x3
-#define CMD_PROGRAM_FPGA  0x4
+#define USB_CMD_CONFIG_PIN    0x1
+#define USB_CMD_READ_PIN      0x2
+#define USB_CMD_CONFIG_REG    0x3
+#define USB_CMD_PROGRAM_FPGA  0x4
+#define USB_CMD_START_OUTPUT  0x5 
+#define USB_CMD_STREAM_INPUT  0x6
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1

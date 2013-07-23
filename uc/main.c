@@ -91,7 +91,6 @@ void eADesigner_Init(void);
 
 struct queue dataIn;
 
-int fpgaConfigPin(struct pinConfig * p);
 
 //Receiving buffer. 
 struct queue dataInBuffer;
@@ -299,9 +298,6 @@ int fpgaConfigPin(struct pinConfig * p)
   *(pin + PINCONFIG_RUN_INF)        = p->runInf;
   *(pin + PINCONFIG_SAMPLE_RATE)    = p->sampleRate;
 
-  //global start shit
-  //*((uint16_t*)EBI_ADDR_BASE) = 1; 
-
   //printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
   //TODO: support everything :-)
   return 0;
@@ -315,7 +311,7 @@ int UsbDataReceived(USB_Status_TypeDef status,
     (void) remaining;
     if ((status == USB_STATUS_OK) && (xf > 0)) {
 
-        if(currentPack.command == CMD_CONFIG_PIN) {
+        if(currentPack.command == USB_CMD_CONFIG_PIN) {
           struct pinConfig conf;
           uint32_t * d = (uint32_t *)(currentPack.data);
           conf.fpgaPin = d[PINCONFIG_DATA_FPGA_PIN];
@@ -328,39 +324,27 @@ int UsbDataReceived(USB_Status_TypeDef status,
           //PinVal is stored in uC-internal per-pin register
           fpgaConfigPin(&conf); 
         }
+
+        if(currentPack.command == USB_CMD_START_OUTPUT) {
+          /* Start output from pin controllers */
+          uint32_t * d = (uint32_t *)(currentPack.data);
+          startOutput(d[PINCONFIG_DATA_FPGA_PIN]);
+        }
         
-        if(currentPack.command == CMD_READ_PIN) {
-            /*
-            struct pinConfig conf;
-            conf.fpgaPin = d[PINCONFIG_DATA_FPGA_PIN];
-            conf.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
-
-            struct mecoPack pack;
-            pack.size = 4;
-            struct ucPin pin = routeThroughMap[pinToRead];
-            GPIO_PinModeSet(pin.port, pin.pin, gpioModeInput, 0); 
-            *pack.data = GPIO_PinInGet(pin.port, pin.pin);
-
-            packToSend = pack;
-            sendPackReady = 1;
-            */
-        }
-
-        /*
-        if(currentPack.command == CMD_STATUS) {
+        if(currentPack.command == USB_CMD_READ_PIN) {
           struct mecoPack pack;
-          pack.size = 4;
-          pack.data = malloc(4);
-          if(fpgaConfigured) {
-            *pack.data = 1;
-          } else {
-            *pack.data = 0;
-          }
-          packToSend = pack;
-          sendPackReady = 1;
+          pack.size = 2; //send back the same amount of data
+          pack.command = currentPack.command;
+          pack.data = malloc(2);
+
+          uint16_t ret = getInput(*currentPack.data);
+          pack.data = memcpy(&ret, pack.data, 2);
+          //ship it!
+          packToSend = pack; 
+          sendPackReady = 1; 
         }
-        */
-        if(currentPack.command == CMD_PROGRAM_FPGA) {
+
+        if(currentPack.command == USB_CMD_PROGRAM_FPGA) {
           if(!fpgaUnderConfiguration) {
             //Start the configuration process.
             //set the input pin modes.
@@ -408,19 +392,9 @@ int UsbDataReceived(USB_Status_TypeDef status,
           printf("Sent %d bytes to FPGA, packet %d\n", nb, packNum);
         }
 
-        //For now, we will just make a mecoPack and queue it for sending.
-        /*
-        struct mecoPack pack;
-        pack.size = currentPack.size; //send back the same amount of data
-        pack.command = currentPack.command;
-        pack.data = malloc(currentPack.size); //allocate 4 bytes for the data.
-        //This loops back back!
-        packToSend = pack; 
-        sendPackReady = 1; //ship it as soon as we can!
-        */
         currentPack.command = 0;
         currentPack.size = 0;
-        free(currentPack.data); //we've sent the data back, no need to store it.
+        free(currentPack.data);
     }
 
     //Check that we're still good, and wait for a new header.
@@ -616,3 +590,24 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
+void startOutput(FPGA_IO_Pins_TypeDef pin)
+{
+  //TODO: Fix CMD_CONFIG_PIN_NAME
+  uint16_t * addr = getPinAddress(pin);
+  addr[PINCONFIG_LOCAL_CMD]= CMD_CONFIG_PIN;
+}
+
+uint16_t getInput(FPGA_IO_Pins_TypeDef pin)
+{
+  uint16_t * addr = getPinAddress(pin);
+  addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
+
+  return addr[PINCONFIG_SAMPLE_REG];
+}
+
+uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
+{
+  //TODO: Ignoring enum type... probably 32 bit int, but..
+  uint16_t offset = pin << 8; //8 MSB bits is pinConfig module addr
+  return ((uint16_t*)EBI_ADDR_BASE) + offset;
+}

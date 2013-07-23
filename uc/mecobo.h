@@ -33,7 +33,7 @@
 //Possible FPGA commands
 #define CMD_CONFIG_PIN  0x1
 #define CMD_READ_PIN    0x2
-#define CMD_CONFIG_REG  0x3
+#define CMD_INPUT_STREAM  0x3
 #define CMD_PROGRAM_FPGA  0x4
 
 
@@ -79,8 +79,6 @@ int decodeExecPack(struct mecoPack * p);
 //and shipped to host over USB.
 int sendPack(void * queue, struct mecoPack * in);
 
-//FPGA interface. 
-
 //Program a data generator and get response back if
 //programming was OK.
 //int progDatagen(uint32_t addr, uint32_t command, fpgaWord data);
@@ -102,6 +100,13 @@ int UsbDataSent(USB_Status_TypeDef status,
         uint32_t remaining);
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+
+
+//Start output on given pin
+void startOutput(FPGA_IO_Pins_TypeDef pin);
+uint16_t getInput(FPGA_IO_Pins_TypeDef pin);
+int fpgaConfigPin(struct pinConfig * p);
+uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 
 #endif //__MECOBO_H_
 
