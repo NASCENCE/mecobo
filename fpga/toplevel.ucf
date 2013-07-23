@@ -1,35 +1,36 @@
-NET "clk" 		LOC = R10;
+NET "clk" LOC = R10;
+NET "reset" LOC = T6;
+NET "led" LOC = N2;
 
-NET "led"		LOC = N2;
 # North Header
-NET "pin[0]" 	LOC = F16;
-NET "pin[1]"	LOC = F17;
-NET "pin[2]"	LOC = G14;
-NET "pin[3]"	LOC = G16;
-NET "pin[4]"	LOC = H16;
-NET "pin[5]"	LOC = H17;
-NET "pin[6]"	LOC = J16;
-NET "pin[7]"	LOC = H15;
-NET "pin[8]"	LOC = L12;
-NET "pin[9]"	LOC = H14;
-NET "pin[10]"	LOC = K14;
-NET "pin[11]"	LOC = K12;
-NET "pin[12]"	LOC = K17;
-NET "pin[13]"	LOC = K16;
-NET "pin[14]"	LOC = H12;
-NET "pin[15]"	LOC = L13;
+NET "pin[0]" LOC = F16;
+NET "pin[1]" LOC = F17;
+NET "pin[2]" LOC = G14;
+NET "pin[3]" LOC = G16;
+NET "pin[4]" LOC = H16;
+NET "pin[5]" LOC = H17;
+NET "pin[6]" LOC = J16;
+NET "pin[7]" LOC = H15;
+NET "pin[8]" LOC = L12;
+NET "pin[9]" LOC = H14;
+NET "pin[10]" LOC = K14;
+NET "pin[11]" LOC = K12;
+NET "pin[12]" LOC = K17;
+NET "pin[13]" LOC = K16;
+NET "pin[14]" LOC = H12;
+NET "pin[15]" LOC = L13;
 
-NET "debug[0]" LOC = D14;
-NET "debug[1]" LOC = C14;
-NET "debug[2]" LOC = F13;
-NET "debug[3]" LOC = E13;
-NET "debug[4]" LOC = F12;
-NET "debug[5]" LOC = D12;
-NET "debug[6]" LOC = D11;
-NET "debug[7]" LOC = C11;
+#NET "debug" LOC = F16;
+#NET "debug[1]" LOC = C14;
+#NET "debug[2]" LOC = F13;
+#NET "debug[3]" LOC = E13;
+#NET "debug[4]" LOC = F12;
+#NET "debug[5]" LOC = D12;
+#NET "debug[6]" LOC = D11;
+#NET "debug[7]" LOC = C11;
 
 #EBI bus.
-NET "ebi_data[0]" LOC = V13 ;
+NET "ebi_data[0]" LOC = V13;
 NET "ebi_data[1]" LOC = R11;
 NET "ebi_data[2]" LOC = U13;
 NET "ebi_data[3]" LOC = T10;
@@ -65,11 +66,10 @@ NET "ebi_addr[15]" LOC = M10;
 NET "ebi_addr[16]" LOC = T4;
 NET "ebi_addr[17]" LOC = R3;
 NET "ebi_addr[18]" LOC = T3;
-NET "ebi_addr[19]" LOC = T6;
-NET "ebi_addr[20]" LOC = P7;
 
-NET "ebi_cs"  LOC = V14;
-NET "ebi_wr"   LOC = V15;
-NET "ebi_rd"    LOC = V16;
+NET "ebi_cs" LOC = V14;
+NET "ebi_wr" LOC = V15;
+NET "ebi_rd" LOC = V16;
 
-NET "fpga_ready"  LOC = T12; #Output from FPGA (0 = FPGA READY)
+#Output from FPGA (0 = FPGA READY)
+NET "fpga_ready" LOC = T12;

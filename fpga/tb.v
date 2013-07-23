@@ -34,13 +34,33 @@ initial begin
   //Run for 5 cycles.	
   ebi_addr = 3;
   ebi_data = 5; //total 5 cycles run
-  #21
-  ebi_addr = 5; //local command address for pin 0
-  ebi_data = 1; //command : start
+
   #21
   ebi_wr = 0; //stop doing stuff.
   ebi_data = 0;
   ebi_addr = 0;
+
+  #30
+  //Pin 1
+  ebi_wr = 1;
+  ebi_addr = 256 + 1;
+  ebi_data = 10;
+  #21
+  ebi_addr = 256 + 2;
+  ebi_data = 20;
+  #21 
+  ebi_addr = 256 + 4; //inf reg
+  ebi_data = 1;
+  #21 
+  // start command
+  ebi_addr = 0 + 5;
+  ebi_data = 1;
+  #21
+// start command
+  ebi_addr = 256 + 5;
+  ebi_data = 1;
+#21
+  ebi_wr = 0;
 
   /*
   #21
@@ -78,14 +98,10 @@ wire [15:0] fjas;
 assign fjas = ebi_data;
 
 wire [15:0] pins;
-wire jmp;
-assign jmp = pins[0];
-assign pins[1] = jmp;
-assign pins [15:2] = 14'b0;
 
 mecobo mecobo0 (
 .clk(clk),
-.reset(reset),
+//.reset(reset),
 .ebi_data(fjas),
 .ebi_addr(ebi_addr),
 .ebi_wr(ebi_wr),

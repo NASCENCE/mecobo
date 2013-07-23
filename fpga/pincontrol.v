@@ -1,11 +1,11 @@
-module pincontrol (clk, reset, addr, data, data_rd, data_wr, pin);
+module pincontrol (clk, reset, addr, data_wr, data_rd, data_in, data_out, pin);
 
 input clk;
 input reset;
-input [20:0] addr;
-inout [15:0] data;
-wire [15:0] data_in;
-//output [15:0] data_out;
+input [18:0] addr;
+input   [15:0] data_in;
+(* tristate2logic = "yes" *)
+output [15:0] data_out;
 inout pin;
 
 input data_wr;
@@ -23,8 +23,10 @@ localparam [3:0]
   MODE_INPUT_STREAM = 4'b0011;
 
 
+wire enable_in = (addr[15:8] == POSITION);
 
-wire enable = ((addr == ADDR_GLOBAL_CMD) || (addr[15:8] == POSITION));
+assign data_out = (data_rd & (addr[15:8] == POSITION)) ? sample_register : 16'b0;
+
 //Drive output pin from pin_output statemachine if mode is output
 assign pin = (enable_pin_output) ? pin_output : 1'bZ;
 //else we have input from pin.
@@ -35,7 +37,8 @@ assign pin_input = pin;
 parameter POSITION = 0;
 localparam BASE_ADDR = (POSITION << 8);
 
-localparam [20:0] 
+//These are byte addresses.
+localparam [18:0] 
   ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
   ADDR_DUTY_CYCLE = BASE_ADDR + 1,
   ADDR_ANTI_DUTY_CYCLE = BASE_ADDR + 2,
@@ -49,8 +52,8 @@ localparam [20:0]
 always @ (posedge clk) begin
   if (res_cmd_reg)
     command <= 0;
-  else if (enable & data_wr) begin
-    if ((addr == ADDR_GLOBAL_CMD) || (addr == ADDR_LOCAL_CMD))
+  else if (enable_in & data_wr) begin
+    if (addr == ADDR_LOCAL_CMD)
       command <= data_in;
     else if (addr == ADDR_DUTY_CYCLE)
       duty_cycle <= data_in;
@@ -62,8 +65,8 @@ always @ (posedge clk) begin
       run_inf <= data_in;
     else if (addr == ADDR_SAMPLE_RATE)
       sample_rate <= data_in;
-    else if (addr == ADDR_PIN_MODE)
-      pin_mode <= data_in;
+    //else if (addr == ADDR_PIN_MODE)
+    //  pin_mode <= data_in;
   end 
 end
 
@@ -89,14 +92,9 @@ reg [15:0] cnt_duty_cycle = 0;
 reg [15:0] cnt_anti_duty_cycle = 0;
 reg [15:0] cnt_cycles = 0;
 reg [15:0] cnt_sample_rate = 0;
-reg [15:0] pin_mode = 0;
+//reg [15:0] pin_mode = 0;
 
 always @ (posedge clk) begin
-  if (reset) begin
-    cnt_duty_cycle <= 0;
-    cnt_anti_duty_cycle <= 0;
-    cnt_cycles <= 0;
-  end
 
   if (res_duty_counter == 1'b1)
     cnt_duty_cycle <= duty_cycle;
@@ -121,14 +119,9 @@ always @ (posedge clk) begin
     cnt_sample_rate <= cnt_sample_rate - 16'h0001;
 
   if (update_data_out) 
-    sample_register <= { 15'b0, pin_input };
+    sample_register <= {15'b0, pin_input};
 
 end
-
-//Drive output, or tristate against bus.
-assign data = (enable & data_rd) ? sample_register : 16'bZ;
-assign data_in = data;
-	
 //outputs from state machine
 reg dec_duty_counter;
 reg dec_anti_duty_counter;
@@ -153,6 +146,7 @@ localparam [3:0]
   high = 4'b0010,
   low  = 4'b0100,
   input_stream = 4'b1000;
+
 
 always @ (posedge clk) begin
   if (reset) 
