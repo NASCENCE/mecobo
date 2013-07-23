@@ -9,12 +9,8 @@
 
 #define NUM_ENDPOINTS 4
 char eps[NUM_ENDPOINTS];
-
-int setPin( FPGA_IO_Pins_TypeDef pin, 
-            uint32_t duty,
-            uint32_t antiduty,
-            uint32_t cycles) ;
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
+
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
 int setReg(uint32_t data);
@@ -112,7 +108,7 @@ int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize,
   packet->data = malloc(dataSize);
   memcpy(packet->data, data, dataSize);
 
-  packet->dataSize = dataSize;
+  packet->size = dataSize;
   packet->command = command;
   return 0;
 }
@@ -120,24 +116,39 @@ int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize,
 int setReg(uint32_t data) 
 {
     struct mecoPack p;
-    createMecoPack(&p, (uint8_t *)(&data), 4, CMD_CONFIG_REG);
+    createMecoPack(&p, (uint8_t *)(&data), 4, USB_CMD_CONFIG_REG);
     sendPacket(&p, eps[2]);
 }
 
 int setPin( FPGA_IO_Pins_TypeDef pin, 
             uint32_t duty,
             uint32_t antiduty,
-            uint32_t cycles) 
+            uint32_t cycles,
+            uint32_t sampleRate)
 {
-  uint32_t data[5];
+
+  uint32_t data[USB_PACK_SIZE_BYTES];
 
   data[PINCONFIG_DATA_FPGA_PIN] = pin;
   data[PINCONFIG_DATA_DUTY] = duty;
   data[PINCONFIG_DATA_ANTIDUTY] = antiduty;
   data[PINCONFIG_DATA_CYCLES] = cycles;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = sampleRate;
+
+  data[PINCONFIG_DATA_RUN_INF] = 0x1; //debug!
 
   struct mecoPack p;
-  createMecoPack(&p, (uint8_t *)data, 30, CMD_CONFIG_PIN);
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+
+  sendPacket(&p, eps[2]);
+}
+
+int startOutput (FPGA_IO_Pins_TypeDef pin)
+{
+  uint32_t data;
+  data = pin;
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_START_OUTPUT);
   sendPacket(&p, eps[2]);
 }
 
@@ -146,7 +157,7 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val)
     uint32_t data[1];
     data[PINCONFIG_DATA_FPGA_PIN] = pin;
     struct mecoPack p;
-    createMecoPack(&p, (uint8_t *)data, 4, CMD_READ_PIN);
+    createMecoPack(&p, (uint8_t *)data, 4, USB_CMD_READ_PIN);
     sendPacket(&p, eps[2]);
     //Get data back.
     int bytesRemaining = 4;
@@ -165,25 +176,21 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
   //First, send header (fixed 8 bytes)
   //Create a buffer of data to send.
   uint32_t toSend[2];
-  toSend[1] = packet->dataSize;
-  uint8_t * toSend8 = (uint8_t *)toSend;
-  toSend8[0] = 0xa;
-  toSend8[1] = 0xb;
-  toSend8[2] = 0xc;
-  toSend8[3] = packet->command;
+  toSend[0] = packet->size;
+  toSend[1] = packet->command;
 
   int transfered = 0;
   int remaining = 8;
   while(remaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, endpoint, toSend8, 8, &transfered, 0);
+    libusb_bulk_transfer(mecoboHandle, endpoint, (uint8_t*)toSend, 8, &transfered, 0);
     remaining -= transfered;
     //printf("Sent bytes of header, %u\n", transfered);
   } 
   //Send data afterwards.
   transfered = 0;
-  remaining = packet->dataSize;
+  remaining = packet->size;
   while(remaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, endpoint, packet->data, packet->dataSize, &transfered, 0);
+    libusb_bulk_transfer(mecoboHandle, endpoint, packet->data, packet->size, &transfered, 0);
     remaining -= transfered;
     //printf("Sent bytes of data, %u\n", transfered);
   }
@@ -198,10 +205,10 @@ int getPacket(struct mecoPack * packet)
 
 int experiment_foo()
 {
-    setPin(FPGA_F16, 0xFF, 0x67, 0xCC);
-    setPin(FPGA_F17, 10, 50, 0x500);
-    setPin(FPGA_G14, 0xFFFF, 0xFFFF, 0xFF);
-    setPin(FPGA_G16, 0xABCD, 0xABCD, 0xFF);
+    setPin(FPGA_F16, 0xFF, 0x67, 0xCC, 0x1);
+    startOutput(FPGA_F16);
+    setPin(FPGA_G16, 0xABCD, 0xABCD, 0xFF, 0x1);
+    startOutput(FPGA_G16);
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
@@ -235,14 +242,14 @@ int programFPGA(char * filename)
   for(i =0; i < nPackets; i++) {
     printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
     printf("position %u in array\n", (i * packsize));
-    createMecoPack(&send, bytes + (i*packsize), packsize, CMD_PROGRAM_FPGA);
+    createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_PROGRAM_FPGA);
     sendPacket(&send, eps[2]);
   }
   //Send the rest if there is any.
   if(rest > 0) {
     printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
     struct mecoPack lol;
-    createMecoPack(&lol, bytes + (i*packsize), rest, CMD_PROGRAM_FPGA);
+    createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_PROGRAM_FPGA);
     sendPacket(&lol, eps[2]);
   }
 

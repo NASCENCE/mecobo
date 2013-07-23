@@ -14,6 +14,7 @@
 #define PINTYPE_IN      0x1
 
 //USB package data offsets for the pinconfig package
+#define USB_PACK_SIZE_BYTES   32 //8 * 4
 #define PINCONFIG_DATA_FPGA_PIN 0
 #define PINCONFIG_DATA_TYPE 1
 #define PINCONFIG_DATA_CONST 2
@@ -40,7 +41,7 @@ typedef enum {
 
 struct mecoPack {
     uint32_t size;
-    uint8_t command;
+    uint32_t command;
     uint8_t * data;
 };
 

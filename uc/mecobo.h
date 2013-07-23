@@ -31,7 +31,7 @@
 
 
 //Possible FPGA commands
-#define CMD_CONFIG_PIN  0x1
+#define CMD_START_OUTPUT  0x1
 #define CMD_READ_PIN    0x2
 #define CMD_INPUT_STREAM  0x3
 #define CMD_PROGRAM_FPGA  0x4

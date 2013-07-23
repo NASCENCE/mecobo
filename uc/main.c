@@ -259,17 +259,15 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
     if ((status == USB_STATUS_OK) && (xf > 0)) {
         //Got some data, check if we have header.
         if (xf == 8) {
-            if (inBuffer[0] == 0xa) {
+          uint32_t * inBuffer32 = (uint32_t *)inBuffer;
+          currentPack.size = inBuffer32[0]; //TODO: blaaaah
 
-                uint32_t * inBuffer32 = (uint32_t *)inBuffer;
-                currentPack.size = inBuffer32[1]; //TODO: blaaaah
-
-                currentPack.command = inBuffer[3];
-                currentPack.data = malloc(currentPack.size);
-            } 
-            gotHeader = 1;
+          currentPack.command = inBuffer32[1];
+          currentPack.data = malloc(currentPack.size);
+          gotHeader = 1;
+          printf("Got header, command %x\n", (unsigned int)currentPack.command);
         } else {
-            //Some kind of error here.
+          printf("Expected header of size 8, got ...something not 8.\n");
         }
     }
 
@@ -289,8 +287,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 //with the data found in the pin config structure. 
 int fpgaConfigPin(struct pinConfig * p)
 {
-  uint16_t offset = p->fpgaPin << 8; //8 MSB bits is pinConfig module addr
-  uint16_t * pin = ((uint16_t*)EBI_ADDR_BASE) + offset;
+  uint16_t * pin = getPinAddress(p->fpgaPin);
 
   *(pin + PINCONFIG_DUTY_CYCLE)     = p->duty;
   *(pin + PINCONFIG_ANTIDUTY_CYCLE) = p->antiduty;
@@ -298,7 +295,7 @@ int fpgaConfigPin(struct pinConfig * p)
   *(pin + PINCONFIG_RUN_INF)        = p->runInf;
   *(pin + PINCONFIG_SAMPLE_RATE)    = p->sampleRate;
 
-  //printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
+  printf("Configured pin %u, address %p, duty %u, antiduty %u, inf: %u\n", (int)p->fpgaPin, (void *)pin, (int)p->duty, (int)p->antiduty, 1);
   //TODO: support everything :-)
   return 0;
 }
@@ -328,8 +325,10 @@ int UsbDataReceived(USB_Status_TypeDef status,
         if(currentPack.command == USB_CMD_START_OUTPUT) {
           /* Start output from pin controllers */
           uint32_t * d = (uint32_t *)(currentPack.data);
+          printf("loc: %u\n", (unsigned int)d[PINCONFIG_DATA_FPGA_PIN]);
           startOutput(d[PINCONFIG_DATA_FPGA_PIN]);
         }
+
         
         if(currentPack.command == USB_CMD_READ_PIN) {
           struct mecoPack pack;
@@ -592,9 +591,8 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 void startOutput(FPGA_IO_Pins_TypeDef pin)
 {
-  //TODO: Fix CMD_CONFIG_PIN_NAME
   uint16_t * addr = getPinAddress(pin);
-  addr[PINCONFIG_LOCAL_CMD]= CMD_CONFIG_PIN;
+  addr[PINCONFIG_LOCAL_CMD]= CMD_START_OUTPUT;
 }
 
 uint16_t getInput(FPGA_IO_Pins_TypeDef pin)
