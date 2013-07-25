@@ -129,8 +129,8 @@ EBI_Init_TypeDef ebiConfig = {
       0,                /* addr setup cycles */          \
       1,                /* addr hold cycles */           \
       false,            /* do not enable half cycle ALE strobe */ \
-      0,                /* read setup cycles */          \
-      0,                /* read strobe cycles */         \
+      1,                /* read setup cycles */          \
+      2,                /* read strobe cycles */         \
       0,                /* read hold cycles */           \
       false,            /* disable page mode */          \
       false,            /* disable prefetch */           \
@@ -329,15 +329,20 @@ int UsbDataReceived(USB_Status_TypeDef status,
           startOutput(d[PINCONFIG_DATA_FPGA_PIN]);
         }
 
+        if(currentPack.command == USB_CMD_STREAM_INPUT) {
+          /* Start input in pin controller */
+          uint32_t * d = (uint32_t *)(currentPack.data);
+          startInput(d[PINCONFIG_DATA_FPGA_PIN]);
+        }
+
         
         if(currentPack.command == USB_CMD_READ_PIN) {
           struct mecoPack pack;
-          pack.size = 2; //send back the same amount of data
+          pack.size = 4; //4 bytes of gold.
           pack.command = currentPack.command;
-          pack.data = malloc(2);
-
-          uint16_t ret = getInput(*currentPack.data);
-          pack.data = memcpy(&ret, pack.data, 2);
+          pack.data = malloc(4);
+          uint32_t ret = getInput(*currentPack.data);
+          memcpy(pack.data, &ret, 4);
           //ship it!
           packToSend = pack; 
           sendPackReady = 1; 
@@ -595,17 +600,24 @@ void startOutput(FPGA_IO_Pins_TypeDef pin)
   addr[PINCONFIG_LOCAL_CMD]= CMD_START_OUTPUT;
 }
 
-uint16_t getInput(FPGA_IO_Pins_TypeDef pin)
+void startInput(FPGA_IO_Pins_TypeDef pin)
 {
+  printf("Starting output on pin %u\n", (unsigned int)pin);
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
+}
 
-  return addr[PINCONFIG_SAMPLE_REG];
+uint32_t getInput(FPGA_IO_Pins_TypeDef pin)
+{
+  uint16_t * addr = getPinAddress(pin);
+  uint32_t val = addr[PINCONFIG_SAMPLE_REG];
+  printf("Read %u from addr %x\n", (unsigned int)val, (unsigned int)(addr + PINCONFIG_SAMPLE_REG));
+  return val;
 }
 
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
   //TODO: Ignoring enum type... probably 32 bit int, but..
   uint16_t offset = pin << 8; //8 MSB bits is pinConfig module addr
-  return ((uint16_t*)EBI_ADDR_BASE) + offset;
+  return (uint16_t*)EBI_ADDR_BASE + offset;
 }

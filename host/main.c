@@ -152,23 +152,35 @@ int startOutput (FPGA_IO_Pins_TypeDef pin)
   sendPacket(&p, eps[2]);
 }
 
+int startInput (FPGA_IO_Pins_TypeDef pin)
+{
+  uint32_t data;
+  data = pin;
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_STREAM_INPUT);
+  sendPacket(&p, eps[2]);
+}
+
+
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val) 
 {
-    uint32_t data[1];
-    data[PINCONFIG_DATA_FPGA_PIN] = pin;
-    struct mecoPack p;
-    createMecoPack(&p, (uint8_t *)data, 4, USB_CMD_READ_PIN);
-    sendPacket(&p, eps[2]);
-    //Get data back.
-    int bytesRemaining = 4;
-    int transfered = 0;
-    uint8_t rcv[4];
-    while(bytesRemaining > 0) {
-        libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
+  //Construct packet to get a pin
+  uint32_t data[1];
+  data[PINCONFIG_DATA_FPGA_PIN] = pin;
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t *)data, 4, USB_CMD_READ_PIN);
+  sendPacket(&p, eps[2]);
+
+  //Get data back.
+  int bytesRemaining = 4;
+  int transfered = 0;
+  uint8_t * rcv = malloc(4);
+  while(bytesRemaining > 0) {
+    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
     bytesRemaining -= transfered;
-    *val = (uint32_t)*rcv;
-    //printf("received:%d bytes.\n", transfered);
   }
+  memcpy(val, rcv, 4);
+  free(rcv);
 }
 
 int sendPacket(struct mecoPack * packet, uint8_t endpoint) 
@@ -205,10 +217,17 @@ int getPacket(struct mecoPack * packet)
 
 int experiment_foo()
 {
-    setPin(FPGA_F16, 0xFF, 0x67, 0xCC, 0x1);
+    setPin(FPGA_F17, 0x1, 0x1, 0x1, 0x1);
+    startInput(FPGA_F17);
+
+    setPin(FPGA_F16, 0xFFFF, 0xFFFF, 0xCC, 0x1);
     startOutput(FPGA_F16);
-    setPin(FPGA_G16, 0xABCD, 0xABCD, 0xFF, 0x1);
-    startOutput(FPGA_G16);
+
+    for(int i = 0; i < 1000; i++) {
+      uint32_t dat = 0;
+      getPin(FPGA_F17, &dat);
+      printf("%x\n", dat);
+    }
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 

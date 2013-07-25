@@ -104,7 +104,8 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 
 //Start output on given pin
 void startOutput(FPGA_IO_Pins_TypeDef pin);
-uint16_t getInput(FPGA_IO_Pins_TypeDef pin);
+void startInput(FPGA_IO_Pins_TypeDef pin);
+uint32_t getInput(FPGA_IO_Pins_TypeDef pin);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 
