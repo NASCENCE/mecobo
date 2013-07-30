@@ -3,12 +3,16 @@
 
 //This defines the fields and values for the mecobo protocol
 
+#define USB_BUFFER_SIZE 1024
+
+
 #define USB_CMD_CONFIG_PIN    0x1
 #define USB_CMD_READ_PIN      0x2
 #define USB_CMD_CONFIG_REG    0x3
 #define USB_CMD_PROGRAM_FPGA  0x4
 #define USB_CMD_START_OUTPUT  0x5 
 #define USB_CMD_STREAM_INPUT  0x6
+#define USB_CMD_GET_INPUT_BUFFER 0x7
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
@@ -44,5 +48,12 @@ struct mecoPack {
     uint32_t command;
     uint8_t * data;
 };
+
+struct sampleValue {
+  uint32_t sampleNum; 
+  uint32_t pin;
+  uint32_t value;
+};
+
 
 #endif //__MECOPROT_H__

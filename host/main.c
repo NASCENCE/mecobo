@@ -39,6 +39,8 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
   }
 }
 
+
+
 int main(int argc, char ** argv) {
 
   uint32_t progFpga = 0;
@@ -105,8 +107,12 @@ int main(int argc, char ** argv) {
 
 int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command)
 {
-  packet->data = malloc(dataSize);
-  memcpy(packet->data, data, dataSize);
+  if(dataSize > 0) {
+    packet->data = malloc(dataSize);
+    memcpy(packet->data, data, dataSize);
+  } else {
+    packet->data = NULL;
+  }
 
   packet->size = dataSize;
   packet->command = command;
@@ -137,6 +143,7 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
 
   data[PINCONFIG_DATA_RUN_INF] = 0x1; //debug!
 
+  printf("sending pinconfig on pin:%x\n", pin);
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
 
@@ -172,14 +179,14 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val)
   sendPacket(&p, eps[2]);
 
   //Get data back.
-  int bytesRemaining = 4;
+  int bytesRemaining = 4*3;
   int transfered = 0;
-  uint8_t * rcv = malloc(4);
+  uint8_t * rcv = malloc(12);
   while(bytesRemaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
+    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 12, &transfered, 0);
     bytesRemaining -= transfered;
   }
-  memcpy(val, rcv, 4);
+  memcpy(val, rcv, 12);
   free(rcv);
 }
 
@@ -191,6 +198,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
   toSend[0] = packet->size;
   toSend[1] = packet->command;
 
+  printf("Sending header\n");
   int transfered = 0;
   int remaining = 8;
   while(remaining > 0) {
@@ -199,6 +207,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
     //printf("Sent bytes of header, %u\n", transfered);
   } 
   //Send data afterwards.
+  printf("Sending data, size %u\n", packet->size);
   transfered = 0;
   remaining = packet->size;
   while(remaining > 0) {
@@ -217,17 +226,22 @@ int getPacket(struct mecoPack * packet)
 
 int experiment_foo()
 {
-    setPin(FPGA_F17, 0x1, 0x1, 0x1, 0x1);
-    startInput(FPGA_F17);
-
-    setPin(FPGA_F16, 0xFFFF, 0xFFFF, 0xCC, 0x1);
+    setPin(FPGA_F16, 0xFFFF, 0xFFFF, 0xCC, 0x0);
+    setPin(FPGA_F17, 0x1, 0x1, 0x1, 0xFF);
     startOutput(FPGA_F16);
+    startInput(FPGA_F17);
+    struct sampleValue * values = calloc(USB_BUFFER_SIZE * sizeof(struct sampleValue), 1);
 
-    for(int i = 0; i < 1000; i++) {
-      uint32_t dat = 0;
-      getPin(FPGA_F17, &dat);
-      printf("%x\n", dat);
+    //Should have an interrupt line or something to tell
+    //me when a buffer is ... half full? Must have some kind 
+    //of status packet at least...? 
+    //
+    
+    getSampleBuffer(values);
+    for(int i = 0; i < USB_BUFFER_SIZE; i++) {
+      printf("sample: s: %x p:%x v:%x\n", values[i].sampleNum, values[i].pin, values[i].value);
     }
+    
 }
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
@@ -275,4 +289,31 @@ int programFPGA(char * filename)
   free(bytes);
   printf("\n");
   fclose(bitfile);
+}
+
+
+int getSampleBuffer(struct sampleValue * values)
+{
+  //Send request for buffer
+  struct mecoPack pack;
+  createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
+  sendPacket(&pack, eps[2]);
+  //Now get data back.
+  //uint8_t * data = malloc(sizeof(struct sampleValue)*USB_BUFFER_SIZE);
+  getBytesFromUSB(eps[0], (uint8_t *)values, sizeof(struct sampleValue)*USB_BUFFER_SIZE);
+
+  //values = (struct sampleValue *)data;
+}
+
+int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
+{
+  //Get data back.
+  printf("recieving %d bytes form USB\n", nBytes);
+  int bytesRemaining = nBytes;
+  int transfered = 0;
+  while(bytesRemaining > 0) {
+    libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
+    bytesRemaining -= transfered;
+  }
+
 }
