@@ -5,13 +5,14 @@ input reset;
 input [18:0] addr;
 input   [15:0] data_in;
 (* tristate2logic = "yes" *)
-output [15:0] data_out;
+output reg [15:0] data_out;
 inout pin;
 
 input data_wr;
 input data_rd;
 
-reg [15:0] sample_register = 16'b0;
+reg [15:0] sample_register = 16'hABCF;
+reg [31:0] sample_cnt = 16'h0000;
 
 reg pin_output;
 wire pin_input;
@@ -25,7 +26,19 @@ localparam [3:0]
 
 wire enable_in = (addr[15:8] == POSITION);
 
-assign data_out = (data_rd & (addr[15:8] == POSITION)) ? sample_register : 16'b0;
+always @ (*) begin
+  if (data_rd) begin
+    if (addr == ADDR_SAMPLE_REG) 
+      data_out <= sample_register;
+    else if (addr == ADDR_SAMPLE_CNT) 
+      data_out <= sample_cnt;
+    else
+      data_out <= 16'b0;
+  end else
+    data_out <= 16'b0;
+end
+//assign data_out = (data_rd & (addr == ADDR_SAMPLE_REG)) ? sample_register : 16'b0;
+//assign data_out = (data_rd & (addr == ADDR_SAMPLE_CNT)) ? sample_cnt : 16'b0;
 
 //Drive output pin from pin_output statemachine if mode is output
 assign pin = (enable_pin_output) ? pin_output : 1'bZ;
@@ -47,7 +60,7 @@ localparam [18:0]
   ADDR_LOCAL_CMD = BASE_ADDR + 5,
   ADDR_SAMPLE_RATE = BASE_ADDR + 6,
   ADDR_SAMPLE_REG = BASE_ADDR + 7,
-  ADDR_PIN_MODE = BASE_ADDR + 8;
+  ADDR_SAMPLE_CNT = BASE_ADDR + 8;
 
 always @ (posedge clk) begin
   if (res_cmd_reg)
@@ -65,8 +78,6 @@ always @ (posedge clk) begin
       run_inf <= data_in;
     else if (addr == ADDR_SAMPLE_RATE)
       sample_rate <= data_in;
-    //else if (addr == ADDR_PIN_MODE)
-    //  pin_mode <= data_in;
   end 
 end
 
@@ -91,7 +102,7 @@ reg [15:0] sample_rate = 0;
 reg [15:0] cnt_duty_cycle = 0;
 reg [15:0] cnt_anti_duty_cycle = 0;
 reg [15:0] cnt_cycles = 0;
-reg [15:0] cnt_sample_rate = 0;
+reg [31:0] cnt_sample_rate = 0;
 //reg [15:0] pin_mode = 0;
 
 always @ (posedge clk) begin
@@ -114,12 +125,14 @@ always @ (posedge clk) begin
   end
 
   if (res_sample_counter == 1'b1) 
-    cnt_sample_rate <= sample_rate;
+    cnt_sample_rate <= sample_rate << 3;
   else if (dec_sample_counter == 1'b1) 
-    cnt_sample_rate <= cnt_sample_rate - 16'h0001;
+    cnt_sample_rate <= cnt_sample_rate - 1;
 
-  if (update_data_out) 
-    sample_register <= {15'b0, pin_input};
+  if (update_data_out)  begin
+    sample_register[0] <= pin_input;
+    sample_cnt <= sample_cnt + 1;
+  end
 
 end
 //outputs from state machine
@@ -135,6 +148,8 @@ reg res_cmd_reg = 1'b0;
 reg res_sample_counter = 0;
 reg dec_sample_counter = 0;
 reg update_data_out    = 0;
+
+reg update_sample_cnt = 0;
 
 reg enable_pin_output = 0;
 
@@ -272,10 +287,11 @@ always @ ( * ) begin
     pin_output <= 1'b0;
 
     //If we have counted down to 1, it's time to update sample reg.
-    if (cnt_sample_rate == 1) begin
+    if (cnt_sample_rate == 31'h00000001) begin
       update_data_out <= 1'b1; 
-      dec_sample_counter <= 1'b0;
+      res_sample_counter <= 1'b1;
     end else begin
+      update_data_out <= 1'b0; 
       dec_sample_counter <= 1'b1;
     end
 
