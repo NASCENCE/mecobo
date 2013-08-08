@@ -28,6 +28,7 @@
 #define PINCONFIG_LOCAL_CMD 5
 #define PINCONFIG_SAMPLE_RATE 6
 #define PINCONFIG_SAMPLE_REG 7
+#define PINCONFIG_SAMPLE_CNT 8
 
 
 //Possible FPGA commands
@@ -54,7 +55,6 @@ struct pinConfig {
   uint32_t nSamples;
   uint32_t * samples; //points to allocated data of samples. (12 bit samples)
 };
-
 
 //Programs the FPGA via the slave serial interface.
 int progFPGA(uint8_t * data);
@@ -105,9 +105,12 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 //Start output on given pin
 void startOutput(FPGA_IO_Pins_TypeDef pin);
 void startInput(FPGA_IO_Pins_TypeDef pin);
-uint32_t getInput(FPGA_IO_Pins_TypeDef pin);
+void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef pin);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
+int noDataCmd(int cmd);
+void execCurrentPack();
+void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
 
 #endif //__MECOBO_H_
 

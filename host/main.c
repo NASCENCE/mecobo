@@ -4,17 +4,24 @@
 #include <stdlib.h>
 #include <omp.h>
 #include <string.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
 #include "mecohost.h"
 #include "../uc/mecoprot.h"
 
 #define NUM_ENDPOINTS 4
+
+
+
+
 char eps[NUM_ENDPOINTS];
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
 int setReg(uint32_t data);
-int programFPGA(char * filename);
+int programFPGA(const char * filename);
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
@@ -38,6 +45,8 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
     endpoints[ep] = (char)interface.endpoint[ep].bEndpointAddress;
   }
 }
+
+
 
 int main(int argc, char ** argv) {
 
@@ -105,8 +114,12 @@ int main(int argc, char ** argv) {
 
 int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command)
 {
-  packet->data = malloc(dataSize);
-  memcpy(packet->data, data, dataSize);
+  if(dataSize > 0) {
+    packet->data = (uint8_t*)malloc(dataSize);
+    memcpy(packet->data, data, dataSize);
+  } else {
+    packet->data = NULL;
+  }
 
   packet->size = dataSize;
   packet->command = command;
@@ -137,6 +150,7 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
 
   data[PINCONFIG_DATA_RUN_INF] = 0x1; //debug!
 
+  //printf("sending pinconfig on pin:%x\n", pin);
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
 
@@ -172,14 +186,14 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val)
   sendPacket(&p, eps[2]);
 
   //Get data back.
-  int bytesRemaining = 4;
+  int bytesRemaining = 4*3;
   int transfered = 0;
-  uint8_t * rcv = malloc(4);
+  uint8_t * rcv = (uint8_t*)malloc(12);
   while(bytesRemaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 4, &transfered, 0);
+    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 12, &transfered, 0);
     bytesRemaining -= transfered;
   }
-  memcpy(val, rcv, 4);
+  memcpy(val, rcv, 12);
   free(rcv);
 }
 
@@ -191,6 +205,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
   toSend[0] = packet->size;
   toSend[1] = packet->command;
 
+  //printf("Sending header\n");
   int transfered = 0;
   int remaining = 8;
   while(remaining > 0) {
@@ -199,6 +214,7 @@ int sendPacket(struct mecoPack * packet, uint8_t endpoint)
     //printf("Sent bytes of header, %u\n", transfered);
   } 
   //Send data afterwards.
+  //printf("Sending data, size %u\n", packet->size);
   transfered = 0;
   remaining = packet->size;
   while(remaining > 0) {
@@ -215,27 +231,80 @@ int getPacket(struct mecoPack * packet)
   return 0;
 }
 
+bool sortValues(sampleValue i, sampleValue j) {
+  return i.sampleNum < j.sampleNum;
+}
+
 int experiment_foo()
 {
-    setPin(FPGA_F17, 0x1, 0x1, 0x1, 0x1);
-    startInput(FPGA_F17);
+    //Repeat of experiment 
+    std::vector<FPGA_IO_Pins_TypeDef> outPins = {
+      FPGA_F16,
+      FPGA_F17,
+      FPGA_G14,
+      FPGA_G16,
+      FPGA_H16,
+      FPGA_H17,
+      FPGA_H15,
+      FPGA_L12,
+      FPGA_H14,
+      FPGA_K14,
+      FPGA_K12
+    };
+    
+    std::vector<FPGA_IO_Pins_TypeDef> inPins = {
+      FPGA_J16
+    };
 
-    setPin(FPGA_F16, 0xFFFF, 0xFFFF, 0xCC, 0x1);
-    startOutput(FPGA_F16);
+    //Setup input pins
+    for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+      setPin(inPin, 0x1, 0x1, 0x1, 0xFFF);
+    }
 
-    for(int i = 0; i < 1000; i++) {
-      uint32_t dat = 0;
-      getPin(FPGA_F17, &dat);
-      printf("%x\n", dat);
+    for(uint16_t gene = 0; gene < 2048; gene++) {
+      int bit = 0;
+      std::string geneString;
+      for(FPGA_IO_Pins_TypeDef pin : outPins) {
+        if(get_bit(gene, bit++)) {
+          setPin(pin, 0xFFFF, 0x0, 0x1, 0x0);
+          geneString += "1 ";
+        } else {
+          setPin(pin, 0x0, 0xFFFF, 0x1, 0x0);
+          geneString += "0 ";
+        }
+        startOutput(pin);
+      }
+
+      //start input
+      for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+        startInput(inPin); //flips buffers. The next buffer should now be clean.
+      }
+
+      //Collect at least 5 samples 
+      std::vector<sampleValue> samples;
+      struct mecoboDev dev;
+      bool done = false;
+      while(!done) {
+        getMecoboStatus(&dev);
+        if(dev.bufElements >= 5) {
+          done = true;
+          getSampleBuffer(samples);
+        }
+      }
+      for (int s = 0; s < 5; s++) {
+        std::cout << geneString << " r: " << samples[s].value << " " << samples[s].sampleNum << " " << samples[s].pin << " " << std::endl;
+      }
+      samples.clear();
     }
 }
+
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
     return (val >> bit) & 0x1;
 }
 
-int programFPGA(char * filename)
+int programFPGA(const char * filename)
 {
   FILE * bitfile;
 
@@ -252,7 +321,7 @@ int programFPGA(char * filename)
   printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
         nBytes, nPackets, packsize, rest);
   uint8_t * bytes;
-  bytes = malloc(nBytes);
+  bytes = (uint8_t *)malloc(nBytes);
 
   fread(bytes, 1, nBytes, bitfile);
 
@@ -275,4 +344,55 @@ int programFPGA(char * filename)
   free(bytes);
   printf("\n");
   fclose(bitfile);
+}
+
+
+int getSampleBuffer(std::vector<sampleValue> & samples)
+{
+  //Send request for buffer size
+  struct mecoPack pack;
+  createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
+  sendPacket(&pack, eps[2]);
+  uint32_t size;
+  getBytesFromUSB(eps[0], (uint8_t *)&size, 4);
+  //Now get data back.
+  //uint8_t * data = malloc(sizeof(struct sampleValue)*USB_BUFFER_SIZE);
+  
+  sampleValue collectedSamples[size];
+  createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
+  sendPacket(&pack, eps[2]);
+  getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * size);
+  //std::cout << "Got " << size  << "samples" << std::endl;
+  for(int i = 0; i < size; i++) {
+    samples.push_back(collectedSamples[i]);
+  }
+}
+
+int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
+{
+  //Get data back.
+  //printf("Waiting for %d bytes from meco\n", nBytes);
+  int bytesRemaining = nBytes;
+  int transfered = 0;
+  while(bytesRemaining > 0) {
+    libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
+    bytesRemaining -= transfered;
+  }
+  //printf("    ... got them!\n\n");
+
+}
+
+
+int getMecoboStatus(struct mecoboDev * dev)
+{
+  struct mecoPack p;
+  uint8_t dat[STATUS_BYTES];
+  createMecoPack(&p, 0, 0, USB_CMD_STATUS);
+  sendPacket(&p, eps[2]);
+  getBytesFromUSB(eps[0], dat, STATUS_BYTES);
+  uint32_t * d = (uint32_t *)dat;
+  dev->fpgaConfigured = d[0];
+  dev->bufElements = d[1];
+
+  return 0;
 }
