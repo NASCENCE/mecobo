@@ -106,7 +106,7 @@ mecoCommand cmd (
 */
 genvar i;
 generate
-  for (i = 0; i < 4 ; i = i + 1) begin: pinControl 
+  for (i = 0; i < 24 ; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i))
     pc (
       .clk(clk),

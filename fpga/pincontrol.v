@@ -11,8 +11,8 @@ inout pin;
 input data_wr;
 input data_rd;
 
-reg [15:0] sample_register = 16'hABCF;
-reg [31:0] sample_cnt = 16'h0000;
+reg [15:0] sample_register = 16'h0000;
+reg [15:0] sample_cnt = 16'h0000;
 
 reg pin_output;
 wire pin_input;
@@ -37,8 +37,6 @@ always @ (*) begin
   end else
     data_out <= 16'b0;
 end
-//assign data_out = (data_rd & (addr == ADDR_SAMPLE_REG)) ? sample_register : 16'b0;
-//assign data_out = (data_rd & (addr == ADDR_SAMPLE_CNT)) ? sample_cnt : 16'b0;
 
 //Drive output pin from pin_output statemachine if mode is output
 assign pin = (enable_pin_output) ? pin_output : 1'bZ;
@@ -223,7 +221,7 @@ always @ ( * ) begin
     pin_output <= 1'b1;
     res_cmd_reg <= 1'b0;
 
-    if (cnt_duty_cycle == 1) begin
+    if (cnt_duty_cycle <= 1) begin
       next_state <= low;
       //Reset duty counter so that it's
       //ready for the next time we're in this state.
@@ -253,7 +251,7 @@ always @ ( * ) begin
 
     if (command == CMD_RESET) 
       next_state <= idle;
-    else if (cnt_anti_duty_cycle == 1) begin
+    else if (cnt_anti_duty_cycle <= 1) begin
       //last low-cycle, reset the anti duty counter
       //so that it's ready for next time.
       res_anti_duty_counter <= 1'b1;
@@ -261,7 +259,7 @@ always @ ( * ) begin
       //Special case if we're running inf for this.
       if (run_inf) 
         next_state <= high;
-      else if (cnt_cycles == 1) begin
+      else if (cnt_cycles <= 1) begin
         //last full cycle, we're done with
         //this command and should return to idle.
         next_state <= idle;
@@ -285,9 +283,10 @@ always @ ( * ) begin
     update_data_out <= 1'b0;
     enable_pin_output <= 1'b0;
     pin_output <= 1'b0;
+    dec_sample_counter <= 1'b0;
 
     //If we have counted down to 1, it's time to update sample reg.
-    if (cnt_sample_rate == 31'h00000001) begin
+    if (cnt_sample_rate <= 1) begin
       update_data_out <= 1'b1; 
       res_sample_counter <= 1'b1;
     end else begin
