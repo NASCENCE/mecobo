@@ -20,6 +20,7 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
+int experiment_ca();
 int setReg(uint32_t data);
 int programFPGA(const char * filename);
 
@@ -90,7 +91,8 @@ int main(int argc, char ** argv) {
   if(progFpga) 
     programFPGA("mecobo.bin");
 
-  experiment_foo();
+  //experiment_foo();
+  experiment_ca();
 
   double end = omp_get_wtime();
   /*	
@@ -234,6 +236,82 @@ int getPacket(struct mecoPack * packet)
 bool sortValues(sampleValue i, sampleValue j) {
   return i.sampleNum < j.sampleNum;
 }
+
+
+int experiment_ca()
+{
+  std::vector<FPGA_IO_Pins_TypeDef> outPins = {
+      FPGA_F16,
+      FPGA_F17,
+      FPGA_G14,
+      FPGA_G16,
+      FPGA_H16,
+      FPGA_H17,
+      FPGA_H15,
+      FPGA_L12,
+      FPGA_H14,
+      FPGA_K12
+    };
+    
+    std::vector<FPGA_IO_Pins_TypeDef> inPins = {
+      FPGA_J16,
+      FPGA_K14
+    };
+
+
+    //Setup input pins
+    for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+      setPin(inPin, 0x1, 0x1, 0x1, 0xFFF);  //sample rate ... something reasonable?
+    }
+
+    //Now, build the entire CA ruleset
+    for(uint16_t gene = 0; gene < 1024; gene++) {
+      int bit = 0;
+      std::string geneString;
+      for(FPGA_IO_Pins_TypeDef pin : outPins) {
+        if(get_bit(gene, bit++)) {
+          setPin(pin, 0xFFFF, 0x0, 0x1, 0x0);
+          geneString += "1 ";
+        } else {
+          setPin(pin, 0x0, 0xFFFF, 0x1, 0x0);
+          geneString += "0 ";
+        }
+        startOutput(pin);
+      }
+
+      //start input on pins
+      for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+        startInput(inPin); //flips buffers. The next buffer should now be clean.
+      }
+
+      //Collect at least 5 samples, about 5 per pin
+      std::vector<sampleValue> samples;
+      struct mecoboDev dev;
+      bool done = false;
+      while(!done) {
+        getMecoboStatus(&dev);
+        if(dev.bufElements >= 10) {
+          done = true;
+          getSampleBuffer(samples);
+        }
+      }
+
+
+
+      //Filter sample buffer, keep only one sample for each pin.
+      /*
+      for(sampleValue sample : samples) {
+
+      }*/
+
+
+      for (int s = 0; s < 10; s++) {
+        std::cout << geneString << " r: " << samples[s].value << " " << samples[s].sampleNum << " " << samples[s].pin << " " << std::endl;
+      }
+      samples.clear();
+    }
+}
+
 
 int experiment_foo()
 {
