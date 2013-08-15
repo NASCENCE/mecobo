@@ -5,14 +5,20 @@
 #include <omp.h>
 #include <string.h>
 #include <vector>
+#include <bitset>
+#include <tuple>
 #include <iostream>
+#include <random>
 #include <algorithm>
+#include <cmath>
 #include "mecohost.h"
 #include "../uc/mecoprot.h"
 
 #define NUM_ENDPOINTS 4
 
 
+const int genomeSize = 11 * 16 * 2;
+const int resultSize = 2048;
 
 
 char eps[NUM_ENDPOINTS];
@@ -23,6 +29,7 @@ int experiment_foo();
 int experiment_ca();
 int setReg(uint32_t data);
 int programFPGA(const char * filename);
+int startOutput (FPGA_IO_Pins_TypeDef pin);
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
@@ -46,6 +53,172 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
     endpoints[ep] = (char)interface.endpoint[ep].bEndpointAddress;
   }
 }
+
+bool sortIndividual(const std::tuple<std::bitset<genomeSize>, double> &a,
+                    const std::tuple<std::bitset<genomeSize>, double> &b) {
+  return std::get<1>(a) > std::get<1>(b);
+}
+
+std::vector<std::tuple<std::bitset<genomeSize>, double>> selection(
+    std::vector< std::tuple< std::bitset<genomeSize>, double >>
+    & fitpop)
+{
+  //elitism, return half of the best ones. 
+  std::sort(fitpop.begin(), fitpop.end(), sortIndividual);
+
+  std::vector<std::tuple<std::bitset<genomeSize>, double>> ret;
+  for(int i = 0; i < fitpop.size()/2; i++) {
+    ret.push_back(fitpop[i]);
+  }
+  return ret;
+}
+
+std::vector<std::bitset<genomeSize>> mutate(
+    std::vector< std::tuple< std::bitset<genomeSize>, double >>
+    & population,
+    int popSize)
+{
+  std::vector<std::bitset<genomeSize>> ret;
+
+  //Linear scaling of parent selection probability
+  //based on fitness.
+  //TODO: fails if max - min = 0
+  double fitRange = std::get<1>(population.front())-std::get<1>(population.back());
+
+  std::default_random_engine generator;
+  
+  std::vector<double> intervals = {0.0f, (double)population.size()};
+  std::vector<double> weights = {std::get<1>(population.front()), std::get<1>(population.back())};
+
+  std::piecewise_linear_distribution<double> distro(intervals.begin(), intervals.end(), weights.begin());
+
+
+  std::uniform_int_distribution<int> uniformDistro20p(0,4);
+  for(int i = 0; i < popSize; i++) {
+    //Do two dice rolls
+    auto parentA = std::get<0>(population[(int)distro(generator)]);
+    auto parentB = std::get<0>(population[(int)distro(generator)]);
+    //We have indices of parents, now 
+    //do a 1 point cross-over between them.
+    std::bitset<genomeSize> child;
+    int b;
+    for(b = 0; b < genomeSize/2; b++) {
+      child[b]                = parentA[b];
+      child[b+(genomeSize/2)] = parentB[b];
+    }
+
+    //Do some mutation as well (20%)
+    for(b = 0; b < genomeSize; b++) {
+      if(uniformDistro20p(generator) == 0) {
+        child[b] = !child[b];
+      }
+    }
+
+    ret.push_back(child);
+  }
+
+
+  return ret;
+}
+
+double measuredFitness(std::bitset<resultSize> individual, double lambda) {
+  int pos = 0;
+  double quint = 0;
+  for(int i = 0; i < resultSize-1; i+=2) {
+    if(!individual[i] && !individual[i+1]) {
+      quint++;
+    }
+  }
+  //std::cout << quint << std::endl;
+  //4^5 = 1024 
+  double measuredLambda = (1024.0f-quint)/1024.0f;
+  double fitness =  (1.0f - std::abs(lambda - measuredLambda));
+  return fitness;
+}
+
+std::vector<std::bitset<resultSize>> runPopulation(std::vector<std::bitset<genomeSize>> population)
+{
+  std::vector<std::bitset<resultSize>> results;
+
+  std::vector<FPGA_IO_Pins_TypeDef> outPins = {
+      FPGA_F16,
+      FPGA_F17,
+      FPGA_G14,
+      FPGA_G16,
+      FPGA_H16,
+      FPGA_H17,
+      FPGA_H15,
+      FPGA_L12,
+      FPGA_H14,
+      FPGA_K14,
+      FPGA_K12
+    };
+    
+    std::vector<FPGA_IO_Pins_TypeDef> inPins = {
+      FPGA_J16
+    };
+
+
+    //Setup input pins
+    for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+      setPin(inPin, 0x1, 0x1, 0x1, 0xFF);  //sample rate ... something reasonable?
+    }
+ 
+    for(std::bitset<genomeSize> individual : population) {
+      int pinNum = 0;
+      std::bitset<16> duty;
+      std::bitset<16> antiduty;
+      for(FPGA_IO_Pins_TypeDef pin : outPins) {
+        //Build two bit slices for pin config
+        int slicePos = pinNum * 32;
+        for(int i = 0; i < 16; i++) {
+          duty[i] = individual[slicePos + i];
+        }
+        for(int i = 0; i < 16; i++ ) {
+          antiduty[i] = individual[slicePos + 16 + i];
+        }
+
+        setPin(pin, duty.to_ulong(), antiduty.to_ulong(), 0x1, 0x0);
+        //std::cout << "Setting " << pin << ": " << \
+        //  duty.to_ulong() << ": " << \
+        //  antiduty.to_ulong() << std::endl;
+
+        startOutput(pin);
+        pinNum++;
+      }
+      for(FPGA_IO_Pins_TypeDef inPin : inPins) {
+        startInput(inPin); //flips buffers. The next buffer should now be clean.
+      }
+
+      //Collect at least 1024 samples.
+      //Only one pin, so it's quite easy.
+      struct mecoboDev dev;
+      std::vector<sampleValue> allSamples;
+      while(allSamples.size() < resultSize) {
+        std::vector<sampleValue> s;
+        getMecoboStatus(&dev);
+        if(dev.bufElements >= 128) {
+          getSampleBuffer(s);
+          //append sample
+          allSamples.insert(allSamples.end(),
+                            s.begin(),
+                            s.end());
+        }
+      }
+      //Construct a bitset  from the collected samples
+      std::bitset<resultSize> b;
+      int pos = 0;
+      for(sampleValue sv : allSamples) {
+        //std::cout << sv.value << std::endl;
+        if(pos < 2048)
+          b[pos++] = sv.value ? true:false;
+      }
+      //std::cout << "Result" << b << std::endl;
+      results.push_back(b);
+    }
+  return results;
+}
+
 
 
 
@@ -238,80 +411,101 @@ bool sortValues(sampleValue i, sampleValue j) {
 }
 
 
-int experiment_ca()
+
+
+typedef std::vector<std::bitset<genomeSize>> kuk;
+kuk ca_run(
+    std::vector<std::bitset<genomeSize>> population, 
+    double wantedLambda, int popSize)
 {
-  std::vector<FPGA_IO_Pins_TypeDef> outPins = {
-      FPGA_F16,
-      FPGA_F17,
-      FPGA_G14,
-      FPGA_G16,
-      FPGA_H16,
-      FPGA_H17,
-      FPGA_H15,
-      FPGA_L12,
-      FPGA_H14,
-      FPGA_K12
-    };
+  std::vector<std::bitset<resultSize>> res;
+  //Run! Run! Run!
+  std::vector<double> generationFitness;
+  bool terminate = false;
+  int gen = 0;
+  double lastAvg = 0.0f;
+  std::tuple<std::bitset<genomeSize>, double> allTimeBest;
+  while(!terminate) {
+    res = runPopulation(population);
+
+    std::vector<double> fitness;
+    for(std::bitset<resultSize> result : res) {
+      fitness.push_back(measuredFitness(result, wantedLambda));
+    }
+    std::vector<std::tuple<std::bitset<genomeSize>, double>> fitPop;
+    int p = 0;
+    for(double f : fitness) {
+      fitPop.push_back(std::make_tuple(population[p++], f));
+    }
+
+    //Select
+    auto bestPop = selection(fitPop);
     
-    std::vector<FPGA_IO_Pins_TypeDef> inPins = {
-      FPGA_J16,
-      FPGA_K14
-    };
+    //Find average fitness increase
+    double avgFit = 0.0f;
+    for(auto b : bestPop) {
+      //Pick out the all time best while we're at it.
+      if(std::get<1>(b) > std::get<1>(allTimeBest)) {
+        allTimeBest = b;
+      }
+      avgFit += std::get<1>(b);
+    }
+    generationFitness.push_back(avgFit/bestPop.size());
+    std::cout <<    gen++                     << " " << \
+      "Avg: " <<    generationFitness.back() << " " << \
+      "Low: " <<    std::get<1>(bestPop.back()) << " " <<\
+      "High: "<<    std::get<1>(bestPop.front()) << " " <<\
+      "ATB: " <<    std::get<1>(allTimeBest) <<  \
+      std::endl;
 
-
-    //Setup input pins
-    for(FPGA_IO_Pins_TypeDef inPin : inPins) {
-      setPin(inPin, 0x1, 0x1, 0x1, 0xFFF);  //sample rate ... something reasonable?
+    //Check if average fitness increase over the last 20 generations is very small,
+    //if so, we are done. But only if we have enough generations.
+    int maxGen = 10;
+    if(generationFitness.size() > maxGen) {
+      double avg = 0.0f;
+      for(int i = generationFitness.size()-maxGen; i < generationFitness.size(); i++) {
+        avg += generationFitness[i];
+      }
+      avg = avg/(double)maxGen;
+      double diff = lastAvg - avg;
+      if((diff >= 0.0f) && (diff <= 0.0001f)) {
+        terminate = true;
+      }
+      lastAvg = avg;
     }
 
-    //Now, build the entire CA ruleset
-    for(uint16_t gene = 0; gene < 1024; gene++) {
-      int bit = 0;
-      std::string geneString;
-      for(FPGA_IO_Pins_TypeDef pin : outPins) {
-        if(get_bit(gene, bit++)) {
-          setPin(pin, 0xFFFF, 0x0, 0x1, 0x0);
-          geneString += "1 ";
-        } else {
-          setPin(pin, 0x0, 0xFFFF, 0x1, 0x0);
-          geneString += "0 ";
-        }
-        startOutput(pin);
-      }
+    //Mutate
+    auto newPop = mutate(bestPop, popSize);
+    //New population!
+    population = newPop;
+  }
 
-      //start input on pins
-      for(FPGA_IO_Pins_TypeDef inPin : inPins) {
-        startInput(inPin); //flips buffers. The next buffer should now be clean.
-      }
-
-      //Collect at least 5 samples, about 5 per pin
-      std::vector<sampleValue> samples;
-      struct mecoboDev dev;
-      bool done = false;
-      while(!done) {
-        getMecoboStatus(&dev);
-        if(dev.bufElements >= 10) {
-          done = true;
-          getSampleBuffer(samples);
-        }
-      }
-
-
-
-      //Filter sample buffer, keep only one sample for each pin.
-      /*
-      for(sampleValue sample : samples) {
-
-      }*/
-
-
-      for (int s = 0; s < 10; s++) {
-        std::cout << geneString << " r: " << samples[s].value << " " << samples[s].sampleNum << " " << samples[s].pin << " " << std::endl;
-      }
-      samples.clear();
-    }
+  //Finish up.
+  std::cout << "All time best individual: " << std::get<0>(allTimeBest) << std::endl;
+  std::cout << "Fitness: " << std::get<1>(allTimeBest) << std::endl;
+  return population;
 }
 
+int experiment_ca()
+{
+  int popSize = 16;
+  //11 pins,32 bit per pin, implicitly mapped 1-1 to outPins defined below.
+  std::vector<std::bitset<genomeSize>> population;
+    std::default_random_engine randEng;
+    std::uniform_int_distribution<> dis(0, 1);
+
+    for(int p = 0; p < popSize; p++) {
+      std::bitset<genomeSize> gene;
+      for(int i = 0; i < genomeSize; i++) {
+        gene[i] = dis(randEng);
+      }
+      population.push_back(gene);
+    }
+    auto seeded = ca_run(population, 0.999, 16);
+    
+    ca_run(seeded, 0.01, 16);
+    return 0;
+}
 
 int experiment_foo()
 {
@@ -442,6 +636,7 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
   getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * size);
   //std::cout << "Got " << size  << "samples" << std::endl;
   for(int i = 0; i < size; i++) {
+    //std::cout << collectedSamples[i].value << std::endl;
     samples.push_back(collectedSamples[i]);
   }
 }
