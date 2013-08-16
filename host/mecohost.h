@@ -3,6 +3,17 @@
 #include "../uc/mecoprot.h"
 
 
+int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
+
+static inline uint32_t get_bit(uint32_t val, uint32_t bit);
+int experiment_foo();
+int experiment_ca();
+int setReg(uint32_t data);
+int programFPGA(const char * filename);
+int startOutput (FPGA_IO_Pins_TypeDef pin);
+
+
+
 struct mecoboDev {
   int fpgaConfigured;
   uint32_t bufElements;
