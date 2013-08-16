@@ -20,6 +20,7 @@
 const int genomeSize = 11 * 16 * 2;
 const int resultSize = 2048;
 
+typedef std::bitset<genomeSize> genomeType;
 
 char eps[NUM_ENDPOINTS];
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
@@ -54,31 +55,40 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
   }
 }
 
-bool sortIndividual(const std::tuple<std::bitset<genomeSize>, double> &a,
-                    const std::tuple<std::bitset<genomeSize>, double> &b) {
+double getAverageFitness(std::vector<std::tuple<genomeType, double>> population) {
+  double avgFit = 0.0f;
+  for(auto individual : population) {
+    avgFit += std::get<1>(individual);
+  }
+  return avgFit/population.size();
+}
+
+
+bool sortIndividual(const std::tuple<genomeType, double> &a,
+                    const std::tuple<genomeType, double> &b) {
   return std::get<1>(a) > std::get<1>(b);
 }
 
-std::vector<std::tuple<std::bitset<genomeSize>, double>> selection(
-    std::vector< std::tuple< std::bitset<genomeSize>, double >>
+std::vector<std::tuple<genomeType, double>> selection(
+    std::vector< std::tuple< genomeType, double >>
     & fitpop)
 {
   //elitism, return half of the best ones. 
   std::sort(fitpop.begin(), fitpop.end(), sortIndividual);
 
-  std::vector<std::tuple<std::bitset<genomeSize>, double>> ret;
+  std::vector<std::tuple<genomeType, double>> ret;
   for(int i = 0; i < fitpop.size()/2; i++) {
     ret.push_back(fitpop[i]);
   }
   return ret;
 }
 
-std::vector<std::bitset<genomeSize>> mutate(
-    std::vector< std::tuple< std::bitset<genomeSize>, double >>
+std::vector<genomeType> mutate(
+    std::vector< std::tuple< genomeType, double >>
     & population,
     int popSize)
 {
-  std::vector<std::bitset<genomeSize>> ret;
+  std::vector<genomeType> ret;
 
   //Linear scaling of parent selection probability
   //based on fitness.
@@ -100,7 +110,7 @@ std::vector<std::bitset<genomeSize>> mutate(
     auto parentB = std::get<0>(population[(int)distro(generator)]);
     //We have indices of parents, now 
     //do a 1 point cross-over between them.
-    std::bitset<genomeSize> child;
+    genomeType child;
     int b;
     for(b = 0; b < genomeSize/2; b++) {
       child[b]                = parentA[b];
@@ -136,7 +146,7 @@ double measuredFitness(std::bitset<resultSize> individual, double lambda) {
   return fitness;
 }
 
-std::vector<std::bitset<resultSize>> runPopulation(std::vector<std::bitset<genomeSize>> population)
+std::vector<std::bitset<resultSize>> runPopulation(std::vector<genomeType> population)
 {
   std::vector<std::bitset<resultSize>> results;
 
@@ -164,7 +174,7 @@ std::vector<std::bitset<resultSize>> runPopulation(std::vector<std::bitset<genom
       setPin(inPin, 0x1, 0x1, 0x1, 0xFF);  //sample rate ... something reasonable?
     }
  
-    for(std::bitset<genomeSize> individual : population) {
+    for(genomeType individual : population) {
       int pinNum = 0;
       std::bitset<16> duty;
       std::bitset<16> antiduty;
@@ -245,7 +255,7 @@ int main(int argc, char ** argv) {
     printf("Init Error\n"); //there was an error
     return 1;
   }
-  libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
+  libusb_set_debug(ctx, 4); //set verbosity level to 3, as suggested in the documentation
 
   mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
   mecobo = libusb_get_device(mecoboHandle);	
@@ -413,9 +423,8 @@ bool sortValues(sampleValue i, sampleValue j) {
 
 
 
-typedef std::vector<std::bitset<genomeSize>> kuk;
-kuk ca_run(
-    std::vector<std::bitset<genomeSize>> population, 
+std::vector<genomeType> ca_run(
+    std::vector<genomeType> population, 
     double wantedLambda, int popSize)
 {
   std::vector<std::bitset<resultSize>> res;
@@ -424,32 +433,33 @@ kuk ca_run(
   bool terminate = false;
   int gen = 0;
   double lastAvg = 0.0f;
-  std::tuple<std::bitset<genomeSize>, double> allTimeBest;
+  std::tuple<genomeType, double> allTimeBest;
   while(!terminate) {
+    //Run population
     res = runPopulation(population);
-
+    //Measure fitness for run
     std::vector<double> fitness;
     for(std::bitset<resultSize> result : res) {
       fitness.push_back(measuredFitness(result, wantedLambda));
     }
-    std::vector<std::tuple<std::bitset<genomeSize>, double>> fitPop;
+
+    //Make <genome, fitness> tuples. 
+    std::vector<std::tuple<genomeType, double>> fitPop;
     int p = 0;
     for(double f : fitness) {
       fitPop.push_back(std::make_tuple(population[p++], f));
     }
 
-    //Select
+    //Select the best individuals
     auto bestPop = selection(fitPop);
-    
-    //Find average fitness increase
-    double avgFit = 0.0f;
-    for(auto b : bestPop) {
-      //Pick out the all time best while we're at it.
-      if(std::get<1>(b) > std::get<1>(allTimeBest)) {
-        allTimeBest = b;
-      }
-      avgFit += std::get<1>(b);
+    if (std::get<1>(allTimeBest) < std::get<1>(bestPop.front())) {
+      allTimeBest = bestPop.front();
     }
+     
+    //Find average fitness increase
+    double avgFit = getAverageFitness(bestPop);
+
+
     generationFitness.push_back(avgFit/bestPop.size());
     std::cout <<    gen++                     << " " << \
       "Avg: " <<    generationFitness.back() << " " << \
@@ -490,12 +500,12 @@ int experiment_ca()
 {
   int popSize = 16;
   //11 pins,32 bit per pin, implicitly mapped 1-1 to outPins defined below.
-  std::vector<std::bitset<genomeSize>> population;
+  std::vector<genomeType> population;
     std::default_random_engine randEng;
     std::uniform_int_distribution<> dis(0, 1);
 
     for(int p = 0; p < popSize; p++) {
-      std::bitset<genomeSize> gene;
+      genomeType gene;
       for(int i = 0; i < genomeSize; i++) {
         gene[i] = dis(randEng);
       }
@@ -651,8 +661,6 @@ int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
     libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
     bytesRemaining -= transfered;
   }
-  //printf("    ... got them!\n\n");
-
 }
 
 
