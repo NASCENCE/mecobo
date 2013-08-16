@@ -1,5 +1,5 @@
+#include <fstream>
 #include "ga.h"
-
 #include "mecohost.h"
 
 
@@ -178,9 +178,15 @@ double measuredFitness(std::bitset<resultSize> individual, double lambda) {
 }
 
 std::vector<genomeType> ca_run(
+    std::string logfile,
     std::vector<genomeType> population, 
     double wantedLambda, int popSize)
 {
+
+  //Open logfile for run.
+  std::ofstream log;
+  log.open(logfile, std::ofstream::out);
+
   std::vector<std::bitset<resultSize>> res;
   //Run! Run! Run!
   std::vector<double> generationFitness;
@@ -218,7 +224,7 @@ std::vector<genomeType> ca_run(
     //Store the average fitness, used for termincation
     generationFitness.push_back(avgFit);
 
-    std::cout <<    gen++                     << " " << \
+    log       <<    gen++                     << " " << \
       "Avg: " <<    generationFitness.back() << " " << \
       "Low: " <<    std::get<1>(bestPop.back()) << " " <<\
       "High: "<<    std::get<1>(bestPop.front()) << " " <<\
@@ -235,10 +241,18 @@ std::vector<genomeType> ca_run(
       }
       avg = avg/(double)maxGen;
       double diff = lastAvg - avg;
-      if((diff >= 0.0f) && (diff <= 0.0001f)) {
+      if((diff >= 0.0f) && (diff <= 0.001f)) {
         terminate = true;
       }
       lastAvg = avg;
+    }
+
+    if(generationFitness.back() > 0.99) {
+      terminate = true;
+    }
+    // max generations reached
+    if(generationFitness.size() > 100) {
+      terminate = true;
     }
 
     //Mutate
@@ -248,8 +262,9 @@ std::vector<genomeType> ca_run(
   }
 
   //Finish up.
-  std::cout << "All time best individual: " << std::get<0>(allTimeBest) << std::endl;
-  std::cout << "Fitness: " << std::get<1>(allTimeBest) << std::endl;
+  log << "All time best individual: " << std::get<0>(allTimeBest) << std::endl;
+  log << "Fitness: " << std::get<1>(allTimeBest) << std::endl;
+  log.close();
   return population;
 }
 

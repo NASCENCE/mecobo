@@ -13,10 +13,10 @@
 const int genomeSize = 11 * 16 * 2;
 const int resultSize = 2048;
 
-
 typedef std::bitset<genomeSize> genomeType;
 
 std::vector<genomeType> ca_run(
+    std::string logfile,
     std::vector<genomeType> population, 
     double wantedLambda, 
     int popSize);

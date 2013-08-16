@@ -226,7 +226,6 @@ bool sortValues(sampleValue i, sampleValue j) {
 }
 
 
-
 int experiment_ca()
 {
   int popSize = 16;
@@ -242,9 +241,22 @@ int experiment_ca()
       }
       population.push_back(gene);
     }
-    auto seeded = ca_run(population, 0.999, 16);
-    
-    ca_run(seeded, 0.01, 16);
+    auto seeded = ca_run("search_init_pop_bottom_up_0.1.log", population, 0.1, 16);
+ 
+    for(double i = 0; i < 1.0; i+=0.05) {
+      std::string logfile("search_bottom_up_");
+      logfile += std::to_string(i);
+      logfile += ".log";
+      ca_run(logfile, seeded, i, 16);
+    }
+    seeded = ca_run("search_init_pop_top_down_0.9.log", population, 0.9, 16);
+    for(double i = 0.90; i >= 0.0; i-=0.05) {
+      std::string logfile("search_top_down_");
+      logfile += std::to_string(i);
+      logfile += ".log";
+      ca_run(logfile, seeded, i, 16);
+    }
+ 
     return 0;
 }
 
