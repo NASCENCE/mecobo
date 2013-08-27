@@ -1,9 +1,16 @@
+#ifndef __MECOHOST_H__
+#define __MECOHOST_H__
+
 #include <stdint.h>
 #include <vector>
 #include "../uc/mecoprot.h"
 
 
+void startUsb();
+void stopUsb();
+
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
+void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNumber);
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
@@ -46,4 +53,4 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
             uint32_t antiduty,
             uint32_t cycles,
             uint32_t sampleRate);
-
+#endif

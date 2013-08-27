@@ -3,7 +3,7 @@
 
 //This defines the fields and values for the mecobo protocol
 
-#define USB_BUFFER_SIZE 1024
+#define USB_BUFFER_SIZE 2000
 
 
 #define USB_CMD_CONFIG_PIN    0x1

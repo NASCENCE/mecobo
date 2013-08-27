@@ -10,7 +10,7 @@
 ####################################################################
 
 DEVICE = EFM32GG990F1024
-PROJECTNAME = usbdcdc
+PROJECTNAME = mecobo
 
 OBJ_DIR = build
 EXE_DIR = exe
@@ -141,9 +141,7 @@ usb/src/em_usbhal.c \
 usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
-main.c \
-mecobo.c \
-queue.c
+main.c 
 
 s_SRC += 
 

@@ -10,12 +10,48 @@
 #include "mecohost.h"
 #include "../uc/mecoprot.h"
 
+
 #define NUM_ENDPOINTS 4
-
 char eps[NUM_ENDPOINTS];
-
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
+libusb_context * ctx;
+
+void startUsb()
+{
+
+
+  int r;
+  ssize_t cnt;
+
+  r = libusb_init(&ctx);
+  if(r < 0) {
+    printf("Init Error\n"); //there was an error
+  }
+  libusb_set_debug(ctx, 4); //set verbosity level to 3, as suggested in the documentation
+
+  mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
+  mecobo = libusb_get_device(mecoboHandle);	
+
+  libusb_detach_kernel_driver(mecoboHandle, 0x1);	
+  if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
+    printf("Could not claim interface 0 of Mecobo\n");
+  }
+
+  getEndpoints(eps, mecobo, 0x1);
+
+  libusb_release_interface(mecoboHandle, 0x1);
+  libusb_attach_kernel_driver(mecoboHandle, 0x1);	
+
+
+
+}
+void stopUsb()
+{
+  libusb_close(mecoboHandle);
+  libusb_exit(ctx); //close the session
+}
+
 void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNumber)
 {
   //We know which interface we want the endpoints for (0x1), so
@@ -37,8 +73,8 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
   }
 }
 
+/*
 int main(int argc, char ** argv) {
-
   uint32_t progFpga = 0;
   //Command line arguments
   if (argc > 1) {
@@ -72,24 +108,9 @@ int main(int argc, char ** argv) {
 
   getEndpoints(eps, mecobo, 0x1);
 
-  double start = omp_get_wtime();
- 
-  //setReg(42);
-
   if(progFpga) 
     programFPGA("mecobo.bin");
 
-  //experiment_foo();
-  experiment_ca();
-
-  double end = omp_get_wtime();
-  /*	
-      for(int q = 0; q < transfered; q++) {
-      printf("%x,", rcv[q]);
-      }
-      printf("\n");
-      */
-  //printf("Rate: %f KB/s\n", ((bytes)/(double)(end-start))/(double)1024);
 
   libusb_release_interface(mecoboHandle, 0x1);
   libusb_attach_kernel_driver(mecoboHandle, 0x1);	
@@ -100,7 +121,7 @@ int main(int argc, char ** argv) {
 
   return 0;
 }
-
+*/
 
 int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command)
 {
@@ -241,22 +262,15 @@ int experiment_ca()
       }
       population.push_back(gene);
     }
-    auto seeded = ca_run("search_init_pop_bottom_up_0.1.log", population, 0.1, 16);
- 
-    for(double i = 0; i < 1.0; i+=0.05) {
-      std::string logfile("search_bottom_up_");
-      logfile += std::to_string(i);
-      logfile += ".log";
-      ca_run(logfile, seeded, i, 16);
+    //auto seeded = ca_run("search_init_repeat_0.1.log", population, 0.1, 16);
+    
+    for(int j = 0; j < 10; j++) {
+        std::string logfile("search_02_lambda_random_init");
+        logfile += std::to_string(j);
+        logfile += "_log";
+        ca_run(logfile, population, 0.1, 50);
     }
-    seeded = ca_run("search_init_pop_top_down_0.9.log", population, 0.9, 16);
-    for(double i = 0.90; i >= 0.0; i-=0.05) {
-      std::string logfile("search_top_down_");
-      logfile += std::to_string(i);
-      logfile += ".log";
-      ca_run(logfile, seeded, i, 16);
-    }
- 
+    
     return 0;
 }
 
@@ -387,7 +401,7 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
   sendPacket(&pack, eps[2]);
   getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * size);
-  //std::cout << "Got " << size  << "samples" << std::endl;
+  std::cout << "Got " << size  << "samples" << std::endl;
   for(int i = 0; i < size; i++) {
     //std::cout << collectedSamples[i].value << std::endl;
     samples.push_back(collectedSamples[i]);

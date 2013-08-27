@@ -134,7 +134,12 @@ std::vector<genomeType> mutate(
   std::piecewise_linear_distribution<double> distro(intervals.begin(), intervals.end(), weights.begin());
 
 
+  std::uniform_int_distribution<int> uniformDistro027(0,100);
+  std::uniform_int_distribution<int> uniformDistro5p(0,19);
+  std::uniform_int_distribution<int> uniformDistro10p(0,9);
   std::uniform_int_distribution<int> uniformDistro20p(0,4);
+  std::uniform_int_distribution<int> uniformDistro33p(0,2);
+
   for(int i = 0; i < popSize; i++) {
     //Do two dice rolls
     auto parentA = std::get<0>(population[(int)distro(generator)]);
@@ -150,7 +155,7 @@ std::vector<genomeType> mutate(
 
     //Do some mutation as well (20%)
     for(b = 0; b < genomeSize; b++) {
-      if(uniformDistro20p(generator) == 0) {
+      if(uniformDistro027(generator) == 0) {
         child[b] = !child[b];
       }
     }
@@ -200,6 +205,7 @@ std::vector<genomeType> ca_run(
     //Measure fitness for run
     std::vector<double> fitness;
     for(std::bitset<resultSize> result : res) {
+      std::cout << "PHENOTYPE: " << result << std::endl;
       fitness.push_back(measuredFitness(result, wantedLambda));
     }
 
@@ -241,17 +247,21 @@ std::vector<genomeType> ca_run(
       }
       avg = avg/(double)maxGen;
       double diff = lastAvg - avg;
-      if((diff >= 0.0f) && (diff <= 0.001f)) {
+      /*
+      if((diff >= 0.0f) && (diff <= 0.0001f)) {
         terminate = true;
-      }
+      }*/
+
       lastAvg = avg;
     }
 
-    if(generationFitness.back() > 0.99) {
+    /*
+    if(generationFitness.back() > 0.999) {
       terminate = true;
     }
+    */
     // max generations reached
-    if(generationFitness.size() > 100) {
+    if(generationFitness.size() > 500) {
       terminate = true;
     }
 
