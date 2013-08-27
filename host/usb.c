@@ -19,8 +19,6 @@ libusb_context * ctx;
 
 void startUsb()
 {
-
-
   int r;
   ssize_t cnt;
 
@@ -73,55 +71,6 @@ void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNum
   }
 }
 
-/*
-int main(int argc, char ** argv) {
-  uint32_t progFpga = 0;
-  //Command line arguments
-  if (argc > 1) {
-    for(int i = 0; i < argc; i++) {
-      if(strcmp(argv[i], "-f") == 0) {
-          progFpga = 1;
-      }
-    }
- }
-
-
-  libusb_context * ctx = NULL;
-
-  int r;
-  ssize_t cnt;
-
-  r = libusb_init(&ctx);
-  if(r < 0) {
-    printf("Init Error\n"); //there was an error
-    return 1;
-  }
-  libusb_set_debug(ctx, 4); //set verbosity level to 3, as suggested in the documentation
-
-  mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
-  mecobo = libusb_get_device(mecoboHandle);	
-
-  libusb_detach_kernel_driver(mecoboHandle, 0x1);	
-  if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
-    printf("Could not claim interface 0 of Mecobo\n");
-  }
-
-  getEndpoints(eps, mecobo, 0x1);
-
-  if(progFpga) 
-    programFPGA("mecobo.bin");
-
-
-  libusb_release_interface(mecoboHandle, 0x1);
-  libusb_attach_kernel_driver(mecoboHandle, 0x1);	
-
-  libusb_close(mecoboHandle);
-
-  libusb_exit(ctx); //close the session
-
-  return 0;
-}
-*/
 
 int createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command)
 {
