@@ -37,20 +37,19 @@ void startUsb()
   }
 
   libusb_detach_kernel_driver(mecoboHandle, 0x1);	
+
   if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
     printf("Could not claim interface 0 of Mecobo\n");
   }
 
   getEndpoints(eps, mecobo, 0x1);
 
-  libusb_release_interface(mecoboHandle, 0x1);
-  libusb_attach_kernel_driver(mecoboHandle, 0x1);	
-
-
-
 }
 void stopUsb()
 {
+  libusb_release_interface(mecoboHandle, 0x1);
+  libusb_attach_kernel_driver(mecoboHandle, 0x1);	
+
   libusb_close(mecoboHandle);
   libusb_exit(ctx); //close the session
 }
