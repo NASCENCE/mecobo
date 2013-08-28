@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include <omp.h>
 #include <string.h>
+#include <vector>
 
 #include "ga.h"
 
 #include "mecohost.h"
 #include "../mecoprot.h"
 
+std::vector<uint8_t> eps;
 
-#define NUM_ENDPOINTS 4
-char eps[NUM_ENDPOINTS];
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
 libusb_context * ctx;
@@ -20,31 +20,39 @@ libusb_context * ctx;
 void startUsb()
 {
   int r;
-  ssize_t cnt;
-
   r = libusb_init(&ctx);
+
   if(r < 0) {
     printf("Init Error\n"); //there was an error
   }
-  libusb_set_debug(ctx, 5); //set verbosity level to 3, as suggested in the documentation
+  libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
 
   mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
   if(!mecoboHandle) {
     printf("Could not open device with vid 2544, pid 0003. I'm dying.\n");
     exit(-1);
-  } else {
-    mecobo = libusb_get_device(mecoboHandle);	
+  }   
+  
+  mecobo = libusb_get_device(mecoboHandle);
+  if(mecobo == NULL) {
+    printf("Could not get device with provided handle\n");
+    exit(-1);
   }
 
   libusb_detach_kernel_driver(mecoboHandle, 0x1);	
 
   if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
-    printf("Could not claim interface 0 of Mecobo\n");
+    printf("Could not claim interface 0x1 of Mecobo\n");
+    exit(-1);
   }
 
+  printf("Getting endpoints from USB driver\n");
   getEndpoints(eps, mecobo, 0x1);
+  printf("Got endpoints!\n");
 
+  return;
 }
+
 void stopUsb()
 {
   libusb_release_interface(mecoboHandle, 0x1);
@@ -54,24 +62,32 @@ void stopUsb()
   libusb_exit(ctx); //close the session
 }
 
-void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNumber)
+void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, int interfaceNumber)
 {
   //We know which interface we want the endpoints for (0x1), so
   //we'll just run through the descriptors and dig them out.
 
-  //get Configuration 0 form device
+  //get Configuration 0 form devicej
+  printf("Retriveving the USB configuration\n");
   struct libusb_config_descriptor * config;
   libusb_get_active_config_descriptor(dev, &config);
+  if(config == NULL) {
+    printf("Could not retrieve active configuration for device :(\n");
+    exit(-1);
+  }
 
-  //Get the interface 0x1 descp
+  printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
+  printf("Selecting interface 1, altsetting 0\n");
   struct libusb_interface_descriptor interface = config->interface[1].altsetting[0];
+  printf("Interface has %d endpoints\n", interface.bNumEndpoints);
   for(int ep = 0; ep < interface.bNumEndpoints; ++ep) {
     if(interface.endpoint[ep].bEndpointAddress & 0x80) {
       printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
     } else {
       printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
     }
-    endpoints[ep] = (char)interface.endpoint[ep].bEndpointAddress;
+    endpoints.push_back(interface.endpoint[ep].bEndpointAddress);
+    printf("Appended endpoint to the special shiny list of endpoints.\n");
   }
 }
 

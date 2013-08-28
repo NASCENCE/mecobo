@@ -10,7 +10,7 @@ void startUsb();
 void stopUsb();
 
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
-void getEndpoints(char * endpoints, struct libusb_device * dev, int interfaceNumber);
+void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, int interfaceNumber);
 
 static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
