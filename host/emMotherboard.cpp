@@ -8,7 +8,7 @@
 #include <thrift/transport/TBufferTransports.h>
 
 #include "mecohost.h"
-#include "../uc/mecoprot.h"
+#include "../mecoprot.h"
 
 
 using namespace ::apache::thrift;
@@ -67,22 +67,26 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   void runSequences() {
 
-    // The application-clock runs at 50MHz. 
-    // Thus, to get a 10MHz signal, you 
-    // take 1/freq * (50*10^6) to get the duty.
+    // The application-clock runs at 50MHz,
+    // so the 'duty' period is a 25Mhz multiple (remember FF updating)
 
     for(auto s : seq) {
       std::cout << "seqitem, f:" << s.frequency << "optype:" << s.operationType << std::endl;
-      double period = 1.0f/(double)s.frequency;
-      int32_t duty = period * (25*1000000);
+      double period; //= 1.0f/(double)s.frequency;
+      int32_t duty; // = period * (25*1000000);
       std::cout << "duty:" << duty << std::endl;
 
       uint32_t sampleDiv = ((50*1000000)/(8.0f*(double)s.frequency));
       emException err;
       switch(s.operationType) {
-        case emSequenceOperationType::type::PWM:
-          setPin(FPGA_F16, duty, duty, 0x1, 0x0);
-          startOutput(FPGA_F16);
+        case emSequenceOperationType::type::PREDEFINED:
+          //Since it's predefined, we have a waveFormType
+          if(s.waveFormType == emWaveFormType::SQUARE) {
+            period = 1.0f/(double)s.frequency;
+            duty = period * (25*1000000);
+            setPin(FPGA_F16, duty, duty * s.cycleTime, 0x1, 0x0);
+            startOutput(FPGA_F16);
+          }
           break;
         case emSequenceOperationType::type::RECORD:
           std::cout << "samplediv:" << sampleDiv << std::endl;
@@ -181,16 +185,19 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
-          progFpga = 1;
+        progFpga = 1;
       }
     }
- }
-    if(progFpga) 
+  }
+  if(progFpga) 
     programFPGA("mecobo.bin");
 
   int port = 9090;
 
+  std::cout << "Starting USB..." << std::endl;
   startUsb();
+  std::cout << "Done!" << std::endl;
+
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler());
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
   shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
@@ -198,9 +205,12 @@ int main(int argc, char **argv) {
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+  std::cout << "Starting thrift server..." << std::endl;
   server.serve();
 
+  std::cout << "Stopping USB..." << std::endl;
   stopUsb();
+  std::cout << "Done!" << std::endl;
   return 0;
 }
 

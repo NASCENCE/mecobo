@@ -8,7 +8,7 @@
 #include "ga.h"
 
 #include "mecohost.h"
-#include "../uc/mecoprot.h"
+#include "../mecoprot.h"
 
 
 #define NUM_ENDPOINTS 4
@@ -26,10 +26,15 @@ void startUsb()
   if(r < 0) {
     printf("Init Error\n"); //there was an error
   }
-  libusb_set_debug(ctx, 4); //set verbosity level to 3, as suggested in the documentation
+  libusb_set_debug(ctx, 5); //set verbosity level to 3, as suggested in the documentation
 
   mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
-  mecobo = libusb_get_device(mecoboHandle);	
+  if(!mecoboHandle) {
+    printf("Could not open device with vid 2544, pid 0003. I'm dying.\n");
+    exit(-1);
+  } else {
+    mecobo = libusb_get_device(mecoboHandle);	
+  }
 
   libusb_detach_kernel_driver(mecoboHandle, 0x1);	
   if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {

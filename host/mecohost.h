@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include "../uc/mecoprot.h"
+#include "../mecoprot.h"
 
 
 void startUsb();
