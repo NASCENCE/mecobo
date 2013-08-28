@@ -220,7 +220,6 @@ int experiment_ca()
     
     for(int j = 0; j < 10; j++) {
         std::string logfile("search_02_lambda_random_init");
-        logfile += std::to_string(j);
         logfile += "_log";
         ca_run(logfile, population, 0.1, 50);
     }
