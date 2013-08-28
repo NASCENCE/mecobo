@@ -1,4 +1,4 @@
-#include <sys/time.h>
+//#include <sys/time.h>
 #include <stdio.h>
 #include <libusb.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@ std::vector<uint8_t> eps;
 
 struct libusb_device_handle * mecoboHandle;
 struct libusb_device * mecobo;
-libusb_context * ctx;
+struct libusb_context * ctx;
 
 void startUsb()
 {
@@ -111,6 +111,7 @@ int setReg(uint32_t data)
     struct mecoPack p;
     createMecoPack(&p, (uint8_t *)(&data), 4, USB_CMD_CONFIG_REG);
     sendPacket(&p, eps[2]);
+	return 0;
 }
 
 int setPin( FPGA_IO_Pins_TypeDef pin, 
@@ -135,6 +136,7 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
 
   sendPacket(&p, eps[2]);
+  return 0;
 }
 
 int startOutput (FPGA_IO_Pins_TypeDef pin)
@@ -144,6 +146,7 @@ int startOutput (FPGA_IO_Pins_TypeDef pin)
   struct mecoPack p;
   createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_START_OUTPUT);
   sendPacket(&p, eps[2]);
+  return 0;
 }
 
 int startInput (FPGA_IO_Pins_TypeDef pin)
@@ -153,6 +156,7 @@ int startInput (FPGA_IO_Pins_TypeDef pin)
   struct mecoPack p;
   createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_STREAM_INPUT);
   sendPacket(&p, eps[2]);
+  return 0;
 }
 
 
@@ -175,6 +179,7 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val)
   }
   memcpy(val, rcv, 12);
   free(rcv);
+  return 0;
 }
 
 int sendPacket(struct mecoPack * packet, uint8_t endpoint) 
@@ -215,97 +220,6 @@ bool sortValues(sampleValue i, sampleValue j) {
   return i.sampleNum < j.sampleNum;
 }
 
-
-int experiment_ca()
-{
-  int popSize = 16;
-  //11 pins,32 bit per pin, implicitly mapped 1-1 to outPins defined below.
-  std::vector<genomeType> population;
-    std::default_random_engine randEng;
-    std::uniform_int_distribution<> dis(0, 1);
-
-    for(int p = 0; p < popSize; p++) {
-      genomeType gene;
-      for(int i = 0; i < genomeSize; i++) {
-        gene[i] = dis(randEng);
-      }
-      population.push_back(gene);
-    }
-    //auto seeded = ca_run("search_init_repeat_0.1.log", population, 0.1, 16);
-    
-    for(int j = 0; j < 10; j++) {
-        std::string logfile("search_02_lambda_random_init");
-        logfile += "_log";
-        ca_run(logfile, population, 0.1, 50);
-    }
-    
-    return 0;
-}
-
-int experiment_foo()
-{
-    //Repeat of experiment 
-    std::vector<FPGA_IO_Pins_TypeDef> outPins = {
-      FPGA_F16,
-      FPGA_F17,
-      FPGA_G14,
-      FPGA_G16,
-      FPGA_H16,
-      FPGA_H17,
-      FPGA_H15,
-      FPGA_L12,
-      FPGA_H14,
-      FPGA_K14,
-      FPGA_K12
-    };
-    
-    std::vector<FPGA_IO_Pins_TypeDef> inPins = {
-      FPGA_J16
-    };
-
-    //Setup input pins
-    for(FPGA_IO_Pins_TypeDef inPin : inPins) {
-      setPin(inPin, 0x1, 0x1, 0x1, 0xFFF);
-    }
-
-    for(uint16_t gene = 0; gene < 2048; gene++) {
-      int bit = 0;
-      std::string geneString;
-      for(FPGA_IO_Pins_TypeDef pin : outPins) {
-        if(get_bit(gene, bit++)) {
-          setPin(pin, 0xFFFF, 0x0, 0x1, 0x0);
-          geneString += "1 ";
-        } else {
-          setPin(pin, 0x0, 0xFFFF, 0x1, 0x0);
-          geneString += "0 ";
-        }
-        startOutput(pin);
-      }
-
-      //start input
-      for(FPGA_IO_Pins_TypeDef inPin : inPins) {
-        startInput(inPin); //flips buffers. The next buffer should now be clean.
-      }
-
-      //Collect at least 5 samples 
-      std::vector<sampleValue> samples;
-      struct mecoboDev dev;
-      bool done = false;
-      while(!done) {
-        getMecoboStatus(&dev);
-        if(dev.bufElements >= 5) {
-          done = true;
-          getSampleBuffer(samples);
-        }
-      }
-      for (int s = 0; s < 5; s++) {
-        std::cout << geneString << " r: " << samples[s].value << " " << samples[s].sampleNum << " " << samples[s].pin << " " << std::endl;
-      }
-      samples.clear();
-    }
-}
-
-
 static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
     return (val >> bit) & 0x1;
@@ -313,10 +227,16 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 int programFPGA(const char * filename)
 {
-  FILE * bitfile;
+  FILE* bitfile;
 
+ 
+#ifdef WIN32
+  int openResult = fopen_s(&bitfile, filename, "rb");
+  perror ("programFPGA");
+#else
+  bitfile = fopen(filename, "rb");
+#endif
 
-  bitfile = fopen(filename, "r");
   fseek(bitfile, 0L, SEEK_END);
   long nBytes = ftell(bitfile);
   rewind(bitfile);
@@ -351,6 +271,7 @@ int programFPGA(const char * filename)
   free(bytes);
   printf("\n");
   fclose(bitfile);
+  return 0;
 }
 
 
@@ -365,7 +286,7 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
   //Now get data back.
   //uint8_t * data = malloc(sizeof(struct sampleValue)*USB_BUFFER_SIZE);
   
-  sampleValue collectedSamples[size];
+  sampleValue* collectedSamples = new sampleValue[size];
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
   sendPacket(&pack, eps[2]);
   getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * size);
@@ -374,6 +295,8 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
     //std::cout << collectedSamples[i].value << std::endl;
     samples.push_back(collectedSamples[i]);
   }
+  delete[] collectedSamples;
+  return 0;
 }
 
 int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
@@ -386,6 +309,7 @@ int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
     libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
     bytesRemaining -= transfered;
   }
+  return 0;
 }
 
 
