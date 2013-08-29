@@ -47,16 +47,18 @@ int _kemSequenceOperationTypeValues[] = {
   emSequenceOperationType::ARBITRARY,
   emSequenceOperationType::RECORD,
   emSequenceOperationType::WAIT,
-  emSequenceOperationType::PREDEFINED
+  emSequenceOperationType::PREDEFINED,
+  emSequenceOperationType::CONST
 };
 const char* _kemSequenceOperationTypeNames[] = {
   "emNULL",
   "ARBITRARY",
   "RECORD",
   "WAIT",
-  "PREDEFINED"
+  "PREDEFINED",
+  "CONST"
 };
-const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kemSequenceOperationTypeValues, _kemSequenceOperationTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kemSequenceOperationTypeValues, _kemSequenceOperationTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kemWaveFormTypeValues[] = {
   emWaveFormType::emNULL,
