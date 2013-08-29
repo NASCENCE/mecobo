@@ -4,8 +4,8 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef NascenseAPI_v01c_TYPES_H
-#define NascenseAPI_v01c_TYPES_H
+#ifndef NascenseAPI_v01d_TYPES_H
+#define NascenseAPI_v01d_TYPES_H
 
 #include <thrift/Thrift.h>
 #include <thrift/TApplicationException.h>
@@ -27,9 +27,9 @@ extern const std::map<int, const char*> _emExceptionType_VALUES_TO_NAMES;
 
 struct emLogEventType {
   enum type {
-    NIL = 0,
+    emNULL = 0,
     CONFIG = 1,
-    ERROR = 2,
+    emERROR = 2,
     MISC = 3,
     COMMAND = 4,
     RESPONSE = 5,
@@ -42,12 +42,11 @@ extern const std::map<int, const char*> _emLogEventType_VALUES_TO_NAMES;
 
 struct emSequenceOperationType {
   enum type {
-    NIL = 0,
-    PWM = 1,
+    emNULL = 0,
+    ARBITRARY = 1,
     RECORD = 2,
     WAIT = 3,
-    ARBITRARY = 4,
-    PREDEFINED = 5
+    PREDEFINED = 4
   };
 };
 
@@ -55,9 +54,9 @@ extern const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES
 
 struct emWaveFormType {
   enum type {
-    NIL = 0,
+    emNULL = 0,
     ARBITRARY = 1,
-    SQUARE = 2,
+    PWM = 2,
     SAW = 3,
     SINE = 4
   };
@@ -243,15 +242,15 @@ class emWaveForm {
 void swap(emWaveForm &a, emWaveForm &b);
 
 typedef struct _emSequenceItem__isset {
-  _emSequenceItem__isset() : operationType(false), pin(false), startTime(false), endTime(false), frequency(true), phase(true), amplitude(true), cycleTime(true), waveFormType(false), waveForm(false), waitForTrigger(true) {}
+  _emSequenceItem__isset() : operationType(false), pin(false), startTime(false), endTime(false), frequency(true), phase(true), cycleTime(true), amplitude(true), waveFormType(false), waveForm(false), waitForTrigger(true) {}
   bool operationType;
   bool pin;
   bool startTime;
   bool endTime;
   bool frequency;
   bool phase;
-  bool amplitude;
   bool cycleTime;
+  bool amplitude;
   bool waveFormType;
   bool waveForm;
   bool waitForTrigger;
@@ -263,7 +262,7 @@ class emSequenceItem {
   static const char* ascii_fingerprint; // = "DC4895B095EBF30E67E39EC74456F780";
   static const uint8_t binary_fingerprint[16]; // = {0xDC,0x48,0x95,0xB0,0x95,0xEB,0xF3,0x0E,0x67,0xE3,0x9E,0xC7,0x44,0x56,0xF7,0x80};
 
-  emSequenceItem() : operationType((emSequenceOperationType::type)0), pin(0), startTime(0), endTime(0), frequency(0), phase(0), amplitude(0), cycleTime(0), waveFormType((emWaveFormType::type)0), waitForTrigger(-1) {
+  emSequenceItem() : operationType((emSequenceOperationType::type)0), pin(0), startTime(0), endTime(0), frequency(0), phase(0), cycleTime(0), amplitude(0), waveFormType((emWaveFormType::type)0), waitForTrigger(-1) {
   }
 
   virtual ~emSequenceItem() throw() {}
@@ -274,8 +273,8 @@ class emSequenceItem {
   int64_t endTime;
   int32_t frequency;
   int32_t phase;
-  int32_t amplitude;
   int32_t cycleTime;
+  int32_t amplitude;
   emWaveFormType::type waveFormType;
   emWaveForm waveForm;
   int32_t waitForTrigger;
@@ -306,12 +305,12 @@ class emSequenceItem {
     phase = val;
   }
 
-  void __set_amplitude(const int32_t val) {
-    amplitude = val;
-  }
-
   void __set_cycleTime(const int32_t val) {
     cycleTime = val;
+  }
+
+  void __set_amplitude(const int32_t val) {
+    amplitude = val;
   }
 
   void __set_waveFormType(const emWaveFormType::type val) {
@@ -340,9 +339,9 @@ class emSequenceItem {
       return false;
     if (!(phase == rhs.phase))
       return false;
-    if (!(amplitude == rhs.amplitude))
-      return false;
     if (!(cycleTime == rhs.cycleTime))
+      return false;
+    if (!(amplitude == rhs.amplitude))
       return false;
     if (!(waveFormType == rhs.waveFormType))
       return false;
@@ -364,6 +363,65 @@ class emSequenceItem {
 };
 
 void swap(emSequenceItem &a, emSequenceItem &b);
+
+typedef struct _emDebugInfo__isset {
+  _emDebugInfo__isset() : stateBlob(false), stateBlobLength(false), values(false) {}
+  bool stateBlob;
+  bool stateBlobLength;
+  bool values;
+} _emDebugInfo__isset;
+
+class emDebugInfo {
+ public:
+
+  static const char* ascii_fingerprint; // = "0AD85E73ED11FD8C9FB0DA32F9512610";
+  static const uint8_t binary_fingerprint[16]; // = {0x0A,0xD8,0x5E,0x73,0xED,0x11,0xFD,0x8C,0x9F,0xB0,0xDA,0x32,0xF9,0x51,0x26,0x10};
+
+  emDebugInfo() : stateBlob(), stateBlobLength(0) {
+  }
+
+  virtual ~emDebugInfo() throw() {}
+
+  std::string stateBlob;
+  int32_t stateBlobLength;
+  std::map<std::string, std::string>  values;
+
+  _emDebugInfo__isset __isset;
+
+  void __set_stateBlob(const std::string& val) {
+    stateBlob = val;
+  }
+
+  void __set_stateBlobLength(const int32_t val) {
+    stateBlobLength = val;
+  }
+
+  void __set_values(const std::map<std::string, std::string> & val) {
+    values = val;
+  }
+
+  bool operator == (const emDebugInfo & rhs) const
+  {
+    if (!(stateBlob == rhs.stateBlob))
+      return false;
+    if (!(stateBlobLength == rhs.stateBlobLength))
+      return false;
+    if (!(values == rhs.values))
+      return false;
+    return true;
+  }
+  bool operator != (const emDebugInfo &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emDebugInfo & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(emDebugInfo &a, emDebugInfo &b);
 
 } // namespace
 

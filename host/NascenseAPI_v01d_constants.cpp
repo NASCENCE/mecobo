@@ -4,13 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "NascenseAPI_v01c_constants.h"
+#include "NascenseAPI_v01d_constants.h"
 
 namespace emInterfaces {
 
-const NascenseAPI_v01cConstants g_NascenseAPI_v01c_constants;
+const NascenseAPI_v01dConstants g_NascenseAPI_v01d_constants;
 
-NascenseAPI_v01cConstants::NascenseAPI_v01cConstants() {
+NascenseAPI_v01dConstants::NascenseAPI_v01dConstants() {
 }
 
 } // namespace

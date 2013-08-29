@@ -169,6 +169,184 @@ uint32_t emEvolvableMotherboard_ping_presult::read(::apache::thrift::protocol::T
   return xfer;
 }
 
+uint32_t emEvolvableMotherboard_setLED_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->index);
+          this->__isset.index = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->state);
+          this->__isset.state = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_setLED_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setLED_args");
+
+  xfer += oprot->writeFieldBegin("index", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->index);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("state", ::apache::thrift::protocol::T_BOOL, 2);
+  xfer += oprot->writeBool(this->state);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_setLED_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setLED_pargs");
+
+  xfer += oprot->writeFieldBegin("index", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->index)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("state", ::apache::thrift::protocol::T_BOOL, 2);
+  xfer += oprot->writeBool((*(this->state)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_setLED_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_setLED_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setLED_result");
+
+  if (this->__isset.err) {
+    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->err.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_setLED_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t emEvolvableMotherboard_getMotherboardID_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -310,147 +488,6 @@ uint32_t emEvolvableMotherboard_getMotherboardID_presult::read(::apache::thrift:
           xfer += iprot->skip(ftype);
         }
         break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_waitUntilReady_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_waitUntilReady_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_waitUntilReady_result");
-
-  if (this->__isset.err) {
-    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->err.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_waitUntilReady_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->err.read(iprot);
@@ -954,6 +991,365 @@ uint32_t emEvolvableMotherboard_reset_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
+uint32_t emEvolvableMotherboard_reprogramme_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readBinary(this->bin);
+          this->__isset.bin = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->length);
+          this->__isset.length = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_reprogramme_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_reprogramme_args");
+
+  xfer += oprot->writeFieldBegin("bin", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeBinary(this->bin);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("length", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->length);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_reprogramme_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_reprogramme_pargs");
+
+  xfer += oprot->writeFieldBegin("bin", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeBinary((*(this->bin)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("length", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((*(this->length)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_reprogramme_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_reprogramme_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_reprogramme_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.err) {
+    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->err.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_reprogramme_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getDebugState_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getDebugState_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getDebugState_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.err) {
+    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->err.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t emEvolvableMotherboard_getDebugState_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->err.read(iprot);
+          this->__isset.err = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t emEvolvableMotherboard_clearSequences_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -1377,7 +1773,7 @@ uint32_t emEvolvableMotherboard_stopSequences_presult::read(::apache::thrift::pr
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_joinSequences_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1404,25 +1800,25 @@ uint32_t emEvolvableMotherboard_joinSequence_args::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_joinSequences_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequence_args");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequences_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_joinSequences_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequence_pargs");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequences_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_joinSequences_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1462,11 +1858,11 @@ uint32_t emEvolvableMotherboard_joinSequence_result::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_joinSequences_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequence_result");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_joinSequences_result");
 
   if (this->__isset.err) {
     xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -1478,7 +1874,7 @@ uint32_t emEvolvableMotherboard_joinSequence_result::write(::apache::thrift::pro
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_joinSequence_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_joinSequences_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2024,169 +2420,7 @@ uint32_t emEvolvableMotherboard_clearRecording_presult::read(::apache::thrift::p
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_setBaseRate_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->rate);
-          this->__isset.rate = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_setBaseRate_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setBaseRate_args");
-
-  xfer += oprot->writeFieldBegin("rate", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->rate);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_setBaseRate_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setBaseRate_pargs");
-
-  xfer += oprot->writeFieldBegin("rate", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->rate)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_setBaseRate_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_setBaseRate_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_setBaseRate_result");
-
-  if (this->__isset.err) {
-    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->err.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_setBaseRate_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTime_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_getTemperature_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2213,186 +2447,25 @@ uint32_t emEvolvableMotherboard_getTime_args::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_getTime_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_getTemperature_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTime_args");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperature_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_getTime_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_getTemperature_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTime_pargs");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperature_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_getTime_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTime_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTime_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
-    xfer += oprot->writeI64(this->success);
-    xfer += oprot->writeFieldEnd();
-  } else if (this->__isset.err) {
-    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->err.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTime_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTemperate_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTemperate_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperate_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTemperate_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperate_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getTemperate_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_getTemperature_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2440,11 +2513,11 @@ uint32_t emEvolvableMotherboard_getTemperate_result::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_getTemperate_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t emEvolvableMotherboard_getTemperature_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperate_result");
+  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getTemperature_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -2460,168 +2533,7 @@ uint32_t emEvolvableMotherboard_getTemperate_result::write(::apache::thrift::pro
   return xfer;
 }
 
-uint32_t emEvolvableMotherboard_getTemperate_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getVoltage_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getVoltage_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->err.read(iprot);
-          this->__isset.err = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("emEvolvableMotherboard_getVoltage_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
-    xfer += oprot->writeI32(this->success);
-    xfer += oprot->writeFieldEnd();
-  } else if (this->__isset.err) {
-    xfer += oprot->writeFieldBegin("err", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->err.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t emEvolvableMotherboard_getVoltage_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t emEvolvableMotherboard_getTemperature_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2891,6 +2803,63 @@ int32_t emEvolvableMotherboardClient::recv_ping()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "ping failed: unknown result");
 }
 
+void emEvolvableMotherboardClient::setLED(const int32_t index, const bool state)
+{
+  send_setLED(index, state);
+  recv_setLED();
+}
+
+void emEvolvableMotherboardClient::send_setLED(const int32_t index, const bool state)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("setLED", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  emEvolvableMotherboard_setLED_pargs args;
+  args.index = &index;
+  args.state = &state;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void emEvolvableMotherboardClient::recv_setLED()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("setLED") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  emEvolvableMotherboard_setLED_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.err) {
+    throw result.err;
+  }
+  return;
+}
+
 void emEvolvableMotherboardClient::getMotherboardID(std::string& _return)
 {
   send_getMotherboardID();
@@ -2949,61 +2918,6 @@ void emEvolvableMotherboardClient::recv_getMotherboardID(std::string& _return)
     throw result.err;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getMotherboardID failed: unknown result");
-}
-
-void emEvolvableMotherboardClient::waitUntilReady()
-{
-  send_waitUntilReady();
-  recv_waitUntilReady();
-}
-
-void emEvolvableMotherboardClient::send_waitUntilReady()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("waitUntilReady", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  emEvolvableMotherboard_waitUntilReady_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void emEvolvableMotherboardClient::recv_waitUntilReady()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("waitUntilReady") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  emEvolvableMotherboard_waitUntilReady_presult result;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.err) {
-    throw result.err;
-  }
-  return;
 }
 
 void emEvolvableMotherboardClient::getMotherboardState(std::string& _return)
@@ -3186,6 +3100,128 @@ bool emEvolvableMotherboardClient::recv_reset()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "reset failed: unknown result");
 }
 
+bool emEvolvableMotherboardClient::reprogramme(const std::string& bin, const int32_t length)
+{
+  send_reprogramme(bin, length);
+  return recv_reprogramme();
+}
+
+void emEvolvableMotherboardClient::send_reprogramme(const std::string& bin, const int32_t length)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("reprogramme", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  emEvolvableMotherboard_reprogramme_pargs args;
+  args.bin = &bin;
+  args.length = &length;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool emEvolvableMotherboardClient::recv_reprogramme()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("reprogramme") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  emEvolvableMotherboard_reprogramme_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.err) {
+    throw result.err;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "reprogramme failed: unknown result");
+}
+
+void emEvolvableMotherboardClient::getDebugState(emDebugInfo& _return)
+{
+  send_getDebugState();
+  recv_getDebugState(_return);
+}
+
+void emEvolvableMotherboardClient::send_getDebugState()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getDebugState", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  emEvolvableMotherboard_getDebugState_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void emEvolvableMotherboardClient::recv_getDebugState(emDebugInfo& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getDebugState") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  emEvolvableMotherboard_getDebugState_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.err) {
+    throw result.err;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getDebugState failed: unknown result");
+}
+
 void emEvolvableMotherboardClient::clearSequences()
 {
   send_clearSequences();
@@ -3351,18 +3387,18 @@ void emEvolvableMotherboardClient::recv_stopSequences()
   return;
 }
 
-void emEvolvableMotherboardClient::joinSequence()
+void emEvolvableMotherboardClient::joinSequences()
 {
-  send_joinSequence();
-  recv_joinSequence();
+  send_joinSequences();
+  recv_joinSequences();
 }
 
-void emEvolvableMotherboardClient::send_joinSequence()
+void emEvolvableMotherboardClient::send_joinSequences()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("joinSequence", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("joinSequences", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  emEvolvableMotherboard_joinSequence_pargs args;
+  emEvolvableMotherboard_joinSequences_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3370,7 +3406,7 @@ void emEvolvableMotherboardClient::send_joinSequence()
   oprot_->getTransport()->flush();
 }
 
-void emEvolvableMotherboardClient::recv_joinSequence()
+void emEvolvableMotherboardClient::recv_joinSequences()
 {
 
   int32_t rseqid = 0;
@@ -3390,12 +3426,12 @@ void emEvolvableMotherboardClient::recv_joinSequence()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("joinSequence") != 0) {
+  if (fname.compare("joinSequences") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  emEvolvableMotherboard_joinSequence_presult result;
+  emEvolvableMotherboard_joinSequences_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -3579,19 +3615,18 @@ void emEvolvableMotherboardClient::recv_clearRecording()
   return;
 }
 
-void emEvolvableMotherboardClient::setBaseRate(const int32_t rate)
+int32_t emEvolvableMotherboardClient::getTemperature()
 {
-  send_setBaseRate(rate);
-  recv_setBaseRate();
+  send_getTemperature();
+  return recv_getTemperature();
 }
 
-void emEvolvableMotherboardClient::send_setBaseRate(const int32_t rate)
+void emEvolvableMotherboardClient::send_getTemperature()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("setBaseRate", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("getTemperature", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  emEvolvableMotherboard_setBaseRate_pargs args;
-  args.rate = &rate;
+  emEvolvableMotherboard_getTemperature_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3599,7 +3634,7 @@ void emEvolvableMotherboardClient::send_setBaseRate(const int32_t rate)
   oprot_->getTransport()->flush();
 }
 
-void emEvolvableMotherboardClient::recv_setBaseRate()
+int32_t emEvolvableMotherboardClient::recv_getTemperature()
 {
 
   int32_t rseqid = 0;
@@ -3619,128 +3654,13 @@ void emEvolvableMotherboardClient::recv_setBaseRate()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("setBaseRate") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  emEvolvableMotherboard_setBaseRate_presult result;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.err) {
-    throw result.err;
-  }
-  return;
-}
-
-int64_t emEvolvableMotherboardClient::getTime()
-{
-  send_getTime();
-  return recv_getTime();
-}
-
-void emEvolvableMotherboardClient::send_getTime()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getTime", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  emEvolvableMotherboard_getTime_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int64_t emEvolvableMotherboardClient::recv_getTime()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("getTime") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int64_t _return;
-  emEvolvableMotherboard_getTime_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    return _return;
-  }
-  if (result.__isset.err) {
-    throw result.err;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getTime failed: unknown result");
-}
-
-int32_t emEvolvableMotherboardClient::getTemperate()
-{
-  send_getTemperate();
-  return recv_getTemperate();
-}
-
-void emEvolvableMotherboardClient::send_getTemperate()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getTemperate", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  emEvolvableMotherboard_getTemperate_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int32_t emEvolvableMotherboardClient::recv_getTemperate()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("getTemperate") != 0) {
+  if (fname.compare("getTemperature") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  emEvolvableMotherboard_getTemperate_presult result;
+  emEvolvableMotherboard_getTemperature_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -3752,67 +3672,7 @@ int32_t emEvolvableMotherboardClient::recv_getTemperate()
   if (result.__isset.err) {
     throw result.err;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getTemperate failed: unknown result");
-}
-
-int32_t emEvolvableMotherboardClient::getVoltage()
-{
-  send_getVoltage();
-  return recv_getVoltage();
-}
-
-void emEvolvableMotherboardClient::send_getVoltage()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getVoltage", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  emEvolvableMotherboard_getVoltage_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int32_t emEvolvableMotherboardClient::recv_getVoltage()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("getVoltage") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int32_t _return;
-  emEvolvableMotherboard_getVoltage_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    return _return;
-  }
-  if (result.__isset.err) {
-    throw result.err;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getVoltage failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getTemperature failed: unknown result");
 }
 
 void emEvolvableMotherboardClient::setLogServer(const emLogServerSettings& logServer)
@@ -3947,6 +3807,62 @@ void emEvolvableMotherboardProcessor::process_ping(int32_t seqid, ::apache::thri
   }
 }
 
+void emEvolvableMotherboardProcessor::process_setLED(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.setLED", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.setLED");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.setLED");
+  }
+
+  emEvolvableMotherboard_setLED_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.setLED", bytes);
+  }
+
+  emEvolvableMotherboard_setLED_result result;
+  try {
+    iface_->setLED(args.index, args.state);
+  } catch (emException &err) {
+    result.err = err;
+    result.__isset.err = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.setLED");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("setLED", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.setLED");
+  }
+
+  oprot->writeMessageBegin("setLED", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.setLED", bytes);
+  }
+}
+
 void emEvolvableMotherboardProcessor::process_getMotherboardID(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -4001,62 +3917,6 @@ void emEvolvableMotherboardProcessor::process_getMotherboardID(int32_t seqid, ::
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getMotherboardID", bytes);
-  }
-}
-
-void emEvolvableMotherboardProcessor::process_waitUntilReady(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.waitUntilReady", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.waitUntilReady");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.waitUntilReady");
-  }
-
-  emEvolvableMotherboard_waitUntilReady_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.waitUntilReady", bytes);
-  }
-
-  emEvolvableMotherboard_waitUntilReady_result result;
-  try {
-    iface_->waitUntilReady();
-  } catch (emException &err) {
-    result.err = err;
-    result.__isset.err = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.waitUntilReady");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("waitUntilReady", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.waitUntilReady");
-  }
-
-  oprot->writeMessageBegin("waitUntilReady", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.waitUntilReady", bytes);
   }
 }
 
@@ -4231,6 +4091,120 @@ void emEvolvableMotherboardProcessor::process_reset(int32_t seqid, ::apache::thr
   }
 }
 
+void emEvolvableMotherboardProcessor::process_reprogramme(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.reprogramme", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.reprogramme");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.reprogramme");
+  }
+
+  emEvolvableMotherboard_reprogramme_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.reprogramme", bytes);
+  }
+
+  emEvolvableMotherboard_reprogramme_result result;
+  try {
+    result.success = iface_->reprogramme(args.bin, args.length);
+    result.__isset.success = true;
+  } catch (emException &err) {
+    result.err = err;
+    result.__isset.err = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.reprogramme");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("reprogramme", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.reprogramme");
+  }
+
+  oprot->writeMessageBegin("reprogramme", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.reprogramme", bytes);
+  }
+}
+
+void emEvolvableMotherboardProcessor::process_getDebugState(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.getDebugState", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.getDebugState");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.getDebugState");
+  }
+
+  emEvolvableMotherboard_getDebugState_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.getDebugState", bytes);
+  }
+
+  emEvolvableMotherboard_getDebugState_result result;
+  try {
+    iface_->getDebugState(result.success);
+    result.__isset.success = true;
+  } catch (emException &err) {
+    result.err = err;
+    result.__isset.err = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.getDebugState");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getDebugState", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.getDebugState");
+  }
+
+  oprot->writeMessageBegin("getDebugState", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getDebugState", bytes);
+  }
+}
+
 void emEvolvableMotherboardProcessor::process_clearSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -4399,40 +4373,40 @@ void emEvolvableMotherboardProcessor::process_stopSequences(int32_t seqid, ::apa
   }
 }
 
-void emEvolvableMotherboardProcessor::process_joinSequence(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void emEvolvableMotherboardProcessor::process_joinSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.joinSequence", callContext);
+    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.joinSequences", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.joinSequence");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.joinSequences");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.joinSequence");
+    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.joinSequences");
   }
 
-  emEvolvableMotherboard_joinSequence_args args;
+  emEvolvableMotherboard_joinSequences_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.joinSequence", bytes);
+    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.joinSequences", bytes);
   }
 
-  emEvolvableMotherboard_joinSequence_result result;
+  emEvolvableMotherboard_joinSequences_result result;
   try {
-    iface_->joinSequence();
+    iface_->joinSequences();
   } catch (emException &err) {
     result.err = err;
     result.__isset.err = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.joinSequence");
+      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.joinSequences");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("joinSequence", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("joinSequences", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -4441,17 +4415,17 @@ void emEvolvableMotherboardProcessor::process_joinSequence(int32_t seqid, ::apac
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.joinSequence");
+    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.joinSequences");
   }
 
-  oprot->writeMessageBegin("joinSequence", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("joinSequences", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.joinSequence", bytes);
+    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.joinSequences", bytes);
   }
 }
 
@@ -4624,97 +4598,41 @@ void emEvolvableMotherboardProcessor::process_clearRecording(int32_t seqid, ::ap
   }
 }
 
-void emEvolvableMotherboardProcessor::process_setBaseRate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void emEvolvableMotherboardProcessor::process_getTemperature(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.setBaseRate", callContext);
+    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.getTemperature", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.setBaseRate");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.getTemperature");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.setBaseRate");
+    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.getTemperature");
   }
 
-  emEvolvableMotherboard_setBaseRate_args args;
+  emEvolvableMotherboard_getTemperature_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.setBaseRate", bytes);
+    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.getTemperature", bytes);
   }
 
-  emEvolvableMotherboard_setBaseRate_result result;
+  emEvolvableMotherboard_getTemperature_result result;
   try {
-    iface_->setBaseRate(args.rate);
-  } catch (emException &err) {
-    result.err = err;
-    result.__isset.err = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.setBaseRate");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("setBaseRate", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.setBaseRate");
-  }
-
-  oprot->writeMessageBegin("setBaseRate", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.setBaseRate", bytes);
-  }
-}
-
-void emEvolvableMotherboardProcessor::process_getTime(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.getTime", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.getTime");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.getTime");
-  }
-
-  emEvolvableMotherboard_getTime_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.getTime", bytes);
-  }
-
-  emEvolvableMotherboard_getTime_result result;
-  try {
-    result.success = iface_->getTime();
+    result.success = iface_->getTemperature();
     result.__isset.success = true;
   } catch (emException &err) {
     result.err = err;
     result.__isset.err = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.getTime");
+      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.getTemperature");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getTime", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("getTemperature", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -4723,131 +4641,17 @@ void emEvolvableMotherboardProcessor::process_getTime(int32_t seqid, ::apache::t
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.getTime");
+    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.getTemperature");
   }
 
-  oprot->writeMessageBegin("getTime", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("getTemperature", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getTime", bytes);
-  }
-}
-
-void emEvolvableMotherboardProcessor::process_getTemperate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.getTemperate", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.getTemperate");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.getTemperate");
-  }
-
-  emEvolvableMotherboard_getTemperate_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.getTemperate", bytes);
-  }
-
-  emEvolvableMotherboard_getTemperate_result result;
-  try {
-    result.success = iface_->getTemperate();
-    result.__isset.success = true;
-  } catch (emException &err) {
-    result.err = err;
-    result.__isset.err = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.getTemperate");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getTemperate", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.getTemperate");
-  }
-
-  oprot->writeMessageBegin("getTemperate", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getTemperate", bytes);
-  }
-}
-
-void emEvolvableMotherboardProcessor::process_getVoltage(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("emEvolvableMotherboard.getVoltage", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "emEvolvableMotherboard.getVoltage");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "emEvolvableMotherboard.getVoltage");
-  }
-
-  emEvolvableMotherboard_getVoltage_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "emEvolvableMotherboard.getVoltage", bytes);
-  }
-
-  emEvolvableMotherboard_getVoltage_result result;
-  try {
-    result.success = iface_->getVoltage();
-    result.__isset.success = true;
-  } catch (emException &err) {
-    result.err = err;
-    result.__isset.err = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "emEvolvableMotherboard.getVoltage");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getVoltage", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "emEvolvableMotherboard.getVoltage");
-  }
-
-  oprot->writeMessageBegin("getVoltage", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getVoltage", bytes);
+    this->eventHandler_->postWrite(ctx, "emEvolvableMotherboard.getTemperature", bytes);
   }
 }
 

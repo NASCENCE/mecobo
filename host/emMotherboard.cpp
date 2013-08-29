@@ -10,7 +10,6 @@
 #include "mecohost.h"
 #include "../mecoprot.h"
 
-
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -21,9 +20,8 @@ using boost::shared_ptr;
 using namespace  ::emInterfaces;
 
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
-
+  
   std::vector<emSequenceItem> seq;
-
  public:
   emEvolvableMotherboardHandler() {
     // Your initialization goes here
@@ -34,14 +32,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     printf("ping\n");
   }
 
+  void setLED(const int32_t index, const bool state) {
+    // Your implementation goes here
+    printf("setLED\n");
+  }
+
   void getMotherboardID(std::string& _return) {
     // Your implementation goes here
     printf("getMotherboardID\n");
-  }
-
-  void waitUntilReady() {
-    // Your implementation goes here
-    printf("waitUntilReady\n");
   }
 
   void getMotherboardState(std::string& _return) {
@@ -57,6 +55,16 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   bool reset() {
     // Your implementation goes here
     printf("reset\n");
+  }
+
+  bool reprogramme(const std::string& bin, const int32_t length) {
+    // Your implementation goes here
+    printf("reprogramme\n");
+  }
+
+  void getDebugState(emDebugInfo& _return) {
+    // Your implementation goes here
+    printf("getDebugState\n");
   }
 
   void clearSequences() {
@@ -81,7 +89,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       switch(s.operationType) {
         case emSequenceOperationType::type::PREDEFINED:
           //Since it's predefined, we have a waveFormType
-          if(s.waveFormType == emWaveFormType::SQUARE) {
+          if(s.waveFormType == emWaveFormType::PWM) {
             period = 1.0f/(double)s.frequency;
             duty = period * (25*1000000);
             setPin(FPGA_F16, duty, duty * s.cycleTime, 0x1, 0x0);
@@ -111,16 +119,17 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }
     seq.clear();
     std::cout << "sequence size after clear:" << seq.size() << std::endl;
-  }
+  } 
+
 
   void stopSequences() {
     // Your implementation goes here
     printf("stopSequences\n");
   }
 
-  void joinSequence() {
+  void joinSequences() {
     // Your implementation goes here
-    printf("joinSequence\n");
+    printf("joinSequences\n");
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
@@ -146,29 +155,15 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     _return = r;
   }
 
+
   void clearRecording(const int32_t srcPin) {
     // Your implementation goes here
     printf("clearRecording\n");
   }
 
-  void setBaseRate(const int32_t rate) {
+  int32_t getTemperature() {
     // Your implementation goes here
-    printf("setBaseRate\n");
-  }
-
-  int64_t getTime() {
-    // Your implementation goes here
-    printf("getTime\n");
-  }
-
-  int32_t getTemperate() {
-    // Your implementation goes here
-    printf("getTemperate\n");
-  }
-
-  int32_t getVoltage() {
-    // Your implementation goes here
-    printf("getVoltage\n");
+    printf("getTemperature\n");
   }
 
   void setLogServer(const emLogServerSettings& logServer) {
@@ -192,11 +187,15 @@ int main(int argc, char **argv) {
   if(progFpga) 
     programFPGA("mecobo.bin");
 
+
+
   int port = 9090;
 
   std::cout << "Starting USB..." << std::endl;
   startUsb();
   std::cout << "Done!" << std::endl;
+
+
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler());
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
@@ -205,12 +204,14 @@ int main(int argc, char **argv) {
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-  std::cout << "Starting thrift server..." << std::endl;
+
+  std::cout << "Starting thrift server. (Silence ensues)." << std::endl;
   server.serve();
 
   std::cout << "Stopping USB..." << std::endl;
   stopUsb();
   std::cout << "Done!" << std::endl;
+
   return 0;
 }
 

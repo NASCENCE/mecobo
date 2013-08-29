@@ -8,7 +8,7 @@
 #define emEvolvableMotherboard_H
 
 #include <thrift/TDispatchProcessor.h>
-#include "NascenseAPI_v01c_types.h"
+#include "NascenseAPI_v01d_types.h"
 
 namespace emInterfaces {
 
@@ -16,22 +16,21 @@ class emEvolvableMotherboardIf {
  public:
   virtual ~emEvolvableMotherboardIf() {}
   virtual int32_t ping() = 0;
+  virtual void setLED(const int32_t index, const bool state) = 0;
   virtual void getMotherboardID(std::string& _return) = 0;
-  virtual void waitUntilReady() = 0;
   virtual void getMotherboardState(std::string& _return) = 0;
   virtual void getLastError(std::string& _return) = 0;
   virtual bool reset() = 0;
+  virtual bool reprogramme(const std::string& bin, const int32_t length) = 0;
+  virtual void getDebugState(emDebugInfo& _return) = 0;
   virtual void clearSequences() = 0;
   virtual void runSequences() = 0;
   virtual void stopSequences() = 0;
-  virtual void joinSequence() = 0;
+  virtual void joinSequences() = 0;
   virtual void appendSequenceAction(const emSequenceItem& Item) = 0;
   virtual void getRecording(emWaveForm& _return, const int32_t srcPin) = 0;
   virtual void clearRecording(const int32_t srcPin) = 0;
-  virtual void setBaseRate(const int32_t rate) = 0;
-  virtual int64_t getTime() = 0;
-  virtual int32_t getTemperate() = 0;
-  virtual int32_t getVoltage() = 0;
+  virtual int32_t getTemperature() = 0;
   virtual void setLogServer(const emLogServerSettings& logServer) = 0;
 };
 
@@ -66,10 +65,10 @@ class emEvolvableMotherboardNull : virtual public emEvolvableMotherboardIf {
     int32_t _return = 0;
     return _return;
   }
-  void getMotherboardID(std::string& /* _return */) {
+  void setLED(const int32_t /* index */, const bool /* state */) {
     return;
   }
-  void waitUntilReady() {
+  void getMotherboardID(std::string& /* _return */) {
     return;
   }
   void getMotherboardState(std::string& /* _return */) {
@@ -82,6 +81,13 @@ class emEvolvableMotherboardNull : virtual public emEvolvableMotherboardIf {
     bool _return = false;
     return _return;
   }
+  bool reprogramme(const std::string& /* bin */, const int32_t /* length */) {
+    bool _return = false;
+    return _return;
+  }
+  void getDebugState(emDebugInfo& /* _return */) {
+    return;
+  }
   void clearSequences() {
     return;
   }
@@ -91,7 +97,7 @@ class emEvolvableMotherboardNull : virtual public emEvolvableMotherboardIf {
   void stopSequences() {
     return;
   }
-  void joinSequence() {
+  void joinSequences() {
     return;
   }
   void appendSequenceAction(const emSequenceItem& /* Item */) {
@@ -103,18 +109,7 @@ class emEvolvableMotherboardNull : virtual public emEvolvableMotherboardIf {
   void clearRecording(const int32_t /* srcPin */) {
     return;
   }
-  void setBaseRate(const int32_t /* rate */) {
-    return;
-  }
-  int64_t getTime() {
-    int64_t _return = 0;
-    return _return;
-  }
-  int32_t getTemperate() {
-    int32_t _return = 0;
-    return _return;
-  }
-  int32_t getVoltage() {
+  int32_t getTemperature() {
     int32_t _return = 0;
     return _return;
   }
@@ -227,6 +222,123 @@ class emEvolvableMotherboard_ping_presult {
 
 };
 
+typedef struct _emEvolvableMotherboard_setLED_args__isset {
+  _emEvolvableMotherboard_setLED_args__isset() : index(false), state(false) {}
+  bool index;
+  bool state;
+} _emEvolvableMotherboard_setLED_args__isset;
+
+class emEvolvableMotherboard_setLED_args {
+ public:
+
+  emEvolvableMotherboard_setLED_args() : index(0), state(0) {
+  }
+
+  virtual ~emEvolvableMotherboard_setLED_args() throw() {}
+
+  int32_t index;
+  bool state;
+
+  _emEvolvableMotherboard_setLED_args__isset __isset;
+
+  void __set_index(const int32_t val) {
+    index = val;
+  }
+
+  void __set_state(const bool val) {
+    state = val;
+  }
+
+  bool operator == (const emEvolvableMotherboard_setLED_args & rhs) const
+  {
+    if (!(index == rhs.index))
+      return false;
+    if (!(state == rhs.state))
+      return false;
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_setLED_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_setLED_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class emEvolvableMotherboard_setLED_pargs {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_setLED_pargs() throw() {}
+
+  const int32_t* index;
+  const bool* state;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_setLED_result__isset {
+  _emEvolvableMotherboard_setLED_result__isset() : err(false) {}
+  bool err;
+} _emEvolvableMotherboard_setLED_result__isset;
+
+class emEvolvableMotherboard_setLED_result {
+ public:
+
+  emEvolvableMotherboard_setLED_result() {
+  }
+
+  virtual ~emEvolvableMotherboard_setLED_result() throw() {}
+
+  emException err;
+
+  _emEvolvableMotherboard_setLED_result__isset __isset;
+
+  void __set_err(const emException& val) {
+    err = val;
+  }
+
+  bool operator == (const emEvolvableMotherboard_setLED_result & rhs) const
+  {
+    if (!(err == rhs.err))
+      return false;
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_setLED_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_setLED_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_setLED_presult__isset {
+  _emEvolvableMotherboard_setLED_presult__isset() : err(false) {}
+  bool err;
+} _emEvolvableMotherboard_setLED_presult__isset;
+
+class emEvolvableMotherboard_setLED_presult {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_setLED_presult() throw() {}
+
+  emException err;
+
+  _emEvolvableMotherboard_setLED_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class emEvolvableMotherboard_getMotherboardID_args {
  public:
@@ -326,100 +438,6 @@ class emEvolvableMotherboard_getMotherboardID_presult {
   emException err;
 
   _emEvolvableMotherboard_getMotherboardID_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class emEvolvableMotherboard_waitUntilReady_args {
- public:
-
-  emEvolvableMotherboard_waitUntilReady_args() {
-  }
-
-  virtual ~emEvolvableMotherboard_waitUntilReady_args() throw() {}
-
-
-  bool operator == (const emEvolvableMotherboard_waitUntilReady_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_waitUntilReady_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_waitUntilReady_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class emEvolvableMotherboard_waitUntilReady_pargs {
- public:
-
-
-  virtual ~emEvolvableMotherboard_waitUntilReady_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_waitUntilReady_result__isset {
-  _emEvolvableMotherboard_waitUntilReady_result__isset() : err(false) {}
-  bool err;
-} _emEvolvableMotherboard_waitUntilReady_result__isset;
-
-class emEvolvableMotherboard_waitUntilReady_result {
- public:
-
-  emEvolvableMotherboard_waitUntilReady_result() {
-  }
-
-  virtual ~emEvolvableMotherboard_waitUntilReady_result() throw() {}
-
-  emException err;
-
-  _emEvolvableMotherboard_waitUntilReady_result__isset __isset;
-
-  void __set_err(const emException& val) {
-    err = val;
-  }
-
-  bool operator == (const emEvolvableMotherboard_waitUntilReady_result & rhs) const
-  {
-    if (!(err == rhs.err))
-      return false;
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_waitUntilReady_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_waitUntilReady_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_waitUntilReady_presult__isset {
-  _emEvolvableMotherboard_waitUntilReady_presult__isset() : err(false) {}
-  bool err;
-} _emEvolvableMotherboard_waitUntilReady_presult__isset;
-
-class emEvolvableMotherboard_waitUntilReady_presult {
- public:
-
-
-  virtual ~emEvolvableMotherboard_waitUntilReady_presult() throw() {}
-
-  emException err;
-
-  _emEvolvableMotherboard_waitUntilReady_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -737,6 +755,237 @@ class emEvolvableMotherboard_reset_presult {
 
 };
 
+typedef struct _emEvolvableMotherboard_reprogramme_args__isset {
+  _emEvolvableMotherboard_reprogramme_args__isset() : bin(false), length(false) {}
+  bool bin;
+  bool length;
+} _emEvolvableMotherboard_reprogramme_args__isset;
+
+class emEvolvableMotherboard_reprogramme_args {
+ public:
+
+  emEvolvableMotherboard_reprogramme_args() : bin(), length(0) {
+  }
+
+  virtual ~emEvolvableMotherboard_reprogramme_args() throw() {}
+
+  std::string bin;
+  int32_t length;
+
+  _emEvolvableMotherboard_reprogramme_args__isset __isset;
+
+  void __set_bin(const std::string& val) {
+    bin = val;
+  }
+
+  void __set_length(const int32_t val) {
+    length = val;
+  }
+
+  bool operator == (const emEvolvableMotherboard_reprogramme_args & rhs) const
+  {
+    if (!(bin == rhs.bin))
+      return false;
+    if (!(length == rhs.length))
+      return false;
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_reprogramme_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_reprogramme_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class emEvolvableMotherboard_reprogramme_pargs {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_reprogramme_pargs() throw() {}
+
+  const std::string* bin;
+  const int32_t* length;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_reprogramme_result__isset {
+  _emEvolvableMotherboard_reprogramme_result__isset() : success(false), err(false) {}
+  bool success;
+  bool err;
+} _emEvolvableMotherboard_reprogramme_result__isset;
+
+class emEvolvableMotherboard_reprogramme_result {
+ public:
+
+  emEvolvableMotherboard_reprogramme_result() : success(0) {
+  }
+
+  virtual ~emEvolvableMotherboard_reprogramme_result() throw() {}
+
+  bool success;
+  emException err;
+
+  _emEvolvableMotherboard_reprogramme_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_err(const emException& val) {
+    err = val;
+  }
+
+  bool operator == (const emEvolvableMotherboard_reprogramme_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(err == rhs.err))
+      return false;
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_reprogramme_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_reprogramme_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_reprogramme_presult__isset {
+  _emEvolvableMotherboard_reprogramme_presult__isset() : success(false), err(false) {}
+  bool success;
+  bool err;
+} _emEvolvableMotherboard_reprogramme_presult__isset;
+
+class emEvolvableMotherboard_reprogramme_presult {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_reprogramme_presult() throw() {}
+
+  bool* success;
+  emException err;
+
+  _emEvolvableMotherboard_reprogramme_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class emEvolvableMotherboard_getDebugState_args {
+ public:
+
+  emEvolvableMotherboard_getDebugState_args() {
+  }
+
+  virtual ~emEvolvableMotherboard_getDebugState_args() throw() {}
+
+
+  bool operator == (const emEvolvableMotherboard_getDebugState_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_getDebugState_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_getDebugState_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class emEvolvableMotherboard_getDebugState_pargs {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_getDebugState_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_getDebugState_result__isset {
+  _emEvolvableMotherboard_getDebugState_result__isset() : success(false), err(false) {}
+  bool success;
+  bool err;
+} _emEvolvableMotherboard_getDebugState_result__isset;
+
+class emEvolvableMotherboard_getDebugState_result {
+ public:
+
+  emEvolvableMotherboard_getDebugState_result() {
+  }
+
+  virtual ~emEvolvableMotherboard_getDebugState_result() throw() {}
+
+  emDebugInfo success;
+  emException err;
+
+  _emEvolvableMotherboard_getDebugState_result__isset __isset;
+
+  void __set_success(const emDebugInfo& val) {
+    success = val;
+  }
+
+  void __set_err(const emException& val) {
+    err = val;
+  }
+
+  bool operator == (const emEvolvableMotherboard_getDebugState_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(err == rhs.err))
+      return false;
+    return true;
+  }
+  bool operator != (const emEvolvableMotherboard_getDebugState_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const emEvolvableMotherboard_getDebugState_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _emEvolvableMotherboard_getDebugState_presult__isset {
+  _emEvolvableMotherboard_getDebugState_presult__isset() : success(false), err(false) {}
+  bool success;
+  bool err;
+} _emEvolvableMotherboard_getDebugState_presult__isset;
+
+class emEvolvableMotherboard_getDebugState_presult {
+ public:
+
+
+  virtual ~emEvolvableMotherboard_getDebugState_presult() throw() {}
+
+  emDebugInfo* success;
+  emException err;
+
+  _emEvolvableMotherboard_getDebugState_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class emEvolvableMotherboard_clearSequences_args {
  public:
@@ -1020,24 +1269,24 @@ class emEvolvableMotherboard_stopSequences_presult {
 };
 
 
-class emEvolvableMotherboard_joinSequence_args {
+class emEvolvableMotherboard_joinSequences_args {
  public:
 
-  emEvolvableMotherboard_joinSequence_args() {
+  emEvolvableMotherboard_joinSequences_args() {
   }
 
-  virtual ~emEvolvableMotherboard_joinSequence_args() throw() {}
+  virtual ~emEvolvableMotherboard_joinSequences_args() throw() {}
 
 
-  bool operator == (const emEvolvableMotherboard_joinSequence_args & /* rhs */) const
+  bool operator == (const emEvolvableMotherboard_joinSequences_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const emEvolvableMotherboard_joinSequence_args &rhs) const {
+  bool operator != (const emEvolvableMotherboard_joinSequences_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const emEvolvableMotherboard_joinSequence_args & ) const;
+  bool operator < (const emEvolvableMotherboard_joinSequences_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1045,69 +1294,69 @@ class emEvolvableMotherboard_joinSequence_args {
 };
 
 
-class emEvolvableMotherboard_joinSequence_pargs {
+class emEvolvableMotherboard_joinSequences_pargs {
  public:
 
 
-  virtual ~emEvolvableMotherboard_joinSequence_pargs() throw() {}
+  virtual ~emEvolvableMotherboard_joinSequences_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _emEvolvableMotherboard_joinSequence_result__isset {
-  _emEvolvableMotherboard_joinSequence_result__isset() : err(false) {}
+typedef struct _emEvolvableMotherboard_joinSequences_result__isset {
+  _emEvolvableMotherboard_joinSequences_result__isset() : err(false) {}
   bool err;
-} _emEvolvableMotherboard_joinSequence_result__isset;
+} _emEvolvableMotherboard_joinSequences_result__isset;
 
-class emEvolvableMotherboard_joinSequence_result {
+class emEvolvableMotherboard_joinSequences_result {
  public:
 
-  emEvolvableMotherboard_joinSequence_result() {
+  emEvolvableMotherboard_joinSequences_result() {
   }
 
-  virtual ~emEvolvableMotherboard_joinSequence_result() throw() {}
+  virtual ~emEvolvableMotherboard_joinSequences_result() throw() {}
 
   emException err;
 
-  _emEvolvableMotherboard_joinSequence_result__isset __isset;
+  _emEvolvableMotherboard_joinSequences_result__isset __isset;
 
   void __set_err(const emException& val) {
     err = val;
   }
 
-  bool operator == (const emEvolvableMotherboard_joinSequence_result & rhs) const
+  bool operator == (const emEvolvableMotherboard_joinSequences_result & rhs) const
   {
     if (!(err == rhs.err))
       return false;
     return true;
   }
-  bool operator != (const emEvolvableMotherboard_joinSequence_result &rhs) const {
+  bool operator != (const emEvolvableMotherboard_joinSequences_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const emEvolvableMotherboard_joinSequence_result & ) const;
+  bool operator < (const emEvolvableMotherboard_joinSequences_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _emEvolvableMotherboard_joinSequence_presult__isset {
-  _emEvolvableMotherboard_joinSequence_presult__isset() : err(false) {}
+typedef struct _emEvolvableMotherboard_joinSequences_presult__isset {
+  _emEvolvableMotherboard_joinSequences_presult__isset() : err(false) {}
   bool err;
-} _emEvolvableMotherboard_joinSequence_presult__isset;
+} _emEvolvableMotherboard_joinSequences_presult__isset;
 
-class emEvolvableMotherboard_joinSequence_presult {
+class emEvolvableMotherboard_joinSequences_presult {
  public:
 
 
-  virtual ~emEvolvableMotherboard_joinSequence_presult() throw() {}
+  virtual ~emEvolvableMotherboard_joinSequences_presult() throw() {}
 
   emException err;
 
-  _emEvolvableMotherboard_joinSequence_presult__isset __isset;
+  _emEvolvableMotherboard_joinSequences_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1447,133 +1696,25 @@ class emEvolvableMotherboard_clearRecording_presult {
 
 };
 
-typedef struct _emEvolvableMotherboard_setBaseRate_args__isset {
-  _emEvolvableMotherboard_setBaseRate_args__isset() : rate(false) {}
-  bool rate;
-} _emEvolvableMotherboard_setBaseRate_args__isset;
 
-class emEvolvableMotherboard_setBaseRate_args {
+class emEvolvableMotherboard_getTemperature_args {
  public:
 
-  emEvolvableMotherboard_setBaseRate_args() : rate(0) {
+  emEvolvableMotherboard_getTemperature_args() {
   }
 
-  virtual ~emEvolvableMotherboard_setBaseRate_args() throw() {}
-
-  int32_t rate;
-
-  _emEvolvableMotherboard_setBaseRate_args__isset __isset;
-
-  void __set_rate(const int32_t val) {
-    rate = val;
-  }
-
-  bool operator == (const emEvolvableMotherboard_setBaseRate_args & rhs) const
-  {
-    if (!(rate == rhs.rate))
-      return false;
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_setBaseRate_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_setBaseRate_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
+  virtual ~emEvolvableMotherboard_getTemperature_args() throw() {}
 
 
-class emEvolvableMotherboard_setBaseRate_pargs {
- public:
-
-
-  virtual ~emEvolvableMotherboard_setBaseRate_pargs() throw() {}
-
-  const int32_t* rate;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_setBaseRate_result__isset {
-  _emEvolvableMotherboard_setBaseRate_result__isset() : err(false) {}
-  bool err;
-} _emEvolvableMotherboard_setBaseRate_result__isset;
-
-class emEvolvableMotherboard_setBaseRate_result {
- public:
-
-  emEvolvableMotherboard_setBaseRate_result() {
-  }
-
-  virtual ~emEvolvableMotherboard_setBaseRate_result() throw() {}
-
-  emException err;
-
-  _emEvolvableMotherboard_setBaseRate_result__isset __isset;
-
-  void __set_err(const emException& val) {
-    err = val;
-  }
-
-  bool operator == (const emEvolvableMotherboard_setBaseRate_result & rhs) const
-  {
-    if (!(err == rhs.err))
-      return false;
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_setBaseRate_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_setBaseRate_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_setBaseRate_presult__isset {
-  _emEvolvableMotherboard_setBaseRate_presult__isset() : err(false) {}
-  bool err;
-} _emEvolvableMotherboard_setBaseRate_presult__isset;
-
-class emEvolvableMotherboard_setBaseRate_presult {
- public:
-
-
-  virtual ~emEvolvableMotherboard_setBaseRate_presult() throw() {}
-
-  emException err;
-
-  _emEvolvableMotherboard_setBaseRate_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class emEvolvableMotherboard_getTime_args {
- public:
-
-  emEvolvableMotherboard_getTime_args() {
-  }
-
-  virtual ~emEvolvableMotherboard_getTime_args() throw() {}
-
-
-  bool operator == (const emEvolvableMotherboard_getTime_args & /* rhs */) const
+  bool operator == (const emEvolvableMotherboard_getTemperature_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const emEvolvableMotherboard_getTime_args &rhs) const {
+  bool operator != (const emEvolvableMotherboard_getTemperature_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const emEvolvableMotherboard_getTime_args & ) const;
+  bool operator < (const emEvolvableMotherboard_getTemperature_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1581,139 +1722,35 @@ class emEvolvableMotherboard_getTime_args {
 };
 
 
-class emEvolvableMotherboard_getTime_pargs {
+class emEvolvableMotherboard_getTemperature_pargs {
  public:
 
 
-  virtual ~emEvolvableMotherboard_getTime_pargs() throw() {}
+  virtual ~emEvolvableMotherboard_getTemperature_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _emEvolvableMotherboard_getTime_result__isset {
-  _emEvolvableMotherboard_getTime_result__isset() : success(false), err(false) {}
+typedef struct _emEvolvableMotherboard_getTemperature_result__isset {
+  _emEvolvableMotherboard_getTemperature_result__isset() : success(false), err(false) {}
   bool success;
   bool err;
-} _emEvolvableMotherboard_getTime_result__isset;
+} _emEvolvableMotherboard_getTemperature_result__isset;
 
-class emEvolvableMotherboard_getTime_result {
+class emEvolvableMotherboard_getTemperature_result {
  public:
 
-  emEvolvableMotherboard_getTime_result() : success(0) {
+  emEvolvableMotherboard_getTemperature_result() : success(0) {
   }
 
-  virtual ~emEvolvableMotherboard_getTime_result() throw() {}
-
-  int64_t success;
-  emException err;
-
-  _emEvolvableMotherboard_getTime_result__isset __isset;
-
-  void __set_success(const int64_t val) {
-    success = val;
-  }
-
-  void __set_err(const emException& val) {
-    err = val;
-  }
-
-  bool operator == (const emEvolvableMotherboard_getTime_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(err == rhs.err))
-      return false;
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_getTime_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_getTime_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_getTime_presult__isset {
-  _emEvolvableMotherboard_getTime_presult__isset() : success(false), err(false) {}
-  bool success;
-  bool err;
-} _emEvolvableMotherboard_getTime_presult__isset;
-
-class emEvolvableMotherboard_getTime_presult {
- public:
-
-
-  virtual ~emEvolvableMotherboard_getTime_presult() throw() {}
-
-  int64_t* success;
-  emException err;
-
-  _emEvolvableMotherboard_getTime_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class emEvolvableMotherboard_getTemperate_args {
- public:
-
-  emEvolvableMotherboard_getTemperate_args() {
-  }
-
-  virtual ~emEvolvableMotherboard_getTemperate_args() throw() {}
-
-
-  bool operator == (const emEvolvableMotherboard_getTemperate_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_getTemperate_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_getTemperate_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class emEvolvableMotherboard_getTemperate_pargs {
- public:
-
-
-  virtual ~emEvolvableMotherboard_getTemperate_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_getTemperate_result__isset {
-  _emEvolvableMotherboard_getTemperate_result__isset() : success(false), err(false) {}
-  bool success;
-  bool err;
-} _emEvolvableMotherboard_getTemperate_result__isset;
-
-class emEvolvableMotherboard_getTemperate_result {
- public:
-
-  emEvolvableMotherboard_getTemperate_result() : success(0) {
-  }
-
-  virtual ~emEvolvableMotherboard_getTemperate_result() throw() {}
+  virtual ~emEvolvableMotherboard_getTemperature_result() throw() {}
 
   int32_t success;
   emException err;
 
-  _emEvolvableMotherboard_getTemperate_result__isset __isset;
+  _emEvolvableMotherboard_getTemperature_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
@@ -1723,7 +1760,7 @@ class emEvolvableMotherboard_getTemperate_result {
     err = val;
   }
 
-  bool operator == (const emEvolvableMotherboard_getTemperate_result & rhs) const
+  bool operator == (const emEvolvableMotherboard_getTemperature_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -1731,137 +1768,33 @@ class emEvolvableMotherboard_getTemperate_result {
       return false;
     return true;
   }
-  bool operator != (const emEvolvableMotherboard_getTemperate_result &rhs) const {
+  bool operator != (const emEvolvableMotherboard_getTemperature_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const emEvolvableMotherboard_getTemperate_result & ) const;
+  bool operator < (const emEvolvableMotherboard_getTemperature_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _emEvolvableMotherboard_getTemperate_presult__isset {
-  _emEvolvableMotherboard_getTemperate_presult__isset() : success(false), err(false) {}
+typedef struct _emEvolvableMotherboard_getTemperature_presult__isset {
+  _emEvolvableMotherboard_getTemperature_presult__isset() : success(false), err(false) {}
   bool success;
   bool err;
-} _emEvolvableMotherboard_getTemperate_presult__isset;
+} _emEvolvableMotherboard_getTemperature_presult__isset;
 
-class emEvolvableMotherboard_getTemperate_presult {
+class emEvolvableMotherboard_getTemperature_presult {
  public:
 
 
-  virtual ~emEvolvableMotherboard_getTemperate_presult() throw() {}
+  virtual ~emEvolvableMotherboard_getTemperature_presult() throw() {}
 
   int32_t* success;
   emException err;
 
-  _emEvolvableMotherboard_getTemperate_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class emEvolvableMotherboard_getVoltage_args {
- public:
-
-  emEvolvableMotherboard_getVoltage_args() {
-  }
-
-  virtual ~emEvolvableMotherboard_getVoltage_args() throw() {}
-
-
-  bool operator == (const emEvolvableMotherboard_getVoltage_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_getVoltage_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_getVoltage_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class emEvolvableMotherboard_getVoltage_pargs {
- public:
-
-
-  virtual ~emEvolvableMotherboard_getVoltage_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_getVoltage_result__isset {
-  _emEvolvableMotherboard_getVoltage_result__isset() : success(false), err(false) {}
-  bool success;
-  bool err;
-} _emEvolvableMotherboard_getVoltage_result__isset;
-
-class emEvolvableMotherboard_getVoltage_result {
- public:
-
-  emEvolvableMotherboard_getVoltage_result() : success(0) {
-  }
-
-  virtual ~emEvolvableMotherboard_getVoltage_result() throw() {}
-
-  int32_t success;
-  emException err;
-
-  _emEvolvableMotherboard_getVoltage_result__isset __isset;
-
-  void __set_success(const int32_t val) {
-    success = val;
-  }
-
-  void __set_err(const emException& val) {
-    err = val;
-  }
-
-  bool operator == (const emEvolvableMotherboard_getVoltage_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(err == rhs.err))
-      return false;
-    return true;
-  }
-  bool operator != (const emEvolvableMotherboard_getVoltage_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const emEvolvableMotherboard_getVoltage_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _emEvolvableMotherboard_getVoltage_presult__isset {
-  _emEvolvableMotherboard_getVoltage_presult__isset() : success(false), err(false) {}
-  bool success;
-  bool err;
-} _emEvolvableMotherboard_getVoltage_presult__isset;
-
-class emEvolvableMotherboard_getVoltage_presult {
- public:
-
-
-  virtual ~emEvolvableMotherboard_getVoltage_presult() throw() {}
-
-  int32_t* success;
-  emException err;
-
-  _emEvolvableMotherboard_getVoltage_presult__isset __isset;
+  _emEvolvableMotherboard_getTemperature_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1998,12 +1931,12 @@ class emEvolvableMotherboardClient : virtual public emEvolvableMotherboardIf {
   int32_t ping();
   void send_ping();
   int32_t recv_ping();
+  void setLED(const int32_t index, const bool state);
+  void send_setLED(const int32_t index, const bool state);
+  void recv_setLED();
   void getMotherboardID(std::string& _return);
   void send_getMotherboardID();
   void recv_getMotherboardID(std::string& _return);
-  void waitUntilReady();
-  void send_waitUntilReady();
-  void recv_waitUntilReady();
   void getMotherboardState(std::string& _return);
   void send_getMotherboardState();
   void recv_getMotherboardState(std::string& _return);
@@ -2013,6 +1946,12 @@ class emEvolvableMotherboardClient : virtual public emEvolvableMotherboardIf {
   bool reset();
   void send_reset();
   bool recv_reset();
+  bool reprogramme(const std::string& bin, const int32_t length);
+  void send_reprogramme(const std::string& bin, const int32_t length);
+  bool recv_reprogramme();
+  void getDebugState(emDebugInfo& _return);
+  void send_getDebugState();
+  void recv_getDebugState(emDebugInfo& _return);
   void clearSequences();
   void send_clearSequences();
   void recv_clearSequences();
@@ -2022,9 +1961,9 @@ class emEvolvableMotherboardClient : virtual public emEvolvableMotherboardIf {
   void stopSequences();
   void send_stopSequences();
   void recv_stopSequences();
-  void joinSequence();
-  void send_joinSequence();
-  void recv_joinSequence();
+  void joinSequences();
+  void send_joinSequences();
+  void recv_joinSequences();
   void appendSequenceAction(const emSequenceItem& Item);
   void send_appendSequenceAction(const emSequenceItem& Item);
   void recv_appendSequenceAction();
@@ -2034,18 +1973,9 @@ class emEvolvableMotherboardClient : virtual public emEvolvableMotherboardIf {
   void clearRecording(const int32_t srcPin);
   void send_clearRecording(const int32_t srcPin);
   void recv_clearRecording();
-  void setBaseRate(const int32_t rate);
-  void send_setBaseRate(const int32_t rate);
-  void recv_setBaseRate();
-  int64_t getTime();
-  void send_getTime();
-  int64_t recv_getTime();
-  int32_t getTemperate();
-  void send_getTemperate();
-  int32_t recv_getTemperate();
-  int32_t getVoltage();
-  void send_getVoltage();
-  int32_t recv_getVoltage();
+  int32_t getTemperature();
+  void send_getTemperature();
+  int32_t recv_getTemperature();
   void setLogServer(const emLogServerSettings& logServer);
   void send_setLogServer(const emLogServerSettings& logServer);
   void recv_setLogServer();
@@ -2065,43 +1995,41 @@ class emEvolvableMotherboardProcessor : public ::apache::thrift::TDispatchProces
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_setLED(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getMotherboardID(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_waitUntilReady(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getMotherboardState(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getLastError(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_reset(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_reprogramme(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getDebugState(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_clearSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_runSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_stopSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_joinSequence(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_joinSequences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_appendSequenceAction(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getRecording(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_clearRecording(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_setBaseRate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getTime(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getTemperate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getVoltage(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getTemperature(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_setLogServer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   emEvolvableMotherboardProcessor(boost::shared_ptr<emEvolvableMotherboardIf> iface) :
     iface_(iface) {
     processMap_["ping"] = &emEvolvableMotherboardProcessor::process_ping;
+    processMap_["setLED"] = &emEvolvableMotherboardProcessor::process_setLED;
     processMap_["getMotherboardID"] = &emEvolvableMotherboardProcessor::process_getMotherboardID;
-    processMap_["waitUntilReady"] = &emEvolvableMotherboardProcessor::process_waitUntilReady;
     processMap_["getMotherboardState"] = &emEvolvableMotherboardProcessor::process_getMotherboardState;
     processMap_["getLastError"] = &emEvolvableMotherboardProcessor::process_getLastError;
     processMap_["reset"] = &emEvolvableMotherboardProcessor::process_reset;
+    processMap_["reprogramme"] = &emEvolvableMotherboardProcessor::process_reprogramme;
+    processMap_["getDebugState"] = &emEvolvableMotherboardProcessor::process_getDebugState;
     processMap_["clearSequences"] = &emEvolvableMotherboardProcessor::process_clearSequences;
     processMap_["runSequences"] = &emEvolvableMotherboardProcessor::process_runSequences;
     processMap_["stopSequences"] = &emEvolvableMotherboardProcessor::process_stopSequences;
-    processMap_["joinSequence"] = &emEvolvableMotherboardProcessor::process_joinSequence;
+    processMap_["joinSequences"] = &emEvolvableMotherboardProcessor::process_joinSequences;
     processMap_["appendSequenceAction"] = &emEvolvableMotherboardProcessor::process_appendSequenceAction;
     processMap_["getRecording"] = &emEvolvableMotherboardProcessor::process_getRecording;
     processMap_["clearRecording"] = &emEvolvableMotherboardProcessor::process_clearRecording;
-    processMap_["setBaseRate"] = &emEvolvableMotherboardProcessor::process_setBaseRate;
-    processMap_["getTime"] = &emEvolvableMotherboardProcessor::process_getTime;
-    processMap_["getTemperate"] = &emEvolvableMotherboardProcessor::process_getTemperate;
-    processMap_["getVoltage"] = &emEvolvableMotherboardProcessor::process_getVoltage;
+    processMap_["getTemperature"] = &emEvolvableMotherboardProcessor::process_getTemperature;
     processMap_["setLogServer"] = &emEvolvableMotherboardProcessor::process_setLogServer;
   }
 
@@ -2140,6 +2068,15 @@ class emEvolvableMotherboardMultiface : virtual public emEvolvableMotherboardIf 
     return ifaces_[i]->ping();
   }
 
+  void setLED(const int32_t index, const bool state) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->setLED(index, state);
+    }
+    ifaces_[i]->setLED(index, state);
+  }
+
   void getMotherboardID(std::string& _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -2148,15 +2085,6 @@ class emEvolvableMotherboardMultiface : virtual public emEvolvableMotherboardIf 
     }
     ifaces_[i]->getMotherboardID(_return);
     return;
-  }
-
-  void waitUntilReady() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->waitUntilReady();
-    }
-    ifaces_[i]->waitUntilReady();
   }
 
   void getMotherboardState(std::string& _return) {
@@ -2188,6 +2116,25 @@ class emEvolvableMotherboardMultiface : virtual public emEvolvableMotherboardIf 
     return ifaces_[i]->reset();
   }
 
+  bool reprogramme(const std::string& bin, const int32_t length) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->reprogramme(bin, length);
+    }
+    return ifaces_[i]->reprogramme(bin, length);
+  }
+
+  void getDebugState(emDebugInfo& _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getDebugState(_return);
+    }
+    ifaces_[i]->getDebugState(_return);
+    return;
+  }
+
   void clearSequences() {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -2215,13 +2162,13 @@ class emEvolvableMotherboardMultiface : virtual public emEvolvableMotherboardIf 
     ifaces_[i]->stopSequences();
   }
 
-  void joinSequence() {
+  void joinSequences() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->joinSequence();
+      ifaces_[i]->joinSequences();
     }
-    ifaces_[i]->joinSequence();
+    ifaces_[i]->joinSequences();
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
@@ -2252,40 +2199,13 @@ class emEvolvableMotherboardMultiface : virtual public emEvolvableMotherboardIf 
     ifaces_[i]->clearRecording(srcPin);
   }
 
-  void setBaseRate(const int32_t rate) {
+  int32_t getTemperature() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->setBaseRate(rate);
+      ifaces_[i]->getTemperature();
     }
-    ifaces_[i]->setBaseRate(rate);
-  }
-
-  int64_t getTime() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getTime();
-    }
-    return ifaces_[i]->getTime();
-  }
-
-  int32_t getTemperate() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getTemperate();
-    }
-    return ifaces_[i]->getTemperate();
-  }
-
-  int32_t getVoltage() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getVoltage();
-    }
-    return ifaces_[i]->getVoltage();
+    return ifaces_[i]->getTemperature();
   }
 
   void setLogServer(const emLogServerSettings& logServer) {

@@ -4,7 +4,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "NascenseAPI_v01c_types.h"
+#include "NascenseAPI_v01d_types.h"
 
 #include <algorithm>
 
@@ -21,9 +21,9 @@ const char* _kemExceptionTypeNames[] = {
 const std::map<int, const char*> _emExceptionType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kemExceptionTypeValues, _kemExceptionTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kemLogEventTypeValues[] = {
-  emLogEventType::NIL,
+  emLogEventType::emNULL,
   emLogEventType::CONFIG,
-  emLogEventType::ERROR,
+  emLogEventType::emERROR,
   emLogEventType::MISC,
   emLogEventType::COMMAND,
   emLogEventType::RESPONSE,
@@ -31,9 +31,9 @@ int _kemLogEventTypeValues[] = {
   emLogEventType::DISPLAYASMESSAGEBOX
 };
 const char* _kemLogEventTypeNames[] = {
-  "NIL",
+  "emNULL",
   "CONFIG",
-  "ERROR",
+  "emERROR",
   "MISC",
   "COMMAND",
   "RESPONSE",
@@ -43,34 +43,32 @@ const char* _kemLogEventTypeNames[] = {
 const std::map<int, const char*> _emLogEventType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kemLogEventTypeValues, _kemLogEventTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kemSequenceOperationTypeValues[] = {
-  emSequenceOperationType::NIL,
-  emSequenceOperationType::PWM,
+  emSequenceOperationType::emNULL,
+  emSequenceOperationType::ARBITRARY,
   emSequenceOperationType::RECORD,
   emSequenceOperationType::WAIT,
-  emSequenceOperationType::ARBITRARY,
   emSequenceOperationType::PREDEFINED
 };
 const char* _kemSequenceOperationTypeNames[] = {
-  "NIL",
-  "PWM",
+  "emNULL",
+  "ARBITRARY",
   "RECORD",
   "WAIT",
-  "ARBITRARY",
   "PREDEFINED"
 };
-const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kemSequenceOperationTypeValues, _kemSequenceOperationTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kemSequenceOperationTypeValues, _kemSequenceOperationTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kemWaveFormTypeValues[] = {
-  emWaveFormType::NIL,
+  emWaveFormType::emNULL,
   emWaveFormType::ARBITRARY,
-  emWaveFormType::SQUARE,
+  emWaveFormType::PWM,
   emWaveFormType::SAW,
   emWaveFormType::SINE
 };
 const char* _kemWaveFormTypeNames[] = {
-  "NIL",
+  "emNULL",
   "ARBITRARY",
-  "SQUARE",
+  "PWM",
   "SAW",
   "SINE"
 };
@@ -437,16 +435,16 @@ uint32_t emSequenceItem::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 7:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->amplitude);
-          this->__isset.amplitude = true;
+          xfer += iprot->readI32(this->cycleTime);
+          this->__isset.cycleTime = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->cycleTime);
-          this->__isset.cycleTime = true;
+          xfer += iprot->readI32(this->amplitude);
+          this->__isset.amplitude = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -517,12 +515,12 @@ uint32_t emSequenceItem::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeI32(this->phase);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("amplitude", ::apache::thrift::protocol::T_I32, 7);
-  xfer += oprot->writeI32(this->amplitude);
+  xfer += oprot->writeFieldBegin("cycleTime", ::apache::thrift::protocol::T_I32, 7);
+  xfer += oprot->writeI32(this->cycleTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("cycleTime", ::apache::thrift::protocol::T_I32, 8);
-  xfer += oprot->writeI32(this->cycleTime);
+  xfer += oprot->writeFieldBegin("amplitude", ::apache::thrift::protocol::T_I32, 8);
+  xfer += oprot->writeI32(this->amplitude);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("waveFormType", ::apache::thrift::protocol::T_I32, 9);
@@ -550,11 +548,123 @@ void swap(emSequenceItem &a, emSequenceItem &b) {
   swap(a.endTime, b.endTime);
   swap(a.frequency, b.frequency);
   swap(a.phase, b.phase);
-  swap(a.amplitude, b.amplitude);
   swap(a.cycleTime, b.cycleTime);
+  swap(a.amplitude, b.amplitude);
   swap(a.waveFormType, b.waveFormType);
   swap(a.waveForm, b.waveForm);
   swap(a.waitForTrigger, b.waitForTrigger);
+  swap(a.__isset, b.__isset);
+}
+
+const char* emDebugInfo::ascii_fingerprint = "0AD85E73ED11FD8C9FB0DA32F9512610";
+const uint8_t emDebugInfo::binary_fingerprint[16] = {0x0A,0xD8,0x5E,0x73,0xED,0x11,0xFD,0x8C,0x9F,0xB0,0xDA,0x32,0xF9,0x51,0x26,0x10};
+
+uint32_t emDebugInfo::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readBinary(this->stateBlob);
+          this->__isset.stateBlob = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->stateBlobLength);
+          this->__isset.stateBlobLength = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->values.clear();
+            uint32_t _size9;
+            ::apache::thrift::protocol::TType _ktype10;
+            ::apache::thrift::protocol::TType _vtype11;
+            xfer += iprot->readMapBegin(_ktype10, _vtype11, _size9);
+            uint32_t _i13;
+            for (_i13 = 0; _i13 < _size9; ++_i13)
+            {
+              std::string _key14;
+              xfer += iprot->readString(_key14);
+              std::string& _val15 = this->values[_key14];
+              xfer += iprot->readString(_val15);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.values = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t emDebugInfo::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("emDebugInfo");
+
+  xfer += oprot->writeFieldBegin("stateBlob", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeBinary(this->stateBlob);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("stateBlobLength", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->stateBlobLength);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_MAP, 3);
+  {
+    xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->values.size()));
+    std::map<std::string, std::string> ::const_iterator _iter16;
+    for (_iter16 = this->values.begin(); _iter16 != this->values.end(); ++_iter16)
+    {
+      xfer += oprot->writeString(_iter16->first);
+      xfer += oprot->writeString(_iter16->second);
+    }
+    xfer += oprot->writeMapEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(emDebugInfo &a, emDebugInfo &b) {
+  using ::std::swap;
+  swap(a.stateBlob, b.stateBlob);
+  swap(a.stateBlobLength, b.stateBlobLength);
+  swap(a.values, b.values);
   swap(a.__isset, b.__isset);
 }
 
