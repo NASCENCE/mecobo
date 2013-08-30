@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include "em_usb.h"
 #include "em_gpio.h"
-#include "mecoprot.h"
+#include "../mecoprot.h"
 
 #define FPGA_BASE_ADDR 0
 
@@ -32,10 +32,11 @@
 
 
 //Possible FPGA commands
-#define CMD_START_OUTPUT  0x1
-#define CMD_READ_PIN    0x2
-#define CMD_INPUT_STREAM  0x3
-#define CMD_PROGRAM_FPGA  0x4
+#define CMD_START_OUTPUT  1
+#define CMD_READ_PIN    2
+#define CMD_INPUT_STREAM  3
+#define CMD_PROGRAM_FPGA  4
+#define CMD_RESET  5
 
 
 struct pinConfig {

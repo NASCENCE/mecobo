@@ -222,7 +222,9 @@ always @ ( * ) begin
     res_cmd_reg <= 1'b0;
 
     if (cnt_duty_cycle <= 1) begin
-      next_state <= low;
+      if (cnt_anti_duty_cycle > 0) begin
+        next_state <= low;
+      end
       //Reset duty counter so that it's
       //ready for the next time we're in this state.
       res_duty_counter <= 1'b1; 

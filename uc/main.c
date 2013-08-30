@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "mecoprot.h"
+#include "../mecoprot.h"
 #include "mecobo.h"
 
 
@@ -378,6 +378,8 @@ int fpgaConfigPin(struct pinConfig * p)
   //to be used for input :)
   if (p->sampleRate != 0) {
     inputPins[p->fpgaPin] = 1;
+  } else {
+    inputPins[p->fpgaPin] = 0;
   }
 
   //TODO: support everything :-)
@@ -597,12 +599,15 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 void startOutput(FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
-  addr[PINCONFIG_LOCAL_CMD]= CMD_START_OUTPUT;
+  addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+  addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+  inputPins[pin] = 0;
 }
 
 void startInput(FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
+  addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
   addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
   inputPins[pin] = 1;
 }

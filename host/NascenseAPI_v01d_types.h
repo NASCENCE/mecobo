@@ -46,7 +46,8 @@ struct emSequenceOperationType {
     ARBITRARY = 1,
     RECORD = 2,
     WAIT = 3,
-    PREDEFINED = 4
+    PREDEFINED = 4,
+    CONST = 5
   };
 };
 

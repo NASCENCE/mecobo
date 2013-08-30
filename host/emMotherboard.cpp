@@ -9,6 +9,9 @@
 
 #include "mecohost.h"
 #include "../mecoprot.h"
+#include <map>
+#include <queue>
+#include <thread>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -20,11 +23,18 @@ using boost::shared_ptr;
 using namespace  ::emInterfaces;
 
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
-  
-  std::vector<emSequenceItem> seq;
- public:
+
+  std::thread runThread;
+
+  int64_t time;
+  std::map<int, std::queue<emSequenceItem>> pinSeq;
+  std::map<int, std::vector<uint32_t>> rec;
+  //std::vector<int> recPins;
+
+  public:
   emEvolvableMotherboardHandler() {
     // Your initialization goes here
+    time = 0;
   }
 
   int32_t ping() {
@@ -70,55 +80,95 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void clearSequences() {
     // Your implementation goes here
     printf("clearSequences\n");
-    seq.clear();
+    //seq.clear();
   }
 
   void runSequences() {
+   
+    auto start = std::chrono::system_clock::now();
+    int64_t t = 0;
+    bool done = false;
+    for(auto p : rec) {
+      p.second.clear();
+    }
 
-    // The application-clock runs at 50MHz,
-    // so the 'duty' period is a 25Mhz multiple (remember FF updating)
+    while(!done) {
 
-    for(auto s : seq) {
-      std::cout << "seqitem, f:" << s.frequency << "optype:" << s.operationType << std::endl;
-      double period; //= 1.0f/(double)s.frequency;
-      int32_t duty; // = period * (25*1000000);
-      std::cout << "duty:" << duty << std::endl;
+      //Iterate all the queues, check if it's time to do a sequence action.
+      for(auto k : pinSeq) {
+        //Peek queue
+        if(pinSeq[k.first].size() > 0) {
+          auto item = pinSeq[k.first].front();
+          auto now = std::chrono::system_clock::now();
 
-      uint32_t sampleDiv = ((50*1000000)/(8.0f*(double)s.frequency));
-      emException err;
-      switch(s.operationType) {
-        case emSequenceOperationType::type::PREDEFINED:
-          //Since it's predefined, we have a waveFormType
-          if(s.waveFormType == emWaveFormType::PWM) {
-            period = 1.0f/(double)s.frequency;
-            duty = period * (25*1000000);
-            setPin(FPGA_F16, duty, duty * s.cycleTime, 0x1, 0x0);
-            startOutput(FPGA_F16);
+          if(item.startTime <= std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count()) {
+            std::cout << "Playing item on pin " << k.first << " at time " << t << "scheduled at" << item.startTime << std::endl;
+            std::cout << "seqitem, f:" << item.frequency << "optype:" << item.operationType << std::endl;
+            double period; //= 1.0f/(double)s.frequency;
+            int32_t duty; // = period * (25*1000000);
+            uint32_t sampleDiv = ((50*1000000)/(8.0f*(double)item.frequency));
+            emException err;
+            switch(item.operationType) {
+              case emSequenceOperationType::type::CONST:
+                if(item.waveFormType == emWaveFormType::PWM) {
+                  setPin((FPGA_IO_Pins_TypeDef)item.pin, item.amplitude, 0, 0x1, 0x0);
+                  startOutput((FPGA_IO_Pins_TypeDef)item.pin);
+                }
+                break;
+              case emSequenceOperationType::type::PREDEFINED:
+                //Since it's predefined, we have a waveFormType
+                if(item.waveFormType == emWaveFormType::PWM) {
+
+                  period = 1.0f/(double)item.frequency;
+                  duty = period * (25*1000000);
+                  std::cout << "duty:" << duty << std::endl;
+                  
+                  setPin((FPGA_IO_Pins_TypeDef)item.pin, duty, duty * (100.0f/item.cycleTime), 0x1, 0x0);
+                  startOutput((FPGA_IO_Pins_TypeDef)item.pin);
+                }
+                break;
+              case emSequenceOperationType::type::RECORD:
+                std::cout << "samplediv:" << sampleDiv << std::endl;
+                if(sampleDiv < 8) {
+                  err.Reason = "samplerate too high";
+                  err.Source = "emMotherboard";
+                  throw err;
+                  break;
+                } else if (sampleDiv > 65535) {
+                  err.Reason = "samplerate too low";
+                  err.Source = "emMotherboard";
+                  throw err;
+                  break;
+                }
+                setPin((FPGA_IO_Pins_TypeDef)item.pin, 1, 1, 1, sampleDiv);
+                startInput((FPGA_IO_Pins_TypeDef)item.pin);
+                break;
+              default:
+                break;
+            }
+            pinSeq[k.first].pop(); //remove element from queue.
           }
-          break;
-        case emSequenceOperationType::type::RECORD:
-          std::cout << "samplediv:" << sampleDiv << std::endl;
-          if(sampleDiv < 8) {
-            err.Reason = "samplerate too high";
-            err.Source = "emMotherboard";
-            throw err;
-            break;
-          } else if (sampleDiv > 65535) {
-            err.Reason = "samplerate too low";
-            err.Source = "emMotherboard";
-            throw err;
-            break;
-          }
+        }
+      }
 
-          setPin(FPGA_J16, 1, 1, 1, sampleDiv);
-          startInput(FPGA_J16);
-          break;
-        default:
-          break;
+      //Poke the board for sample buffers for the 
+      //pins that we have selected for recording.
+      std::vector<sampleValue> samples;
+      getSampleBuffer(samples);
+      for(auto s : samples) {
+        rec[s.pin].push_back(s.value);
+      }
+
+
+      //Check if queues are empty.
+      done = true;
+      for(auto q : pinSeq) {
+        if(q.second.size() > 0) {
+          done = false;
+        }
       }
     }
-    seq.clear();
-    std::cout << "sequence size after clear:" << seq.size() << std::endl;
+    std::cout << "Sequence done, all qeueues empty" << std::endl;
   } 
 
 
@@ -133,9 +183,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
-    // Your implementation goes here
-    seq.push_back(Item);
-    std::cout << "sequence size after append:" << seq.size() << std::endl;
+    //TODO: Lots of error checking and all that jazzy.
+    std::cout << "Appending action" << std::endl;
+    pinSeq[Item.pin].push(Item);
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
@@ -143,16 +193,18 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::vector<int32_t> v;
     std::vector<sampleValue> samples;
 
-    getSampleBuffer(samples);
-    for(auto s : samples) {
+    std::cout << "There are " << rec[srcPin].size() << "samples for pin " << srcPin << std::endl;
+    for(auto s : rec[srcPin]) {
       //std::cout << s.sampleNum << std::endl;
-      v.push_back(s.value);
+      v.push_back(s);
     }
 
     emWaveForm r;
     r.SampleCount = v.size();
     r.Samples = v;
     _return = r;
+
+    rec[srcPin].clear();
   }
 
 
@@ -194,8 +246,6 @@ int main(int argc, char **argv) {
   std::cout << "Starting USB..." << std::endl;
   startUsb();
   std::cout << "Done!" << std::endl;
-
-
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler());
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
