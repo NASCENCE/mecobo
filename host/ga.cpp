@@ -45,12 +45,16 @@ std::vector<std::bitset<resultSize>> runPopulation(std::vector<genomeType> popul
           antiduty[i] = individual[slicePos + 16 + i];
         }
 
-        setPin(pin, duty.to_ulong(), antiduty.to_ulong(), 0x1, 0x0);
-        //std::cout << "Setting " << pin << ": " << \
-        //  duty.to_ulong() << ": " << \
-        //  antiduty.to_ulong() << std::endl;
+        emSequenceItem out;
+        out.pin = 0;
+        out.startTime = 0;
+        out.endTime = 100000;
+        out.frequency = 1000;
+        out.cycleTime = 25;
+        out.operationType = emSequenceOperationType::type::PREDEFINED;
+        out.waveFormType = emWaveFormType::PWM;
 
-        startOutput(pin);
+        client.appendSequenceAction(out);
         pinNum++;
       }
       for(FPGA_IO_Pins_TypeDef inPin : inPins) {

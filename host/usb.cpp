@@ -149,6 +149,19 @@ int startOutput (FPGA_IO_Pins_TypeDef pin)
   return 0;
 }
 
+//TODO: ugly as all ghells
+//Based on whatever is in either duty
+//or anti duty register 
+int startConstOutput (FPGA_IO_Pins_TypeDef pin)
+{
+  uint32_t data;
+  data = pin;
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_CONST);
+  sendPacket(&p, eps[2]);
+  return 0;
+}
+
 int startInput (FPGA_IO_Pins_TypeDef pin)
 {
   uint32_t data;
@@ -156,6 +169,8 @@ int startInput (FPGA_IO_Pins_TypeDef pin)
   struct mecoPack p;
   createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_STREAM_INPUT);
   sendPacket(&p, eps[2]);
+  std::cout << "Setting up pin "  << pin << std::endl;
+
   return 0;
 }
 
@@ -281,22 +296,25 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
   struct mecoPack pack;
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack, eps[2]);
-  uint32_t size;
-  getBytesFromUSB(eps[0], (uint8_t *)&size, 4);
-  //Now get data back.
-  //uint8_t * data = malloc(sizeof(struct sampleValue)*USB_BUFFER_SIZE);
-  
-  sampleValue* collectedSamples = new sampleValue[size];
-  createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
-  sendPacket(&pack, eps[2]);
-  getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * size);
-  std::cout << "Got " << size  << "samples" << std::endl;
-  for(int i = 0; i < size; i++) {
-    //std::cout << collectedSamples[i].value << std::endl;
-    samples.push_back(collectedSamples[i]);
+  uint32_t nSamples = 0;
+  getBytesFromUSB(eps[0], (uint8_t *)&nSamples, 4);
+ 
+  if(nSamples == 0) {
+    return 0;
+  } else {
+    sampleValue* collectedSamples = new sampleValue[nSamples];
+    //std::cout << "SampleBuffer collected: " << nSamples << std::endl;
+    std::vector<sampleValue> collected;
+    createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
+    sendPacket(&pack, eps[2]);
+    getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * nSamples);
+    for(int i = 0; i < (int)nSamples; i++) {
+      samples.push_back(collectedSamples[i]);
+    }
+    delete[] collectedSamples;
+
   }
-  delete[] collectedSamples;
-  return 0;
+   return 0;
 }
 
 int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
@@ -305,10 +323,15 @@ int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
   //printf("Waiting for %d bytes from meco\n", nBytes);
   int bytesRemaining = nBytes;
   int transfered = 0;
+  int ret = 0;
   while(bytesRemaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
+    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
+    if(ret != 0) {
+      printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
+    }
     bytesRemaining -= transfered;
   }
+
   return 0;
 }
 
@@ -325,4 +348,11 @@ int getMecoboStatus(struct mecoboDev * dev)
   dev->bufElements = d[1];
 
   return 0;
+}
+
+void resetAllPins()
+{
+  struct mecoPack p;
+  createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
+  sendPacket(&p, eps[2]);
 }

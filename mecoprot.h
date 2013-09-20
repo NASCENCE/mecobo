@@ -3,7 +3,7 @@
 
 //This defines the fields and values for the mecobo protocol
 
-#define USB_BUFFER_SIZE 2000
+#define USB_BUFFER_SIZE 1000
 
 
 #define USB_CMD_CONFIG_PIN    0x1
@@ -15,6 +15,8 @@
 #define USB_CMD_GET_INPUT_BUFFER 0x7
 #define USB_CMD_STATUS 0x8
 #define USB_CMD_GET_INPUT_BUFFER_SIZE 0x9
+#define USB_CMD_CONST 0xA
+#define USB_CMD_RESET_ALL 0xB
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1

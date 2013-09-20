@@ -37,6 +37,7 @@
 #define CMD_INPUT_STREAM  3
 #define CMD_PROGRAM_FPGA  4
 #define CMD_RESET  5
+#define CMD_CONST  6
 
 
 struct pinConfig {
@@ -112,6 +113,7 @@ uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
 void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
+void resetAllPins();
 
 #endif //__MECOBO_H_
 

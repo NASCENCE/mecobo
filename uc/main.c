@@ -10,6 +10,8 @@
 #include "em_timer.h"
 #include "bsp.h"
 #include "bsp_trace.h"
+#include "q.h"
+#include "ll.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +20,7 @@
 #include "../mecoprot.h"
 #include "mecobo.h"
 
-
+DMA_CB_TypeDef DmaUsbTxCB;
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -91,25 +93,27 @@ void eADesigner_Init(void);
 
 int packNum = 0;
 
+static int lastCollected[50];
+static struct llItem * llInputPins = NULL;
 static uint32_t inBufferTop;
 static uint8_t * inBuffer;
 
 
 static struct mecoPack currentPack;
 static struct mecoPack packToSend;
-static int sendPackReady;
+static int sendPackReady = 0;
 
 static int bSel, bHead1, bHead2; //last index with data
 static struct sampleValue sampleBuffer[2][USB_BUFFER_SIZE];
-static int * bHead;
-static uint32_t sendingBuffer;
-static uint32_t sendingBufferSize;
+static int * bHead = NULL;
+static uint32_t sendingBuffer = 0;
+static uint32_t sendingBufferSize = 0;
 
 
 
 //Keep track of which pins are input pins. 
-static int nInputPins = 100;
-static int inputPins[100];
+static int nPins = 50;
+
 
 //Are we programming the FPGA
 int fpgaUnderConfiguration = 0;
@@ -132,13 +136,13 @@ EBI_Init_TypeDef ebiConfig = {
     0,                /* addr setup cycles */          \
     1,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
-    0,                /* read setup cycles */          \
+    1,                /* read setup cycles */          \
     2,                /* read strobe cycles */         \
     0,                /* read hold cycles */           \
     false,            /* disable page mode */          \
     false,            /* disable prefetch */           \
     false,            /* do not enable half cycle REn strobe */ \
-    0,                /* write setup cycles */         \
+    1,                /* write setup cycles */         \
     2,                /* write strobe cycles */        \
     0,                /* write hold cycles */          \
     false,            /* do not disable the write buffer */ \
@@ -180,12 +184,10 @@ void flipBuffers()
     bHead1 = 0; //reset buffer index
 
     bHead = &bHead1;
-    printf("sel b1\n");
   } else {
     bSel = 0;
     bHead2 = 0;
     bHead = &bHead2;
-    printf("sel b0\n");
   }
 }
 
@@ -194,7 +196,6 @@ int main(void)
   eADesigner_Init();
 
   setupSWOForPrint();
-  //printf("Hello world, I'm alive.\n");
 
   //Turn on timer
   CMU_ClockEnable(cmuClock_TIMER1, true);
@@ -210,7 +211,6 @@ int main(void)
 
   TIMER_Init(TIMER1, &timerInit);
 
-  //printf("Initializing EBI\n");
 
   EBI_Init(&ebiConfig);
 
@@ -223,6 +223,7 @@ int main(void)
   bSel = 0;
   bHead1 = 0; 
   bHead2 = 0;
+  bHead = &bHead1;
 
   //printf("Initializing USB\n");
   USBD_Init(&initstruct);
@@ -249,10 +250,8 @@ int main(void)
 
   bHead = &bHead1;
   //read and write in loop	
-  uint32_t lastCollected[100];
-  for(int l = 0; l < 100; l++) {
+  for(int l = 0; l < 50; l++) {
     lastCollected[l] = 0;
-    inputPins[l] = 0;
   }
 
   struct sampleValue foo = {0,0,0};
@@ -281,33 +280,26 @@ int main(void)
     }
 
     //We can start the EBI interface if the FPGA is configured.
-    if(sendPackReady) {
-      printf("usb: %u\n", (unsigned int)packToSend.size);
-      USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
-      sendPackReady = 0;
-    }
     //Whatever time is left should be spent collecting data from input pins.
 
     struct sampleValue val;
-    for(int pin = 0; pin < nInputPins; pin++) {
+    //for(int pin = 0; pin < nInputPins; pin++) {
+    struct llItem * curr = llInputPins;
+    while(curr != NULL) {
       //TODO: Make pinControllers notify uC when it has new data, interrupt?
-      //Until then:
-      //For each input pin, collect a sample, if it's the 
-      //same running number as last collected, just discard it?
-      //Bluech... Then I have to keep a separate map of "last collected sample".
-      //Which is ok, it's just uint32_t[100]...index on pin.
-      if(inputPins[pin]) {
-        getInput(&val, pin);
-        if(val.sampleNum != lastCollected[pin]) {
+        getInput(&val, curr->data);
+        if(val.sampleNum != (uint32_t)lastCollected[curr->data]) {
+          if(*bHead >= (USB_BUFFER_SIZE - 1)) {
+            //printf("BF!\n");
+          } else {
+            //This is a new value. Update last collected and put into send queue.
+            lastCollected[curr->data] = val.sampleNum; 
+            sampleBuffer[bSel][*bHead] = val;
 
-          //printf("pin %u pull\n", pin);
-          //This is a new value. Update last collected and put into send queue.
-          lastCollected[pin] = val.sampleNum; 
-          sampleBuffer[bSel][*bHead] = val;
-          //printf("new: %x\n", sampleBuffer[bSel][*bHead].value);
-          *bHead = (*bHead + 1)%USB_BUFFER_SIZE;
+            *bHead = (*bHead + 1);
+          }
         }
-      }
+        curr = curr->next;
     }
 
   }
@@ -344,7 +336,6 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
           printf("cP.data mal failed\n");
         } 
 
-        //Queue for data wait.
         USBD_Read(EP_DATA_OUT1, currentPack.data, currentPack.size, UsbDataReceived);
       } else {
         //Only header command, so we can parse it, and will not wait for data.
@@ -374,14 +365,8 @@ int fpgaConfigPin(struct pinConfig * p)
   *(pin + PINCONFIG_RUN_INF)        = p->runInf;
   *(pin + PINCONFIG_SAMPLE_RATE)    = p->sampleRate;
 
-  //If the sampleRate is not 0, i'll assume this pin is going
-  //to be used for input :)
-  if (p->sampleRate != 0) {
-    inputPins[p->fpgaPin] = 1;
-  } else {
-    inputPins[p->fpgaPin] = 0;
-  }
-
+  //TODO: This doesn't really work,
+  //what is a pin is removed.
   //TODO: support everything :-)
   return 0;
 }
@@ -412,66 +397,26 @@ int UsbDataSent(USB_Status_TypeDef status,
   if ((status == USB_STATUS_OK) && (xf > 0)) 
   {
     //we probably sent some data :-)
-    //sendPackReady = 0;  //reset this for next packet.
-    //don't free the input buffer...
+    //don't free the sample buffer
     if((packToSend.command != USB_CMD_GET_INPUT_BUFFER) &&
         (packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE)) 
     {
-      printf("free\n");
       free(packToSend.data);
     }
-    printf("sdone!\n");
   }
 
   return USB_STATUS_OK;
 }
 
-/*
-   void DmaUsbRxDone(unsigned int channel, int primary, void *user)
-   {
-   (void) channel;
-   (void) primary;
-   (void) user;
+void DmaUsbTxDone(unsigned int channel, int primary, void *user)
+{
+  (void) channel;
+  (void) primary;
+  (void) user;
 
-   INT_Disable();
-   INT_Enable();
-   }
-
-   int setupDma(void)
-   {
-   DMA_Init_TypeDef dmaInit;
-   DMA_CfgChannel_TypeDef chnlCfgTx, chnlCfgRx;
-   DMA_CfgDescr_TypeDef   descrCfgTx, descrCfgRx;
-
-//Init DMA in general.
-dmaInit.hprot = 0;
-dmaInit.controlBlock = dmaControlBlock; //where channel config data is stored
-DMA_Init(&dmaInit);
-
-//Channel 0 for USB Rx
-//Callback function when Rx occurs
-DmaUsbRxCB.cbFunc = DmaUsbRxDone;
-DmaUsbRxCB.userPtr = NULL; //no user data for function.
-
-chnlCfgRx.highPri = false;
-chnlCfgRx.enableInt = true;
-chnlCfgRx.select    = USB_GRSTCTL_DMAREQ;
-chnlCfgRx.cb = &DmaUsbRxCB;
-DMA_CfgChannel(0, &chnlCfgRx);
-
-//Channel descriptor
-descrCfgRx.dstInc = dmaDataInc1;
-descrCfgRx.srcInc = dmaDataIncNone;
-descrCfgRx.size = dmaDataSize1;
-
-descrCfgRx.arbRate = dmaArbitrate1;
-descrCfgRx.hprot = 0;
-
-DMA_CfgDescr(1, true, &descrCfgRx);
-
+  INT_Disable();
+  INT_Enable();
 }
-*/
-
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
@@ -596,12 +541,22 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
+void startConstOutput(FPGA_IO_Pins_TypeDef pin)
+{
+  uint16_t * addr = getPinAddress(pin);
+  addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+  addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
+}
+
 void startOutput(FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
   addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
-  inputPins[pin] = 0;
+
+  printf("output: %d\n", pin);
+  llRemove(&llInputPins, pin);
+  lastCollected[pin] = -1;
 }
 
 void startInput(FPGA_IO_Pins_TypeDef pin)
@@ -609,14 +564,14 @@ void startInput(FPGA_IO_Pins_TypeDef pin)
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
   addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
-  inputPins[pin] = 1;
+  printf("input: %d\n", pin);
+  llInsert(&llInputPins, pin);
 }
 
 void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
   val->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-  //printf("%u\n", addr[PINCONFIG_SAMPLE_CNT]);
   val->pin = pin;
   val->value = addr[PINCONFIG_SAMPLE_REG];
 }
@@ -669,6 +624,13 @@ void execCurrentPack()
     startOutput(d[PINCONFIG_DATA_FPGA_PIN]);
   }
 
+  if(currentPack.command == USB_CMD_CONST) {
+    /* Start output from pin controllers */
+    uint32_t * d = (uint32_t *)(currentPack.data);
+    startConstOutput(d[PINCONFIG_DATA_FPGA_PIN]);
+  }
+
+
   if(currentPack.command == USB_CMD_STREAM_INPUT) {
     /* Start input in pin controller */
     uint32_t * d = (uint32_t *)(currentPack.data);
@@ -690,9 +652,15 @@ void execCurrentPack()
     sendPackReady = 1; 
   }
 
+  if(currentPack.command == USB_CMD_RESET_ALL) {
+    resetAllPins();
+  }
+
+
+
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
     //Get the size of the current buffer, and send it to host. 
-    sendingBufferSize = *bHead;
+    sendingBufferSize = (*bHead) + 1;
     sendingBuffer = bSel;
     //TODO: here a packet can sneak in if we're DMA-ing data...
     flipBuffers();
@@ -703,11 +671,6 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
     //Send back a complete buffer.
-    //TODO: DMA tranfer from
-    //this buffer to host with USB?
-    //
-    //One pack is 1024 * 12 bytes
-
     sendPacket(sizeof(struct sampleValue) * sendingBufferSize, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer[sendingBuffer]);
 
   }
@@ -767,12 +730,24 @@ void execCurrentPack()
 
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 {
-  printf("sp!\n");
   struct mecoPack pack;
   pack.size = size;
   pack.command = cmd;
   pack.data = data;
 
   packToSend = pack; //This copies the pack structure.
-  sendPackReady = 1;
+  USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
+}
+
+void resetAllPins()
+{
+  for (int i = 0; i < nPins; i++) {
+    uint16_t * addr = getPinAddress(i);
+    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+    lastCollected[i] = -1;
+  }
+  llClear(&llInputPins); 
+  bHead1 = 0;
+  bHead2 = 0;
+
 }
