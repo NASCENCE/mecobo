@@ -52,7 +52,9 @@ typedef enum {
   FPGA_L12 = 8,
   FPGA_H14 = 9,
   FPGA_K14 = 10,
-  FPGA_K12 = 11 
+  FPGA_K12 = 11,
+  FPGA_K17 = 12,
+  FPGA_K16 = 13 
 } FPGA_IO_Pins_TypeDef;
 
 
