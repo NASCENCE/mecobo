@@ -142,7 +142,6 @@ usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
 main.c \
-q.c \
 ll.c
 
 s_SRC += 

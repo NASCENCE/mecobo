@@ -10,7 +10,6 @@
 #include "em_timer.h"
 #include "bsp.h"
 #include "bsp_trace.h"
-#include "q.h"
 #include "ll.h"
 
 #include <stdio.h>
