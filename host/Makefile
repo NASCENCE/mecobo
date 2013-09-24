@@ -16,7 +16,7 @@ INC := -I$(THRIFT_DIR) -I$(BOOST_DIR) -I /usr/include/libusb-1.0/
 
 .PHONY: all clean
 
-all: evo_srv evo_cli
+all: evo_srv evo_cli evoGates
 
 %.o: %.cpp
 	$(CXX) -std=c++11 -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H $(INC) -c $< -o $@
@@ -27,6 +27,10 @@ evo_srv:  emMotherboard.cpp $(GEN_OBJ)
 evo_cli: evo_cli.o $(GEN_OBJ)
 	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift -lusb-1.0 
 
+evoGates: evoGates.o $(GEN_OBJ)
+	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift -lusb-1.0 
+
+
 clean:
-	$(RM) *.o evo_srv evo_cli
+	$(RM) *.o evo_srv evo_cli evoGates
 

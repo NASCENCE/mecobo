@@ -545,6 +545,7 @@ void startConstOutput(FPGA_IO_Pins_TypeDef pin)
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
   addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
+  printf("CONST pin %d\n", pin);
 }
 
 void startOutput(FPGA_IO_Pins_TypeDef pin)

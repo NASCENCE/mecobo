@@ -83,13 +83,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   void clearSequences() {
     // Your implementation goes here
+    
     printf("clearSequences\n");
-    //seq.clear();
+    pinSeq.clear();
   }
 
   void runSequences() {
   
-    resetAllPins();
     auto start = std::chrono::system_clock::now();
     auto lastGetBuffer = std::chrono::system_clock::now(); 
     bool done = false;
@@ -115,65 +115,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           //If an item's start time has passed.
           if(item.startTime <= std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count()) {
             itemsInFlight.push_back(item); 
-            std::cout << "Playing item on pin " << k.first << " scheduled at" << item.startTime << std::endl;
-            double period; //= 1.0f/(double)s.frequency;
-            int32_t duty; // = period * (25*1000000);
-            int32_t aduty; // = period * (25*1000000);
-            uint32_t sampleDiv = ((50*1000000)/(8.0d*(double)item.frequency));
-            emException err;
-
-            switch(item.operationType) {
-              case emSequenceOperationType::type::CONST:
-                std::cout << "CONST voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
-                setPin((FPGA_IO_Pins_TypeDef)item.pin, item.amplitude, 0, 0x1, 0x0);
-                startConstOutput((FPGA_IO_Pins_TypeDef)item.pin);
-                break;
-              case emSequenceOperationType::type::PREDEFINED:
-
-                //Since it's predefined, we have a waveFormType
-                if(item.waveFormType == emWaveFormType::PWM) {
-                  period = 1.0d/(double)item.frequency;
-
-                  duty =  (item.cycleTime/100.0d)*(period * (50*1000000));
-                  aduty = ((100.0f - item.cycleTime)/100.0d) * period * (50*1000000);
-                  
-
-                  if(item.frequency < 382) {
-                    std::cout << "Throwing error, duty is " << duty << std::endl;
-                    //std::string reason;
-                    //reason << "Frequency too low: " << item.frequency << ", minimum 400Hz please." << std::endl;
-                    err.Reason = "too low freq"; //reason;
-                    err.Source = "emMotherboard sequencer";
-                    throw err;
-                    break;
-                  }
-                  std::cout << "PREDEFINED PWM: Freq:" << item.frequency << "Duty" << duty << "Antiduty: " << aduty << std::endl;
-                  setPin((FPGA_IO_Pins_TypeDef)item.pin, (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0);
-                  startOutput((FPGA_IO_Pins_TypeDef)item.pin);
-                }
-                break;
-
-              
-              
-              case emSequenceOperationType::type::RECORD:
-                std::cout << "RECORD. start: " << item.startTime << "end: " << item.endTime <<"   Freq: " << item.frequency << "Gives sample divisor:" << sampleDiv << std::endl;
-                if(sampleDiv <= 1) {
-                  err.Reason = "samplerate too high";
-                  err.Source = "emMotherboard";
-                  throw err;
-                  break;
-                } else if (sampleDiv > 65535) {
-                  err.Reason = "samplerate too low";
-                  err.Source = "emMotherboard";
-                  throw err;
-                  break;
-                }
-                setPin((FPGA_IO_Pins_TypeDef)item.pin, 1, 1, 1, sampleDiv);
-                startInput((FPGA_IO_Pins_TypeDef)item.pin);
-                break;
-              default:
-                break;
-            }
+            std::cout << "Playing item on pin " << k.first << " scheduled at" << item.startTime << "Time is: " <<  std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() << std::endl;
+           
+            setupItem(item);
             pinSeq[k.first].pop(); //remove element from queue.
           }
         }
@@ -235,7 +179,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     }
     std::cout << "Sequence done, all qeueues empty." << std::endl;
-    resetAllPins();
   } 
 
 
@@ -252,7 +195,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void appendSequenceAction(const emSequenceItem& Item) {
     //TODO: Lots of error checking and all that jazzy.
     std::cout << "Appending action" << std::endl;
-    pinSeq[Item.pin].push(Item);
+
+    //If it starts at time = 0, just set it up immediatly.
+    if((Item.operationType != emSequenceOperationType::type::RECORD) &&
+        Item.startTime == 0) {
+      setupItem(Item); }
+    else  {
+      pinSeq[Item.pin].push(Item);
+    }
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
@@ -308,6 +258,67 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       } 
     }
     */
+  void setupItem(emSequenceItem item) {
+    double period; //= 1.0f/(double)s.frequency;
+    int32_t duty; // = period * (25*1000000);
+    int32_t aduty; // = period * (25*1000000);
+    uint32_t sampleDiv = ((50*1000000)/(8.0d*(double)item.frequency));
+    emException err;
+
+    switch(item.operationType) {
+      case emSequenceOperationType::type::CONST:
+        std::cout << "CONST voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
+        setPin((FPGA_IO_Pins_TypeDef)item.pin, item.amplitude, 0, 0x1, 0x0);
+        startConstOutput((FPGA_IO_Pins_TypeDef)item.pin);
+        break;
+      case emSequenceOperationType::type::PREDEFINED:
+
+        //Since it's predefined, we have a waveFormType
+        if(item.waveFormType == emWaveFormType::PWM) {
+          period = 1.0d/(double)item.frequency;
+
+          duty =  (item.cycleTime/100.0d)*(period * (50*1000000));
+          aduty = ((100.0f - item.cycleTime)/100.0d) * period * (50*1000000);
+
+
+          if(item.frequency < 382) {
+            std::cout << "Throwing error, duty is " << duty << std::endl;
+            //std::string reason;
+            //reason << "Frequency too low: " << item.frequency << ", minimum 400Hz please." << std::endl;
+            err.Reason = "too low freq"; //reason;
+            err.Source = "emMotherboard sequencer";
+            throw err;
+            break;
+          }
+          std::cout << "PREDEFINED PWM: Freq:" << item.frequency << "Duty" << duty << "Antiduty: " << aduty << std::endl;
+          setPin((FPGA_IO_Pins_TypeDef)item.pin, (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0);
+          startOutput((FPGA_IO_Pins_TypeDef)item.pin);
+        }
+        break;
+
+
+
+      case emSequenceOperationType::type::RECORD:
+        std::cout << "RECORD. start: " << item.startTime << "end: " << item.endTime <<"   Freq: " << item.frequency << "Gives sample divisor:" << sampleDiv << std::endl;
+        if(sampleDiv <= 1) {
+          err.Reason = "samplerate too high";
+          err.Source = "emMotherboard";
+          throw err;
+          break;
+        } else if (sampleDiv > 65535) {
+          err.Reason = "samplerate too low";
+          err.Source = "emMotherboard";
+          throw err;
+          break;
+        }
+        setPin((FPGA_IO_Pins_TypeDef)item.pin, 1, 1, 1, sampleDiv);
+        startInput((FPGA_IO_Pins_TypeDef)item.pin);
+        break;
+      default:
+        break;
+    }
+
+  }
 };
 
 int main(int argc, char **argv) {
@@ -321,16 +332,18 @@ int main(int argc, char **argv) {
       }
     }
   }
-  if(progFpga) 
-    programFPGA("mecobo.bin");
-
-
+  
 
   int port = 9090;
 
   std::cout << "Starting USB..." << std::endl;
   startUsb();
   std::cout << "Done!" << std::endl;
+
+  if(progFpga) {
+    programFPGA("mecobo.bin");
+  }
+
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler());
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));

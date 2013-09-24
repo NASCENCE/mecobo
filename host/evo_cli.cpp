@@ -25,7 +25,7 @@ void connectivityTest(emEvolvableMotherboardClient & cli)
     out.pin = i;
     out.startTime = 0;
     out.endTime = 1000;
-    out.amplitude = 1.0d;
+    out.amplitude = 1.0;
     out.operationType = emSequenceOperationType::type::CONST;
     cli.appendSequenceAction(out);
 
@@ -34,10 +34,11 @@ void connectivityTest(emEvolvableMotherboardClient & cli)
     rec.pin = 0;
     rec.startTime = 0;
     rec.endTime = 1000;
-    rec.frequency = 8000;
+    rec.frequency = 5000;
     rec.operationType = emSequenceOperationType::type::RECORD;
     cli.appendSequenceAction(rec);
 
+    cli.runSequences();
 
     emWaveForm r;
     cli.getRecording(r, 0);
@@ -48,11 +49,52 @@ void connectivityTest(emEvolvableMotherboardClient & cli)
    }
     if (vals[1] > 0) {
       std::cout << "Connectivity good for pin" << i << std::endl;
+    } else {
+      std::cout << "no connection" << std::endl;
     }
 
   }
 }
 
+void pinTest(emEvolvableMotherboardClient & cli) 
+{
+  int offset = 6;
+  for(int i = 0; i < offset; i++) {
+    emSequenceItem out;
+    out.pin = i;
+    out.amplitude = 1;
+    out.startTime = 0;
+    out.endTime = 256;
+    out.operationType = emSequenceOperationType::type::CONST;
+    cli.appendSequenceAction(out);
+
+    //Do a recording.
+    emSequenceItem rec;
+    rec.pin = i + offset;
+    rec.startTime = 0;
+    rec.endTime = 256;
+    rec.frequency = 5000;
+    rec.operationType = emSequenceOperationType::type::RECORD;
+    cli.appendSequenceAction(rec);
+
+    cli.runSequences();
+
+    emWaveForm r;
+    cli.getRecording(r, i + offset);
+ 
+    std::map<int, int> vals;
+    for (auto l : r.Samples) {
+      vals[l]++;
+    }
+    
+    std::cout << std::endl;
+    if (vals[1] > 0) {
+      std::cout << "Connectivity OK for pins" << i << "and " << i + offset << std::endl;
+    } else {
+      std::cout << "Connectivity BAD for pins" << i << "and " << i + offset << std::endl;
+    }
+  }
+}
 
 void testLoopbackCONST(emEvolvableMotherboardClient & cli, int pin1, int pin2) 
 {
@@ -124,10 +166,12 @@ int main(void)
   emEvolvableMotherboardClient client(protocol);
   transport->open();
   client.ping();
-
+/*
   for(int i = 0; i < 10; i++) {
     testLoopbackCONST(client, 12,13);
   }
+  */
+  pinTest(client);
 /*  
   emSequenceItem rec;
   rec.pin = 1;

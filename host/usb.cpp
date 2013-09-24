@@ -252,6 +252,7 @@ int programFPGA(const char * filename)
   bitfile = fopen(filename, "rb");
 #endif
 
+  printf("Programming FPGA\n");
   fseek(bitfile, 0L, SEEK_END);
   long nBytes = ftell(bitfile);
   rewind(bitfile);
