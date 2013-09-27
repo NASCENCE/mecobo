@@ -216,6 +216,24 @@ int main(void)
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
   GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
+  //Turn off all LEDS
+  for(int l = 1; l < 6; l++) {
+    led(l, 1);
+  }
+  //Leddies
+  for(int r = 0; r < 5; r++)  {
+    for(int i = 1; i < 6; i++) {
+      led(i, 0);
+      for(int t = 0; t < 1000000; t++);
+      led(i, 1);
+    }
+
+    for(int i = 5; i > 0; i--) {
+      led(i, 0);
+      for(int t = 0; t < 1000000; t++);
+      led(i, 1);
+    }
+  }
   inBuffer = (uint8_t*)malloc(8*1024);
   inBufferTop = 0;
 
@@ -540,6 +558,7 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
+
 void startConstOutput(FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
@@ -629,6 +648,13 @@ void execCurrentPack()
     uint32_t * d = (uint32_t *)(currentPack.data);
     startConstOutput(d[PINCONFIG_DATA_FPGA_PIN]);
   }
+
+  if(currentPack.command == USB_CMD_LED) {
+    /* Start output from pin controllers */
+    uint32_t * d = (uint32_t *)(currentPack.data);
+    led(d[LED_SELECT], d[LED_MODE]);
+  }
+
 
 
   if(currentPack.command == USB_CMD_STREAM_INPUT) {
@@ -750,4 +776,28 @@ void resetAllPins()
   bHead1 = 0;
   bHead2 = 0;
 
+}
+
+void led(int l, int mode) 
+{
+  printf("led: %d, m: %d\n", l, mode);
+  switch(l) {
+    case 1:
+  GPIO_PinModeSet(gpioPortF,  7, gpioModePushPull, mode);
+  break;
+    case 2:
+  GPIO_PinModeSet(gpioPortC,  11, gpioModePushPull, mode);
+  break;
+    case 3:
+  GPIO_PinModeSet(gpioPortB,  8, gpioModePushPull, mode);
+  break;
+    case 4:
+  GPIO_PinModeSet(gpioPortD,  8, gpioModePushPull, mode);
+  break;
+    case 5:
+  GPIO_PinModeSet(gpioPortF,  6, gpioModePushPull, mode);
+  break;
+    default:
+  break;
+  }
 }

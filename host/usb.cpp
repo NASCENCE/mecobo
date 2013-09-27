@@ -357,3 +357,12 @@ void resetAllPins()
   createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
   sendPacket(&p, eps[2]);
 }
+
+void moboSetLed(int led, int mode) {
+  struct mecoPack p;
+  uint32_t dat[2];
+  dat[LED_SELECT] = (uint32_t)led;
+  dat[LED_MODE] = (uint32_t)mode; 
+  createMecoPack(&p, (uint8_t*)dat, 8, USB_CMD_LED);
+  sendPacket(&p, eps[2]);
+}

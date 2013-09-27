@@ -47,6 +47,7 @@ int getPacket(struct mecoPack * packet);
 int startInput (FPGA_IO_Pins_TypeDef pin);
 int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes);
 int getSampleBuffer(std::vector<sampleValue> & values);
+void moboSetLed(int led, int mode);
 
 int setPin( FPGA_IO_Pins_TypeDef pin, 
             uint32_t duty,

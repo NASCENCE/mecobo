@@ -30,6 +30,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::map<int, std::queue<emSequenceItem>> pinSeq;
   std::map<int, std::vector<uint32_t>> rec;
   //std::vector<int> recPins;
+  std::vector<emSequenceItem> itemsInFlight;
 
   public:
   emEvolvableMotherboardHandler() {
@@ -44,8 +45,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setLED(const int32_t index, const bool state) {
-    // Your implementation goes here
-    printf("setLED\n");
+    state ? moboSetLed(index, 0) : moboSetLed(index, 1);
+    std::cout << "Led " << index << "is " << state << std::endl;
   }
 
   void getMotherboardID(std::string& _return) {
@@ -98,7 +99,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }
     int64_t lastEndTime = -1;
 
-    std::vector<emSequenceItem> itemsInFlight;
     while(!done) {
       //Iterate all the queues, check if it's time to do a sequence action.
       for(auto k : pinSeq) {
@@ -170,6 +170,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         if(q.second.size() > 0) {
           done = false;
         }
+        if(itemsInFlight.size() > 0) {
+          done = false;
+        }
       }
 
       auto n = std::chrono::system_clock::now();
@@ -199,8 +202,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //If it starts at time = 0, just set it up immediatly.
     if((Item.operationType != emSequenceOperationType::type::RECORD) &&
         Item.startTime == 0) {
-      setupItem(Item); }
-    else  {
+      setupItem(Item); 
+      itemsInFlight.push_back(Item);
+    } else  {
       pinSeq[Item.pin].push(Item);
     }
   }

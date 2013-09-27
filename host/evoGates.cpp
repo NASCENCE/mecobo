@@ -5,6 +5,7 @@
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 #include <random>
 #include <algorithm>
@@ -29,42 +30,75 @@ int main(void)
   transport->open();
   client.ping();
 
-  std::vector<std::bitset<12>> outputs;
+  std::vector<std::bitset<11>> outputs;
 
-  for(int i = 0; i < 4096; i++) {
-    std::bitset<12> f ((unsigned long long)i);
-   
-    //setup pins for all 
-    for(int i = 0; i < 12; i++) {
-      
-      emSequenceItem s;
+  for(int rec = 0; rec < 12; rec++) {
+    for(int j = 0; j < 2048; j++) {
+      std::bitset<11> f ((unsigned long long)j);
 
-      if(i == 6) {
-        //ignore 6th bit as output.
-        s.pin = i;
+      //Reset!
+      for(int pin = 0; pin < 12; pin++) {
+        emSequenceItem s;
+        s.pin = pin;
         s.startTime = 0;
-        s.endTime = 256;
-        s.frequency = 8000;
-        s.operationType = emSequenceOperationType::type::RECORD;
-
-      } else {
-        s.pin = i;
-        s.startTime = 0;
-        s.endTime = 256;
-        s.amplitude = f[i];
+        s.endTime = 1000;
+        s.amplitude = 0;
         s.operationType = emSequenceOperationType::type::CONST;
+        client.appendSequenceAction(s);
       }
-    
-      client.appendSequenceAction(s);
-    }
-    client.runSequences();
+      client.runSequences ();
 
-    emWaveForm r;
-    client.getRecording(r, 6);
+      client.reset();
 
-    for(auto s : r.Samples) {
-      std::cout << s;
+      //setup pins for the actual pattern
+      int ai = 0;
+      for(int pin = 0; pin < 12; pin++) {
+
+        emSequenceItem s;
+        if(pin == rec) {
+          //ignore 6th bit as output.
+          s.pin = rec;
+          s.startTime = 0;
+          s.endTime = 100;
+          s.frequency = 10000;
+          s.operationType = emSequenceOperationType::type::RECORD;
+          std::cout << "# ";
+        } else {
+          s.pin = pin;
+          s.startTime = 0;
+          s.endTime = 100;
+          s.amplitude = f[ai];
+          s.operationType = emSequenceOperationType::type::CONST;
+          std::cout << f[ai] << " ";
+          ai++;
+        }
+
+        client.appendSequenceAction(s);
+      }
+      client.runSequences ();
+
+      emWaveForm r;
+      client.getRecording(r, rec);
+
+      std::cout << "=> ";
+      std::map<int, int> vals;
+      for (auto i : r.Samples) {
+        vals[i]++;
+        std::cout << i;
+      }
+      std::cout << std::endl;
     }
+    /*
+    if (vals[1] > 100) {
+      std::cout << " 1" << std::endl;
+    } else {
+      std::cout << " 0" << std::endl;
+    }*/
+
+
+    //for(auto s : r.Samples) {
+    //  std::cout << s;
+   // }
     client.clearSequences();
     client.reset();
   }

@@ -114,6 +114,7 @@ int noDataCmd(int cmd);
 void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
 void resetAllPins();
+void led(int l, int mode);
 
 #endif //__MECOBO_H_
 
