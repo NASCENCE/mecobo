@@ -26,7 +26,7 @@ void connectivityTest(emEvolvableMotherboardClient & cli)
     out.startTime = 0;
     out.endTime = 1000;
     out.amplitude = 1.0;
-    out.operationType = emSequenceOperationType::type::CONST;
+    out.operationType = emSequenceOperationType::type::CONSTANT;
     cli.appendSequenceAction(out);
 
     //Do a recording.
@@ -65,7 +65,7 @@ void pinTest(emEvolvableMotherboardClient & cli)
     out.amplitude = 1;
     out.startTime = 0;
     out.endTime = 256;
-    out.operationType = emSequenceOperationType::type::CONST;
+    out.operationType = emSequenceOperationType::type::CONSTANT;
     cli.appendSequenceAction(out);
 
     //Do a recording.
@@ -96,7 +96,7 @@ void pinTest(emEvolvableMotherboardClient & cli)
   }
 }
 
-void testLoopbackCONST(emEvolvableMotherboardClient & cli, int pin1, int pin2) 
+void testLoopbackCONSTANT(emEvolvableMotherboardClient & cli, int pin1, int pin2) 
 {
   //std::default_random_engine generator;
   std::random_device generator;
@@ -123,7 +123,7 @@ void testLoopbackCONST(emEvolvableMotherboardClient & cli, int pin1, int pin2)
     out.startTime = i*100;
     out.endTime = (i*100)+100;
     out.amplitude = amps[i];
-    out.operationType = emSequenceOperationType::type::CONST;
+    out.operationType = emSequenceOperationType::type::CONSTANT;
     cli.appendSequenceAction(out);
   }
 
@@ -168,7 +168,7 @@ int main(void)
   client.ping();
 /*
   for(int i = 0; i < 10; i++) {
-    testLoopbackCONST(client, 12,13);
+    testLoopbackCONSTANT(client, 12,13);
   }
   */
   pinTest(client);

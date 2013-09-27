@@ -48,7 +48,7 @@ int _kemSequenceOperationTypeValues[] = {
   emSequenceOperationType::RECORD,
   emSequenceOperationType::WAIT,
   emSequenceOperationType::PREDEFINED,
-  emSequenceOperationType::CONST
+  emSequenceOperationType::CONSTANT
 };
 const char* _kemSequenceOperationTypeNames[] = {
   "emNULL",
@@ -56,7 +56,7 @@ const char* _kemSequenceOperationTypeNames[] = {
   "RECORD",
   "WAIT",
   "PREDEFINED",
-  "CONST"
+  "CONSTANT"
 };
 const std::map<int, const char*> _emSequenceOperationType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kemSequenceOperationTypeValues, _kemSequenceOperationTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 

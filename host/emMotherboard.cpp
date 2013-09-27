@@ -270,8 +270,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     emException err;
 
     switch(item.operationType) {
-      case emSequenceOperationType::type::CONST:
-        std::cout << "CONST voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
+      case emSequenceOperationType::type::CONSTANT:
+        std::cout << "CONSTANT voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
         setPin((FPGA_IO_Pins_TypeDef)item.pin, item.amplitude, 0, 0x1, 0x0);
         startConstOutput((FPGA_IO_Pins_TypeDef)item.pin);
         break;

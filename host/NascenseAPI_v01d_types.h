@@ -47,7 +47,7 @@ struct emSequenceOperationType {
     RECORD = 2,
     WAIT = 3,
     PREDEFINED = 4,
-    CONST = 5
+    CONSTANT = 5
   };
 };
 
