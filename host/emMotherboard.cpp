@@ -272,7 +272,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     double period; //= 1.0f/(double)s.frequency;
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
-    uint32_t sampleDiv = ((50*1000000)/(8.0d*(double)item.frequency));
+    uint32_t sampleDiv = ((50*1000000)/(8.0*(double)item.frequency));
     emException err;
 
     switch(item.operationType) {
@@ -285,10 +285,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
         //Since it's predefined, we have a waveFormType
         if(item.waveFormType == emWaveFormType::PWM) {
-          period = 1.0d/(double)item.frequency;
+          period = 1.0/(double)item.frequency;
 
-          duty =  (item.cycleTime/100.0d)*(period * (50*1000000));
-          aduty = ((100.0f - item.cycleTime)/100.0d) * period * (50*1000000);
+          duty =  (item.cycleTime/100.0)*(period * (50*1000000));
+          aduty = ((100.0f - item.cycleTime)/100.0) * period * (50*1000000);
 
 
           if(item.frequency < 382) {
