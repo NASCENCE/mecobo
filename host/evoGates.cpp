@@ -22,7 +22,7 @@ using namespace emInterfaces;
 
 int main(void)
 {
-  boost::shared_ptr<TSocket> socket(new TSocket("dmlab02.idi.ntnu.no", 9090));
+  boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
   boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
   boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
   
@@ -43,7 +43,7 @@ int main(void)
         s.startTime = 0;
         s.endTime = 1000;
         s.amplitude = 0;
-        s.operationType = emSequenceOperationType::type::CONST;
+        s.operationType = emSequenceOperationType::type::CONSTANT;
         client.appendSequenceAction(s);
       }
       client.runSequences ();
@@ -59,8 +59,8 @@ int main(void)
           //ignore 6th bit as output.
           s.pin = rec;
           s.startTime = 0;
-          s.endTime = 100;
-          s.frequency = 10000;
+          s.endTime = 1024;
+          s.frequency = 50000;
           s.operationType = emSequenceOperationType::type::RECORD;
           std::cout << "# ";
         } else {
@@ -68,7 +68,7 @@ int main(void)
           s.startTime = 0;
           s.endTime = 100;
           s.amplitude = f[ai];
-          s.operationType = emSequenceOperationType::type::CONST;
+          s.operationType = emSequenceOperationType::type::CONSTANT;
           std::cout << f[ai] << " ";
           ai++;
         }
@@ -108,3 +108,6 @@ int main(void)
 
   return 0;
 }
+
+
+

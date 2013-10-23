@@ -304,7 +304,7 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
     return 0;
   } else {
     sampleValue* collectedSamples = new sampleValue[nSamples];
-    //std::cout << "SampleBuffer collected: " << nSamples << std::endl;
+    std::cout << "SampleBuffer collected: " << nSamples << std::endl;
     std::vector<sampleValue> collected;
     createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack, eps[2]);
@@ -349,6 +349,24 @@ int getMecoboStatus(struct mecoboDev * dev)
   dev->bufElements = d[1];
 
   return 0;
+}
+
+bool UsbIsFpgaConfigured()
+{
+  struct mecoPack p;
+  uint8_t dat[STATUS_BYTES];
+  createMecoPack(&p, 0, 0, USB_CMD_STATUS);
+  sendPacket(&p, eps[2]);
+  getBytesFromUSB(eps[0], dat, STATUS_BYTES);
+  printf("getting!\n");
+  uint32_t * d = (uint32_t *)dat;
+  bool fpgaConfigured = (d[STATUS_FPGA_CONFIGURED] ? true : false);
+
+  if(fpgaConfigured == 1) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void resetAllPins()

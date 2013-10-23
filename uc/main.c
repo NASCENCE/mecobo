@@ -116,6 +116,7 @@ static int nPins = 50;
 
 //Are we programming the FPGA
 int fpgaUnderConfiguration = 0;
+int fpgaConfigured = 0;
 
 EBI_Init_TypeDef ebiConfig = {   
 
@@ -181,13 +182,13 @@ void flipBuffers()
   if(bSel == 0) {
     bSel = 1;
     bHead1 = 0; //reset buffer index
-
     bHead = &bHead1;
   } else {
     bSel = 0;
     bHead2 = 0;
     bHead = &bHead2;
   }
+  printf("BF, b1: %d b2: %d\n", bHead1, bHead2);
 }
 
 int main(void)
@@ -278,6 +279,14 @@ int main(void)
     }
   }
 
+  //Check if DONE pin is high, which means that the FPGA is configured.
+  
+  if(!GPIO_PinInGet(gpioPortD, 15) && GPIO_PinInGet(gpioPortD, 12)) {
+    fpgaConfigured = 1;
+    fpgaUnderConfiguration = 0;
+    GPIO_PinOutSet(gpioPortD, 0); //turn on led (we're configured)
+  }
+
   for (;;)
   {
     //check if DONE has gone high, then we are ... uh, done
@@ -306,15 +315,13 @@ int main(void)
       //TODO: Make pinControllers notify uC when it has new data, interrupt?
         getInput(&val, curr->data);
         if(val.sampleNum != (uint32_t)lastCollected[curr->data]) {
-          if(*bHead >= (USB_BUFFER_SIZE - 1)) {
-            //printf("BF!\n");
-          } else {
-            //This is a new value. Update last collected and put into send queue.
+          if(*bHead <= (USB_BUFFER_SIZE-1)) {
             lastCollected[curr->data] = val.sampleNum; 
             sampleBuffer[bSel][*bHead] = val;
 
-            *bHead = (*bHead + 1);
-          }
+            if(*bHead != USB_BUFFER_SIZE - 1)
+              *bHead = (*bHead + 1); //will count to 999
+          } 
         }
         curr = curr->next;
     }
@@ -612,11 +619,10 @@ void execCurrentPack()
     pack.command = USB_CMD_STATUS;
     pack.data = malloc(STATUS_BYTES);
     uint32_t * dat = (uint32_t *)pack.data;
-    dat[0] = !fpgaUnderConfiguration;
+    dat[0] = fpgaConfigured;
     dat[1] = *bHead;
-    packToSend = pack;
-    sendPackReady = 1;
     printf("c:stat d!\n");
+    sendPacket(STATUS_BYTES, USB_CMD_STATUS, (uint8_t*)dat);
   }
 
   if(currentPack.command == USB_CMD_CONFIG_PIN) {

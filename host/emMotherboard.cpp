@@ -13,6 +13,8 @@
 #include <queue>
 #include <thread>
 
+#include "emMotherboard.h"
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -24,6 +26,9 @@ using namespace  ::emInterfaces;
 
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
+
+  shared_ptr<emMotherboard> mobo;
+
   std::thread runThread;
 
   int64_t time;
@@ -33,9 +38,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::vector<emSequenceItem> itemsInFlight;
 
   public:
-  emEvolvableMotherboardHandler() {
+  emEvolvableMotherboardHandler(shared_ptr<emMotherboard> mobo) {
     // Your initialization goes here
     time = 0;
+    this->mobo = mobo;
   }
 
   int32_t ping() {
@@ -133,7 +139,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         //Sample buffer fetching.
         if(item.operationType == emSequenceOperationType::type::RECORD) {
           //auto now = std::chrono::system_clock::now();
-          if(10000 <= std::chrono::duration_cast<std::chrono::microseconds>(now - lastGetBuffer).count()) {
+          if(5000 <= std::chrono::duration_cast<std::chrono::microseconds>(now - lastGetBuffer).count()) {
             lastGetBuffer = now;
             //Poke the board for sample buffers for the 
             //pins that we have selected for recording.
@@ -327,12 +333,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 int main(int argc, char **argv) {
 
-  uint32_t progFpga = 0;
+  shared_ptr<emMotherboard> em(new emMotherboard());
+  uint32_t forceProgFpga = 0;
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
-        progFpga = 1;
+        forceProgFpga = 1;
       }
     }
   }
@@ -340,22 +347,30 @@ int main(int argc, char **argv) {
 
   int port = 9090;
 
-  std::cout << "Starting USB..." << std::endl;
-  startUsb();
-  std::cout << "Done!" << std::endl;
-
-  if(progFpga) {
-    programFPGA("mecobo.bin");
-  }
-
-
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler());
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(em));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
   shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+
+  std::cout << "Starting USB..." << std::endl;
+  startUsb();
+  std::cout << "Done!" << std::endl;
+
+  if(forceProgFpga) {
+    programFPGA("mecobo.bin");
+  } else {
+    //Check if FPGA is configured
+    /*
+    if(em != NULL) {
+      if(!(em->isFpgaConfigured())) {
+        programFPGA("mecobo.bin");
+      }
+    }
+    */
+  }
 
   std::cout << "Starting thrift server. (Silence ensues)." << std::endl;
   server.serve();
