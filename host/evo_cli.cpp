@@ -171,7 +171,8 @@ int main(void)
     testLoopbackCONSTANT(client, 12,13);
   }
   */
-  pinTest(client);
+  for(int i = 0; i < 100; i++)
+    pinTest(client);
 /*  
   emSequenceItem rec;
   rec.pin = 1;

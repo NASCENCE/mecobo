@@ -222,6 +222,7 @@ int main(void)
     led(l, 1);
   }
   //Leddies
+  /*
   for(int r = 0; r < 5; r++)  {
     for(int i = 1; i < 6; i++) {
       led(i, 0);
@@ -235,6 +236,7 @@ int main(void)
       led(i, 1);
     }
   }
+  */
   inBuffer = (uint8_t*)malloc(8*1024);
   inBufferTop = 0;
 
