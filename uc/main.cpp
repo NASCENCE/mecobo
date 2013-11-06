@@ -550,6 +550,8 @@ void pinItem::execute()
     case PINCONFIG_DATA_TYPE_DIRECT_CONST:
       addr[PINCONFIG_DUTY_CYCLE] = constantValue;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
+      printf("Ex it, %d\n", pin);
+      break;
     default:
       break;
   }
