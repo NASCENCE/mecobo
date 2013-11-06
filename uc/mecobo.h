@@ -19,6 +19,17 @@
 #define FPGA_BASE_ADDR 0
 
 
+/* Define USB endpoint addresses */
+#define EP_DATA_OUT1       0x01  /* Endpoint for USB data reception.       */
+#define EP_DATA_OUT2       0x02  /* Endpoint for USB data reception.       */
+#define EP_DATA_IN1        0x81  /* Endpoint for USB data transmission.    */
+#define EP_DATA_IN2        0x82  /* Endpoint for USB data transmission.    */
+#define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
+#define BULK_EP_SIZE     USB_MAX_EP_SIZE  /* This is the max. ep size.    */
+
+
+#define EBI_ADDR_BASE 0x80000000
+
 //Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
 #define PINCONFIG_DUTY_CYCLE 1
@@ -101,7 +112,15 @@ int UsbDataSent(USB_Status_TypeDef status,
         uint32_t xf,
         uint32_t remaining);
 
-void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+#ifdef __cplusplus
+}
+#endif
+
 
 
 //Start output on given pin

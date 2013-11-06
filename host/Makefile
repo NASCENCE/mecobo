@@ -25,10 +25,10 @@ evo_srv: usb.o emMotherboard.o emMotherboardImp.o $(GEN_OBJ)
 	$(CXX) -std=c++11 $(INC) -L/usr/local/lib/ $^ -o $@ -lthrift -lusb-1.0 
 
 evo_cli: evo_cli.o $(GEN_OBJ)
-	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift -lusb-1.0 
+	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift
 
 evoGates: evoGates.o $(GEN_OBJ)
-	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift -lusb-1.0 
+	$(CXX) $^ -std=c++11 -o $@ -L/usr/local/lib -lthrift
 
 
 clean:
