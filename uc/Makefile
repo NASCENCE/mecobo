@@ -24,7 +24,7 @@ LST_DIR = lst
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
 WINDOWSCS  ?= GNU Tools ARM Embedded\4.7 2012q4
-LINUXCS    ?= ./gcc-arm-none-eabi/
+LINUXCS    ?= ./gcc-arm-none-eabi-4_7-2013q3/
 
 RMDIRS     := rm -rf
 RMFILES    := rm -rf
@@ -146,11 +146,12 @@ usb/src/em_usbhal.c \
 usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
-struct_init.c \
-ll.c
+ll.c \
+pinItemQueue.c \
+pinItem.c\
+main.c
 
 CXX_SRC += \
-main.cpp
 
 s_SRC += 
 
@@ -210,7 +211,7 @@ $(OBJ_DIR)/%.o: %.S
 # Link
 $(EXE_DIR)/$(PROJECTNAME).out: $(OBJS)
 	@echo "Linking target: $@"
-	$(CXX) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBS) -Wl,-v -o $(EXE_DIR)/$(PROJECTNAME).out
+	$(CC) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBS) -Wl,-v -o $(EXE_DIR)/$(PROJECTNAME).out
 
 # Create binary file
 $(EXE_DIR)/$(PROJECTNAME).bin: $(EXE_DIR)/$(PROJECTNAME).out

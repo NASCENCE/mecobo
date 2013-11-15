@@ -18,6 +18,7 @@ int experiment_ca();
 int setReg(uint32_t data);
 int programFPGA(const char * filename);
 int startOutput (FPGA_IO_Pins_TypeDef pin);
+int evoMoboRunSeq();
 int startConstOutput (FPGA_IO_Pins_TypeDef pin);
 void resetAllPins ();
 
@@ -50,9 +51,14 @@ int getSampleBuffer(std::vector<sampleValue> & values);
 void moboSetLed(int led, int mode);
 bool UsbIsFpgaConfigured();
 
-int setPin( FPGA_IO_Pins_TypeDef pin, 
+int submitItem( FPGA_IO_Pins_TypeDef pin, 
+            uint32_t startTime,
+            uint32_t endTime,
             uint32_t duty,
             uint32_t antiduty,
             uint32_t cycles,
-            uint32_t sampleRate);
+            uint32_t sampleRate,
+            uint32_t type,
+            uint32_t constantValue
+            );
 #endif

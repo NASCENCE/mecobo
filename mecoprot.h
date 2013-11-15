@@ -3,6 +3,7 @@
 
 //This defines the fields and values for the mecobo protocol
 
+#include <inttypes.h>
 #define USB_BUFFER_SIZE 32
 
 
@@ -18,12 +19,13 @@
 #define USB_CMD_CONST 0xA
 #define USB_CMD_RESET_ALL 0xB
 #define USB_CMD_LED 0xC
+#define USB_CMD_RUN_SEQ 0xD
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
 
 //USB package data offsets for the pinconfig package
-#define USB_PACK_SIZE_BYTES   32 //8 * 4
+#define USB_PACK_SIZE_BYTES   40 //10 * 4
 #define PINCONFIG_DATA_FPGA_PIN 0
 #define PINCONFIG_DATA_TYPE 1
 #define PINCONFIG_DATA_CONST 2
@@ -38,8 +40,9 @@
 #define LED_SELECT 1
 
 #define PINCONFIG_DATA_TYPE_DIRECT_CONST 10
-#define PINCONFIG_DATA_TYPE_PWM_CONST 10
-#define PINCONFIG_DATA_TYPE_DAC_CONST 10
+#define PINCONFIG_DATA_TYPE_PWM_CONST 11
+#define PINCONFIG_DATA_TYPE_DAC_CONST 12
+#define PINCONFIG_DATA_TYPE_RECORD 13
 
 #define STATUS_BYTES 8
 #define STATUS_FPGA_CONFIGURED 0
@@ -74,9 +77,9 @@ struct mecoPack {
 };
 
 struct sampleValue {
-  uint32_t sampleNum; 
-  uint32_t pin;
-  uint32_t value;
+  uint16_t sampleNum; 
+  uint8_t pin;
+  uint8_t value;
 };
 
 

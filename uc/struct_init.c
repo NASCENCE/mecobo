@@ -53,6 +53,15 @@ TIMER_Init_TypeDef timerInit = {
   .sync       = false, 
 };
 
+const USBD_Callbacks_TypeDef callbacks = 
+{
+  .usbReset        = NULL,
+  .usbStateChange  = UsbStateChange,
+  .setupCmd        = NULL,
+  .isSelfPowered   = NULL,
+  .sofInt          = NULL
+};
+
 const USBD_Init_TypeDef initstruct = 
 {
   .deviceDescriptor    = &deviceDesc,
@@ -62,14 +71,5 @@ const USBD_Init_TypeDef initstruct =
   .callbacks           = &callbacks,
   .bufferingMultiplier = bufferingMultiplier,
   .reserved            = 0
-};
-
-const USBD_Callbacks_TypeDef callbacks = 
-{
-  .usbReset        = NULL,
-  .usbStateChange  = UsbStateChange,
-  .setupCmd        = NULL,
-  .isSelfPowered   = NULL,
-  .sofInt          = NULL
 };
 

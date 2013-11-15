@@ -124,8 +124,9 @@ extern "C" {
 
 
 //Start output on given pin
+void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef pin);
-void startInput(FPGA_IO_Pins_TypeDef pin);
+void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate);
 void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef pin);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);

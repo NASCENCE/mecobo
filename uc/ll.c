@@ -4,7 +4,7 @@
 
 void llInsert(struct llItem ** head, int data)
 {
-  printf("Inserting element %d\n", data);
+  printf("ll insert");
   struct llItem * new = malloc(sizeof(struct llItem));
   new->data = data;
   new->next = (*head);
@@ -13,7 +13,7 @@ void llInsert(struct llItem ** head, int data)
 
 void llRemove(struct llItem ** head, int data)
 {
-  printf("Removing %d\n", data);
+  printf("Removing element. \n");
   struct llItem * curr = *head;
   struct llItem * prev = *head;
 
@@ -28,7 +28,6 @@ void llRemove(struct llItem ** head, int data)
       }
 
       free(curr);
-      printf("Removed element\n");
       return;
     }
     prev = curr;

@@ -23,6 +23,9 @@ using namespace ::apache::thrift::server;
 using boost::shared_ptr;
 
 using namespace  ::emInterfaces;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::steady_clock;
 
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
@@ -32,6 +35,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::thread runThread;
 
   int64_t time;
+  std::vector<emSequenceItem> seqItems;
+
   std::map<int, std::queue<emSequenceItem>> pinSeq;
   std::map<int, std::vector<uint32_t>> rec;
   //std::vector<int> recPins;
@@ -93,100 +98,42 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     
     printf("clearSequences\n");
     pinSeq.clear();
+    seqItems.clear();
   }
 
   void runSequences() {
-  
-    auto start = std::chrono::system_clock::now();
-    auto lastGetBuffer = std::chrono::system_clock::now(); 
-    bool done = false;
-    for(auto p : rec) {
-      p.second.clear();
+    
+    //Reset board?
+    reset();
+    //Sort the sequence before we submit the items to the board.
+    std::sort(seqItems.begin(), seqItems.end(), 
+        [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
+    
+    int lastEnd = -1;
+    for (auto item : seqItems) {
+      setupItem(item);
+      if(item.endTime > lastEnd) {
+        lastEnd = item.endTime;
+        std::cout << lastEnd << std::endl;
+      }
     }
-    int64_t lastEndTime = -1;
+    
+    steady_clock::time_point start = steady_clock::now();
+    steady_clock::time_point end = steady_clock::now();
+    evoMoboRunSeq();
 
-    while(!done) {
-      //Iterate all the queues, check if it's time to do a sequence action.
-      for(auto k : pinSeq) {
-        //Peek queue
-        if(pinSeq[k.first].size() > 0) {
-          auto item = pinSeq[k.first].front();
-          auto now = std::chrono::system_clock::now();
-
-          if(item.endTime > lastEndTime) {
-            //This is the last item, and we must wait for it to finish.
-            lastEndTime = item.endTime;
-          }
-          
-          //If an item's start time has passed.
-          if(item.startTime <= std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count()) {
-            itemsInFlight.push_back(item); 
-            std::cout << "Playing item on pin " << k.first << " scheduled at" << item.startTime << "Time is: " <<  std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() << std::endl;
-           
-            setupItem(item);
-            pinSeq[k.first].pop(); //remove element from queue.
-          }
-        }
-      }
-
-      
-      //check if we have items in flight that it's time to kill or do something with
-      auto now = std::chrono::system_clock::now();
-      std::vector<sampleValue> samples;
-      for(int i = 0; i < (int)itemsInFlight.size(); i++) {
-        emSequenceItem item = itemsInFlight[i];
-
-        //Sample buffer fetching.
-        if(item.operationType == emSequenceOperationType::type::RECORD) {
-          //auto now = std::chrono::system_clock::now();
-          if(5000 <= std::chrono::duration_cast<std::chrono::microseconds>(now - lastGetBuffer).count()) {
-            lastGetBuffer = now;
-            //Poke the board for sample buffers for the 
-            //pins that we have selected for recording.
-            std::vector<sampleValue> samples;
-            getSampleBuffer(samples);
-            for(auto s : samples) {
-              //std::cout << s.pin << ":" << s.sampleNum << std::endl;
-              rec[s.pin].push_back(s.value);
-            }
-          }
-        }
-
-
-
-        if(item.endTime <= std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count()) {
-          std::cout << "Killing item ending at " << item.endTime << ". Time is: " << std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() << std::endl;
-          switch(item.operationType) {
-            case emSequenceOperationType::type::RECORD:
-              break;
-            default:
-              break;
-          }
-          //remove
-          itemsInFlight.erase(itemsInFlight.begin() + i);
-        }
-
-
-      }
-
-
-      //Check if queues are empty and last item has finished.
-      done = true;
-      for(auto q : pinSeq) {
-        if(q.second.size() > 0) {
-          done = false;
-        }
-        if(itemsInFlight.size() > 0) {
-          done = false;
-        }
-      }
-
-      auto n = std::chrono::system_clock::now();
-      if(lastEndTime >= std::chrono::duration_cast<std::chrono::milliseconds>(n - start).count()) {
-        done = false;
-      }
-
+    lastEnd += 10; //add some stuff because we're cool like that.
+    while(duration_cast<milliseconds>(end - start).count() < lastEnd) {
+      end = steady_clock::now();
     }
+    std::cout << "-- Sequence done --" << std::endl;
+    std::vector<sampleValue> samples;
+    getSampleBuffer(samples);
+    for(auto s : samples) {
+      //std::cout << "Samples for pin " << s.pin << ":" << s.sampleNum << std::endl;
+      rec[s.pin].push_back(s.value);
+    }
+
     std::cout << "Sequence done, all qeueues empty." << std::endl;
   } 
 
@@ -204,15 +151,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void appendSequenceAction(const emSequenceItem& Item) {
     //TODO: Lots of error checking and all that jazzy.
     std::cout << "Appending action" << std::endl;
-
-    //If it starts at time = 0, just set it up immediatly.
-    if((Item.operationType != emSequenceOperationType::type::RECORD) &&
-        Item.startTime == 0) {
-      setupItem(Item); 
-      itemsInFlight.push_back(Item);
-    } else  {
-      pinSeq[Item.pin].push(Item);
-    }
+    
+    //append to vector that we will sort when doing runSequences (where we will do most work)
+    seqItems.push_back(Item);
+    return;
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
@@ -278,8 +220,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
         std::cout << "CONSTANT voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
-        setPin((FPGA_IO_Pins_TypeDef)item.pin, item.amplitude, 0, 0x1, 0x0);
-        startConstOutput((FPGA_IO_Pins_TypeDef)item.pin);
+        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
       case emSequenceOperationType::type::PREDEFINED:
 
@@ -301,13 +242,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
             break;
           }
           std::cout << "PREDEFINED PWM: Freq:" << item.frequency << "Duty" << duty << "Antiduty: " << aduty << std::endl;
-          setPin((FPGA_IO_Pins_TypeDef)item.pin, (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0);
-          startOutput((FPGA_IO_Pins_TypeDef)item.pin);
+          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PWM_CONST, item.amplitude);
         }
         break;
-
-
-
       case emSequenceOperationType::type::RECORD:
         std::cout << "RECORD. start: " << item.startTime << "end: " << item.endTime <<"   Freq: " << item.frequency << "Gives sample divisor:" << sampleDiv << std::endl;
         if(sampleDiv <= 1) {
@@ -321,8 +258,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           throw err;
           break;
         }
-        setPin((FPGA_IO_Pins_TypeDef)item.pin, 1, 1, 1, sampleDiv);
-        startInput((FPGA_IO_Pins_TypeDef)item.pin);
+        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
         break;
       default:
         break;

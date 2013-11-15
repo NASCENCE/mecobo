@@ -199,8 +199,26 @@ static const void * const strings[] =
 /* Use double buffering on the BULK endpoints.                        */
 static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 2, 2, 2, 2, 2 };
 
-extern const USBD_Callbacks_TypeDef callbacks;
-extern const USBD_Init_TypeDef initstruct;
+static const USBD_Callbacks_TypeDef callbacks = 
+{
+  .usbReset        = NULL,
+  .usbStateChange  = UsbStateChange,
+  .setupCmd        = NULL,
+  .isSelfPowered   = NULL,
+  .sofInt          = NULL
+};
+
+static const USBD_Init_TypeDef initstruct = 
+{
+  .deviceDescriptor    = &deviceDesc,
+  .configDescriptor    = configDesc,
+  .stringDescriptors   = strings,
+  .numberOfStrings     = sizeof(strings)/sizeof(void*),
+  .callbacks           = &callbacks,
+  .bufferingMultiplier = bufferingMultiplier,
+  .reserved            = 0
+};
+
 
 #ifdef __cplusplus
 }

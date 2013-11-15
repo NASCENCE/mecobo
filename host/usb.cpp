@@ -114,20 +114,29 @@ int setReg(uint32_t data)
 	return 0;
 }
 
-int setPin( FPGA_IO_Pins_TypeDef pin, 
+int submitItem( FPGA_IO_Pins_TypeDef pin, 
+            uint32_t startTime,
+            uint32_t endTime,
             uint32_t duty,
             uint32_t antiduty,
             uint32_t cycles,
-            uint32_t sampleRate)
+            uint32_t sampleRate,
+            uint32_t type,
+            uint32_t constantValue
+            )
 {
 
   uint32_t data[USB_PACK_SIZE_BYTES];
 
+  data[PINCONFIG_START_TIME] = startTime;
+  data[PINCONFIG_END_TIME] = endTime;
   data[PINCONFIG_DATA_FPGA_PIN] = pin;
   data[PINCONFIG_DATA_DUTY] = duty;
   data[PINCONFIG_DATA_ANTIDUTY] = antiduty;
   data[PINCONFIG_DATA_CYCLES] = cycles;
   data[PINCONFIG_DATA_SAMPLE_RATE] = sampleRate;
+  data[PINCONFIG_DATA_TYPE] = type;
+  data[PINCONFIG_DATA_CONST] = constantValue;
 
   data[PINCONFIG_DATA_RUN_INF] = 0x1; //debug!
 
@@ -139,6 +148,13 @@ int setPin( FPGA_IO_Pins_TypeDef pin,
   return 0;
 }
 
+int evoMoboRunSeq()
+{
+  struct mecoPack p;
+  createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
+  sendPacket(&p, eps[2]);
+  return 0;
+}
 int startOutput (FPGA_IO_Pins_TypeDef pin)
 {
   uint32_t data;
@@ -300,17 +316,20 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
   uint32_t nSamples = 0;
   getBytesFromUSB(eps[0], (uint8_t *)&nSamples, 4);
  
+  std::cout << "SampleBuffer size collected: " << nSamples << std::endl;
   if(nSamples == 0) {
     return 0;
   } else {
     sampleValue* collectedSamples = new sampleValue[nSamples];
-    std::cout << "SampleBuffer collected: " << nSamples << std::endl;
     std::vector<sampleValue> collected;
-    createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER);
+    //So ask for the samples back. Not more at least. 
+    createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack, eps[2]);
     getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * nSamples);
+    std::cout << "Collected from USB" << std::endl;
+    sampleValue * casted = (sampleValue *)collectedSamples;
     for(int i = 0; i < (int)nSamples; i++) {
-      samples.push_back(collectedSamples[i]);
+      samples.push_back(casted[i]);
     }
     delete[] collectedSamples;
 

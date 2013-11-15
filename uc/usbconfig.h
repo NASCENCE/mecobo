@@ -54,7 +54,7 @@ extern "C" {
 ** Specify number of application timers you need.                          **
 **                                                                         **
 *****************************************************************************/
-#define NUM_APP_TIMERS 1
+#define NUM_APP_TIMERS 3
 
 #ifdef __cplusplus
 }
