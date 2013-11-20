@@ -226,7 +226,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
       case emSequenceOperationType::type::PREDEFINED:
-
         //Since it's predefined, we have a waveFormType
         if(item.waveFormType == emWaveFormType::PWM) {
           period = 1.0/(double)item.frequency;
@@ -245,7 +244,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
             break;
           }
           std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
-          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PWM_CONST, item.amplitude);
+          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
         }
         break;
       case emSequenceOperationType::type::RECORD:
