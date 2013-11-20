@@ -96,7 +96,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void clearSequences() {
     // Your implementation goes here
     
-    printf("clearSequences\n");
+    printf("Clearing sequence queue.\n");
     pinSeq.clear();
     seqItems.clear();
   }
@@ -106,6 +106,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //Reset board?
     reset();
     //Sort the sequence before we submit the items to the board.
+    std::cout << "Submitting sequence to board." << std::endl;
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
@@ -118,11 +119,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       }
     }
     
+    std::cout << "Running sequences." << std::endl;
     steady_clock::time_point start = steady_clock::now();
     steady_clock::time_point end = steady_clock::now();
     evoMoboRunSeq();
 
-    lastEnd += 10; //add some stuff because we're cool like that.
+    //If it took a little time to schedule that last item, add a little slack.
+    lastEnd += 10;
     while(duration_cast<milliseconds>(end - start).count() < lastEnd) {
       end = steady_clock::now();
     }
@@ -219,11 +222,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
-        std::cout << "CONSTANT voltage: " << item.amplitude << "on pin " << item.pin << std::endl;
+        std::cout << "CONSTANT added: " << item.amplitude << " on pin " << item.pin << std::endl;
         submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
       case emSequenceOperationType::type::PREDEFINED:
-
         //Since it's predefined, we have a waveFormType
         if(item.waveFormType == emWaveFormType::PWM) {
           period = 1.0/(double)item.frequency;
@@ -233,20 +235,20 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
           if(item.frequency < 382) {
-            std::cout << "Throwing error, duty is " << duty << std::endl;
-            //std::string reason;
-            //reason << "Frequency too low: " << item.frequency << ", minimum 400Hz please." << std::endl;
-            err.Reason = "too low freq"; //reason;
+            std::cout << "Frequency is too low:" << item.frequency << std::endl;
+            std::cout << "Please set frequency to over 400Hz.";
+            
+            err.Reason = "Frequency too low; under 400Hz"; //reason;
             err.Source = "emMotherboard sequencer";
             throw err;
             break;
           }
-          std::cout << "PREDEFINED PWM: Freq:" << item.frequency << "Duty" << duty << "Antiduty: " << aduty << std::endl;
-          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PWM_CONST, item.amplitude);
+          std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
+          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
         }
         break;
       case emSequenceOperationType::type::RECORD:
-        std::cout << "RECORD. start: " << item.startTime << "end: " << item.endTime <<"   Freq: " << item.frequency << "Gives sample divisor:" << sampleDiv << std::endl;
+        std::cout << "RECORDING added. Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
           err.Source = "emMotherboard";
@@ -270,12 +272,12 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 int main(int argc, char **argv) {
 
   shared_ptr<emMotherboard> em(new emMotherboard());
-  uint32_t forceProgFpga = 0;
+  uint32_t forceProgFpga = 1;  //default program fpga.
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
-        forceProgFpga = 1;
+        forceProgFpga = 0;
       }
     }
   }
