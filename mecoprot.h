@@ -3,7 +3,7 @@
 
 //This defines the fields and values for the mecobo protocol
 
-#include <inttypes.h>
+#include <stdint.h>
 #define USB_BUFFER_SIZE 32
 
 
