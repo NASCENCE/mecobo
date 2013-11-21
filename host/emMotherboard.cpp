@@ -273,6 +273,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 int main(int argc, char **argv) {
 
+
+  std::cout << "Hi, I'm the evolutionary motherboard." << std::endl;
+  std::cout << "I was built on" << __DATE__ << " at " __TIME__ << std::endl;
   shared_ptr<emMotherboard> em(new emMotherboard());
   uint32_t forceProgFpga = 1;  //default program fpga.
   //Command line arguments

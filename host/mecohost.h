@@ -5,7 +5,6 @@
 #include <vector>
 #include "../mecoprot.h"
 
-
 void startUsb();
 void stopUsb();
 
