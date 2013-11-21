@@ -115,7 +115,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       setupItem(item);
       if(item.endTime > lastEnd) {
         lastEnd = item.endTime;
-        std::cout << lastEnd << std::endl;
+        std::cout << "Last item ends at" << lastEnd << std::endl;
       }
     }
     
@@ -138,6 +138,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }
 
     std::cout << "Sequence done, all qeueues empty." << std::endl;
+    std::cout << "Clearing sequences for you." << std::endl;
+    clearSequences();
   } 
 
 
@@ -248,7 +250,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         }
         break;
       case emSequenceOperationType::type::RECORD:
-        std::cout << "RECORDING added. Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        std::cout << "RECORDING added on pin " << item.pin << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
           err.Source = "emMotherboard";
