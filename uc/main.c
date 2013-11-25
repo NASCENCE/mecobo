@@ -111,8 +111,12 @@ int numItemsInFlight = 0;
 static int lastCollected[50];
 static int runItems = 0;
 
-#define MAX_SAMPLES 15*1024
-struct sampleValue * sampleBuffer;
+#define SRAM1_START 0x84000000
+#define SRAM1_WORDS 1024*1024
+
+#define MAX_SAMPLES SRAM1_WORDS/sizeof(struct sampleValue)
+
+struct sampleValue * sampleBuffer = (struct sampleValue *)SRAM1_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -165,6 +169,19 @@ int main(void)
 
   printf("Initializing EBI\n");
   EBI_Init(&ebiConfig);
+  EBI_Init(&ebiConfigSRAM1);
+
+  printf("Have room for %d\n", MAX_SAMPLES);
+  //let's write and read!
+
+
+  for(int i = 0; i < MAX_SAMPLES; i++) {
+    struct sampleValue val;
+    val.sampleNum = i;
+    val.pin = 22;
+    val.value = 33;
+    sampleBuffer[i] = val;
+  }
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
@@ -173,7 +190,7 @@ int main(void)
   for(int l = 1; l < 6; l++) {
     led(l, 1);
   }
-  sampleBuffer = malloc(sizeof(struct sampleValue)*MAX_SAMPLES);
+  //sampleBuffer = malloc(sizeof(struct sampleValue)*MAX_SAMPLES);
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
