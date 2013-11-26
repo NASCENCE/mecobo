@@ -116,7 +116,7 @@ static int runItems = 0;
 
 #define MAX_SAMPLES SRAM1_WORDS/sizeof(struct sampleValue)
 
-uint16_t * sampleBuffer = (uint16_t*)SRAM1_START;
+void * sampleBuffer = (void*)SRAM1_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -175,19 +175,23 @@ int main(void)
   printf("Have room for %d samples\n", MAX_SAMPLES);
   //let's write and read!
 
-  uint16_t * foo = (uint16_t *)0x84000000;
+  /*
   for(uint16_t i = 0; i < MAX_SAMPLES; i++) {
-    /*
+    *((uint16_t*)(sampleBuffer+i)) = i;
+    printf("%u at %p\n", *((uint16_t*)(sampleBuffer + i)), sampleBuffer + i);
+  }
+  */
+  /*
+  for(uint32_t i = 0; i < MAX_SAMPLES; i++) {
     struct sampleValue val;
     val.sampleNum = i;
-    val.pin = 22;
-    val.value = 33;
-    *(sampleBuffer + i) = val;
-    printf("a:%p %d\n", sampleBuffer + i, (*(sampleBuffer + i)).sampleNum);
-    */
-    foo[i] = i;
-    printf("a:%p %x\n", foo + i, foo[i]);
+    val.pin = 0;
+    val.value = i+1;
+    writeSample(&val);
+    struct sampleValue rr;
+    readSample(&rr, i);
   }
+  */
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
@@ -272,7 +276,6 @@ int main(void)
           if(numSamples < MAX_SAMPLES) {
             //sampleBuffer[numSamples++] = val;
             writeSample(&val);
-            numSamples++;
           }
         }
       }
@@ -831,6 +834,24 @@ void led(int l, int mode)
   }
 }
 
-inline void writeSample(sampleValue * val) {
-  uint16_t * currentAddr = sampleBuffer + 
+inline void writeSample(struct sampleValue * val) 
+{
+
+  void * currentAddr = sampleBuffer + (numSamples*2);
+  uint16_t * valp = (uint16_t*)val;
+
+  *((uint16_t*)currentAddr) = valp[0];
+  *((uint16_t*)currentAddr + 1) = valp[1];
+  numSamples++;
+}
+
+void readSample(struct sampleValue * val, int num) {
+  void * currentAddr = sampleBuffer + (num*2);
+  uint16_t * valp = (uint16_t*)val;
+  valp[0] = *((uint16_t*)(currentAddr));
+  valp[1] = *((uint16_t*)(currentAddr + 1));
+  printf("%u %u from %p\n", 
+    valp[0] = *((uint16_t*)(currentAddr)),
+    valp[1] = *((uint16_t*)(currentAddr + 1)),
+    currentAddr);
 }
