@@ -116,7 +116,7 @@ static int runItems = 0;
 
 #define MAX_SAMPLES SRAM1_WORDS/sizeof(struct sampleValue)
 
-struct sampleValue * sampleBuffer = (struct sampleValue *)SRAM1_START;
+uint16_t * sampleBuffer = (uint16_t*)SRAM1_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -171,16 +171,22 @@ int main(void)
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
 
-  printf("Have room for %d\n", MAX_SAMPLES);
+  printf("Address of samplebuffer: %p\n", sampleBuffer);
+  printf("Have room for %d samples\n", MAX_SAMPLES);
   //let's write and read!
 
-
-  for(int i = 0; i < MAX_SAMPLES; i++) {
+  uint16_t * foo = (uint16_t *)0x84000000;
+  for(uint16_t i = 0; i < MAX_SAMPLES; i++) {
+    /*
     struct sampleValue val;
     val.sampleNum = i;
     val.pin = 22;
     val.value = 33;
-    sampleBuffer[i] = val;
+    *(sampleBuffer + i) = val;
+    printf("a:%p %d\n", sampleBuffer + i, (*(sampleBuffer + i)).sampleNum);
+    */
+    foo[i] = i;
+    printf("a:%p %x\n", foo + i, foo[i]);
   }
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
@@ -264,7 +270,9 @@ int main(void)
         if(val.sampleNum != (uint16_t)lastCollected[inputPins[ip]]) {
           lastCollected[inputPins[ip]] = val.sampleNum; 
           if(numSamples < MAX_SAMPLES) {
-            sampleBuffer[numSamples++] = val;
+            //sampleBuffer[numSamples++] = val;
+            writeSample(&val);
+            numSamples++;
           }
         }
       }
@@ -616,6 +624,8 @@ inline void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate)
   printf("input: %d\n", pin);
 }
 
+//TODO: Want to have one read form FPGA. 16 bits sample.
+//4 bits for counter, 12 bits for value. 
 inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
 {
   uint16_t * addr = getPinAddress(pin);
@@ -624,7 +634,7 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
   val->value = addr[PINCONFIG_SAMPLE_REG];
 }
 
-uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
+inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
   //TODO: Ignoring enum type... probably 32 bit int, but..
   uint16_t offset = pin << 8; //8 MSB bits is pinConfig module addr
@@ -819,4 +829,8 @@ void led(int l, int mode)
     default:
   break;
   }
+}
+
+inline void writeSample(sampleValue * val) {
+  uint16_t * currentAddr = sampleBuffer + 
 }
