@@ -114,7 +114,7 @@ static int runItems = 0;
 #define SRAM1_START 0x84000000
 #define SRAM1_WORDS 1024*1024
 
-#define MAX_SAMPLES SRAM1_WORDS/sizeof(struct sampleValue)
+static const int MAX_SAMPLES = SRAM1_WORDS/sizeof(struct sampleValue);
 
 void * sampleBuffer = (void*)SRAM1_START;
 int numSamples = 0;
@@ -160,7 +160,7 @@ int main(void)
   NVIC_EnableIRQ(TIMER2_IRQn);
 
   /* Set TIMER Top value */
-  TIMER_TopSet(TIMER1, 10000);
+  TIMER_TopSet(TIMER1, 100000);
   TIMER_TopSet(TIMER2, 47);
 
   printf("Initalizing timers\n");
@@ -170,17 +170,16 @@ int main(void)
   printf("Initializing EBI\n");
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
+  EBI_Init(&ebiConfigSRAM2);
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
   //let's write and read!
 
-  /*
   for(uint16_t i = 0; i < MAX_SAMPLES; i++) {
-    *((uint16_t*)(sampleBuffer+i)) = i;
-    printf("%u at %p\n", *((uint16_t*)(sampleBuffer + i)), sampleBuffer + i);
+    *((uint16_t*)(0x88000000+i)) = i;
+    printf("sr2: %u at %p\n", *((uint16_t*)(0x88000000 + i)), 0x88000000 + i);
   }
-  */
   /*
   for(uint32_t i = 0; i < MAX_SAMPLES; i++) {
     struct sampleValue val;
@@ -273,7 +272,7 @@ int main(void)
         //printf("num: %d\n", val.sampleNum);
         if(val.sampleNum != (uint16_t)lastCollected[inputPins[ip]]) {
           lastCollected[inputPins[ip]] = val.sampleNum; 
-          if(numSamples < MAX_SAMPLES) {
+          if((int)numSamples < MAX_SAMPLES) {
             //sampleBuffer[numSamples++] = val;
             writeSample(&val);
           }
@@ -845,13 +844,15 @@ inline void writeSample(struct sampleValue * val)
   numSamples++;
 }
 
-void readSample(struct sampleValue * val, int num) {
+inline void readSample(struct sampleValue * val, int num) {
   void * currentAddr = sampleBuffer + (num*2);
   uint16_t * valp = (uint16_t*)val;
   valp[0] = *((uint16_t*)(currentAddr));
   valp[1] = *((uint16_t*)(currentAddr + 1));
+  /*
   printf("%u %u from %p\n", 
     valp[0] = *((uint16_t*)(currentAddr)),
     valp[1] = *((uint16_t*)(currentAddr + 1)),
     currentAddr);
+    */
 }
