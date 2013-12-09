@@ -57,8 +57,10 @@ localparam [18:0]
   ADDR_RUN_INF = BASE_ADDR + 4,
   ADDR_LOCAL_CMD = BASE_ADDR + 5,
   ADDR_SAMPLE_RATE = BASE_ADDR + 6,
-  ADDR_SAMPLE_REG = BASE_ADDR + 7,
-  ADDR_SAMPLE_CNT = BASE_ADDR + 8;
+  ADDR_SAMPLE_REG_LOW = BASE_ADDR + 7,
+  ADDR_SAMPLE_REG_HIGH = BASE_ADDR + 8,
+  ADDR_SAMPLE_CNT_LOW = BASE_ADDR + 8;
+  ADDR_SAMPLE_CNT_HIGH = BASE_ADDR + 9;
 
 always @ (posedge clk) begin
   if (res_cmd_reg)
@@ -74,8 +76,10 @@ always @ (posedge clk) begin
       cycles <= data_in;
     else if (addr == ADDR_RUN_INF)
       run_inf <= data_in;
-    else if (addr == ADDR_SAMPLE_RATE)
-      sample_rate <= data_in;
+    else if (addr == ADDR_SAMPLE_RATE_LOW)
+      sample_rate[15:0] <= data_in;
+    else if (addr == ADDR_SAMPLE_RATE_HIGH)
+      sample_rate[31:16] <= data_in;
   end 
 end
 
@@ -85,7 +89,8 @@ localparam
   LOCAL_CMD_WRITE_PIN = 2,
   CMD_INPUT_STREAM = 3,
   LOCAL_CMD_START_OUTPUT = 4,
-  CMD_RESET = 5;
+  CMD_RESET = 5,
+  CMD_CONST = 6;
 
 reg [15:0] command = 0;
 //reg [15:0] command = 0;
@@ -94,7 +99,7 @@ reg [15:0] duty_cycle = 0; //length of duty in cyle, measured in 20ns ticks.
 reg [15:0] anti_duty_cycle = 0; //length of anti-duty in 20ns ticks. 
 reg [15:0] cycles = 0; //number of cycles to run
 reg [15:0] run_inf = 0; //set to 1 if we just want to run inf.
-reg [15:0] sample_rate = 0;
+reg [31:0] sample_rate = 0;
 
 //Counters for the cycles.
 reg [15:0] cnt_duty_cycle = 0;
@@ -123,7 +128,7 @@ always @ (posedge clk) begin
   end
 
   if (res_sample_counter == 1'b1) 
-    cnt_sample_rate <= sample_rate << 3;
+    cnt_sample_rate <= sample_rate;
   else if (dec_sample_counter == 1'b1) 
     cnt_sample_rate <= cnt_sample_rate - 1;
 
@@ -151,14 +156,15 @@ reg update_sample_cnt = 0;
 
 reg enable_pin_output = 0;
 
-reg [3:0] state;
-reg [3:0] next_state;
+reg [4:0] state;
+reg [4:0] next_state;
 
-localparam [3:0] 
-  idle = 4'b0001,
-  high = 4'b0010,
-  low  = 4'b0100,
-  input_stream = 4'b1000;
+localparam [4:0] 
+  idle =          5'b00001,
+  high =          5'b00010,
+  low  =          5'b00100,
+  input_stream =  5'b01000,
+  const =         5'b10000;
 
 
 always @ (posedge clk) begin
@@ -197,6 +203,9 @@ always @ ( * ) begin
       else if ( (command == CMD_START_OUTPUT) ) begin
         next_state <= high;
         res_cmd_reg <= 1'b1; //reset command since this is a single command.
+      end else if ( (command == CMD_CONST) ) begin
+        next_state <= const;
+        res_cmd_reg <= 1'b1; //reset command since this is a single command.
       end else
         next_state <= idle;
 
@@ -222,9 +231,7 @@ always @ ( * ) begin
     res_cmd_reg <= 1'b0;
 
     if (cnt_duty_cycle <= 1) begin
-      if (cnt_anti_duty_cycle > 0) begin
-        next_state <= low;
-      end
+      next_state <= low;
       //Reset duty counter so that it's
       //ready for the next time we're in this state.
       res_duty_counter <= 1'b1; 
@@ -288,31 +295,60 @@ always @ ( * ) begin
     dec_sample_counter <= 1'b0;
 
     //If we have counted down to 1, it's time to update sample reg.
-    if (cnt_sample_rate <= 1) begin
-      update_data_out <= 1'b1; 
-      res_sample_counter <= 1'b1;
-    end else begin
-      update_data_out <= 1'b0; 
-      dec_sample_counter <= 1'b1;
-    end
+      if (cnt_sample_rate <= 1) begin
+        update_data_out <= 1'b1; 
+        res_sample_counter <= 1'b1;
+      end else begin
+        update_data_out <= 1'b0; 
+        dec_sample_counter <= 1'b1;
+      end
 
-    //We're streaming input back
-    //at a certain rate, and will never leave this state
-    //unless reset is called.
-    if (command == CMD_RESET)
-      next_state <= idle;
-    else
-      next_state <= input_stream;
-
+      //We're streaming input back
+      //at a certain rate, and will never leave this state
+      //unless reset is called.
+      if (command == CMD_RESET)
+        next_state <= idle;
+      else
+        next_state <= input_stream;
   end 
 
-      default: begin
-        res_cmd_reg <= 1'b0;
-        dec_duty_counter <= 1'b0;
-        dec_anti_duty_counter <= 1'b0;
-        dec_cycles_counter <= 1'b0;
 
-        res_duty_counter <= 1'b1;
+  const : begin
+    res_cmd_reg <= 1'b0;
+    dec_duty_counter <= 1'b0;
+    dec_anti_duty_counter <= 1'b0;
+    dec_cycles_counter <= 1'b0;
+
+    res_duty_counter <= 1'b1;
+    res_anti_duty_counter <= 1'b1;
+    res_cycles_counter <= 1'b1;
+
+    dec_sample_counter <= 1'b0;
+    res_sample_counter <= 1'b0;
+
+    update_data_out <= 1'b0;
+    enable_pin_output <= 1'b1;
+
+    pin_output <= 1'b0;
+
+    if (command == CMD_RESET)
+      next_state <= idle;
+    else begin
+      next_state <= const;
+      if (duty_cycle != 0)
+        pin_output <= 1'b1;
+      else
+        pin_output <= 1'b0;
+    end
+  end
+
+  default: begin
+    res_cmd_reg <= 1'b0;
+    dec_duty_counter <= 1'b0;
+    dec_anti_duty_counter <= 1'b0;
+    dec_cycles_counter <= 1'b0;
+
+    res_duty_counter <= 1'b1;
         res_anti_duty_counter <= 1'b1;
         res_cycles_counter <= 1'b1;
 
