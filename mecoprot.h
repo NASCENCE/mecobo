@@ -3,7 +3,7 @@
 
 //This defines the fields and values for the mecobo protocol
 
-#define USB_BUFFER_SIZE 2000
+#define USB_BUFFER_SIZE 32
 
 
 #define USB_CMD_CONFIG_PIN    0x1
@@ -15,6 +15,9 @@
 #define USB_CMD_GET_INPUT_BUFFER 0x7
 #define USB_CMD_STATUS 0x8
 #define USB_CMD_GET_INPUT_BUFFER_SIZE 0x9
+#define USB_CMD_CONST 0xA
+#define USB_CMD_RESET_ALL 0xB
+#define USB_CMD_LED 0xC
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
@@ -29,6 +32,14 @@
 #define PINCONFIG_DATA_CYCLES 5
 #define PINCONFIG_DATA_SAMPLE_RATE 6
 #define PINCONFIG_DATA_RUN_INF 7  
+#define PINCONFIG_START_TIME 8  
+#define PINCONFIG_END_TIME 9  
+#define LED_MODE 0
+#define LED_SELECT 1
+
+#define PINCONFIG_DATA_TYPE_DIRECT_CONST 10
+#define PINCONFIG_DATA_TYPE_PWM_CONST 10
+#define PINCONFIG_DATA_TYPE_DAC_CONST 10
 
 #define STATUS_BYTES 8
 #define STATUS_FPGA_CONFIGURED 0
@@ -50,7 +61,9 @@ typedef enum {
   FPGA_L12 = 8,
   FPGA_H14 = 9,
   FPGA_K14 = 10,
-  FPGA_K12 = 11 
+  FPGA_K12 = 11,
+  FPGA_K17 = 12,
+  FPGA_K16 = 13 
 } FPGA_IO_Pins_TypeDef;
 
 

@@ -12,14 +12,14 @@ void stopUsb();
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
 void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, int interfaceNumber);
 
-static inline uint32_t get_bit(uint32_t val, uint32_t bit);
+//static inline uint32_t get_bit(uint32_t val, uint32_t bit);
 int experiment_foo();
 int experiment_ca();
 int setReg(uint32_t data);
 int programFPGA(const char * filename);
 int startOutput (FPGA_IO_Pins_TypeDef pin);
-
-
+int startConstOutput (FPGA_IO_Pins_TypeDef pin);
+void resetAllPins ();
 
 struct mecoboDev {
   int fpgaConfigured;
@@ -47,6 +47,8 @@ int getPacket(struct mecoPack * packet);
 int startInput (FPGA_IO_Pins_TypeDef pin);
 int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes);
 int getSampleBuffer(std::vector<sampleValue> & values);
+void moboSetLed(int led, int mode);
+bool UsbIsFpgaConfigured();
 
 int setPin( FPGA_IO_Pins_TypeDef pin, 
             uint32_t duty,

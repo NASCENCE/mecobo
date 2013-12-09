@@ -24,7 +24,7 @@ LST_DIR = lst
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
 WINDOWSCS  ?= GNU Tools ARM Embedded\4.7 2012q4
-LINUXCS    ?= ./gcc-arm-none-eabi-4_7-2013q1/
+LINUXCS    ?= ./gcc-arm-none-eabi/
 
 RMDIRS     := rm -rf
 RMFILES    := rm -rf
@@ -73,6 +73,7 @@ ifeq (clean,$(findstring clean, $(MAKECMDGOALS)))
 endif
 
 CC      = $(QUOTE)$(TOOLDIR)/bin/arm-none-eabi-gcc$(QUOTE)
+CXX     = $(QUOTE)$(TOOLDIR)/bin/arm-none-eabi-c++$(QUOTE)
 LD      = $(QUOTE)$(TOOLDIR)/bin/arm-none-eabi-ld$(QUOTE)
 AR      = $(QUOTE)$(TOOLDIR)/bin/arm-none-eabi-ar$(QUOTE)
 OBJCOPY = $(QUOTE)$(TOOLDIR)/bin/arm-none-eabi-objcopy$(QUOTE)
@@ -90,7 +91,12 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 # Add -Wa,-ahld=$(LST_DIR)/$(@F:.o=.lst) to CFLAGS to produce assembly list files
 #
-override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=gnu99 -mcpu=cortex-m3 -mthumb \
+override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
+-mfix-cortex-m3-ldrd -ffunction-sections \
+-fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
+$(DEPFLAGS)
+
+override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -std=c++11 -mcpu=cortex-m3 -mthumb \
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)
@@ -104,8 +110,7 @@ override LDFLAGS += -Xlinker -Map=$(LST_DIR)/$(PROJECTNAME).map -mcpu=cortex-m3 
 -mthumb -TDevice/EnergyMicro/EFM32GG/Source/GCC/efm32gg.ld \
  -Wl,--gc-sections,--no-wchar-size-warning
 
-LIBS = -Wl,--start-group -lgcc -lc -lnosys -lm -Wl,--end-group
-
+LIBS = -Wl,--start-group -lgcc -lc -lnosys -lm -Wl,--end-group 
 INCLUDEPATHS += \
 -I. \
 -ICMSIS/Include \
@@ -141,7 +146,11 @@ usb/src/em_usbhal.c \
 usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
-main.c 
+struct_init.c \
+ll.c
+
+CXX_SRC += \
+main.cpp
 
 s_SRC += 
 
@@ -153,16 +162,19 @@ Device/EnergyMicro/EFM32GG/Source/GCC/startup_efm32gg.S
 ####################################################################
 
 C_FILES = $(notdir $(C_SRC) )
+CXX_FILES = $(notdir $(CXX_SRC) )
 S_FILES = $(notdir $(S_SRC) $(s_SRC) )
 #make list of source paths, sort also removes duplicates
 C_PATHS = $(sort $(dir $(C_SRC) ) )
 S_PATHS = $(sort $(dir $(S_SRC) $(s_SRC) ) )
 
 C_OBJS = $(addprefix $(OBJ_DIR)/, $(C_FILES:.c=.o))
+CXX_OBJS = $(addprefix $(OBJ_DIR)/, $(CXX_FILES:.cpp=.o))
 S_OBJS = $(if $(S_SRC), $(addprefix $(OBJ_DIR)/, $(S_FILES:.S=.o)))
 s_OBJS = $(if $(s_SRC), $(addprefix $(OBJ_DIR)/, $(S_FILES:.s=.o)))
 C_DEPS = $(addprefix $(OBJ_DIR)/, $(C_FILES:.c=.d))
-OBJS = $(C_OBJS) $(S_OBJS) $(s_OBJS)
+OBJS = $(C_OBJS) $(S_OBJS) $(s_OBJS) $(CXX_OBJS)
+
 
 vpath %.c $(C_PATHS)
 vpath %.s $(S_PATHS)
@@ -182,6 +194,10 @@ $(OBJ_DIR)/%.o: %.c
 	@echo "Building file: $<"
 	$(CC) $(CFLAGS) $(INCLUDEPATHS) -c -o $@ $<
 
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "Building file: $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDEPATHS) -c -o $@ $<
+
 # Assemble .s/.S files
 $(OBJ_DIR)/%.o: %.s
 	@echo "Assembling $<"
@@ -194,7 +210,7 @@ $(OBJ_DIR)/%.o: %.S
 # Link
 $(EXE_DIR)/$(PROJECTNAME).out: $(OBJS)
 	@echo "Linking target: $@"
-	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $(EXE_DIR)/$(PROJECTNAME).out
+	$(CXX) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBS) -Wl,-v -o $(EXE_DIR)/$(PROJECTNAME).out
 
 # Create binary file
 $(EXE_DIR)/$(PROJECTNAME).bin: $(EXE_DIR)/$(PROJECTNAME).out

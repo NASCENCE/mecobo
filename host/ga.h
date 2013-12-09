@@ -9,11 +9,20 @@
 #include <algorithm>
 #include <cmath>
 
+#include "emEvolvableMotherboard.h"
 
 const int genomeSize = 11 * 16 * 2;
 const int resultSize = 2048;
 
 typedef std::bitset<genomeSize> genomeType;
+
+class geneticAlgorithm {
+  public:
+    //geneticAlgorithm(emEvolvableMotherboardClient& client);
+
+  private:
+    //emEvolvableMotherboardClient & client;
+};
 
 std::vector<genomeType> ca_run(
     std::string logfile,

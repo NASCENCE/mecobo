@@ -19,6 +19,17 @@
 #define FPGA_BASE_ADDR 0
 
 
+/* Define USB endpoint addresses */
+#define EP_DATA_OUT1       0x01  /* Endpoint for USB data reception.       */
+#define EP_DATA_OUT2       0x02  /* Endpoint for USB data reception.       */
+#define EP_DATA_IN1        0x81  /* Endpoint for USB data transmission.    */
+#define EP_DATA_IN2        0x82  /* Endpoint for USB data transmission.    */
+#define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
+#define BULK_EP_SIZE     USB_MAX_EP_SIZE  /* This is the max. ep size.    */
+
+
+#define EBI_ADDR_BASE 0x80000000
+
 //Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
 #define PINCONFIG_DUTY_CYCLE 1
@@ -37,6 +48,7 @@
 #define CMD_INPUT_STREAM  3
 #define CMD_PROGRAM_FPGA  4
 #define CMD_RESET  5
+#define CMD_CONST  6
 
 
 struct pinConfig {
@@ -100,7 +112,15 @@ int UsbDataSent(USB_Status_TypeDef status,
         uint32_t xf,
         uint32_t remaining);
 
-void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+#ifdef __cplusplus
+}
+#endif
+
 
 
 //Start output on given pin
@@ -112,6 +132,8 @@ uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
 void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
+void resetAllPins();
+void led(int l, int mode);
 
 #endif //__MECOBO_H_
 
