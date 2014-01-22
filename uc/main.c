@@ -1,3 +1,5 @@
+#define __GIT_COMMIT__ "5e1dca595ed4c443e5f223f3a2b7126c25f54fb6"
+
 #include "em_device.h"
 #include "em_cmu.h"
 #include "em_dma.h"
@@ -216,7 +218,10 @@ int main(void)
 
   nextKillTime = 0;
 
-  printf("Entering main loop\n");
+  printf("It's just turtles all the way down.\n");
+  printf("I'm the mecobo firmware running on the evolutionary motherboard.\n");
+  printf("I was built %s, git commit %s\n", __DATE__, __GIT_COMMIT__);
+  printf("Entering main loop.\n");
   for (;;) {
     //check if DONE has gone high, then we are ... uh, done
     if(fpgaUnderConfiguration) {
@@ -543,12 +548,13 @@ inline void execute(struct pinItem * item)
       startInput(item->pin, item->sampleRate);
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-      printf("  PWM: duty %d, aduty: %d", item->duty, item->antiDuty);
+      printf("  PWM: duty %d, aduty: %d\n", item->duty, item->antiDuty);
       addr[PINCONFIG_DUTY_CYCLE]     = item->duty;
       addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
-      //addr[PINCONFIG_CYCLES]         = item->cycles;
-      addr[PINCONFIG_RUN_INF]        = 1;
-      addr[PINCONFIG_SAMPLE_RATE]    = item->sampleRate;
+      //addr[PINCONFIG_CYCLES]       = item->cycles;
+      //addr[PINCONFIG_RUN_INF]        = 1;
+      //addr[PINCONFIG_SAMPLE_RATE]    = item->sampleRate;
+      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     default:
