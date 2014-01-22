@@ -1,4 +1,3 @@
-#define __GIT_COMMIT__ "5e1dca595ed4c443e5f223f3a2b7126c25f54fb6"
 
 #include "em_device.h"
 #include "em_cmu.h"
@@ -25,6 +24,8 @@
 
 #include "descriptors.h"
 #include "struct_init.h"
+
+char * BUILD_VERSION = __GIT_COMMIT__;
 
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
@@ -220,7 +221,7 @@ int main(void)
 
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard.\n");
-  printf("I was built %s, git commit %s\n", __DATE__, __GIT_COMMIT__);
+  printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
   printf("Entering main loop.\n");
   for (;;) {
     //check if DONE has gone high, then we are ... uh, done

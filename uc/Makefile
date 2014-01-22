@@ -183,12 +183,9 @@ vpath %.S $(S_PATHS)
 
 GIT_C = $(shell git rev-parse HEAD)
 # Default build is debug build
-all:      preproc debug
+all:       debug
 
-preproc:
-	sed -i -e 's/#define __GIT_COMMIT__ \".*\"/#define __GIT_COMMIT__ \"$(GIT_C)\"/' main.c
-
-debug:    CFLAGS += -DDEBUG -O0 -g3
+debug:    CFLAGS += -DDEBUG -O0 -g3 -D__GIT_COMMIT__=\"$(shell git rev-parse HEAD)\"
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
 release:  CFLAGS += -DNDEBUG -O0 -g3 
