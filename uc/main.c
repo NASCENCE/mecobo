@@ -552,9 +552,6 @@ inline void execute(struct pinItem * item)
       printf("  PWM: duty %d, aduty: %d\n", item->duty, item->antiDuty);
       addr[PINCONFIG_DUTY_CYCLE]     = item->duty;
       addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
-      //addr[PINCONFIG_CYCLES]       = item->cycles;
-      //addr[PINCONFIG_RUN_INF]        = 1;
-      //addr[PINCONFIG_SAMPLE_RATE]    = item->sampleRate;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
@@ -571,6 +568,7 @@ void killItem(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_DIRECT_CONST:
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      break;
     case PINCONFIG_DATA_TYPE_RECORD:
       for(int i = 0; i < numInputPins; i++) {
         if (inputPins[i] == item->pin) {
