@@ -176,10 +176,30 @@ int main(void)
   printf("Have room for %d samples\n", MAX_SAMPLES);
   //let's write and read!
 
-  for(uint16_t i = 0; i < MAX_SAMPLES; i++) {
-    *((uint16_t*)(0x88000000+i)) = i;
-    printf("sr2: %u at %p\n", *((uint16_t*)(0x88000000 + i)), 0x88000000 + i);
+  printf("Doing SRAM1 test\n");
+  uint16_t val = 0;
+  for(uint32_t i = 0; i < 100000; i++) {
+    *((uint16_t*)(0x80000000+i)) = val;
+    uint16_t readback = *((uint16_t*)(0x80000000 + i));
+    if(readback != val) {
+      printf("RAM test failed at addr %x\n", 0x80000000 + i);
+      printf("Got %x, wanted %x\n", readback, val);
+    }
+    val++;
   }
+
+  printf("Doing SRAM2 test\n");
+  val = 0;
+  for(uint32_t i = 0; i < 100000; i++) {
+    *((uint16_t*)(0x88000000+i)) = val;
+    uint16_t readback = *((uint16_t*)(0x88000000 + i));
+    if(readback != val) {
+      printf("RAM test failed at addr %x\n", 0x88000000 + i);
+      printf("Got %x, wanted %x\n", readback, val);
+    }
+    val++;
+  }
+  printf("\nDone!\n");
   /*
   for(uint32_t i = 0; i < MAX_SAMPLES; i++) {
     struct sampleValue val;
@@ -195,6 +215,7 @@ int main(void)
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
   GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
+  GPIO_PinModeSet(gpioPortB,  3, gpioModePushPull, 1);  //FPGA RESET, active high.
   //Turn off all LEDS
   for(int l = 1; l < 6; l++) {
     led(l, 1);
@@ -207,8 +228,8 @@ int main(void)
   USBD_Init(&initstruct);
   printf("USB Initialized.\n");
 
-  //Release fpga reset
-  GPIO_PinOutClear(gpioPortB, 4);
+  //release fpga reset (active high)
+  GPIO_PinOutClear(gpioPortB, 3);
 
   /*
    * When using a debugger it is practical to uncomment the following three

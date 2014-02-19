@@ -88,8 +88,8 @@ static EBI_Init_TypeDef ebiConfigSRAM2 = {
     false,            /* don't disable ARDY timeout */ \
     EBI_BANK2,        /* enable bank 0 */              \
     EBI_CS2,          /* enable chip select 0 */       \
-    0,                /* addr setup cycles */          \
-    1,                /* addr hold cycles */           \
+    1,                /* addr setup cycles */          \
+    2,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
     1,                /* read setup cycles */          \
     2,                /* read strobe cycles */         \
