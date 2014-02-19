@@ -1,4 +1,3 @@
-
 #include "em_device.h"
 #include "em_cmu.h"
 #include "em_dma.h"
@@ -221,6 +220,7 @@ int main(void)
 
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard.\n");
+  printf("I start at 0x4000\n");
   printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
   printf("Entering main loop.\n");
   for (;;) {
@@ -249,7 +249,7 @@ int main(void)
       for(int ip = 0; ip < numInputPins; ip++) {
         struct sampleValue val;
         getInput(&val, (FPGA_IO_Pins_TypeDef)inputPins[ip]);
-        //printf("num: %d\n", val.sampleNum);
+        //printf("num: %d - %d\n", val.sampleNum, val.value);
         if(val.sampleNum != (uint16_t)lastCollected[inputPins[ip]]) {
           lastCollected[inputPins[ip]] = val.sampleNum; 
           if(numSamples < MAX_SAMPLES) {
@@ -550,8 +550,10 @@ inline void execute(struct pinItem * item)
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       printf("  PWM: duty %d, aduty: %d\n", item->duty, item->antiDuty);
-      addr[PINCONFIG_DUTY_CYCLE]     = item->duty;
-      addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
+      addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
+      addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
+      addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)item->sampleRate;
+      addr[PINCONFIG_RUN_INF] = 1;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
@@ -569,6 +571,11 @@ void killItem(struct pinItem * item)
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       break;
+    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+      addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
+      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      break;
+ 
     case PINCONFIG_DATA_TYPE_RECORD:
       for(int i = 0; i < numInputPins; i++) {
         if (inputPins[i] == item->pin) {
@@ -581,6 +588,7 @@ void killItem(struct pinItem * item)
         }
       }
       break;
+
     default:
       break;
   }
@@ -778,6 +786,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
 void resetAllPins()
 {
+  printf("RESETing all pins\n");
   for (int i = 0; i < nPins; i++) {
     uint16_t * addr = (getPinAddress((i)));
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
