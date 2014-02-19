@@ -114,6 +114,10 @@ static int runItems = 0;
 #define SRAM1_START 0x84000000
 #define SRAM1_WORDS 1024*1024
 
+#define SRAM2_START 0x88000000
+#define SRAM2_WORDS 1024*1024
+
+
 static const int MAX_SAMPLES = SRAM1_WORDS/sizeof(struct sampleValue);
 
 void * sampleBuffer = (void*)SRAM1_START;
@@ -179,10 +183,10 @@ int main(void)
   printf("Doing SRAM1 test\n");
   uint16_t val = 0;
   for(uint32_t i = 0; i < 100000; i++) {
-    *((uint16_t*)(0x80000000+i)) = val;
-    uint16_t readback = *((uint16_t*)(0x80000000 + i));
+    *((uint16_t*)(SRAM1_START+i)) = val;
+    uint16_t readback = *((uint16_t*)(SRAM1_START + i));
     if(readback != val) {
-      printf("RAM test failed at addr %x\n", 0x80000000 + i);
+      printf("RAM test failed at addr %x\n", SRAM1_START + i);
       printf("Got %x, wanted %x\n", readback, val);
     }
     val++;
