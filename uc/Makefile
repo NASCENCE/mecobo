@@ -91,12 +91,14 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 # Add -Wa,-ahld=$(LST_DIR)/$(@F:.o=.lst) to CFLAGS to produce assembly list files
 #
+<<<<<<< Updated upstream
 override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -std=c++11 -mcpu=cortex-m3 -mthumb \
+
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)
