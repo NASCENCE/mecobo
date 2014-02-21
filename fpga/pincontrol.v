@@ -1,7 +1,8 @@
-module pincontrol (clk, reset, addr, data_wr, data_rd, data_in, data_out, pin);
+module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin);
 
 input clk;
 input reset;
+input enable;
 input [18:0] addr;
 input   [15:0] data_in;
 (* tristate2logic = "yes" *)
@@ -24,7 +25,7 @@ localparam [3:0]
   MODE_INPUT_STREAM = 4'b0011;
 
 
-wire enable_in = (addr[15:8] == POSITION);
+wire enable_in = (enable & (addr[15:8] == POSITION));
 
 always @ (*) begin
   if (data_rd) begin
@@ -57,10 +58,8 @@ localparam [18:0]
   ADDR_RUN_INF = BASE_ADDR + 4,
   ADDR_LOCAL_CMD = BASE_ADDR + 5,
   ADDR_SAMPLE_RATE = BASE_ADDR + 6,
-  ADDR_SAMPLE_REG_LOW = BASE_ADDR + 7,
-  ADDR_SAMPLE_REG_HIGH = BASE_ADDR + 8,
-  ADDR_SAMPLE_CNT_LOW = BASE_ADDR + 8;
-  ADDR_SAMPLE_CNT_HIGH = BASE_ADDR + 9;
+  ADDR_SAMPLE_REG = BASE_ADDR + 7,
+  ADDR_SAMPLE_CNT = BASE_ADDR + 8;
 
 always @ (posedge clk) begin
   if (res_cmd_reg)
@@ -76,10 +75,8 @@ always @ (posedge clk) begin
       cycles <= data_in;
     else if (addr == ADDR_RUN_INF)
       run_inf <= data_in;
-    else if (addr == ADDR_SAMPLE_RATE_LOW)
+    else if (addr == ADDR_SAMPLE_RATE)
       sample_rate[15:0] <= data_in;
-    else if (addr == ADDR_SAMPLE_RATE_HIGH)
-      sample_rate[31:16] <= data_in;
   end 
 end
 
@@ -99,13 +96,13 @@ reg [15:0] duty_cycle = 0; //length of duty in cyle, measured in 20ns ticks.
 reg [15:0] anti_duty_cycle = 0; //length of anti-duty in 20ns ticks. 
 reg [15:0] cycles = 0; //number of cycles to run
 reg [15:0] run_inf = 0; //set to 1 if we just want to run inf.
-reg [31:0] sample_rate = 0;
+reg [15:0] sample_rate = 0;
 
 //Counters for the cycles.
 reg [15:0] cnt_duty_cycle = 0;
 reg [15:0] cnt_anti_duty_cycle = 0;
 reg [15:0] cnt_cycles = 0;
-reg [31:0] cnt_sample_rate = 0;
+reg [15:0] cnt_sample_rate = 0;
 //reg [15:0] pin_mode = 0;
 
 always @ (posedge clk) begin
