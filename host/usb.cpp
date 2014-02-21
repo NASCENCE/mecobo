@@ -325,6 +325,7 @@ int getSampleBuffer(std::vector<sampleValue> & samples)
     //So ask for the samples back. Not more at least. 
     createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack, eps[2]);
+    std::cout << "Receiving bytes:" << sizeof(sampleValue) * nSamples << std::endl;
     getBytesFromUSB(eps[0], (uint8_t*)collectedSamples, sizeof(sampleValue) * nSamples);
     std::cout << "Collected from USB" << std::endl;
     sampleValue * casted = (sampleValue *)collectedSamples;

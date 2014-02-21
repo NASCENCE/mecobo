@@ -185,7 +185,7 @@ vpath %.S $(S_PATHS)
 # Default build is debug build
 all:      debug
 
-debug:    CFLAGS += -DDEBUG -O0 -g3
+debug:    CFLAGS += -DDEBUG -O0 -g3 -D__GIT_COMMIT__=\"$(shell git rev-parse HEAD)\"
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
 release:  CFLAGS += -DNDEBUG -O0 -g3 
