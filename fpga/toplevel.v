@@ -29,18 +29,19 @@ inout [99:0] pin;
 
 assign fpga_ready = 1'b0;
 
-wire [15:0] data_in;
-//(* tristate2logic = "yes" *)
-wor [15:0] data_out;
-
-assign data_in = ebi_data; //write op
-//build multiplexer
-assign ebi_data = (!ebi_cs & !ebi_rd) ? data_out : 16'bz; //read op
-
 //Invert control signals
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
+
+
+//(* tristate2logic = "yes" *)
+wor [15:0] data_out;
+wire [15:0] data_in;
+
+assign data_in = ebi_data; //write op
+//build multiplexer
+assign ebi_data = (chip_select & read_enable) ? data_out : 16'bz; //read op
 
 reg [23:0] led_heartbeat = 0;
 assign led = led_heartbeat[22] | led_heartbeat[23];

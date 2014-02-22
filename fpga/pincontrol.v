@@ -28,11 +28,13 @@ localparam [3:0]
 wire enable_in = (enable & (addr[15:8] == POSITION));
 
 always @ (*) begin
-  if (data_rd) begin
+  if (enable_in & data_rd) begin
     if (addr == ADDR_SAMPLE_REG) 
       data_out <= sample_register;
     else if (addr == ADDR_SAMPLE_CNT) 
       data_out <= sample_cnt;
+    else if (addr == ADDR_STATUS_REG)
+      data_out <= POSITION;
     else
       data_out <= 16'b0;
   end else
@@ -59,7 +61,8 @@ localparam [18:0]
   ADDR_LOCAL_CMD = BASE_ADDR + 5,
   ADDR_SAMPLE_RATE = BASE_ADDR + 6,
   ADDR_SAMPLE_REG = BASE_ADDR + 7,
-  ADDR_SAMPLE_CNT = BASE_ADDR + 8;
+  ADDR_SAMPLE_CNT = BASE_ADDR + 8,
+  ADDR_STATUS_REG = BASE_ADDR + 9;
 
 always @ (posedge clk) begin
   if (res_cmd_reg)
@@ -77,6 +80,7 @@ always @ (posedge clk) begin
       run_inf <= data_in;
     else if (addr == ADDR_SAMPLE_RATE)
       sample_rate[15:0] <= data_in;
+
   end 
 end
 
