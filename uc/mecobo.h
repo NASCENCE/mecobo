@@ -40,6 +40,7 @@
 #define PINCONFIG_SAMPLE_RATE 6
 #define PINCONFIG_SAMPLE_REG 7
 #define PINCONFIG_SAMPLE_CNT 8
+#define PINCONFIG_STATUS_REG 8
 
 
 //Possible FPGA commands

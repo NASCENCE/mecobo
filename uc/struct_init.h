@@ -6,12 +6,12 @@
 static EBI_Init_TypeDef ebiConfig = {   
 
   ebiModeD16,      /* 8 bit address, 8 bit data */  \
-    ebiActiveHigh,     /* ARDY polarity */              \
-    ebiActiveHigh,     /* ALE polarity */               \
-    ebiActiveHigh,     /* WE polarity */                \
-    ebiActiveHigh,     /* RE polarity */                \
-    ebiActiveHigh,     /* CS polarity */                \
-    ebiActiveHigh,     /* BL polarity */                \
+    ebiActiveLow,     /* ARDY polarity */              \
+    ebiActiveLow,     /* ALE polarity */               \
+    ebiActiveLow,     /* WE polarity */                \
+    ebiActiveLow,     /* RE polarity */                \
+    ebiActiveLow,     /* CS polarity */                \
+    ebiActiveLow,     /* BL polarity */                \
     false,            /* enable BL */                  \
     false,            /* enable NOIDLE */              \
     false,            /* enable ARDY */                \
@@ -33,7 +33,7 @@ static EBI_Init_TypeDef ebiConfig = {
     false,            /* do not disable the write buffer */ \
     false,            /* do not enable halc cycle WEn strobe */ \
     ebiALowA0,        /* ALB - Low bound, address lines */ \
-    ebiAHighA18,       /* APEN - High bound, address lines */   \
+    ebiAHighA20,       /* APEN - High bound, address lines */   \
     ebiLocation1,     /* Use Location 0 */             \
     true,             /* enable EBI */                 \
 };

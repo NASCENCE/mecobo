@@ -113,6 +113,7 @@ int numItemsInFlight = 0;
 static int lastCollected[50];
 static int runItems = 0;
 
+
 #define SRAM1_START 0x84000000
 #define SRAM1_WORDS 1024*1024
 
@@ -122,7 +123,7 @@ static int runItems = 0;
 
 static const int MAX_SAMPLES = SRAM1_WORDS/sizeof(struct sampleValue);
 
-struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
+struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM2_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -175,12 +176,18 @@ int main(void)
 
   printf("Initializing EBI\n");
   EBI_Init(&ebiConfig);
-  EBI_Init(&ebiConfigSRAM1);
-  EBI_Init(&ebiConfigSRAM2);
+  //EBI_Init(&ebiConfigSRAM1);
+  //EBI_Init(&ebiConfigSRAM2);
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
+  printf("Check if FPGA is alive.\n");
+  for(int i = 0; i < 75; i++) {
+    int16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+    printf("Response from pincontroller, %p (%d): %u\n", a, i, *a);
+  }
+  /*
   printf("SRAM 1 TEST\n");
   uint8_t * ram = (uint8_t*)sampleBuffer;
   for(int i = 0; i < 4; i++) {
@@ -193,6 +200,8 @@ int main(void)
         printf("FAIL at %u wanted %u got %u\n", i*(1024 * 1024) + j, j%255, rb);
       }
     }
+    //Null out before use.
+    ram[i] = 0;
   }
   printf("Complete.\n");
  
@@ -210,6 +219,7 @@ int main(void)
     }
   }
   printf("Complete.\n");
+  */
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
@@ -260,6 +270,8 @@ int main(void)
   //itemsToApply will be ordered by start time, hurrah!
   itemsToApply = malloc(sizeof(struct pinItem) * 50);
   itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
+  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
+  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
 
   nextKillTime = 0;
@@ -525,6 +537,8 @@ void eADesigner_Init(void)
   GPIO->P[2].MODEH = (GPIO->P[2].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
   /* Pin PD9 is configured to Push-pull */
   GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
+  GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE11_MASK) | GPIO_P_MODEH_MODE11_PUSHPULL;
   /* Pin PE0 is configured to Push-pull */
   GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
   /* Pin PE1 is configured to Push-pull */
@@ -660,13 +674,14 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
   val->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
   val->pin = pin;
   val->value = addr[PINCONFIG_SAMPLE_REG];
+  //printf("G: %u %u %u\n", val->sampleNum, val->pin, val->value);
 }
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
   //TODO: Ignoring enum type... probably 32 bit int, but..
-  uint16_t offset = pin << 8; //8 MSB bits is pinConfig module addr
-  return (uint16_t*)EBI_ADDR_BASE + offset;
+  uint16_t offset = 0x200 * pin; //8 MSB bits is pinConfig module addr
+  return (uint16_t*)(EBI_ADDR_BASE) + offset;
 }
 
 void execCurrentPack() 
@@ -759,6 +774,12 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
     //Send back the whole sending buffer.
     printf("Sending back the input buffers, of sample size %d\n", numSamples);
+    //uint8_t * mongo = (uint8_t*)sampleBuffer;
+    /*
+    for(int i = 0; i < 4*numSamples; i++) {
+      printf("%p:%x\n", mongo + i, mongo[i] );
+    }
+    */
     uint32_t * d = (uint32_t *)(currentPack.data);
     sendPacket(sizeof(struct sampleValue) * *d, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
     printf("Back to main loop\n");
@@ -825,9 +846,11 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
   packToSend = pack; //This copies the pack structure.
   printf("Writing back %u bytes over USB.\n", pack.size);
+  
   for(int i = 0; i < size; i++) {
-    printf("%x\n", data[i]);
+    printf("%p: %x\n", data + i, data[i]);
   }
+  
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }
 
