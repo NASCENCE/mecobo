@@ -16,7 +16,7 @@ input clk;
 input reset;
 
 inout [15:0] ebi_data;
-input [18:0] ebi_addr;
+input [20:0] ebi_addr;
 input ebi_wr;
 input ebi_rd;
 input ebi_cs;
@@ -55,7 +55,7 @@ end
 
 genvar i;
 generate
-  for (i = 0; i < 75 ; i = i + 1) begin: pinControl 
+  for (i = 0; i < 16 ; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i))
     pc (
       .clk(clk),

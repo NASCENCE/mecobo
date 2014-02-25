@@ -5,7 +5,7 @@ input reset;
 input enable;
 input [18:0] addr;
 input   [15:0] data_in;
-(* tristate2logic = "yes" *)
+//(* tristate2logic = "yes" *)
 output reg [15:0] data_out;
 inout pin;
 
@@ -34,7 +34,7 @@ always @ (*) begin
     else if (addr == ADDR_SAMPLE_CNT) 
       data_out <= sample_cnt;
     else if (addr == ADDR_STATUS_REG)
-      data_out <= POSITION;
+      data_out <= 16'hDEAD;
     else
       data_out <= 16'b0;
   end else
@@ -79,7 +79,7 @@ always @ (posedge clk) begin
     else if (addr == ADDR_RUN_INF)
       run_inf <= data_in;
     else if (addr == ADDR_SAMPLE_RATE)
-      sample_rate[15:0] <= data_in;
+      sample_rate <= data_in;
 
   end 
 end
