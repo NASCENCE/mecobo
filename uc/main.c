@@ -115,15 +115,15 @@ static int runItems = 0;
 
 
 #define SRAM1_START 0x84000000
-#define SRAM1_WORDS 1024*1024
+#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
 
 #define SRAM2_START 0x88000000
-#define SRAM2_WORDS 1024*1024
+#define SRAM2_BYTES 256*1024 
 
 
-static const int MAX_SAMPLES = SRAM1_WORDS/sizeof(struct sampleValue);
+static const int MAX_SAMPLES = SRAM1_BYTES/sizeof(struct sampleValue);
 
-struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM2_START;
+struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -176,28 +176,31 @@ int main(void)
 
   printf("Initializing EBI\n");
   EBI_Init(&ebiConfig);
-  //EBI_Init(&ebiConfigSRAM1);
-  //EBI_Init(&ebiConfigSRAM2);
+  EBI_Init(&ebiConfigSRAM1);
+  EBI_Init(&ebiConfigSRAM2);
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
   printf("Check if FPGA is alive.\n");
-  for(int i = 0; i < 75; i++) {
-    int16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
-    printf("Response from pincontroller, %p (%d): %u\n", a, i, *a);
+  //If not alive, program it. 
+  for(int i = 0; i < 17; i++) {
+    uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+    if(*a != 0xDEAD) {
+      printf("Pincontroller %d broken: %u\n", i, *a);
+    }
   }
-  /*
+  printf("FPGA check complete\n");
   printf("SRAM 1 TEST\n");
   uint8_t * ram = (uint8_t*)sampleBuffer;
   for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < 1024*1024; j++) {
-      ram[i*(1024*1024)+j] = j%255;
+    for(int j = 0; j < SRAM1_BYTES; j++) {
+      ram[i*(16*1024)+j] = j%255;
     }
-    for(int j = 0; j < 1024*1024; j++) {
-      uint8_t rb = ram[i*(1024*1024) + j];
+    for(int j = 0; j < 16*1024; j++) {
+      uint8_t rb = ram[i*(16*1024) + j];
       if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(1024 * 1024) + j, j%255, rb);
+        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
       }
     }
     //Null out before use.
@@ -208,18 +211,17 @@ int main(void)
   printf("SRAM 2 TEST\n");
   ram = (uint8_t*)SRAM2_START;
   for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < 1024*1024; j++) {
-      ram[i*(1024*1024)+j] = j%255;
+    for(int j = 0; j < SRAM2_BYTES; j++) {
+      ram[i*(16*1024)+j] = j%255;
     }
-    for(int j = 0; j < 1024*1024; j++) {
-      uint8_t rb = ram[i*(1024*1024) + j];
+    for(int j = 0; j < 16*1024; j++) {
+      uint8_t rb = ram[i*(16*1024) + j];
       if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(1024 * 1024) + j, j%255, rb);
+        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
       }
     }
   }
   printf("Complete.\n");
-  */
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
@@ -233,7 +235,7 @@ int main(void)
   inBufferTop = 0;
 
   for(int i = 0; i < 50; i++) {
-    lastCollected[i] = 0;
+    lastCollected[i] = -1;
   }
   printf("Initializing USB\n");
   USBD_Init(&initstruct);
@@ -441,6 +443,7 @@ int UsbDataSent(USB_Status_TypeDef status,
 {
   (void) remaining;
 
+  printf("USB DATA SENT HURRA\n");
   if ((status == USB_STATUS_OK) && (xf > 0)) 
   {
     //we probably sent some data :-)
@@ -606,9 +609,9 @@ inline void execute(struct pinItem * item)
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       printf("  PWM: duty %d, aduty: %d", item->duty, item->antiDuty);
-      addr[PINCONFIG_DUTY_CYCLE]     = item->duty;
-      addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
-      addr[PINCONFIG_SAMPLE_RATE]    = item->sampleRate;
+      addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
+      addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
+      addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
       addr[PINCONFIG_RUN_INF]        = 1;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
@@ -660,10 +663,9 @@ inline void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate)
 {
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-  addr[PINCONFIG_SAMPLE_RATE] = sampleRate;
+  addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;
   addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
   inputPins[numInputPins++] = pin;
-  printf("input: %d\n", pin);
 }
 
 //TODO: Want to have one read form FPGA. 16 bits sample.
@@ -679,9 +681,9 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
-  //TODO: Ignoring enum type... probably 32 bit int, but..
-  uint16_t offset = 0x200 * pin; //8 MSB bits is pinConfig module addr
-  return (uint16_t*)(EBI_ADDR_BASE) + offset;
+  //Each pin controller has 2^8 = 0x100 16-bit words, or
+  //2^9 bytes. 
+  return (uint16_t*)(EBI_ADDR_BASE) + pin*0x100;
 }
 
 void execCurrentPack() 
@@ -774,14 +776,19 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
     //Send back the whole sending buffer.
     printf("Sending back the input buffers, of sample size %d\n", numSamples);
-    //uint8_t * mongo = (uint8_t*)sampleBuffer;
-    /*
-    for(int i = 0; i < 4*numSamples; i++) {
-      printf("%p:%x\n", mongo + i, mongo[i] );
-    }
-    */
+
     uint32_t * d = (uint32_t *)(currentPack.data);
-    sendPacket(sizeof(struct sampleValue) * *d, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
+    int bytes = sizeof(struct sampleValue) * *d;
+    int packSize = 64000;
+
+    int packNum = 0;
+    /*
+    for(; packNum < (bytes/packSize); packNum++) {
+      sendPacket(packSize, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer + (packNum*packSize));
+      printf("pack sent\n");
+    }*/
+    //Rest packet.
+    sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
     printf("Back to main loop\n");
   }
 
@@ -846,10 +853,6 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
   packToSend = pack; //This copies the pack structure.
   printf("Writing back %u bytes over USB.\n", pack.size);
-  
-  for(int i = 0; i < size; i++) {
-    printf("%p: %x\n", data + i, data[i]);
-  }
   
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }

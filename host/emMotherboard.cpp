@@ -219,7 +219,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     double period; //= 1.0f/(double)s.frequency;
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
-    uint32_t sampleDiv = ((50*1000000)/(8.0*(double)item.frequency));
+    uint32_t sampleDiv = ((50*1000000)/(double)item.frequency);
     emException err;
 
     switch(item.operationType) {

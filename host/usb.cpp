@@ -5,6 +5,7 @@
 #include <omp.h>
 #include <string.h>
 #include <vector>
+#include <iostream>
 
 #include "ga.h"
 
@@ -14,8 +15,9 @@
 std::vector<uint8_t> eps;
 
 struct libusb_device_handle * mecoboHandle;
-struct libusb_device * mecobo;
+std::vector<libusb_device *> mecobos;
 struct libusb_context * ctx;
+int numMecobos = 0;
 
 void startUsb()
 {
@@ -27,17 +29,42 @@ void startUsb()
   }
   libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
 
-  mecoboHandle = libusb_open_device_with_vid_pid(ctx, 0x2544, 0x3);
-  if(!mecoboHandle) {
+  libusb_device ** devs;
+  int numDevices = libusb_get_device_list(ctx, &devs);
+  for(int i = 0; i < numDevices; i++) {
+    libusb_device * dev = devs[i];
+    libusb_device_descriptor desc;
+    libusb_get_device_descriptor(dev, &desc);
+    if(desc.idVendor == 0x2544 && desc.idProduct == 0x3) {
+      std::cout << "Found Mecobo Device" << std::endl;
+      mecobos.push_back(dev);
+    }
+  }
+
+  int chosen = 0;
+  if(mecobos.size() > 1) {
+    std::cout << "We only support 1 mecobo per server. Choose one: " << std::endl;
+    int count = 0;
+    for (auto meco : mecobos) {
+      std::cout << count++ << " Port:" << (int)libusb_get_port_number(meco) << " Address:" << (int)libusb_get_device_address(meco) << std::endl;
+    }
+    std::cin >> chosen;
+  }
+  
+  int err = libusb_open(mecobos[chosen], &mecoboHandle);
+
+  if(err) {
     printf("Could not open device with vid 2544, pid 0003. I'm dying.\n");
     exit(-1);
   }   
+
   
-  mecobo = libusb_get_device(mecoboHandle);
+  //libusb_device * mecobo = libusb_get_device(mecoboHandle);
+  /*
   if(mecobo == NULL) {
     printf("Could not get device with provided handle\n");
     exit(-1);
-  }
+  }*/
 
   libusb_detach_kernel_driver(mecoboHandle, 0x1);	
 
@@ -47,8 +74,7 @@ void startUsb()
   }
 
   printf("Getting endpoints from USB driver\n");
-  getEndpoints(eps, mecobo, 0x1);
-  printf("Got endpoints!\n");
+  getEndpoints(eps, mecobos[chosen], 0x1);
 
   return;
 }
@@ -205,7 +231,7 @@ int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val)
   int transfered = 0;
   uint8_t * rcv = (uint8_t*)malloc(12);
   while(bytesRemaining > 0) {
-    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 12, &transfered, 0);
+    libusb_bulk_transfer(mecoboHandle, eps[0], rcv, 12, &transfered, 10);
     bytesRemaining -= transfered;
   }
   memcpy(val, rcv, 12);
@@ -342,15 +368,17 @@ int getBytesFromUSB(int endpoint, uint8_t * bytes, int nBytes)
 {
   //Get data back.
   //printf("Waiting for %d bytes from meco\n", nBytes);
+  //There is a max size to the end point...
   int bytesRemaining = nBytes;
   int transfered = 0;
   int ret = 0;
   while(bytesRemaining > 0) {
-    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 0);
+    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, nBytes, &transfered, 100);
     if(ret != 0) {
       printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
     }
     bytesRemaining -= transfered;
+    printf("we have %d bytes remaining\n", bytesRemaining);
   }
 
   return 0;
