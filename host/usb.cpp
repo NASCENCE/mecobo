@@ -13,6 +13,7 @@
 #include "../mecoprot.h"
 
 std::vector<uint8_t> eps;
+std::vector<uint8_t> debug_eps;
 
 struct libusb_device_handle * mecoboHandle;
 std::vector<libusb_device *> mecobos;
@@ -74,7 +75,8 @@ void startUsb()
   }
 
   printf("Getting endpoints from USB driver\n");
-  getEndpoints(eps, mecobos[chosen], 0x1);
+  getEndpoints(eps, mecobos[chosen], 1);
+  getEndpoints(debug_eps, mecobos[chosen], 0);
 
   return;
 }
@@ -94,7 +96,7 @@ void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, 
   //we'll just run through the descriptors and dig them out.
 
   //get Configuration 0 form devicej
-  printf("Retriveving the USB configuration\n");
+  //printf("Retriveving the USB configuration\n");
   struct libusb_config_descriptor * config;
   libusb_get_active_config_descriptor(dev, &config);
   if(config == NULL) {
@@ -102,9 +104,9 @@ void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, 
     exit(-1);
   }
 
-  printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
-  printf("Selecting interface 1, altsetting 0\n");
-  struct libusb_interface_descriptor interface = config->interface[1].altsetting[0];
+  //printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
+  std::cout << "Selecting interface " << interfaceNumber << std::endl;
+  struct libusb_interface_descriptor interface = config->interface[interfaceNumber].altsetting[0];
   printf("Interface has %d endpoints\n", interface.bNumEndpoints);
   for(int ep = 0; ep < interface.bNumEndpoints; ++ep) {
     if(interface.endpoint[ep].bEndpointAddress & 0x80) {
@@ -113,7 +115,6 @@ void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, 
       printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
     }
     endpoints.push_back(interface.endpoint[ep].bEndpointAddress);
-    printf("Appended endpoint to the special shiny list of endpoints.\n");
   }
 }
 
