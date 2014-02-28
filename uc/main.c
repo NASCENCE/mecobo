@@ -24,6 +24,8 @@
 #include "descriptors.h"
 #include "struct_init.h"
 
+char * BUILD_VERSION = __GIT_COMMIT__;
+
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -111,12 +113,17 @@ int numItemsInFlight = 0;
 static int lastCollected[50];
 static int runItems = 0;
 
+
 #define SRAM1_START 0x84000000
-#define SRAM1_WORDS 1024*1024
+#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
 
-static const int MAX_SAMPLES = SRAM1_WORDS/sizeof(struct sampleValue);
+#define SRAM2_START 0x88000000
+#define SRAM2_BYTES 256*1024 
 
-void * sampleBuffer = (void*)SRAM1_START;
+
+static const int MAX_SAMPLES = SRAM1_BYTES/sizeof(struct sampleValue);
+
+struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
 
 int inputPins[10];
@@ -160,7 +167,7 @@ int main(void)
   NVIC_EnableIRQ(TIMER2_IRQn);
 
   /* Set TIMER Top value */
-  TIMER_TopSet(TIMER1, 100000);
+  TIMER_TopSet(TIMER1, 10000);
   TIMER_TopSet(TIMER2, 47);
 
   printf("Initalizing timers\n");
@@ -174,41 +181,68 @@ int main(void)
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
-  //let's write and read!
 
-  for(uint16_t i = 0; i < MAX_SAMPLES; i++) {
-    *((uint16_t*)(0x88000000+i)) = i;
-    printf("sr2: %u at %p\n", *((uint16_t*)(0x88000000 + i)), 0x88000000 + i);
+  printf("Check if FPGA is alive.\n");
+  //If not alive, program it. 
+  for(int i = 0; i < 17; i++) {
+    uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+    if(*a != 0xDEAD) {
+      printf("Pincontroller %d broken: %u\n", i, *a);
+    }
   }
-  /*
-  for(uint32_t i = 0; i < MAX_SAMPLES; i++) {
-    struct sampleValue val;
-    val.sampleNum = i;
-    val.pin = 0;
-    val.value = i+1;
-    writeSample(&val);
-    struct sampleValue rr;
-    readSample(&rr, i);
+  printf("FPGA check complete\n");
+  printf("SRAM 1 TEST\n");
+  uint8_t * ram = (uint8_t*)sampleBuffer;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < SRAM1_BYTES; j++) {
+      ram[i*(16*1024)+j] = j%255;
+    }
+    for(int j = 0; j < 16*1024; j++) {
+      uint8_t rb = ram[i*(16*1024) + j];
+      if(rb != j%255) {
+        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+      }
+    }
+    //Null out before use.
+    ram[i] = 0;
   }
-  */
+  printf("Complete.\n");
+ 
+  printf("SRAM 2 TEST\n");
+  ram = (uint8_t*)SRAM2_START;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < SRAM2_BYTES; j++) {
+      ram[i*(16*1024)+j] = j%255;
+    }
+    for(int j = 0; j < 16*1024; j++) {
+      uint8_t rb = ram[i*(16*1024) + j];
+      if(rb != j%255) {
+        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+      }
+    }
+  }
+  printf("Complete.\n");
 
   GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
   GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
+  GPIO_PinModeSet(gpioPortB,  3, gpioModePushPull, 1);  //FPGA RESET, active high.
   //Turn off all LEDS
   for(int l = 1; l < 6; l++) {
     led(l, 1);
   }
-  //sampleBuffer = malloc(sizeof(struct sampleValue)*MAX_SAMPLES);
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
+  for(int i = 0; i < 50; i++) {
+    lastCollected[i] = -1;
+  }
   printf("Initializing USB\n");
   USBD_Init(&initstruct);
   printf("USB Initialized.\n");
 
-  //Release fpga reset
-  GPIO_PinOutClear(gpioPortB, 4);
+  //release fpga reset (active high)
+  GPIO_PinOutClear(gpioPortB, 3);
 
   /*
    * When using a debugger it is practical to uncomment the following three
@@ -238,10 +272,14 @@ int main(void)
   //itemsToApply will be ordered by start time, hurrah!
   itemsToApply = malloc(sizeof(struct pinItem) * 50);
   itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
+  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
+  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
 
   nextKillTime = 0;
-
+  printf("It's just turtles all the way down.\n");
+  printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
+  printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
   printf("Entering main loop\n");
   for (;;) {
     //check if DONE has gone high, then we are ... uh, done
@@ -269,12 +307,10 @@ int main(void)
       for(int ip = 0; ip < numInputPins; ip++) {
         struct sampleValue val;
         getInput(&val, (FPGA_IO_Pins_TypeDef)inputPins[ip]);
-        //printf("num: %d\n", val.sampleNum);
         if(val.sampleNum != (uint16_t)lastCollected[inputPins[ip]]) {
           lastCollected[inputPins[ip]] = val.sampleNum; 
-          if((int)numSamples < MAX_SAMPLES) {
-            //sampleBuffer[numSamples++] = val;
-            writeSample(&val);
+          if(numSamples < MAX_SAMPLES) {
+            sampleBuffer[numSamples++] = val;
           }
         }
       }
@@ -316,7 +352,6 @@ int main(void)
 
     }
   } //for loop ends
-
 }
 
 
@@ -408,6 +443,7 @@ int UsbDataSent(USB_Status_TypeDef status,
 {
   (void) remaining;
 
+  printf("USB DATA SENT HURRA\n");
   if ((status == USB_STATUS_OK) && (xf > 0)) 
   {
     //we probably sent some data :-)
@@ -504,6 +540,8 @@ void eADesigner_Init(void)
   GPIO->P[2].MODEH = (GPIO->P[2].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
   /* Pin PD9 is configured to Push-pull */
   GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE9_MASK) | GPIO_P_MODEH_MODE9_PUSHPULL;
+  GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE10_MASK) | GPIO_P_MODEH_MODE10_PUSHPULL;
+  GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE11_MASK) | GPIO_P_MODEH_MODE11_PUSHPULL;
   /* Pin PE0 is configured to Push-pull */
   GPIO->P[4].MODEL = (GPIO->P[4].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
   /* Pin PE1 is configured to Push-pull */
@@ -571,11 +609,11 @@ inline void execute(struct pinItem * item)
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       printf("  PWM: duty %d, aduty: %d", item->duty, item->antiDuty);
-      addr[PINCONFIG_DUTY_CYCLE]     = item->duty;
-      addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
-      //addr[PINCONFIG_CYCLES]         = item->cycles;
+      addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
+      addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
+      addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
       addr[PINCONFIG_RUN_INF]        = 1;
-      addr[PINCONFIG_SAMPLE_RATE]    = item->sampleRate;
+      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     default:
@@ -591,6 +629,11 @@ void killItem(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_DIRECT_CONST:
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      break;
+    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+      addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
+      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      break;
     case PINCONFIG_DATA_TYPE_RECORD:
       for(int i = 0; i < numInputPins; i++) {
         if (inputPins[i] == item->pin) {
@@ -620,10 +663,9 @@ inline void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate)
 {
   uint16_t * addr = getPinAddress(pin);
   addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-  addr[PINCONFIG_SAMPLE_RATE] = sampleRate;
+  addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;
   addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
   inputPins[numInputPins++] = pin;
-  printf("input: %d\n", pin);
 }
 
 //TODO: Want to have one read form FPGA. 16 bits sample.
@@ -634,13 +676,14 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
   val->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
   val->pin = pin;
   val->value = addr[PINCONFIG_SAMPLE_REG];
+  //printf("G: %u %u %u\n", val->sampleNum, val->pin, val->value);
 }
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
-  //TODO: Ignoring enum type... probably 32 bit int, but..
-  uint16_t offset = pin << 8; //8 MSB bits is pinConfig module addr
-  return (uint16_t*)EBI_ADDR_BASE + offset;
+  //Each pin controller has 2^8 = 0x100 16-bit words, or
+  //2^9 bytes. 
+  return (uint16_t*)(EBI_ADDR_BASE) + pin*0x100;
 }
 
 void execCurrentPack() 
@@ -733,8 +776,20 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
     //Send back the whole sending buffer.
     printf("Sending back the input buffers, of sample size %d\n", numSamples);
+
     uint32_t * d = (uint32_t *)(currentPack.data);
-    sendPacket(sizeof(struct sampleValue) * *d, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
+    int bytes = sizeof(struct sampleValue) * *d;
+    int packSize = 64000;
+
+    int packNum = 0;
+    /*
+    for(; packNum < (bytes/packSize); packNum++) {
+      sendPacket(packSize, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer + (packNum*packSize));
+      printf("pack sent\n");
+    }*/
+    //Rest packet.
+    sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
+    printf("Back to main loop\n");
   }
 
 
@@ -797,11 +852,14 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
   pack.data = data;
 
   packToSend = pack; //This copies the pack structure.
+  printf("Writing back %u bytes over USB.\n", pack.size);
+  
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }
 
 void resetAllPins()
 {
+  printf("RESETing all pins\n");
   for (int i = 0; i < nPins; i++) {
     uint16_t * addr = (getPinAddress((i)));
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
@@ -831,28 +889,4 @@ void led(int l, int mode)
     default:
   break;
   }
-}
-
-inline void writeSample(struct sampleValue * val) 
-{
-
-  void * currentAddr = sampleBuffer + (numSamples*2);
-  uint16_t * valp = (uint16_t*)val;
-
-  *((uint16_t*)currentAddr) = valp[0];
-  *((uint16_t*)currentAddr + 1) = valp[1];
-  numSamples++;
-}
-
-inline void readSample(struct sampleValue * val, int num) {
-  void * currentAddr = sampleBuffer + (num*2);
-  uint16_t * valp = (uint16_t*)val;
-  valp[0] = *((uint16_t*)(currentAddr));
-  valp[1] = *((uint16_t*)(currentAddr + 1));
-  /*
-  printf("%u %u from %p\n", 
-    valp[0] = *((uint16_t*)(currentAddr)),
-    valp[1] = *((uint16_t*)(currentAddr + 1)),
-    currentAddr);
-    */
 }

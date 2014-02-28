@@ -97,6 +97,7 @@ override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
 $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -std=c++11 -mcpu=cortex-m3 -mthumb \
+
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)
@@ -184,7 +185,7 @@ vpath %.S $(S_PATHS)
 # Default build is debug build
 all:      debug
 
-debug:    CFLAGS += -DDEBUG -O0 -g3
+debug:    CFLAGS += -DDEBUG -O0 -g3 -D__GIT_COMMIT__=\"$(shell git rev-parse HEAD)\"
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
 release:  CFLAGS += -DNDEBUG -O0 -g3 

@@ -40,6 +40,7 @@
 #define PINCONFIG_SAMPLE_RATE 6
 #define PINCONFIG_SAMPLE_REG 7
 #define PINCONFIG_SAMPLE_CNT 8
+#define PINCONFIG_STATUS_REG 9
 
 
 //Possible FPGA commands
@@ -135,10 +136,6 @@ void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
 void resetAllPins();
 void led(int l, int mode);
-
-void writeSample(struct sampleValue * cal);
-void readSample(struct sampleValue * cal, int num);
-
 
 #endif //__MECOBO_H_
 
