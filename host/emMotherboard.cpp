@@ -286,9 +286,11 @@ int main(int argc, char **argv) {
       }
     }
   }
-  
+ 
+  std::cout << "Starting USB" << std::endl;
+  int boardAddr = startUsb();
 
-  int port = 9090;
+  int port = 9090 + boardAddr;
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(em));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
@@ -297,30 +299,16 @@ int main(int argc, char **argv) {
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-
-  std::cout << "Starting USB..." << std::endl;
-  startUsb();
-  std::cout << "Done!" << std::endl;
-
   if(forceProgFpga) {
     programFPGA("mecobo.bin");
-  } else {
-    //Check if FPGA is configured
-    /*
-    if(em != NULL) {
-      if(!(em->isFpgaConfigured())) {
-        programFPGA("mecobo.bin");
-      }
-    }
-    */
   }
-
-  std::cout << "Starting thrift server. (Silence ensues)." << std::endl;
+ 
+  std::cout << "Starting thrift server, listening at port " << port << std::endl;
   server.serve();
 
-  std::cout << "Stopping USB..." << std::endl;
+  std::cout << "Stopping USB." << std::endl;
   stopUsb();
-  std::cout << "Done!" << std::endl;
+  std::cout << "EvoMaterio exiting. Sayonara." << std::endl;
 
   return 0;
 }

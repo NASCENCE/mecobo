@@ -20,7 +20,7 @@ std::vector<libusb_device *> mecobos;
 struct libusb_context * ctx;
 int numMecobos = 0;
 
-void startUsb()
+int startUsb()
 {
   int r;
   r = libusb_init(&ctx);
@@ -37,19 +37,28 @@ void startUsb()
     libusb_device_descriptor desc;
     libusb_get_device_descriptor(dev, &desc);
     if(desc.idVendor == 0x2544 && desc.idProduct == 0x3) {
-      std::cout << "Found Mecobo Device" << std::endl;
+      std::cout << "Found Mecobo Device." << std::endl;
       mecobos.push_back(dev);
     }
   }
 
   int chosen = 0;
+  int addr = 0;
   if(mecobos.size() > 1) {
-    std::cout << "We only support 1 mecobo per server. Choose one: " << std::endl;
+    std::cout << "We only support 1 mecobo per server. Choose one of the connected boards.: " << std::endl;
+
     int count = 0;
     for (auto meco : mecobos) {
       std::cout << count++ << " Port:" << (int)libusb_get_port_number(meco) << " Address:" << (int)libusb_get_device_address(meco) << std::endl;
     }
+    std::cout << "Enter number, followed by [enter]: ";
     std::cin >> chosen;
+   
+    addr = (int)libusb_get_device_address(mecobos[chosen]); 
+    int port = addr + 9090;
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << "Take special care now: The server will start at port " << port << std::endl;
+    std::cout << "---------------------------------" << std::endl;
   }
   
   int err = libusb_open(mecobos[chosen], &mecoboHandle);
@@ -58,15 +67,7 @@ void startUsb()
     printf("Could not open device with vid 2544, pid 0003. I'm dying.\n");
     exit(-1);
   }   
-
-  
-  //libusb_device * mecobo = libusb_get_device(mecoboHandle);
-  /*
-  if(mecobo == NULL) {
-    printf("Could not get device with provided handle\n");
-    exit(-1);
-  }*/
-
+ 
   libusb_detach_kernel_driver(mecoboHandle, 0x1);	
 
   if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
@@ -78,7 +79,7 @@ void startUsb()
   getEndpoints(eps, mecobos[chosen], 1);
   getEndpoints(debug_eps, mecobos[chosen], 0);
 
-  return;
+  return addr;
 }
 
 void stopUsb()
@@ -105,14 +106,14 @@ void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, 
   }
 
   //printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
-  std::cout << "Selecting interface " << interfaceNumber << std::endl;
+  //std::cout << "Selecting interface " << interfaceNumber << std::endl;
   struct libusb_interface_descriptor interface = config->interface[interfaceNumber].altsetting[0];
-  printf("Interface has %d endpoints\n", interface.bNumEndpoints);
+  //printf("Interface has %d endpoints\n", interface.bNumEndpoints);
   for(int ep = 0; ep < interface.bNumEndpoints; ++ep) {
     if(interface.endpoint[ep].bEndpointAddress & 0x80) {
-      printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
+      //printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
     } else {
-      printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
+      //printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
     }
     endpoints.push_back(interface.endpoint[ep].bEndpointAddress);
   }

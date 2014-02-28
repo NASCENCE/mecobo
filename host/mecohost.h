@@ -5,7 +5,7 @@
 #include <vector>
 #include "../mecoprot.h"
 
-void startUsb();
+int startUsb();
 void stopUsb();
 
 int getPin(FPGA_IO_Pins_TypeDef pin, uint32_t * val);
