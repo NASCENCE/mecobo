@@ -53,12 +53,17 @@ ADC_CMD_GET_SAMPLES = 2;
 
 
 always @ (clk) begin
-  if (addr == ADDR_ADC_REGISTER)
+  if (addr == ADDR_ADC_REGISTER) begin
     //if not shifting out data.
     if (!shift_out)
       adc_register <= data_in;
-  else
-    data_out <= 16'b0;
+      $display("adc_register: %h\n", adc_register);
+  end 
+  else if (addr == ADDR_ADC_SAMPLE_CHAN_0) begin
+      data_out <= tmp_register[0];
+      end
+      else 
+        data_out <= 16'b0;
 end
 
 //8 words, 16 bits memory.
@@ -67,13 +72,14 @@ reg [15:0]  adc_register;
 
 //State machine for shifting in data using sclk and 
 //copying over to temp register.
-reg [15:0] tmp_register [2:0];
+reg [15:0] tmp_register [0:7];
 reg [15:0] shift_register;
 reg [15:0] shift_in_register;
 
-parameter NUM_STATES = 2;
-parameter output_reg   = 1'b0;
-parameter get_values   = 1'b1;
+parameter NUM_STATES = 3;
+parameter idle         = 2'b00;
+parameter output_reg   = 2'b01;
+parameter get_values   = 2'b10;
 
 reg [NUM_STATES - 1:0] state;
 
@@ -101,17 +107,27 @@ always @ (posedge sclk)  begin
     if (shift_out) 
       adc_register <= {adc_register[14:0], 1'b0};
 
-    //if (shift_in)
-      //Do in shifting.
-    //Copy from shift reg
-    if (copy_to_tmp) 
+    if (shift_in) begin
+      shift_in_register  <= {shift_in_register[14:0], adc_dout};
+      //<< 1;
+      //shift_in_register[0] <= adc_dout; 
+      //{shift_in_register[15:0] << 1, adc_dout};
+      //$display("Shifted in bit %d: %b\n", outcounter, adc_dout);
+      //$display("shift_in_register: %b\n", shift_in_register);
+    end
+    //Copy from shift (first bits indicate channel)
+    if (copy_to_tmp) begin
       tmp_register[shift_in_register[15:13]] <= shift_in_register;
+      $display("copy: %h\n", shift_in_register);
+    end
   end
 end
 
 assign adc_din = adc_register[15];
 
-//Control state machine.
+
+
+//output state machine
 always @ (posedge sclk) 
 begin
   if (reset) begin
@@ -124,6 +140,51 @@ begin
   else begin
     case(state)
 
+      idle: begin
+        busy <= 1'b0;
+        cs <= 1'b0;
+        shift_out <= 1'b0;
+        shift_in <= 1'b0;
+        inc_outcounter <= 1'b0;
+        res_outcounter <= 1'b0;
+        copy_to_tmp <= 1'b0;
+        state <= idle;
+
+        //If write bit is high, there's a new command in town.
+        if (adc_register[15] == 1'b1)
+          state <= get_values;
+      end
+      
+      get_values: begin
+        busy <= 1'b1;
+        cs <= 1'b1;
+        shift_in <= 1'b1;  //shifts data into ADC
+        shift_out <= 1'b1; //shifts data out from ADC
+        inc_outcounter <= 1'b1;
+        res_outcounter <= 1'b0;
+        copy_to_tmp <= 1'b0;
+
+        //Keep getting values if we're not done.
+        state <= get_values;
+
+        //done with getting one sample, let's go via idle
+        //to make sure we're synchronized.
+        if (outcounter == 15) begin
+          $display("Outcounter 15\n");
+          copy_to_tmp <= 1'b1;
+          res_outcounter <= 1'b1;
+          state <= idle;
+        end
+
+        //we have a new register value that has not been shifted out.
+        /*
+        if (adc_register[15] == 1'b1) begin
+          state <= idle;
+        end
+        */
+
+      end
+      /*
       output_reg: begin
         busy <= 1'b1;
         cs <= 1'b1;
@@ -142,10 +203,10 @@ begin
         end
       end
 
-      //Default state.
+      //Default state, pull cs low and just keep getting samples.
       get_values: begin
         busy <= 1'b0;
-        cs <= 1'b0;
+        cs <= 1'b1;
         shift_out <= 1'b0;
         shift_in <= 1'b1;
         copy_to_tmp <= 1'b0;
@@ -165,6 +226,7 @@ begin
         if (adc_register != 16'h0000)
           state <= output_reg;
       end
+      */
     endcase
   end
 end
