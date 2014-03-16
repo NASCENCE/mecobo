@@ -3,7 +3,7 @@ module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out
 input clk;
 input reset;
 input enable;
-input [18:0] addr;
+input [20:0] addr;
 input   [15:0] data_in;
 //(* tristate2logic = "yes" *)
 output reg [15:0] data_out;
@@ -12,7 +12,7 @@ inout pin;
 input data_wr;
 input data_rd;
 
-reg [15:0] sample_register = 16'h0000;
+reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
 
 reg pin_output;
@@ -30,7 +30,7 @@ wire enable_in = (enable & (addr[15:8] == POSITION));
 always @ (*) begin
   if (enable_in & data_rd) begin
     if (addr == ADDR_SAMPLE_REG) 
-      data_out <= sample_register;
+      data_out <= {15'b0, sample_register};
     else if (addr == ADDR_SAMPLE_CNT) 
       data_out <= sample_cnt;
     else if (addr == ADDR_STATUS_REG)
@@ -52,7 +52,7 @@ parameter POSITION = 0;
 localparam BASE_ADDR = (POSITION << 8);
 
 //These are byte addresses.
-localparam [18:0] 
+localparam [20:0] 
   ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
   ADDR_DUTY_CYCLE = BASE_ADDR + 1,
   ADDR_ANTI_DUTY_CYCLE = BASE_ADDR + 2,
@@ -114,12 +114,12 @@ always @ (posedge clk) begin
   if (res_duty_counter == 1'b1)
     cnt_duty_cycle <= duty_cycle;
   else if (dec_duty_counter == 1'b1) 
-    cnt_duty_cycle <= cnt_duty_cycle - 16'h0001;
+    cnt_duty_cycle <= (cnt_duty_cycle - 16'h0001);
 
   if (res_anti_duty_counter == 1'b1)
     cnt_anti_duty_cycle <= anti_duty_cycle;
   else if (dec_anti_duty_counter == 1'b1) 
-    cnt_anti_duty_cycle <= cnt_anti_duty_cycle - 4'b0001;
+    cnt_anti_duty_cycle <= (cnt_anti_duty_cycle - 16'h0001);
 
   if (run_inf == 0) begin
     if (res_cycles_counter == 1'b1)
@@ -131,11 +131,11 @@ always @ (posedge clk) begin
   if (res_sample_counter == 1'b1) 
     cnt_sample_rate <= sample_rate;
   else if (dec_sample_counter == 1'b1) 
-    cnt_sample_rate <= cnt_sample_rate - 1;
+    cnt_sample_rate <= (cnt_sample_rate - 1);
 
   if (update_data_out)  begin
-    sample_register[0] <= pin_input;
-    sample_cnt <= sample_cnt + 1;
+    sample_register <= pin_input;
+    sample_cnt <= (sample_cnt + 1);
   end
 
 end
