@@ -14,41 +14,36 @@ always #10 clk <= !clk;
 always #200 sclk <= !sclk;
 
 reg [15:0] adc_reg = 0;
-reg [15:0] data_in = 0;
-reg [15:0] data_out = 0;
+reg [15:0] data_to_adc = 0;
+reg [15:0] data_from_adc;
 reg [18:0] addr = 0;
 
+//Dump to file.
 wire adc_sclk;
+ initial  begin
+  $dumpfile ("counter.vcd"); 
+  $dumpvars; 
+end 
+
 
 initial #0 begin
- // $monitor("adc_dout: %b\n", adc_dout);
   sclk = 0;
   clk = 0;
   rst = 1;
   #220;
+  //Program the AD controller to output channel 1
   rst = 0;
-  addr = 1;
-  data_in = 16'b1000010000000000;
-  //data_in = $random;
+  addr =    16'h0000;
+  data_to_adc = 16'b1000010000000011;
   #820;  //This is two cycles. 
-  addr = 0;   
-  //#(17*400);
+  data_to_adc = 0; //reset data in after a cycle or two.
   $display("busy: %b\n", busy);
   wait (busy == 1'b0) #1;
 
-//  $display("Input %h, got %h\n", data_in, adc_reg);
-  addr = 1;
-  data_in = 16'hFAAA;
-  #400;
-  data_in = 0;
-  addr = 0;
-  wait (busy == 1'b0) #1;
-  #500;
-  $display("Getting some data\n");
-  addr = 2;
-  #400;
-  wait (busy == 1'b0) #1;
-  $display("data_out: %h\n", data_out);
+  //Now we'll get a sample from channel 1. We don't need read/write, it's well-defined.
+  addr = 16'h1300;
+  #(200*17) //one cycle wait for data to be clocked in....
+  $display("data_from_adc: %h\n", data_from_adc);
 end
 
 adc_dummy adc_d0 (
@@ -64,8 +59,8 @@ adc_control adc0 (
   .reset(rst),
   .busy(busy),
   .addr(addr),
-  .data_in(data_in),
-  .data_out(data_out),
+  .data_in(data_to_adc),
+  .data_out(data_from_adc),
   .cs(adc_cs),
   .adc_din(adc_din),
   .adc_sclk(adc_sclk),

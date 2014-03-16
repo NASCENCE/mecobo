@@ -1,24 +1,131 @@
+#LOCS
 NET "clk" LOC = R10;
+#this is actually ebi addr 19...
 NET "reset" LOC = T6;
-NET "led" LOC = N2;
+
+NET "led[0]" LOC = N2;
+NET "led[1]" LOC = N1;
+NET "led[2]" LOC = M3;
+NET "led[3]" LOC = M1;
+
 
 # North Header
-NET "pin[0]" LOC = F16;
-NET "pin[1]" LOC = F17;
-NET "pin[2]" LOC = G14;
-NET "pin[3]" LOC = G16;
-NET "pin[4]" LOC = H16;
-NET "pin[5]" LOC = H17;
-NET "pin[6]" LOC = J16;
-NET "pin[7]" LOC = H15;
-NET "pin[8]" LOC = L12;
-NET "pin[9]" LOC = H14;
-NET "pin[10]" LOC = K14;
-NET "pin[11]" LOC = K12;
-NET "pin[12]" LOC = K17;
-NET "pin[13]" LOC = K16;
-NET "pin[14]" LOC = H12;
-NET "pin[15]" LOC = L13;
+NET "HN[2]" LOC = F16;
+NET "HN[4]" LOC = F17;
+NET "HN[6]" LOC = G14;
+NET "HN[8]" LOC = G16;
+NET "HN[10]" LOC = H16;
+NET "HN[12]" LOC = H17;
+NET "HN[14]" LOC = J16;
+NET "HN[16]" LOC = H15;
+NET "HN[18]" LOC = L12;
+NET "HN[20]" LOC = H14;
+NET "HN[22]" LOC = K14;
+NET "HN[24]" LOC = K12;
+NET "HN[26]" LOC = K17;
+NET "HN[28]" LOC = K16;
+NET "HN[30]" LOC = H12;
+NET "HN[32]" LOC = L13;
+NET "HN[34]" LOC = L18;
+NET "HN[36]" LOC = L15;
+NET "HN[38]" LOC = K15;
+NET "HN[40]" LOC = L17;
+NET "HN[42]" LOC = L16;
+NET "HN[44]" LOC = M16;
+NET "HN[46]" LOC = L14;
+NET "HN[48]" LOC = M14;
+NET "HN[50]" LOC = P17;
+NET "HN[52]" LOC = P16;
+NET "HN[54]" LOC = N14;
+#second row (innermost relative to fpga)
+NET "HN[1]" LOC = C17;
+NET "HN[3]" LOC = C18;
+NET "HN[5]" LOC = D17;
+NET "HN[7]" LOC = D18;
+NET "HN[9]" LOC = E16;
+NET "HN[11]" LOC = E18;
+NET "HN[13]" LOC = F15;
+NET "HN[15]" LOC = F18;
+NET "HN[17]" LOC = F14;
+NET "HN[19]" LOC = G18;
+NET "HN[21]" LOC = G13;
+NET "HN[23]" LOC = H18;
+NET "HN[25]" LOC = H13;
+NET "HN[27]" LOC = J18;
+NET "HN[29]" LOC = J13;
+NET "HN[31]" LOC = K13;
+NET "HN[33]" LOC = K18;
+NET "HN[35]" LOC = M13;
+NET "HN[37]" LOC = M18;
+NET "HN[39]" LOC = N15;
+NET "HN[41]" LOC = N18;
+NET "HN[43]" LOC = N17;
+NET "HN[45]" LOC = P18;
+NET "HN[47]" LOC = N16;
+NET "HN[49]" LOC = T18;
+NET "HN[51]" LOC = U18;
+NET "HN[53]" LOC = P15;
+NET "HN[55]" LOC = T17;
+NET "HN[57]" LOC = U17;
+
+# West Header
+NET  "HW[1]" LOC = D14;
+NET  "HW[3]" LOC = C14;
+NET  "HW[5]" LOC = F13;
+NET  "HW[7]" LOC = E13;
+NET  "HW[9]" LOC = F12;
+NET  "HW[11]"LOC = D12;
+NET  "HW[13]"LOC = D11;
+NET  "HW[15]"LOC = C11;
+NET  "HW[17]"LOC = F11;
+NET  "HW[19]"LOC = E11;
+NET  "HW[21]"LOC = G11;
+NET  "HW[23]"LOC = F10;
+NET  "HW[25]"LOC = D9;
+NET  "HW[27]"LOC = F9;
+#"HW29" DOES NOT EXIST
+NET  "HW[31]"LOC = C9;
+NET  "HW[33]"LOC = G9;
+NET  "HW[35]"LOC = D8;
+NET  "HW[37]"LOC = C8;
+NET  "HW[39]"LOC = C6;
+NET  "HW[41]"LOC = D6;
+NET  "HW[43]"LOC = C4;
+NET  "HW[45]"LOC = B3;
+NET  "HW[47]"LOC = B2;
+
+#second row (innermost relative to fpga)
+NET "HW[2]"  LOC = A16;
+NET "HW[4]"  LOC = A15;
+NET "HW[6]"  LOC = A14;
+NET "HW[8]"  LOC = A13;
+NET "HW[10]" LOC = B16;
+NET "HW[12]" LOC = E12;
+NET "HW[14]" LOC = C15;
+NET "HW[16]" LOC = A12;
+NET "HW[18]" LOC = B14;
+NET "HW[20]" LOC = C12;
+NET "HW[22]" LOC = C13;
+NET "HW[24]" LOC = A11;
+NET "HW[26]" LOC = B12;
+NET "HW[28]" LOC = A10;
+NET "HW[30]" LOC = B11;
+NET "HW[32]" LOC = A9;
+NET "HW[34]" LOC = C10;
+NET "HW[36]" LOC = A8;
+NET "HW[38]" LOC = B9;
+NET "HW[40]" LOC = A7;
+NET "HW[42]" LOC = B8;
+NET "HW[44]" LOC = A6;
+NET "HW[46]" LOC = C7;
+NET "HW[48]" LOC = A5;
+NET "HW[50]" LOC = B6;
+NET "HW[52]" LOC = A4;
+NET "HW[54]" LOC = C5;
+NET "HW[56]" LOC = A3;
+NET "HW[58]" LOC = B2;
+NET "HW[60]" LOC = A2;
+
 
 #NET "debug" LOC = F16;
 #NET "debug[1]" LOC = C14;
@@ -66,6 +173,8 @@ NET "ebi_addr[15]" LOC = M10;
 NET "ebi_addr[16]" LOC = T4;
 NET "ebi_addr[17]" LOC = R3;
 NET "ebi_addr[18]" LOC = T3;
+#NET "ebi_addr[19]" LOC = T6;
+#NET "ebi_addr[20]" LOC = P7;
 
 NET "ebi_cs" LOC = V14;
 NET "ebi_wr" LOC = V15;
