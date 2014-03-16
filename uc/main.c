@@ -182,6 +182,13 @@ int main(void)
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
+
+  int inf = 0;
+  uint16_t * dac = EBI_ADDR_BASE + (62 * 0x100);
+  dac[0] = 0xA002; //lDAC mode, single pulse.
+  dac[0] = 0x0FFF; //set to max pump up the voluuuuume.
+  while(inf);
+
   printf("Check if FPGA is alive.\n");
   //If not alive, program it. 
   for(int i = 0; i < 17; i++) {
@@ -615,6 +622,8 @@ inline void execute(struct pinItem * item)
       addr[PINCONFIG_RUN_INF]        = 1;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+      printf("  CONST: %d\n", item->constantValue);
 
     default:
       break;
@@ -681,6 +690,10 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
+  //Get the address of the DAC controller. Now it's getting hairy.
+  if (pin == FPGA_DAC_0) {
+    return (uint16_t*)(EBI_ADDR_BASE) + (62 * 0x100);
+  }
   //Each pin controller has 2^8 = 0x100 16-bit words, or
   //2^9 bytes. 
   return (uint16_t*)(EBI_ADDR_BASE) + pin*0x100;

@@ -14,6 +14,7 @@
 #include <thread>
 
 #include "emMotherboard.h"
+#include "rs232.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -286,6 +287,10 @@ int main(int argc, char **argv) {
       }
     }
   }
+
+
+  //If we want to program.
+    
  
   std::cout << "Starting USB" << std::endl;
   int boardAddr = startUsb();
