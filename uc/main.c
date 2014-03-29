@@ -158,6 +158,7 @@ int main(void)
   CMU_ClockEnable(cmuClock_TIMER1, true);
   CMU_ClockEnable(cmuClock_TIMER2, true);
 
+
   /* Enable overflow interrupt */
   TIMER_IntEnable(TIMER1, TIMER_IF_OF);
   TIMER_IntEnable(TIMER2, TIMER_IF_OF);
@@ -182,51 +183,64 @@ int main(void)
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
-  printf("Check if FPGA is alive.\n");
-  //If not alive, program it. 
-  for(int i = 0; i < 17; i++) {
-    uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
-    if(*a != 0xDEAD) {
-      printf("Pincontroller %d broken: %u\n", i, *a);
-    }
-  }
-  printf("FPGA check complete\n");
-  printf("SRAM 1 TEST\n");
-  uint8_t * ram = (uint8_t*)sampleBuffer;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM1_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
-    }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+
+  int skip_boot_tests = 1;
+  printf("DAC\n");
+  int inf = 0;
+  uint16_t * dac = EBI_ADDR_BASE + (62 * 0x100);
+  dac[0] = 0xA002; //lDAC mode, single pulse.
+  dac[0] = 0x0FFF; //set to max pump up the voluuuuume.
+  while(inf);
+
+  if(!skip_boot_tests) {
+    printf("Check if FPGA is alive.\n");
+    //If not alive, program it. 
+    for(int i = 0; i < 17; i++) {
+      uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+      if(*a != 0xDEAD) {
+        printf("Pincontroller %d broken: %u\n", i, *a);
       }
     }
-    //Null out before use.
-    ram[i] = 0;
-  }
-  printf("Complete.\n");
- 
-  printf("SRAM 2 TEST\n");
-  ram = (uint8_t*)SRAM2_START;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM2_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
+    printf("FPGA check complete\n");
+    printf("SRAM 1 TEST\n");
+    uint8_t * ram = (uint8_t*)sampleBuffer;
+    for(int i = 0; i < 4; i++) {
+      for(int j = 0; j < SRAM1_BYTES; j++) {
+        ram[i*(16*1024)+j] = j%255;
+      }
+      for(int j = 0; j < 16*1024; j++) {
+        uint8_t rb = ram[i*(16*1024) + j];
+        if(rb != j%255) {
+          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+        }
+      }
+      //Null out before use.
+      ram[i] = 0;
     }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+    printf("Complete.\n");
+  
+    printf("SRAM 2 TEST\n");
+    ram = (uint8_t*)SRAM2_START;
+    for(int i = 0; i < 4; i++) {
+      for(int j = 0; j < SRAM2_BYTES; j++) {
+        ram[i*(16*1024)+j] = j%255;
+      }
+      for(int j = 0; j < 16*1024; j++) {
+        uint8_t rb = ram[i*(16*1024) + j];
+        if(rb != j%255) {
+          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+        }
       }
     }
   }
   printf("Complete.\n");
 
-  GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
+  //debug leds.
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
+  GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
   GPIO_PinModeSet(gpioPortB,  3, gpioModePushPull, 1);  //FPGA RESET, active high.
+
   //Turn off all LEDS
   for(int l = 1; l < 6; l++) {
     led(l, 1);
@@ -242,7 +256,7 @@ int main(void)
   printf("USB Initialized.\n");
 
   //release fpga reset (active high)
-  GPIO_PinOutClear(gpioPortB, 3);
+  //GPIO_PinOutClear(gpioPortB, 3);
 
   /*
    * When using a debugger it is practical to uncomment the following three
@@ -615,6 +629,8 @@ inline void execute(struct pinItem * item)
       addr[PINCONFIG_RUN_INF]        = 1;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+      printf("  CONST: %d\n", item->constantValue);
 
     default:
       break;
@@ -681,6 +697,10 @@ inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
 {
+  //Get the address of the DAC controller. Now it's getting hairy.
+  if (pin == FPGA_DAC_0) {
+    return (uint16_t*)(EBI_ADDR_BASE) + (62 * 0x100);
+  }
   //Each pin controller has 2^8 = 0x100 16-bit words, or
   //2^9 bytes. 
   return (uint16_t*)(EBI_ADDR_BASE) + pin*0x100;

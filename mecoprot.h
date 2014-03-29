@@ -52,21 +52,25 @@
 //TODO: Fill in the rest.
 //
 //FPGA port enum
+//This MUST MUST correspond to the generate in toplevel.v; because that gives them their real
+//address. I guess we'll stop using these now, honestly...
+//so TODO: generate this from that. 
 typedef enum {
-  FPGA_F16 = 0,
-  FPGA_F17 = 1,
-  FPGA_G14 = 2,
-  FPGA_G16 = 3,
-  FPGA_H16 = 4,
-  FPGA_H17 = 5,
-  FPGA_J16 = 6,
-  FPGA_H15 = 7,
-  FPGA_L12 = 8,
-  FPGA_H14 = 9,
-  FPGA_K14 = 10,
-  FPGA_K12 = 11,
-  FPGA_K17 = 12,
-  FPGA_K16 = 13 
+  FPGA_DIGI_0 = 0,
+  FPGA_DIGI_1 = 1,
+  FPGA_DIGI_2 = 2,
+  FPGA_DIGI_3 = 3,
+  FPGA_DIGI_4 = 4,
+  FPGA_DIGI_5 = 5,
+  FPGA_DIGI_6 = 6,
+  FPGA_DIGI_7 = 7,
+  FPGA_DIGI_8 = 8,
+  FPGA_DIGI_9 = 9,
+  FPGA_DIGI_10 = 10,
+  FPGA_DIGI_11 = 11,
+  FPGA_DIGI_12 = 12,
+  FPGA_DIGI_13 = 13,
+  FPGA_DAC_0 = 61,
 } FPGA_IO_Pins_TypeDef;
 
 
