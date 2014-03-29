@@ -1,5 +1,5 @@
 #LOCS
-NET "clk" LOC = R10;
+NET "osc" LOC = R10;
 #this is actually ebi addr 19...
 NET "reset" LOC = T6;
 
@@ -73,14 +73,14 @@ NET  "HW[1]" LOC = D14;
 NET  "HW[3]" LOC = C14;
 NET  "HW[5]" LOC = F13;
 NET  "HW[7]" LOC = E13;
-NET  "HW[9]" LOC = F12;
-NET  "HW[11]"LOC = D12;
+#NET  "HW[9]" LOC = F12;
+#NET  "HW[11]"LOC = D12;
 NET  "HW[13]"LOC = D11;
 NET  "HW[15]"LOC = C11;
-NET  "HW[17]"LOC = F11;
-NET  "HW[19]"LOC = E11;
-NET  "HW[21]"LOC = G11;
-NET  "HW[23]"LOC = F10;
+#NET  "HW[17]"LOC = F11;
+#NET  "HW[19]"LOC = E11;
+#NET  "HW[21]"LOC = G11;
+#NET  "HW[23]"LOC = F10;
 NET  "HW[25]"LOC = D9;
 NET  "HW[27]"LOC = F9;
 #"HW29" DOES NOT EXIST
@@ -100,11 +100,11 @@ NET "HW[4]"  LOC = A15;
 NET "HW[6]"  LOC = A14;
 NET "HW[8]"  LOC = A13;
 NET "HW[10]" LOC = B16;
-NET "HW[12]" LOC = E12;
+#NET "HW[12]" LOC = E12;
 NET "HW[14]" LOC = C15;
 NET "HW[16]" LOC = A12;
 NET "HW[18]" LOC = B14;
-NET "HW[20]" LOC = C12;
+#NET "HW[20]" LOC = C12;
 NET "HW[22]" LOC = C13;
 NET "HW[24]" LOC = A11;
 NET "HW[26]" LOC = B12;
@@ -123,7 +123,7 @@ NET "HW[50]" LOC = B6;
 NET "HW[52]" LOC = A4;
 NET "HW[54]" LOC = C5;
 NET "HW[56]" LOC = A3;
-NET "HW[58]" LOC = B2;
+NET "HW[58]" LOC = B4;
 NET "HW[60]" LOC = A2;
 
 

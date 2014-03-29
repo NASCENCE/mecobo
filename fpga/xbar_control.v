@@ -5,22 +5,13 @@ input reset,
 input re,
 input wr,
 input [15:0] data,
-input [20:0] addr,
+input [18:0] addr,
 //facing the DAC
-output xbar_clock,
+output reg xbar_clock_enable,
 output reg pclk, //assumption: Keep this low. Then make it high; shift data, then give low pulse...hm. 
 output sin);
 
 parameter POSITION = 0;
-
-//Make the device clock with a clock-enable buffer.
-reg clock_enable;
-
-BUFGCE xbar_clock_buf
-(.O(xbar_clock),
- .I(sclk),
- .CE(clock_enable));
-
 
 //Chip select
 reg cs;
@@ -72,7 +63,7 @@ always @ (posedge sclk) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        clock_enable <= 1'b0;
+        xbar_clock_enable <= 1'b0;
         pclk <= 1'b1;
   end else begin
     //State machine start.
@@ -84,7 +75,7 @@ always @ (posedge sclk) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        clock_enable <= 1'b0;
+        xbar_clock_enable <= 1'b0;
         pclk <= 1'b1;
 
         if (command == LOAD) begin
@@ -100,7 +91,7 @@ always @ (posedge sclk) begin
         shift_out_enable <= 1'b1;
         count_up <= 1'b1;
         count_res <= 1'b0;
-        clock_enable <= 1'b1;
+        xbar_clock_enable <= 1'b1;
         pclk <= 1'b1;
 
         if (counter == 255) begin

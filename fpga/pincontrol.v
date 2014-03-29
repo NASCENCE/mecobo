@@ -27,14 +27,14 @@ localparam [3:0]
 
 wire enable_in = (enable & (addr[15:8] == POSITION));
 
-always @ (*) begin
+always @ (posedge clk) begin
   if (enable_in & data_rd) begin
     if (addr == ADDR_SAMPLE_REG) 
       data_out <= {15'b0, sample_register};
     else if (addr == ADDR_SAMPLE_CNT) 
       data_out <= sample_cnt;
     else if (addr == ADDR_STATUS_REG)
-      data_out <= 16'hDEAD;
+      data_out <= POSITION;
     else
       data_out <= 16'b0;
   end else

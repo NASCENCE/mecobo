@@ -14,14 +14,12 @@ module adc_control (
   input sclk,  //clocks the serial interface.
   input reset,
 
-  input [20:0] addr,
+  input [18:0] addr,
   input [15:0] data_in,
+  input enable,
   input re,
   input wr,
   output reg [15:0] data_out,
-
-  output reg busy,
-
 
   // interfacing the chip.
   output reg cs,
@@ -31,54 +29,65 @@ module adc_control (
   input adc_dout
 );
                                             
-//                       Channel          Command    Offset (position)
+//                          |offset                | channel| command
 //Address layout: [18,17,16,15,14,13,12 | 11,10,9,8| 7,6,5,4,3,2,1,0]
 parameter POSITION = 0;
 
-reg controller_enable = 0;
-always @ (posedge clk) begin
-  if (addr[7:0] == POSITION)
-    controller_enable = 1;
-  else 
-    controller_enable = 0;
-end
-
+wire controller_enable;
+assign controller_enable = (enable & (addr[15:8] == POSITION));
 
 localparam [3:0] 
-  PROGRAM  = 4'h0,
+  PROGRAM  = 4'h4,
   OVERFLOW = 4'h1,
   DIVIDE   = 4'h2,
-  SAMPLE   = 4'h3;
+  SAMPLE   = 4'h3,
+  ID_REG   = 4'h9,
+  BUSY     = 4'hA;
 
 //Data capture from EBI
 //--------------------------------------------------------------------
-reg[15:0] tmp_shift_out_reg;
+reg[15:0] ebi_capture_reg;
 always @ (posedge clk) begin
   if (reset) 
-    tmp_shift_out_reg <= 0;
+    data_out <= 0;
   else
-  //"Chip select" decode
+
+    if (reset_ebi_capture_reg)
+      ebi_capture_reg <= 0;
     if (controller_enable && wr) begin
       //Decode the command field.
-      if (addr[11:8] == PROGRAM) begin
+      if (addr[3:0] == PROGRAM) begin
         //if not shifting out data we are free to capture new.
         if (!shift_out) begin
-          tmp_shift_out_reg <= data_in;
+          ebi_capture_reg <= data_in;
         end 
       end
-      
-      if (addr[11:8] == OVERFLOW) begin
-        overflow_register[addr[18:12]] <= data_in;
+      //Data driving
+      if (addr[3:0] == OVERFLOW) begin
+        overflow_register[addr[7:4]] <= data_in;
       end
 
-      if (addr[11:8] == DIVIDE) begin
+      if (addr[3:0] == DIVIDE) begin
         clock_divide_register <= data_in;
+      end
+    end
+
+    //Driving out
+    if(controller_enable & re) begin
+      //Getting sample values.
+      if (addr[3:0] == SAMPLE) begin
+        //$display("Someone asked for sample for channel %d: %h\n", addr[7:4],sample_register[addr[7:4]]);
+        data_out <= sample_register[addr[7:4]];
       end
 
       //Getting sample values.
-      if (addr[11:8] == SAMPLE && re) begin
-        $display("Someone asked for sample for channel %d: %h\n", addr[18:12],sample_register[addr[18:12]]);
-        data_out <= sample_register[addr[18:12]];
+      if (addr[3:0] == ID_REG) begin
+        data_out <= 16'hFADC;
+      end
+
+      //Check if busy.
+      if (addr[3:0] == BUSY) begin
+        data_out <= {15'h0, (shift_out|shift_in)};
       end
 
     end else
@@ -105,12 +114,15 @@ reg shift_out; //shift out to ADC
 reg shift_in; //shift into FPGA
 reg copy_to_tmp;
 reg load_shift_out_reg;
+reg reset_ebi_capture_reg;
 
 
 //----------------------------- SLOW DATA PATH -----------------------------------------------
 //This describes the process that shifts out data in our out of the ADC.
 always @ (posedge sclk)  begin
   if (!reset) begin
+
+    //Clock counter logic
     if (res_clkcounter) 
       clkcounter <= 0; 
     else begin
@@ -120,130 +132,163 @@ always @ (posedge sclk)  begin
     end
 
     //shift reg logic. 
-    //the fast clock loads the temp reg, the slow clock loads the real shift register.
+    //the fast clock loads the ebi capture reg, the slow clock loads the real shift register in sync
+    //with the control state machine.
     if (load_shift_out_reg) 
-      shift_out_register <= tmp_shift_out_reg;
-    else if (shift_out) begin
+      shift_out_register <= ebi_capture_reg;
+    else if (shift_out)
       shift_out_register <= {shift_out_register[14:0], 1'b0};
-    end else begin
+    else
       shift_out_register <= 16'h0000;  //keep adc din tied low.
     end
-
-    if (shift_in) begin
-      shift_in_register  <= {shift_in_register[14:0], adc_dout};
-    end else begin
-      shift_in_register <= 16'h0000; //keep it zero when not shifting in data.
-    end
-
     //Copy from shift register to temp register every 16 cycles. (first bits indicate which channel it's from)
     if (copy_to_tmp) begin
       $display("Copy from shift %h", shift_in_register[15:13]);
       tmp_register[shift_in_register[15:13]] <= shift_in_register;
     end
+end
+
+//Handle clocking in of data.
+always @ (negedge sclk) begin
+  if (shift_in) begin
+    shift_in_register  <= {shift_in_register[14:0], adc_dout};
   end
 end
+
 
 //Take top-most bit of shift_out_register and hook it directly to ADC input.
 assign adc_din = shift_out_register[15];
 //----------------------------------------------------------------------------
-parameter NUM_STATES = 3;
-parameter init         = 2'b00;
-parameter program_adc   = 2'b01;
-parameter get_values   = 2'b10;
+parameter NUM_STATES    = 4;
+parameter init          = 4'b0001;
+parameter program_adc   = 4'b0010;
+parameter get_values    = 4'b0100;
+parameter copy          = 4'b1000;
 
 reg [NUM_STATES - 1:0] state;
 
 //---------------------------- CONTROL LOGIC -----------------------------
 //The slow clocked control logic that controls the shift registers
 //and times when to copy data into the temporary registers.
+//TODO: Split into two state machines? One for shifting in, one for shifting out.
+
+
+//Each state machine is two processes to make things a little more readable.
+//The first process describes the next-state equation,
+//and the second process describes the outputs for each state (it's combinatorial).
+
 always @ (posedge sclk) 
 begin
   if (reset) begin
-    cs <= 1'b1;
     state <= init;
-    shift_in <= 1'b0;
-    shift_out <= 1'b0;
   end
   else begin
     case(state)
 
       init: begin
-        busy <= 1'b0;
-        cs <= 1'b1;
-        load_shift_out_reg <= 1'b1;
-        shift_out <= 1'b0;
-        shift_in <= 1'b0;
-        inc_clkcounter <= 1'b0;
-        res_clkcounter <= 1'b1;
-        copy_to_tmp <= 1'b0;
-        state <= init;
-
         //If write bit is high, there's a new command in town.
-        if (shift_out_register[15] == 1'b1) begin
-          $display("Going to programming state, shifting out %d", shift_out_register);
+        if (ebi_capture_reg[15] == 1'b1) begin
+          //$display("Going to programming state, shifting out %d", shift_out_register);
           state <= program_adc;
-          //shift_out <= 1'b1;
-          //cs <= 1'b0;
         end else begin
-          //Go get values if no commands to program. 
-          state <= get_values;
-          //cs <= 1'b0;
-          //shift_in <= 1'b0;
+          state <= get_values;  //ebi_capture 0, go get values by default.
         end
       end
-      
+
+      copy: begin
+        state <= init;
+      end
+
       get_values: begin
-        busy <= 1'b1;
-        cs <= 1'b0;
-        shift_in <= 1'b1;  //shifts data into ADC
-        shift_out <= 1'b0; //shifts data out from ADC
-        load_shift_out_reg <= 1'b0;
-        inc_clkcounter <= 1'b1;
-        res_clkcounter <= 1'b0;
-        copy_to_tmp <= 1'b0;
-
-        //Keep getting values if we're not done.
         state <= get_values;
-
-        //done with getting one sample, let's go via init
-        //to make sure we're synchronized.
+        
         if (clkcounter == 15) begin
-          //Next cycle we should copy.
-          copy_to_tmp <= 1'b1;
-        //  res_clkcounter <= 1'b1;
-         // inc_clkcounter <= 1'b0;
-          state <= init;  //go back to initial state to check for new commands. 
-          //cs <= 1'b1;
+          state <= copy;
         end
       end
 
       //In programming state, for 16 sckl-cycles we will output data.
       program_adc: begin
-        busy <= 1'b1;
-        cs <= 1'b0;
-        shift_in <= 1'b0;  //shifts data into ADC
-        shift_out <= 1'b1; //shifts data out from ADC
-        load_shift_out_reg <= 1'b0;
-        inc_clkcounter <= 1'b1;
-        res_clkcounter <= 1'b0;
-        copy_to_tmp <= 1'b0;
-
-        //Keep getting values if we're not done.
         state <= program_adc;
-        //done with getting one sample, let's go via init
-        //to make sure we're synchronized.
         if (clkcounter == 15) begin
-          //Next cycle we should copy.
-          //res_clkcounter <= 1'b1;
-          //inc_clkcounter <= 1'b0;
-          //cs <= 1'b1; //raise chip select again. no more data.
           state <= init;
         end
       end
 
+      default: 
+        state <= init;
+
     endcase
   end
 end
+
+//output equations and stunff.
+always @ (*) begin
+  case (state)
+    init: begin
+      cs <= 1'b1;
+      if (ebi_capture_reg[15] == 1'b1)
+        load_shift_out_reg <= 1'b1;
+      else
+        load_shift_out_reg <= 1'b0;
+
+      reset_ebi_capture_reg <= 1'b0;
+      shift_out <= 1'b0;
+      shift_in <= 1'b0;
+      inc_clkcounter <= 1'b0;
+      res_clkcounter <= 1'b1;
+      copy_to_tmp <= 1'b0;
+    end
+
+
+    //This state shall copy to tmp registers.
+    copy: begin
+      cs <= 1'b1;  
+      shift_in <= 1'b0;  //shifts data into ADC
+      shift_out <= 1'b0; //shifts data out from ADC
+      load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
+      reset_ebi_capture_reg <= 1'b0;
+      inc_clkcounter <= 1'b0;
+      res_clkcounter <= 1'b1;
+      copy_to_tmp <= 1'b1;
+    end
+
+
+    get_values: begin
+      cs <= 1'b0;  //pull low to select ADC.
+      shift_in <= 1'b1;  //shifts data into ADC
+      shift_out <= 1'b0; //shifts data out from ADC
+      load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
+      reset_ebi_capture_reg <= 1'b0;
+      inc_clkcounter <= 1'b1;
+      res_clkcounter <= 1'b0;
+      copy_to_tmp <= 1'b0;
+    end
+
+    program_adc: begin
+      cs <= 1'b0;
+      shift_in <= 1'b0;  //shifts data into ADC
+      shift_out <= 1'b1; //shifts data out from ADC
+      load_shift_out_reg <= 1'b0;
+      reset_ebi_capture_reg <= 1'b1;
+      inc_clkcounter <= 1'b1;
+      res_clkcounter <= 1'b0;
+      copy_to_tmp <= 1'b0;
+    end
+    
+    default: begin
+      cs <= 1'b1;
+      shift_in <= 1'b0;  //shifts data into ADC
+      shift_out <= 1'b1; //shifts data out from ADC
+      load_shift_out_reg <= 1'b0;
+      reset_ebi_capture_reg <= 1'b1;
+      inc_clkcounter <= 1'b1;
+      res_clkcounter <= 1'b0;
+      copy_to_tmp <= 1'b0;
+    end
+  endcase
+end
+
 
 //------------------ Handles copying on overflow to real data register -----------
 //TODO: statemachine that controls the sample rate copying.
@@ -251,6 +296,9 @@ end
 genvar i;
 for (i = 0; i < 8; i = i+1) begin
   always @ (posedge clk) begin
+    if (reset) begin
+      sample_register[i] <= 0;
+    end else
       if (fast_clk_counter[i] == overflow_register[i]) begin
         fast_clk_counter[i] <= 0;
         sample_register[i] <= tmp_register[i];
