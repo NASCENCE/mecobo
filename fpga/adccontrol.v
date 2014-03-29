@@ -82,7 +82,7 @@ always @ (posedge clk) begin
 
       //Getting sample values.
       if (addr[3:0] == ID_REG) begin
-        data_out <= 16'hFADC;
+        data_out <= 16'h0ADC;
       end
 
       //Check if busy.

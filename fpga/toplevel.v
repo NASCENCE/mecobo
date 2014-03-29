@@ -116,7 +116,6 @@ assign clk[5] = clk_int[5];
 
 //Enable all by default some clocks.
 assign ce[1] = 1'b1; //always on.
-
 //XBar clock needs to be toggleable
 assign HN[6] = clk_out[2];
 wire xbar_clock_enable; //from xbar control
@@ -169,7 +168,7 @@ adc_control #(.POSITION(65))
       .adc_din(HN[32]),
       .adc_dout(HN[40]));
 
-dac_control #(.POSITION(62)) 
+dac_control #(.POSITION(62))
     dac0 (
       .ebi_clk(sys_clk),
       .sclk(da_clk),
@@ -184,13 +183,15 @@ dac_control #(.POSITION(62))
       .nSync(HN[16]),
       .dac_din(HN[8]));
 
-xbar_control #(.POSITION(63)) 
+xbar_control #(.POSITION(63))
     xbar0 (
       .ebi_clk(sys_clk),
       .sclk(xbar_clk),
       .reset(reset),
+      .enable(chip_select),
       .re(ebi_rd),
       .wr(ebi_wr),
+      .data_out(data_out),
       .data(data_in),
       .addr(ebi_addr),
       .xbar_clock_enable(xbar_clock_enable), //clock from xbar and out to device (BUFCE in module)
