@@ -168,6 +168,7 @@ int main(void)
   CMU_ClockEnable(cmuClock_TIMER1, true);
   CMU_ClockEnable(cmuClock_TIMER2, true);
 
+
   /* Enable overflow interrupt */
   TIMER_IntEnable(TIMER1, TIMER_IF_OF);
   TIMER_IntEnable(TIMER2, TIMER_IF_OF);
@@ -191,111 +192,63 @@ int main(void)
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
-
-
-
-
-
  
-  //int inf = 1;
-  //uint16_t val = 0;
-  //uint16_t * ad = ((uint16_t*)EBI_ADDR_BASE) + (65 * 0x100);
-
-  //101 xxx 10
-  printf("Setting up DAC\n");
+  printf("Setting up DAC and ADCs\n");
   setupDAC();
   setupADC();
 
-  /*
-  printf("ADC programming\n");
-  //Set internal overflow register for channel 0.
-  ad[0x01] = 0; //overflow
-  ad[0x02] = 1; //divide
 
-  ad[0x04] = 0x803C;//AD control command. 8 single ended inputs, straight binary coding, no sequencer.
-  while(ad[0x0A] == 1);
-  ad[0x04] = 0xA800; //range register written to +-5V on all channels for chans 0 to 4
-  while(ad[0x0A] == 1);
 
-  for(int i =0; i < 32; i++)  {
-      xbar[i] = 0;
-  }
-
-  //while(1) {
-    //XBAR program
-    xbar[7] = 0x8000;   //switch y15, x8 on
-    //xbar[15] = 0x0000;  //switch y15, x0 on
-
-    //cmd
-     printf(".");
-    xbar[0x20] = 0x0; //whatever written to this register will be interpreted as a cmd.
-    }
-    printf("xbar programmed!\n");
-  //}
-
-  //ad[0x04] = 0x803C; //convert channel 0 and give it back in straight binary yo.
-  double t = 0.0;
-  while (inf) {
-    dac[0] = 0x0001 & (val++); //set to max pump up the voluuuuume.
-    while (dac[10] == 1) {};
-    //dac[0] = 0x0FF0 & ((uint16_t)((cos(t)+1)*(0xFF/2.0)) << 4);
-    //dac[0] = 0x0FFF;
-    //t += 6.28/5000.0;
-    //while (dac[10] == 1) {};
-
-    uint16_t valback = ad[0x03]; //read operation to sample register 0.
-    printf("valback %x\n", valback);
-  }
-  */
-
-  /*
-  printf("Check if FPGA is alive.\n");
-  //If not alive, program it. 
-  for(int i = 0; i < 70; i++) {
-    uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
-    printf("pincontroller %d: %x\n", i, *a);
-    //if(*a != 0xDEAD) {
-    //  printf("Pincontroller %d broken: %u\n", i, *a);
-    //}   
-  }
-  */
-  printf("FPGA check complete\n");
-  printf("SRAM 1 TEST\n");
-  uint8_t * ram = (uint8_t*)sampleBuffer;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM1_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
-    }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+  int skip_boot_tests= 0;
+  if(!skip_boot_tests) {
+    printf("Check if FPGA is alive.\n");
+    //If not alive, program it. 
+    for(int i = 0; i < 17; i++) {
+      uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+      if(*a != 0xDEAD) {
+        printf("Pincontroller %d broken: %u\n", i, *a);
       }
     }
-    //Null out before use.
-    ram[i] = 0;
-  }
-  printf("Complete.\n");
- 
-  printf("SRAM 2 TEST\n");
-  ram = (uint8_t*)SRAM2_START;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM2_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
+    printf("FPGA check complete\n");
+    printf("SRAM 1 TEST\n");
+    uint8_t * ram = (uint8_t*)sampleBuffer;
+    for(int i = 0; i < 4; i++) {
+      for(int j = 0; j < SRAM1_BYTES; j++) {
+        ram[i*(16*1024)+j] = j%255;
+      }
+      for(int j = 0; j < 16*1024; j++) {
+        uint8_t rb = ram[i*(16*1024) + j];
+        if(rb != j%255) {
+          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+        }
+      }
+      //Null out before use.
+      ram[i] = 0;
     }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+    printf("Complete.\n");
+  
+    printf("SRAM 2 TEST\n");
+    ram = (uint8_t*)SRAM2_START;
+    for(int i = 0; i < 4; i++) {
+      for(int j = 0; j < SRAM2_BYTES; j++) {
+        ram[i*(16*1024)+j] = j%255;
+      }
+      for(int j = 0; j < 16*1024; j++) {
+        uint8_t rb = ram[i*(16*1024) + j];
+        if(rb != j%255) {
+          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
+        }
       }
     }
   }
   printf("Complete.\n");
 
-  GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
+  //debug leds.
   GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
+  GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
   GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
   GPIO_PinModeSet(gpioPortB,  3, gpioModePushPull, 1);  //FPGA RESET, active high.
+
   //Turn off all LEDS
   for(int l = 1; l < 6; l++) {
     led(l, 1);
@@ -311,7 +264,7 @@ int main(void)
   printf("USB Initialized.\n");
 
   //release fpga reset (active high)
-  GPIO_PinOutClear(gpioPortB, 3);
+  //GPIO_PinOutClear(gpioPortB, 3);
 
   /*
    * When using a debugger it is practical to uncomment the following three
