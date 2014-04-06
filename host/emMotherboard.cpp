@@ -7,6 +7,7 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 
+#include "channelmap.h"
 #include "mecohost.h"
 #include "../mecoprot.h"
 #include <map>
@@ -37,8 +38,15 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   int64_t time;
   std::vector<emSequenceItem> seqItems;
+  
+  channelMap xbar;
 
   std::map<int, std::queue<emSequenceItem>> pinSeq;
+
+  std::map<int,int> pinToChannel;
+  std::map<int,int> channelToPin;
+
+  //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
   //std::vector<int> recPins;
   std::vector<emSequenceItem> itemsInFlight;
@@ -78,6 +86,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   bool reset() {
     // Your implementation goes here
+    xbar = channelMap();
     resetAllPins();
     printf("reset\n");
     return true;
@@ -111,14 +120,24 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
+
     int lastEnd = -1;
     for (auto item : seqItems) {
       setupItem(item);
+
+
       if(item.endTime > lastEnd) {
         lastEnd = item.endTime;
         std::cout << "Last item ends at" << lastEnd << std::endl;
       }
     }
+    
+    //Set up the crossbar for this sequence.
+    std::cout << "Setting up XBAR" << std::endl;
+    uint8_t * bytting = new uint8_t[64];
+    xbar.getXbarConfigBytes(bytting);
+    setXbar(bytting);
+    delete[] bytting;
     
     std::cout << "Running sequences." << std::endl;
     steady_clock::time_point start = steady_clock::now();
@@ -134,8 +153,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::vector<sampleValue> samples;
     getSampleBuffer(samples);
     for(auto s : samples) {
-      //std::cout << "Samples for pin " << s.pin << ":" << s.sampleNum << std::endl;
-      rec[s.pin].push_back(s.value);
+      //std::cout << "Samples for pin " << s.channel << ":" << s.sampleNum << std::endl;
+      rec[xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel)].push_back(s.value);
     }
 
     std::cout << "Sequence done, all qeueues empty." << std::endl;
@@ -164,7 +183,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
-    // Your implementation goes here
+    //Asks for recording from a pin, but we have only channel recordins of course.
     std::vector<int32_t> v;
     std::vector<sampleValue> samples;
 
@@ -179,12 +198,12 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     r.Samples = v;
     _return = r;
 
-    rec[srcPin].clear();
   }
 
 
   void clearRecording(const int32_t srcPin) {
     // Your implementation goes here
+    rec[srcPin].clear();
     printf("clearRecording\n");
   }
 
@@ -221,13 +240,26 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
     uint32_t sampleDiv = ((50*1000000)/(double)item.frequency);
+    uint16_t ampBinary = 0;
     emException err;
+
+    FPGA_IO_Pins_TypeDef channel = xbar.getChannelForItem(item);
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
         std::cout << "CONSTANT added: " << item.amplitude << " on pin " << item.pin << std::endl;
-        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
+        submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
+
+      //For now this is mapped to the DAC.
+      case emSequenceOperationType::type::ARBITRARY:
+        std::cout << "Arbitrary voltage: " << item.amplitude << " on pin " << item.pin << std::endl;
+        //Calculate the real amplitude value (binary encoding, 0 - 255)
+        //ampBinary = (uint16_t)((255.0/2.5) * item.amplitude);
+        ampBinary = item.amplitude;
+        submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DAC_CONST, ampBinary);
+        break;
+
       case emSequenceOperationType::type::PREDEFINED:
         //Since it's predefined, we have a waveFormType
         if(item.waveFormType == emWaveFormType::PWM) {
@@ -250,8 +282,15 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
         }
         break;
+
+      //Record type implies analogue recordin ... if you haven't specified the waveform type to PWM, in which case we use digital
       case emSequenceOperationType::type::RECORD:
-        std::cout << "RECORDING added on pin " << item.pin << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        //Use one of the analoge recording channels for this pin.
+        //pinToChannel[item.pin] = FPGA_ADC_0_A;
+        //channelToPin[FPGA_ADC_0_A] = item.pin;
+
+        std::cout << "RECORDING [analogue] added on pin " << item.pin << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
           err.Source = "emMotherboard";
@@ -262,8 +301,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           err.Source = "emMotherboard";
           throw err;
           break;
-        }
-        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+        }*/
+        
+        submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+
         break;
       default:
         break;

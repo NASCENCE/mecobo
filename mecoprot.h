@@ -20,6 +20,7 @@
 #define USB_CMD_RESET_ALL 0xB
 #define USB_CMD_LED 0xC
 #define USB_CMD_RUN_SEQ 0xD
+#define USB_CMD_PROGRAM_XBAR 0xE
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
@@ -43,19 +44,29 @@
 #define PINCONFIG_DATA_TYPE_PREDEFINED_PWM 11
 #define PINCONFIG_DATA_TYPE_DAC_CONST 12
 #define PINCONFIG_DATA_TYPE_RECORD 13
+#define PINCONFIG_DATA_TYPE_RECORD_ANALOGUE 14
 
 #define STATUS_BYTES 8
 #define STATUS_FPGA_CONFIGURED 0
 #define STATUS_USB_BUFFER_ELEMENTS 1
 
 
+#define AD_CHANNELS_START 100
+#define AD_CHANNELS_END 199
+
+#define DA_CHANNELS_START 50
+#define DA_CHANNELS_END 99
+
+#define IO_CHANNELS_START 0
+#define IO_CHANNELS_END 49
 //TODO: Fill in the rest.
 //
 //FPGA port enum
 //This MUST MUST correspond to the generate in toplevel.v; because that gives them their real
-//address. I guess we'll stop using these now, honestly...
+//address. 
 //so TODO: generate this from that. 
 typedef enum {
+  INVALID = -1,
   FPGA_DIGI_0 = 0,
   FPGA_DIGI_1 = 1,
   FPGA_DIGI_2 = 2,
@@ -70,7 +81,37 @@ typedef enum {
   FPGA_DIGI_11 = 11,
   FPGA_DIGI_12 = 12,
   FPGA_DIGI_13 = 13,
-  FPGA_DAC_0 = 61,
+  FPGA_DIGI_14 = 14,
+  FPGA_DIGI_15 = 15,
+  //DAC channels
+  FPGA_DAC_0_A = 50,
+  FPGA_DAC_0_B = 51,
+  FPGA_DAC_0_C = 52,
+  FPGA_DAC_0_D = 53,
+  FPGA_DAC_0_E = 54,
+  FPGA_DAC_0_F = 55,
+  FPGA_DAC_0_G = 56,
+  FPGA_DAC_0_H = 57,
+  
+  FPGA_DAC_1_A = 58,
+  FPGA_DAC_1_B = 59,
+  FPGA_DAC_1_C = 60,
+  FPGA_DAC_1_D = 61,
+  FPGA_DAC_1_E = 62,
+  FPGA_DAC_1_F = 63,
+  FPGA_DAC_1_G = 64,
+  FPGA_DAC_1_H = 65,
+
+  //ADC channels.
+  FPGA_ADC_0_A = 100,
+  FPGA_ADC_0_B = 101,
+  FPGA_ADC_0_C = 102,
+  FPGA_ADC_0_D = 103,
+  FPGA_ADC_0_E = 104,
+  FPGA_ADC_0_F = 105,
+  FPGA_ADC_0_G = 106,
+  FPGA_ADC_0_H = 107
+  //Etc...
 } FPGA_IO_Pins_TypeDef;
 
 
@@ -82,8 +123,8 @@ struct mecoPack {
 
 struct sampleValue {
   uint16_t sampleNum; 
-  uint8_t pin;
-  uint8_t value;
+  uint8_t channel;
+  uint16_t value;
 };
 
 

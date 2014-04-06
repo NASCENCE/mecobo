@@ -13,6 +13,7 @@
 #include "ll.h"
 #include "pinItemQueue.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +24,9 @@
 
 #include "descriptors.h"
 #include "struct_init.h"
+
+#include "dac.h"
+#include "adc.h"
 
 char * BUILD_VERSION = __GIT_COMMIT__;
 
@@ -120,16 +124,20 @@ static int runItems = 0;
 #define SRAM2_START 0x88000000
 #define SRAM2_BYTES 256*1024 
 
+uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 
 static const int MAX_SAMPLES = SRAM1_BYTES/sizeof(struct sampleValue);
 
 struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
 
-int inputPins[10];
-int numInputPins = 0;
+int inputChannels[10];
+int numInputChannels = 0;
 int nextKillTime = 0;
 
+
+//ADC sequencer registers
+uint16_t adcSequence[4] = {0xE000,0xE000,0xE000,0xE000};
 
 void TIMER1_IRQHandler(void)
 { 
@@ -152,8 +160,10 @@ int main(void)
   eADesigner_Init();
   setupSWOForPrint();
   printf("Printing online.\n");
+  GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
 
   printf("Starting timer clocks\n");
+  GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
   //Turn on timers
   CMU_ClockEnable(cmuClock_TIMER1, true);
   CMU_ClockEnable(cmuClock_TIMER2, true);
@@ -183,20 +193,72 @@ int main(void)
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
 
-  int inf = 0;
-  uint16_t * dac = EBI_ADDR_BASE + (62 * 0x100);
-  dac[0] = 0xA002; //lDAC mode, single pulse.
-  dac[0] = 0x0FFF; //set to max pump up the voluuuuume.
-  while(inf);
 
+
+
+ 
+  //int inf = 1;
+  //uint16_t val = 0;
+  //uint16_t * ad = ((uint16_t*)EBI_ADDR_BASE) + (65 * 0x100);
+
+  //101 xxx 10
+  printf("Setting up DAC\n");
+  setupDAC();
+  setupADC();
+
+  /*
+  printf("ADC programming\n");
+  //Set internal overflow register for channel 0.
+  ad[0x01] = 0; //overflow
+  ad[0x02] = 1; //divide
+
+  ad[0x04] = 0x803C;//AD control command. 8 single ended inputs, straight binary coding, no sequencer.
+  while(ad[0x0A] == 1);
+  ad[0x04] = 0xA800; //range register written to +-5V on all channels for chans 0 to 4
+  while(ad[0x0A] == 1);
+
+  for(int i =0; i < 32; i++)  {
+      xbar[i] = 0;
+  }
+
+  //while(1) {
+    //XBAR program
+    xbar[7] = 0x8000;   //switch y15, x8 on
+    //xbar[15] = 0x0000;  //switch y15, x0 on
+
+    //cmd
+     printf(".");
+    xbar[0x20] = 0x0; //whatever written to this register will be interpreted as a cmd.
+    }
+    printf("xbar programmed!\n");
+  //}
+
+  //ad[0x04] = 0x803C; //convert channel 0 and give it back in straight binary yo.
+  double t = 0.0;
+  while (inf) {
+    dac[0] = 0x0001 & (val++); //set to max pump up the voluuuuume.
+    while (dac[10] == 1) {};
+    //dac[0] = 0x0FF0 & ((uint16_t)((cos(t)+1)*(0xFF/2.0)) << 4);
+    //dac[0] = 0x0FFF;
+    //t += 6.28/5000.0;
+    //while (dac[10] == 1) {};
+
+    uint16_t valback = ad[0x03]; //read operation to sample register 0.
+    printf("valback %x\n", valback);
+  }
+  */
+
+  /*
   printf("Check if FPGA is alive.\n");
   //If not alive, program it. 
-  for(int i = 0; i < 17; i++) {
+  for(int i = 0; i < 70; i++) {
     uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
-    if(*a != 0xDEAD) {
-      printf("Pincontroller %d broken: %u\n", i, *a);
-    }
+    printf("pincontroller %d: %x\n", i, *a);
+    //if(*a != 0xDEAD) {
+    //  printf("Pincontroller %d broken: %u\n", i, *a);
+    //}   
   }
+  */
   printf("FPGA check complete\n");
   printf("SRAM 1 TEST\n");
   uint8_t * ram = (uint8_t*)sampleBuffer;
@@ -287,12 +349,12 @@ int main(void)
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
   printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
-  printf("Entering main loop\n");
+  printf("Entering main loop.\n");
   for (;;) {
     //check if DONE has gone high, then we are ... uh, done
     if(fpgaUnderConfiguration) {
       if(GPIO_PinInGet(gpioPortD, 12)) {
-        printf("FPGA config over, DONE went high. All is well witht he world.\n");
+        printf("FPGA configured.\n");
         fpgaUnderConfiguration = 0;
         //Release FPGA reset signal from uC 
         //Send a few 1's to make sure the device boots.
@@ -311,11 +373,11 @@ int main(void)
     //For all the input pins, collect samples into the big buff!
     //TODO: Make pinControllers notify uC when it has new data, interrupt?
     if(runItems) {
-      for(int ip = 0; ip < numInputPins; ip++) {
+      for(int ch = 0; ch < numInputChannels; ch++) {
         struct sampleValue val;
-        getInput(&val, (FPGA_IO_Pins_TypeDef)inputPins[ip]);
-        if(val.sampleNum != (uint16_t)lastCollected[inputPins[ip]]) {
-          lastCollected[inputPins[ip]] = val.sampleNum; 
+        getInput(&val, (FPGA_IO_Pins_TypeDef)inputChannels[ch]);
+        if(val.sampleNum != (uint16_t)lastCollected[inputChannels[ch]]) {
+          lastCollected[inputChannels[ch]] = val.sampleNum; 
           if(numSamples < MAX_SAMPLES) {
             sampleBuffer[numSamples++] = val;
           }
@@ -408,25 +470,6 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 
   return USB_STATUS_OK;
 }
-
-//The purpose of this function is to configure the FPGA
-//with the data found in the pin config structure. 
-int fpgaConfigPin(struct pinConfig * p)
-{
-  uint16_t * pin = getPinAddress((FPGA_IO_Pins_TypeDef)p->fpgaPin);
-
-  *(pin + PINCONFIG_DUTY_CYCLE)     = p->duty;
-  *(pin + PINCONFIG_ANTIDUTY_CYCLE) = p->antiduty;
-  *(pin + PINCONFIG_CYCLES)         = p->cycles;
-  *(pin + PINCONFIG_RUN_INF)        = p->runInf;
-  *(pin + PINCONFIG_SAMPLE_RATE)    = p->sampleRate;
-
-  //TODO: This doesn't really work,
-  //what is a pin is removed.
-  //TODO: support everything :-)
-  return 0;
-}
-
 
 int UsbDataReceived(USB_Status_TypeDef status,
     uint32_t xf,
@@ -622,8 +665,10 @@ inline void execute(struct pinItem * item)
       addr[PINCONFIG_RUN_INF]        = 1;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
+
     case PINCONFIG_DATA_TYPE_DAC_CONST:
-      printf("  CONST: %d\n", item->constantValue);
+      printf("  CONST DAC VOLTAGE: %u\n", item->constantValue);
+      setVoltage(item->pin, item->constantValue);
 
     default:
       break;
@@ -644,12 +689,12 @@ void killItem(struct pinItem * item)
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       break;
     case PINCONFIG_DATA_TYPE_RECORD:
-      for(int i = 0; i < numInputPins; i++) {
-        if (inputPins[i] == item->pin) {
+      for(int i = 0; i < numInputChannels; i++) {
+        if (inputChannels[i] == item->pin) {
           printf("Rec stop: %d\n", item->pin);
-          numInputPins--;
-          for(int j = i; j < numInputPins; j++){
-            inputPins[i] = inputPins[i+1];
+          numInputChannels--;
+          for(int j = i; j < numInputChannels; j++){
+            inputChannels[i] = inputChannels[i+1];
           }
           break;
         }
@@ -660,46 +705,87 @@ void killItem(struct pinItem * item)
   }
 }
 
-void startConstOutput(FPGA_IO_Pins_TypeDef pin)
+//inline void startInput(struct pinItem * item)
+inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 {
-  uint16_t * addr = getPinAddress(pin);
-  addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-  addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
-  printf("CONST pin %d\n", pin);
-}
+  //If it's a ADC channel we set up the ADC here in stead of all this other faff.
+  uint16_t * addr = getPinAddress(channel);
+  if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_START + 100))) {
+    
+    uint16_t boardChan = channel - AD_CHANNELS_START;
+    //board 0
+    if(boardChan < 8) {
+      //Add channel to sequence register.
+      adcSequence[0] |= 0xE000 | (0x0001 << (12 - boardChan));
+      printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
+      //setup AD.
+      addr[0x01] = 10000; //overflow
+      addr[0x02] = 1; //divide
+      //addr[0x04] = 0x803C; //convert channel 0 and give it back in straight binary. Sequencer -off-.
+      addr[0x04] = adcSequence[0];
+      while(addr[0x0A]);
+ 
+      addr[0x04] = 0x8034;
+      while(addr[0x0A]);
 
-inline void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate)
-{
-  uint16_t * addr = getPinAddress(pin);
-  addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-  addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;
-  addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
-  inputPins[numInputPins++] = pin;
-}
-
-//TODO: Want to have one read form FPGA. 16 bits sample.
-//4 bits for counter, 12 bits for value. 
-inline void getInput(struct sampleValue * val, FPGA_IO_Pins_TypeDef pin)
-{
-  uint16_t * addr = getPinAddress(pin);
-  val->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-  val->pin = pin;
-  val->value = addr[PINCONFIG_SAMPLE_REG];
-  //printf("G: %u %u %u\n", val->sampleNum, val->pin, val->value);
-}
-
-inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin)
-{
-  //Get the address of the DAC controller. Now it's getting hairy.
-  if (pin == FPGA_DAC_0) {
-    return (uint16_t*)(EBI_ADDR_BASE) + (62 * 0x100);
+      printf("ADC programmed\n");
+    }
   }
-  //Each pin controller has 2^8 = 0x100 16-bit words, or
-  //2^9 bytes. 
-  return (uint16_t*)(EBI_ADDR_BASE) + pin*0x100;
+  
+  else {
+    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+    addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;
+    addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
+  }
+
+  inputChannels[numInputChannels++] = channel;
 }
 
-void execCurrentPack() 
+//TODO: We can get away with only 1 read here. In time. 
+inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
+{
+  uint16_t * addr = getPinAddress(channel);
+  uint16_t got = 0;
+  uint16_t boardChan = channel - AD_CHANNELS_START;
+  //this is the common interface to get stuff.
+  if(boardChan < 8) {
+    got = addr[PINCONFIG_SAMPLE_REG];
+    sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
+    sample->value = (got & 0x0FF0) >> 4;
+    sample->channel = channel;
+  } else {
+    sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
+    sample->value = addr[PINCONFIG_SAMPLE_REG];
+    sample->channel = channel;
+  }
+  //printf("G: %u %u %u %x %x\n", sample->sampleNum, sample->channel, sample->value, sample->value, got);
+}
+
+inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
+{
+
+  //Digital channels.
+  if (channel < IO_CHANNELS_END) {
+    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
+  }
+
+  //ADC channels
+  if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
+    uint16_t boardChan = channel - AD_CHANNELS_START;
+    //Each board has 1 controller, each channel is at 16 uint16_t's offset.
+    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100) + (16*boardChan);
+  }
+
+  //DA channels -- This isn't used I think.
+  if ((DA_CHANNELS_START <= channel) && (channel <= DA_CHANNELS_END)) {
+    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
+  }
+  //Each channel controller has 2^8 = 0x100 16-bit words, or
+  //2^9 bytes.
+  return (uint16_t*)(EBI_ADDR_BASE) + channel*0x100;
+}
+
+void execCurrentPack()
 {
 
   if(currentPack.command == USB_CMD_STATUS) {
@@ -734,10 +820,24 @@ void execCurrentPack()
     itaPos = 0;
   }
 
+  if(currentPack.command == USB_CMD_PROGRAM_XBAR)
+  {
+    printf("Configuring XBAR\n");
+    uint16_t * d = (uint16_t*)(currentPack.data);
+    for(int i = 0; i < 32; i++) {
+      xbar[i] = d[i];
+    }
+    xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+    while(xbar[0x0A]) { printf("."); }
+
+    printf("\nXBAR configured\n");
+  }
+
+
   if(currentPack.command == USB_CMD_CONST) {
     /* Start output from pin controllers */
-    uint32_t * d = (uint32_t *)(currentPack.data);
-    startConstOutput((d[PINCONFIG_DATA_FPGA_PIN]));
+    //uint32_t * d = (uint32_t *)(currentPack.data);
+    //startConstOutput((d[PINCONFIG_DATA_FPGA_PIN]));
   }
 
   if(currentPack.command == USB_CMD_LED) {
@@ -762,7 +862,7 @@ void execCurrentPack()
     getInput(&value, (*currentPack.data));
     memcpy(pack.data, &value, sizeof(struct sampleValue));
     //ship it!
-    packToSend = pack; 
+    packToSend = pack;
     sendPackReady = 1; 
   }
 
@@ -775,8 +875,9 @@ void execCurrentPack()
     numItemsInFlight = 0;
     runItems = 0;
     numSamples = 0;
-    numInputPins = 0;
+    numInputChannels = 0;
     nextKillTime = 0;
+    printf("RESET. NumSamples: %u\n", numSamples);
 
     resetAllPins();
   }
@@ -792,9 +893,9 @@ void execCurrentPack()
 
     uint32_t * d = (uint32_t *)(currentPack.data);
     int bytes = sizeof(struct sampleValue) * *d;
-    int packSize = 64000;
+    //int packSize = 64000;
 
-    int packNum = 0;
+    //int packNum = 0;
     /*
     for(; packNum < (bytes/packSize); packNum++) {
       sendPacket(packSize, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer + (packNum*packSize));
@@ -865,7 +966,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
   pack.data = data;
 
   packToSend = pack; //This copies the pack structure.
-  printf("Writing back %u bytes over USB.\n", pack.size);
+  printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
   
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }

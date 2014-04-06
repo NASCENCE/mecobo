@@ -142,6 +142,14 @@ int setReg(uint32_t data)
 	return 0;
 }
 
+int setXbar(uint8_t * data)
+{
+  struct mecoPack p;
+  createMecoPack(&p, data, 64, USB_CMD_PROGRAM_XBAR);
+  sendPacket(&p, eps[2]);
+  return 0;
+}
+
 int submitItem( FPGA_IO_Pins_TypeDef pin, 
             uint32_t startTime,
             uint32_t endTime,

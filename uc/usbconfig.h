@@ -42,6 +42,7 @@ extern "C" {
 #define USB_DEVICE        /* Compile stack for device mode. */
 
 #define DEBUG_USB_API
+#define USB_USE_PRINTF 1
 /****************************************************************************
 **                                                                         **
 ** Specify number of endpoints used (in addition to EP0).                  **

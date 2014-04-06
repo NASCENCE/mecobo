@@ -150,6 +150,8 @@ usb/src/em_usbtimer.c \
 ll.c \
 pinItemQueue.c \
 pinItem.c\
+dac.c\
+adc.c\
 main.c
 
 CXX_SRC += \

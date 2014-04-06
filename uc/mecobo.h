@@ -42,7 +42,6 @@
 #define PINCONFIG_SAMPLE_CNT 8
 #define PINCONFIG_STATUS_REG 9
 
-
 //Possible FPGA commands
 #define CMD_START_OUTPUT  1
 #define CMD_READ_PIN    2
@@ -126,9 +125,9 @@ extern "C" {
 
 //Start output on given pin
 void eADesigner_Init(void);
-void startOutput(FPGA_IO_Pins_TypeDef pin);
-void startInput(FPGA_IO_Pins_TypeDef pin, int sampleRate);
-void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef pin);
+void startOutput(FPGA_IO_Pins_TypeDef channel);
+void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate);
+void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
