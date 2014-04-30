@@ -18,7 +18,7 @@ parameter POSITION = 0;
 
 //Controller select (not to be confused with chip select)
 wire cs;
-assign cs = (enable & (addr[15:8] == POSITION));
+assign cs = (enable & (addr[18:8] == POSITION));
 
 //EBI data capture - technically also part of the data path.
 reg [15:0] ebi_captured_data = 0;
@@ -87,6 +87,7 @@ always @ (posedge sclk) begin
         count_res <= 1'b1;
         nLdac <= 1'b1;
         nSync <= 1'b1;
+        load_shift_reg = 1'b0;
 
         if (ebi_captured_data != 0) begin
           state <= load;
