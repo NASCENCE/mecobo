@@ -22,18 +22,21 @@ class channelMap {
     int numIOchannels;
     int maxIOchannels;
 
+    //One pin has only one channel
     std::map<int, FPGA_IO_Pins_TypeDef> pinToChannel;
-    std::map<FPGA_IO_Pins_TypeDef, int> channelToPin;
+    //One channel can be on many pins
+    std::map<FPGA_IO_Pins_TypeDef, std::vector<int>> channelToPin;
 
     std::map<FPGA_IO_Pins_TypeDef, int> channelToXbar;
 
   public:
     //This will attempt to map a pin, but it WILL be annoyed if you try to use more channels than we have. 
-    void mapPin(int pin, FPGA_IO_Pins_TypeDef channel);
+    void mapPin(const std::vector<int> pins, FPGA_IO_Pins_TypeDef channel);
     FPGA_IO_Pins_TypeDef getChannelForItem(emSequenceItem item);
     void getXbarConfigBytes(uint8_t * bytes);
 
-    int getPin(FPGA_IO_Pins_TypeDef channel);
+    //Since one channel can be on many pins, 
+    std::vector<int> getPin(FPGA_IO_Pins_TypeDef channel);
     FPGA_IO_Pins_TypeDef getChannel(int pin);
 
     channelMap();

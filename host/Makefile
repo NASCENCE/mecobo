@@ -5,7 +5,7 @@
 #	g++ -std=c++11 -lthrift emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01d_types.cpp NascenseAPI_v01d_constants.cpp client.cpp -o cli
 
 
-GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01d_types.cpp NascenseAPI_v01d_constants.cpp 
+GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp 
 #ga.cpp
 GEN_OBJ := $(patsubst %.cpp,%.o, $(GEN_SRC))
 
@@ -16,7 +16,7 @@ INC := -I$(THRIFT_DIR) -I$(BOOST_DIR) -I /usr/include/libusb-1.0/
 
 .PHONY: all clean
 
-all: evo_srv evo_cli evoGates
+all: evo_srv
 
 %.o: %.cpp
 	$(CXX) -std=c++11 -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H $(INC) -c $< -o $@

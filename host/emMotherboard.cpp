@@ -15,7 +15,7 @@
 #include <thread>
 
 #include "emMotherboard.h"
-#include "rs232.h"
+//#include "rs232.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -44,7 +44,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::map<int, std::queue<emSequenceItem>> pinSeq;
 
   std::map<int,int> pinToChannel;
-  std::map<int,int> channelToPin;
+  std::map<int,const std::vector<int>> channelToPin;
 
   //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
@@ -152,10 +152,17 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::cout << "-- Sequence done --" << std::endl;
     std::vector<sampleValue> samples;
     getSampleBuffer(samples);
+
+    //The samples we get back are associated with a certain channel,
+    //we need to convert it to pins to see what the user actually
+    //expected out.
     for(auto s : samples) {
-      int pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-      std::cout << "Samples for channel " << s.channel << "pin: " << pin << " :" << s.sampleNum << std::endl;
-      rec[pin].push_back(s.value);
+      //Since one channel can be on many pins we'll collect them all.
+      std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
+      for (auto p : pin) {
+        std::cout << "Samples for channel " << s.channel << "pin: " << p << " :" << s.sampleNum << std::endl;
+        rec[p].push_back(s.value);
+      }
     }
 
     std::cout << "Sequence done, all qeueues empty." << std::endl;
@@ -248,19 +255,25 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
-        std::cout << "CONSTANT added: " << item.amplitude << " on pin " << item.pin << std::endl;
+        for (auto p : item.pin) {
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+        }
+        
         submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
 
       //For now this is mapped to the DAC.
       case emSequenceOperationType::type::ARBITRARY:
-        std::cout << "Arbitrary voltage: " << item.amplitude << " on pin " << item.pin << std::endl;
+        for (auto p : item.pin) {
+          std::cout << "Arbitrary voltage: " << item.amplitude << " on pin " << p << std::endl;
+        }
         //Calculate the real amplitude value (binary encoding, 0 - 255)
         //ampBinary = (uint16_t)((255.0/2.5) * item.amplitude);
         ampBinary = item.amplitude;
         submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DAC_CONST, ampBinary);
         break;
 
+      /*
       case emSequenceOperationType::type::PREDEFINED:
         //Since it's predefined, we have a waveFormType
         if(item.waveFormType == emWaveFormType::PWM) {
@@ -282,6 +295,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
           submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
         }
+        */
         break;
 
       //Record type implies analogue recordin ... if you haven't specified the waveform type to PWM, in which case we use digital
@@ -290,7 +304,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         //pinToChannel[item.pin] = FPGA_ADC_0_A;
         //channelToPin[FPGA_ADC_0_A] = item.pin;
 
-        std::cout << "RECORDING [analogue] added on pin " << item.pin << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        for (auto p : item.pin) {
+          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        }
         /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
