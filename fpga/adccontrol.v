@@ -34,13 +34,14 @@ module adc_control (
 parameter POSITION = 0;
 
 wire controller_enable;
-assign controller_enable = (enable & (addr[15:8] == POSITION));
+assign controller_enable = (enable & (addr[18:8] == POSITION));
 
 localparam [3:0] 
   PROGRAM  = 4'h4,
   OVERFLOW = 4'h1,
   DIVIDE   = 4'h2,
-  SAMPLE   = 4'h3,
+  SAMPLE   = 4'h7,
+  SEQUENCE = 4'h8,
   ID_REG   = 4'h9,
   BUSY     = 4'hA;
 
@@ -76,9 +77,13 @@ always @ (posedge clk) begin
     if(controller_enable & re) begin
       //Getting sample values.
       if (addr[3:0] == SAMPLE) begin
-        //$display("Someone asked for sample for channel %d: %h\n", addr[7:4],sample_register[addr[7:4]]);
         data_out <= sample_register[addr[7:4]];
       end
+
+      if (addr[3:0] == SEQUENCE) begin
+        data_out <= sequence_number[addr[7:4]];
+      end
+
 
       //Getting sample values.
       if (addr[3:0] == ID_REG) begin
@@ -100,6 +105,7 @@ reg [15:0] clock_divide_register = 0;
 reg [15:0] overflow_register [0:7];
 reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
 reg [15:0] sample_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
+reg [15:0] sequence_number [0:7]; //Holds sequence number.
 reg [15:0] fast_clk_counter[0:7];
 reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
 reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
@@ -298,10 +304,12 @@ for (i = 0; i < 8; i = i+1) begin
   always @ (posedge clk) begin
     if (reset) begin
       sample_register[i] <= 0;
+      sequence_number[i] <= 0;
     end else
       if (fast_clk_counter[i] == overflow_register[i]) begin
         fast_clk_counter[i] <= 0;
         sample_register[i] <= tmp_register[i];
+        sequence_number[i] <= sequence_number[i] + 1;
       end else begin
         fast_clk_counter[i] <= (fast_clk_counter[i] + 1);
       end

@@ -25,15 +25,15 @@ localparam [3:0]
   MODE_INPUT_STREAM = 4'b0011;
 
 
-wire enable_in = (enable & (addr[15:8] == POSITION));
+wire enable_in = (enable & (addr[18:8] == POSITION));
 
 always @ (posedge clk) begin
   if (enable_in & data_rd) begin
-    if (addr == ADDR_SAMPLE_REG) 
+    if (addr[7:0] == ADDR_SAMPLE_REG) 
       data_out <= {15'b0, sample_register};
-    else if (addr == ADDR_SAMPLE_CNT) 
+    else if (addr[7:0] == ADDR_SAMPLE_CNT) 
       data_out <= sample_cnt;
-    else if (addr == ADDR_STATUS_REG)
+    else if (addr[7:0] == ADDR_STATUS_REG)
       data_out <= POSITION;
     else
       data_out <= 16'b0;
@@ -54,31 +54,31 @@ localparam BASE_ADDR = (POSITION << 8);
 //These are byte addresses.
 localparam [20:0] 
   ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
-  ADDR_DUTY_CYCLE = BASE_ADDR + 1,
-  ADDR_ANTI_DUTY_CYCLE = BASE_ADDR + 2,
-  ADDR_CYCLES = BASE_ADDR + 3,
-  ADDR_RUN_INF = BASE_ADDR + 4,
-  ADDR_LOCAL_CMD = BASE_ADDR + 5,
-  ADDR_SAMPLE_RATE = BASE_ADDR + 6,
-  ADDR_SAMPLE_REG = BASE_ADDR + 7,
-  ADDR_SAMPLE_CNT = BASE_ADDR + 8,
-  ADDR_STATUS_REG = BASE_ADDR + 9;
+  ADDR_DUTY_CYCLE =  1,
+  ADDR_ANTI_DUTY_CYCLE =  2,
+  ADDR_CYCLES = 3,
+  ADDR_RUN_INF =  4,
+  ADDR_LOCAL_CMD =  5,
+  ADDR_SAMPLE_RATE =  6,
+  ADDR_SAMPLE_REG =  7,
+  ADDR_SAMPLE_CNT =  8,
+  ADDR_STATUS_REG =  9;
 
 always @ (posedge clk) begin
   if (res_cmd_reg)
     command <= 0;
   else if (enable_in & data_wr) begin
-    if (addr == ADDR_LOCAL_CMD)
+    if (addr[7:0] == ADDR_LOCAL_CMD)
       command <= data_in;
-    else if (addr == ADDR_DUTY_CYCLE)
+    else if (addr[7:0] == ADDR_DUTY_CYCLE)
       duty_cycle <= data_in;
-    else if (addr == ADDR_ANTI_DUTY_CYCLE)
+    else if (addr[7:0] == ADDR_ANTI_DUTY_CYCLE)
       anti_duty_cycle <= data_in;
-    else if (addr == ADDR_CYCLES)
+    else if (addr[7:0] == ADDR_CYCLES)
       cycles <= data_in;
-    else if (addr == ADDR_RUN_INF)
+    else if (addr[7:0] == ADDR_RUN_INF)
       run_inf <= data_in;
-    else if (addr == ADDR_SAMPLE_RATE)
+    else if (addr[7:0] == ADDR_SAMPLE_RATE)
       sample_rate <= data_in;
 
   end 

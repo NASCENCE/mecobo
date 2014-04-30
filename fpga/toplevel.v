@@ -109,14 +109,15 @@ generate
 endgenerate
 
 assign clk[1] = clk_int[1];
-assign clk[2] = clk_int[2];
+assign clk[2] = ~clk_int[2];
 assign clk[3] = clk_int[3];
 assign clk[4] = clk_int[4];
 assign clk[5] = clk_int[5];
 
 //Enable all by default some clocks.
 assign ce[1] = 1'b1; //always on.
-//XBar clock needs to be toggleable
+//XBar clock needs to be toggleable. We'll invert it so that we know that the
+//flank goes to the XBAR after we've set up the data line.
 assign HN[6] = clk_out[2];
 wire xbar_clock_enable; //from xbar control
 assign ce[2] = xbar_clock_enable;
@@ -133,7 +134,7 @@ assign ce[4] = 1'b1;
 //Standard pin controllers
 genvar i;
 generate
-  for (i = 0; i < 60; i = i + 1) begin: pinControl 
+  for (i = 0; i < 50; i = i + 1) begin: pinControl 
     if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20)) 
     begin
       pincontrol #(.POSITION(i))
@@ -152,7 +153,7 @@ generate
   end
 endgenerate
 
-adc_control #(.POSITION(65))
+adc_control #(.POSITION(100))
     adc0 (
       .clk(sys_clk),
       .sclk(ad_clk),
@@ -168,7 +169,7 @@ adc_control #(.POSITION(65))
       .adc_din(HN[32]),
       .adc_dout(HN[40]));
 
-dac_control #(.POSITION(62))
+dac_control #(.POSITION(50))
     dac0 (
       .ebi_clk(sys_clk),
       .sclk(da_clk),
@@ -183,19 +184,19 @@ dac_control #(.POSITION(62))
       .nSync(HN[16]),
       .dac_din(HN[8]));
 
-xbar_control #(.POSITION(63))
+xbar_control #(.POSITION(200))
     xbar0 (
       .ebi_clk(sys_clk),
       .sclk(xbar_clk),
       .reset(reset),
       .enable(chip_select),
-      .re(ebi_rd),
-      .wr(ebi_wr),
+      .re(read_enable),
+      .wr(write_enable),
       .data_out(data_out),
       .data(data_in),
       .addr(ebi_addr),
       .xbar_clock_enable(xbar_clock_enable), //clock from xbar and out to device (BUFCE in module)
       .pclk(HN[1]),
-      .sin(HN[17]));
+      .sin(HN[9]));
 
 endmodule

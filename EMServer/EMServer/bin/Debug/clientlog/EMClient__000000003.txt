@@ -1,0 +1,10 @@
+Saturday, January 18, 2014	10:02:50 AM		Logging to file ./clientlog//EMClient__000000003.txt
+Saturday, January 18, 2014	10:02:50 AM		SETTING	LogServer	True
+Saturday, January 18, 2014	10:02:50 AM		SETTING	LogServerPath	./serverlog
+Saturday, January 18, 2014	10:02:50 AM		SETTING	LogClient	True
+Saturday, January 18, 2014	10:02:50 AM		SETTING	LogClientPath	./clientlog
+Saturday, January 18, 2014	10:02:50 AM		SETTING	Server	win8laptop-slh
+Saturday, January 18, 2014	10:02:50 AM		SETTING	ServerPort	9090
+Saturday, January 18, 2014	10:02:50 AM		SETTING	DataAPIServer	win8laptop-slh
+Saturday, January 18, 2014	10:02:50 AM		SETTING	DataAPIServerPort	9091
+Saturday, January 18, 2014	10:02:50 AM	Microsoft CLR? YES

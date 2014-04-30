@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/lykkebo/lib/NascenseAPI_v01d/')
+sys.path.append('NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
 
@@ -18,21 +18,15 @@ transport.open();
 
 for i in xrange(0,100000):
   cli.reset()
+  cli.clearSequences()
   it = emSequenceItem()
-  it.pin = 15
+  it.pin = [15, 0]
   it.startTime = 0
   it.endTime = 100
   it.amplitude = (i*10%255)
   it.operationType = emSequenceOperationType().ARBITRARY   #implies analogue 
   cli.appendSequenceAction(it)
-  cli.reset()
-  it = emSequenceItem()
-  it.pin = 14
-  it.startTime = 0
-  it.endTime = 100
-  it.amplitude = (i*10%255)
-  it.operationType = emSequenceOperationType().ARBITRARY   #implies analogue
   cli.runSequences()
-  cli.clearSequences()
+  cli.reset()
 
 transport.close()

@@ -58,15 +58,18 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_15] = 15;
 }
 
-void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel) 
+void channelMap::mapPin(const std::vector<int> pin, FPGA_IO_Pins_TypeDef channel) 
 {
+  /*
   if(pinToChannel.count(pin)) {
     emException e;
     e.Reason = "Pin already assigned in this sequence";
     throw e;
     return;
+  }*/
+  for (auto p : pin) {
+    pinToChannel[p] = channel;
   }
-  pinToChannel[pin] = channel;
   channelToPin[channel] = pin;
   return;
 }
@@ -172,11 +175,12 @@ void channelMap::getXbarConfigBytes(uint8_t * bytes)
   memcpy(bytes, (uint8_t*)config.data(), 64);
 }
 
-int channelMap::getPin(FPGA_IO_Pins_TypeDef channel) 
+std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel) 
 {
   return channelToPin[channel];
 }
 
+//one pin can only have one channel assigned to it.
 FPGA_IO_Pins_TypeDef channelMap::getChannel(int pin) 
 {
   return pinToChannel[pin];

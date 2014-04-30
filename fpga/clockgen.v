@@ -108,7 +108,7 @@ module clockgen
     .DIVCLK_DIVIDE          (1),
     .CLKFBOUT_MULT          (12),
     .CLKFBOUT_PHASE         (0.000),
-    .CLKOUT0_DIVIDE         (6),
+    .CLKOUT0_DIVIDE         (8),
     .CLKOUT0_PHASE          (0.000),
     .CLKOUT0_DUTY_CYCLE     (0.500),
     .CLKOUT1_DIVIDE         (120),

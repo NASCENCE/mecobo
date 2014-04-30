@@ -16,7 +16,7 @@ output sin);
 //Controller select logic. 
 parameter POSITION = 0;
 wire cs;
-assign cs = (enable & (addr[15:8] == POSITION));
+assign cs = (enable & (addr[18:8] == POSITION));
 
 //wire high_addr = (addr[4:0]<<4)+15;
 //wire low_addr = (addr[4:0]<<4);
@@ -39,7 +39,7 @@ begin
   if (reset) begin
     //ebi_captured_data <= 0;
     for (i = 0; i < 32; i = i + 1) begin
-      ebi_captured_data[i] <= data; //offset into ebi big register since we only tx 2 bytes at a time.
+      ebi_captured_data[i] <= 0; //offset into ebi big register since we only tx 2 bytes at a time.
     end
 
   end else begin
@@ -47,9 +47,9 @@ begin
       if (addr[7:5] == 3'b001) 
         command <= data;
       else begin
-        for (i = 0; i < 32; i = i + 1) begin
-        ebi_captured_data[i] <= data; //offset into ebi big register since we only tx 2 bytes at a time.
-        end
+        //for (i = 0; i < 32; i = i + 1) begin
+        ebi_captured_data[addr[4:0]] <= data; //offset into ebi big register since we only tx 2 bytes at a time.
+        //end
       end
 
     if (cs & re) begin
@@ -71,14 +71,15 @@ reg load_shift_reg;
 reg count_up;
 reg count_res;
 
-parameter init = 3'b001;
-parameter load = 3'b010;
-parameter pulse = 3'b100;
+parameter init = 4'b0001;
+parameter load = 4'b0010;
+parameter pulse = 4'b0100;
+parameter load_shift = 4'b1000;
 
-reg[2:0] state;
+reg[3:0] state;
 
 initial begin
-  state = init;
+  state <= init;
 end
 
 //State transitions.
@@ -90,17 +91,22 @@ always @ (posedge sclk) begin
       init: begin
         state <= init;
         if (command != 0) begin
-          state <= load;
+          state <= load_shift;
         end
       end
 
       load: begin
         state <= load;
-        if (counter == 511)
-          state <= init;
+        if (counter == 511) 
+          state <= pulse;
+        else if (counter[3:0] == 15)
+          state <= load_shift;
       end
 
-      pulse: 
+      load_shift:
+        state <= load;
+
+      pulse:
         state <= init;
 
       default:
@@ -112,6 +118,7 @@ end
 
 //Output functions.
 always @ (*) begin
+  /*
   if (reset) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
@@ -119,6 +126,7 @@ always @ (*) begin
         xbar_clock_enable <= 1'b0;
         pclk <= 1'b1;
   end else begin
+    */
     //State machine start.
     case (state)
       //Idle / init, waiting for something to do.
@@ -128,39 +136,48 @@ always @ (*) begin
         count_res <= 1'b1;
         xbar_clock_enable <= 1'b0;
         pclk <= 1'b1;
-        load_shift_reg = 1'b1;
+        load_shift_reg <= 1'b0;
       end
 
-      //load a value into mr. dac
       load: begin
         shift_out_enable <= 1'b1;
         count_up <= 1'b1;
         count_res <= 1'b0;
         xbar_clock_enable <= 1'b1;
         pclk <= 1'b1;
-        load_shift_reg = 1'b0;
+        load_shift_reg <= 1'b0;
       end
+
+      load_shift: begin
+        shift_out_enable <= 1'b0;
+        count_up <= 1'b0;
+        count_res <= 1'b0;
+        xbar_clock_enable <= 1'b0;
+        pclk <= 1'b1;
+        load_shift_reg <= 1'b1;
+      end
+
 
       pulse: begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        xbar_clock_enable <= 1'b1;
+        xbar_clock_enable <= 1'b0;
         pclk <= 1'b0; //give a pulse.
-        load_shift_reg = 1'b0;
+        load_shift_reg <= 1'b0;
       end
 
       default: begin
         shift_out_enable <= 1'b1;
         count_up <= 1'b1;
         count_res <= 1'b0;
-        xbar_clock_enable <= 1'b1;
-        load_shift_reg = 1'b0;
+        xbar_clock_enable <= 1'b0;
+        load_shift_reg <= 1'b0;
         pclk <= 1'b1;
       end
 
     endcase
-  end
+//  end
 end
 
 
