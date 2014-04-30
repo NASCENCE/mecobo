@@ -99,7 +99,7 @@ static struct mecoPack packToSend;
 static int sendPackReady = 0;
 
 //Keep track of which pins are input pins. 
-static int nPins = 50;
+static int nPins = 250;
 
 
 //Are we programming the FPGA
@@ -114,7 +114,7 @@ static struct pinItem ** itemsInFlight;
 int iifPos  = 0;
 int numItemsInFlight = 0;
 
-static int lastCollected[50];
+static int * lastCollected;
 static int runItems = 0;
 
 
@@ -193,22 +193,40 @@ int main(void)
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
  
-  printf("Setting up DAC and ADCs\n");
-  setupDAC();
-  setupADC();
-
-
-
   int skip_boot_tests= 0;
+  int fpga_alive = 1;
+  /*
+  for(int j = 0; j < 100000; j++) {
+    printf("%x: %x\n", ((uint8_t*)(EBI_ADDR_BASE + j)), *((uint8_t*)(EBI_ADDR_BASE + j)));
+  }
+  */
   if(!skip_boot_tests) {
-    printf("Check if FPGA is alive.\n");
-    //If not alive, program it. 
-    for(int i = 0; i < 17; i++) {
-      uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
-      if(*a != 0xDEAD) {
-        printf("Pincontroller %d broken: %u\n", i, *a);
-      }
-    }
+  int i = 0;
+  printf("Check if FPGA is alive.\n");
+  uint16_t * a = getPinAddress(42) + PINCONFIG_STATUS_REG;
+  uint16_t foo = *a;
+  if (foo != 42) {
+    fpga_alive = 0;
+    printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
+  } else {
+    fpga_alive = 1;
+    printf("FPGA responding as expected\n");
+  }
+
+  if(fpga_alive) {
+    printf("Setting up DAC and ADCs\n");
+    setupDAC();
+    setupADC();
+  }
+
+
+    //Check DAC controllers.
+    uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
+    printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
+    uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
+    printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
+    printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
+
     printf("FPGA check complete\n");
     printf("SRAM 1 TEST\n");
     uint8_t * ram = (uint8_t*)sampleBuffer;
@@ -256,7 +274,8 @@ int main(void)
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
-  for(int i = 0; i < 50; i++) {
+  lastCollected = malloc(sizeof(int)*nPins);
+  for(int i = 0; i < nPins; i++) {
     lastCollected[i] = -1;
   }
   printf("Initializing USB\n");
@@ -667,9 +686,9 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
     
     uint16_t boardChan = channel - AD_CHANNELS_START;
     //board 0
-    if(boardChan < 8) {
-      //Add channel to sequence register.
-      adcSequence[0] |= 0xE000 | (0x0001 << (12 - boardChan));
+    if(boardChan < 16) {
+      //Program sequence register with channel.
+      adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
       printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
       //setup AD.
       addr[0x01] = 10000; //overflow
@@ -678,10 +697,11 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       addr[0x04] = adcSequence[0];
       while(addr[0x0A]);
  
+      //Program the ADC to use this channel as well now. Result in straight binary.
       addr[0x04] = 0x8034;
       while(addr[0x0A]);
 
-      printf("ADC programmed\n");
+      printf("ADC programmed to new sequences\n");
     }
   }
   
@@ -700,18 +720,20 @@ inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
   uint16_t * addr = getPinAddress(channel);
   uint16_t got = 0;
   uint16_t boardChan = channel - AD_CHANNELS_START;
+  //printf("Address got: %x\n", addr);
   //this is the common interface to get stuff.
-  if(boardChan < 8) {
+  if(boardChan < 16) {
     got = addr[PINCONFIG_SAMPLE_REG];
     sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-    sample->value = (got & 0x0FF0) >> 4;
+    sample->value = got & 0x1FFF;// >> 4;
     sample->channel = channel;
   } else {
     sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
     sample->value = addr[PINCONFIG_SAMPLE_REG];
     sample->channel = channel;
   }
-  //printf("G: %u %u %u %x %x\n", sample->sampleNum, sample->channel, sample->value, sample->value, got);
+
+  //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
 }
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
@@ -725,8 +747,9 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
   //ADC channels
   if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
     uint16_t boardChan = channel - AD_CHANNELS_START;
+    uint16_t controllerNr = channel - boardChan;
     //Each board has 1 controller, each channel is at 16 uint16_t's offset.
-    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100) + (16*boardChan);
+    return (uint16_t*)(EBI_ADDR_BASE) + (controllerNr * 0x100) + (0x10*boardChan);
   }
 
   //DA channels -- This isn't used I think.
@@ -779,9 +802,11 @@ void execCurrentPack()
     uint16_t * d = (uint16_t*)(currentPack.data);
     for(int i = 0; i < 32; i++) {
       xbar[i] = d[i];
+      printf("XBAR: Word %d: %x\n", i, d[i]); 
     }
     xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
     while(xbar[0x0A]) { printf("."); }
+    xbar[0x20] = 0x0; //whatever written to this register will be interpreted as a cmd.
 
     printf("\nXBAR configured\n");
   }
@@ -926,12 +951,16 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
 void resetAllPins()
 {
-  printf("RESETing all pins\n");
   for (int i = 0; i < nPins; i++) {
-    uint16_t * addr = (getPinAddress((i)));
-    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
     lastCollected[i] = -1;
   }
+
+  printf("Reseting all digital pin controllers\n");
+  for(int j = 0; j < 50; j++) {
+    uint16_t * addr = (getPinAddress((j)));
+    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+  }
+  printf("OK\n");
 }
 
 void led(int l, int mode) 
@@ -957,3 +986,7 @@ void led(int l, int mode)
   break;
   }
 }
+
+//void programFPGA() {
+//
+//}

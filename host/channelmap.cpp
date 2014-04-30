@@ -21,23 +21,23 @@ channelMap::channelMap()
   maxIOchannels = 16;
 
   //X indices on xbar 1.
-  channelToXbar[FPGA_ADC_0_A] = 0;
-  channelToXbar[FPGA_ADC_0_B] = 1;
-  channelToXbar[FPGA_ADC_0_C] = 2;
-  channelToXbar[FPGA_ADC_0_D] = 3;
-  channelToXbar[FPGA_ADC_0_E] = 4;
-  channelToXbar[FPGA_ADC_0_F] = 5;
-  channelToXbar[FPGA_ADC_0_G] = 6;
-  channelToXbar[FPGA_ADC_0_H] = 7;
+  channelToXbar[FPGA_DAC_0_A] = 0;
+  channelToXbar[FPGA_DAC_0_B] = 1;
+  channelToXbar[FPGA_DAC_0_C] = 2;
+  channelToXbar[FPGA_DAC_0_D] = 3;
+  channelToXbar[FPGA_DAC_0_E] = 4;
+  channelToXbar[FPGA_DAC_0_F] = 5;
+  channelToXbar[FPGA_DAC_0_G] = 6;
+  channelToXbar[FPGA_DAC_0_H] = 7;
   
-  channelToXbar[FPGA_DAC_0_A] = 8;
-  channelToXbar[FPGA_DAC_0_B] = 9;
-  channelToXbar[FPGA_DAC_0_C] = 10;
-  channelToXbar[FPGA_DAC_0_D] = 11;
-  channelToXbar[FPGA_DAC_0_E] = 12;
-  channelToXbar[FPGA_DAC_0_F] = 13;
-  channelToXbar[FPGA_DAC_0_G] = 14;
-  channelToXbar[FPGA_DAC_0_H] = 15;
+  channelToXbar[FPGA_ADC_0_A] = 8;
+  channelToXbar[FPGA_ADC_0_B] = 9;
+  channelToXbar[FPGA_ADC_0_C] = 10;
+  channelToXbar[FPGA_ADC_0_D] = 11;
+  channelToXbar[FPGA_ADC_0_E] = 12;
+  channelToXbar[FPGA_ADC_0_F] = 13;
+  channelToXbar[FPGA_ADC_0_G] = 14;
+  channelToXbar[FPGA_ADC_0_H] = 15;
 
   //Second crossbar.
   channelToXbar[FPGA_DIGI_0] = 0;
@@ -152,7 +152,7 @@ void channelMap::getXbarConfigBytes(uint8_t * bytes)
   for (auto pc : pinToChannel) {
     FPGA_IO_Pins_TypeDef channel = pc.second;
     int pin = pc.first;
-    int configIndex = 15-pin; //pin 0 is configIndexWord 15.
+    int configIndex = -1;
 
     //The first 16 words control the bottom channels (i.e. digital), but inversly. word 0 controls Y15, etc.
     //The next 16 words control the AD/DA-chans.
@@ -160,12 +160,14 @@ void channelMap::getXbarConfigBytes(uint8_t * bytes)
     //we have two choices to drive/source one pin.
     //xbar1, or xbar2. We add 16 to program xbar1.
     
-    if (channel >= 50) { //Digital channels
-      configIndex = pin + 16;
+    if (channel < 50) { //Digital channels
+      configIndex = 15 - pin;
+    } else {
+      configIndex = 31 - pin ;
     }
 
-    config[configIndex] |= (1 << (15-channelToXbar[channel]));
-    std::cout << "pin" << configIndex << " " << config[configIndex] << std::endl;
+    config[configIndex] |= (1 << (channelToXbar[channel]));
+    std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
   }
   memcpy(bytes, (uint8_t*)config.data(), 64);
 }

@@ -88,7 +88,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     // Your implementation goes here
     xbar = channelMap();
     resetAllPins();
-    printf("reset\n");
+    printf("Sent reset command!\n");
     return true;
   }
 
@@ -153,8 +153,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::vector<sampleValue> samples;
     getSampleBuffer(samples);
     for(auto s : samples) {
-      //std::cout << "Samples for pin " << s.channel << ":" << s.sampleNum << std::endl;
-      rec[xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel)].push_back(s.value);
+      int pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
+      std::cout << "Samples for channel " << s.channel << "pin: " << pin << " :" << s.sampleNum << std::endl;
+      rec[pin].push_back(s.value);
     }
 
     std::cout << "Sequence done, all qeueues empty." << std::endl;
@@ -189,7 +190,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     std::cout << "There are " << rec[srcPin].size() << "samples for pin " << srcPin << std::endl;
     for(auto s : rec[srcPin]) {
-      //std::cout << s.sampleNum << std::endl;
       v.push_back(s);
     }
 
@@ -198,6 +198,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     r.Samples = v;
     _return = r;
 
+    rec[srcPin].clear();
   }
 
 
