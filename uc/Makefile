@@ -24,7 +24,7 @@ LST_DIR = lst
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
 WINDOWSCS  ?= GNU Tools ARM Embedded\4.7 2012q4
-LINUXCS    ?= ./gcc-arm-none-eabi-4_7-2013q3/
+LINUXCS    ?= ./gcc-arm-none-eabi-4_8-2014q1/
 
 RMDIRS     := rm -rf
 RMFILES    := rm -rf
@@ -97,7 +97,6 @@ override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
 $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -std=c++11 -mcpu=cortex-m3 -mthumb \
-
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)

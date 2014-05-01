@@ -1,5 +1,5 @@
 import sys
-sys.path.append('NascenseAPI_v01e/')
+sys.path.append('../Thrift interface/gen-py/NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
 
