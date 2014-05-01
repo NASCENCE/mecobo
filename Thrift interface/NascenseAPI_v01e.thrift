@@ -76,7 +76,7 @@ enum emSequenceOperationType
 	/** Outputs a value of amplitude 	*/
 	CONSTANT = 5,
 	/** Outputs a Binary value on based on amplitude. Amplitude=0, output 0, else 1 */
-	DIGITAL = 6
+	DIGITAL = 6,
 	/** Outputs a value based on contents of register 	*/
 	CONSTANT_FROM_REGISTER = 7,
 }

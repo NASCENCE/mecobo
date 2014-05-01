@@ -137,11 +137,5 @@ namespace EMServer
         {
             throw new NotImplementedException();
         }
-
-
-        void emEvolvableMotherboard.Iface.setConfigRegister(int index, int value)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
