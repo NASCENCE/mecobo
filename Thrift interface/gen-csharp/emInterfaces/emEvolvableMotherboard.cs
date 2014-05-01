@@ -168,6 +168,16 @@ namespace emInterfaces
       IAsyncResult Begin_setLogServer(AsyncCallback callback, object state, emLogServerSettings logServer);
       void End_setLogServer(IAsyncResult asyncResult);
       #endif
+      /// <summary>
+      /// Set config register
+      /// </summary>
+      /// <param name="index">Index of register to apply to</param>
+      /// <param name="value">Value to apply</param>
+      void setConfigRegister(int index, int value);
+      #if SILVERLIGHT
+      IAsyncResult Begin_setConfigRegister(AsyncCallback callback, object state, int index, int value);
+      void End_setConfigRegister(IAsyncResult asyncResult);
+      #endif
     }
 
     /// <summary>
@@ -1331,6 +1341,74 @@ namespace emInterfaces
         return;
       }
 
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_setConfigRegister(AsyncCallback callback, object state, int index, int value)
+      {
+        return send_setConfigRegister(callback, state, index, value);
+      }
+
+      public void End_setConfigRegister(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        recv_setConfigRegister();
+      }
+
+      #endif
+
+      /// <summary>
+      /// Set config register
+      /// </summary>
+      /// <param name="index">Index of register to apply to</param>
+      /// <param name="value">Value to apply</param>
+      public void setConfigRegister(int index, int value)
+      {
+        #if !SILVERLIGHT
+        send_setConfigRegister(index, value);
+        recv_setConfigRegister();
+
+        #else
+        var asyncResult = Begin_setConfigRegister(null, null, index, value);
+        End_setConfigRegister(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_setConfigRegister(AsyncCallback callback, object state, int index, int value)
+      #else
+      public void send_setConfigRegister(int index, int value)
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("setConfigRegister", TMessageType.Call, seqid_));
+        setConfigRegister_args args = new setConfigRegister_args();
+        args.Index = index;
+        args.Value = value;
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public void recv_setConfigRegister()
+      {
+        TMessage msg = iprot_.ReadMessageBegin();
+        if (msg.Type == TMessageType.Exception) {
+          TApplicationException x = TApplicationException.Read(iprot_);
+          iprot_.ReadMessageEnd();
+          throw x;
+        }
+        setConfigRegister_result result = new setConfigRegister_result();
+        result.Read(iprot_);
+        iprot_.ReadMessageEnd();
+        if (result.__isset.err) {
+          throw result.Err;
+        }
+        return;
+      }
+
     }
     public class Processor : TProcessor {
       public Processor(Iface iface)
@@ -1353,6 +1431,7 @@ namespace emInterfaces
         processMap_["clearRecording"] = clearRecording_Process;
         processMap_["getTemperature"] = getTemperature_Process;
         processMap_["setLogServer"] = setLogServer_Process;
+        processMap_["setConfigRegister"] = setConfigRegister_Process;
       }
 
       protected delegate void ProcessFunction(int seqid, TProtocol iprot, TProtocol oprot);
@@ -1669,6 +1748,23 @@ namespace emInterfaces
           result.Err = err;
         }
         oprot.WriteMessageBegin(new TMessage("setLogServer", TMessageType.Reply, seqid)); 
+        result.Write(oprot);
+        oprot.WriteMessageEnd();
+        oprot.Transport.Flush();
+      }
+
+      public void setConfigRegister_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        setConfigRegister_args args = new setConfigRegister_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        setConfigRegister_result result = new setConfigRegister_result();
+        try {
+          iface_.setConfigRegister(args.Index, args.Value);
+        } catch (emException err) {
+          result.Err = err;
+        }
+        oprot.WriteMessageBegin(new TMessage("setConfigRegister", TMessageType.Reply, seqid)); 
         result.Write(oprot);
         oprot.WriteMessageEnd();
         oprot.Transport.Flush();
@@ -4612,6 +4708,222 @@ namespace emInterfaces
 
       public override string ToString() {
         StringBuilder sb = new StringBuilder("setLogServer_result(");
+        sb.Append("Err: ");
+        sb.Append(Err== null ? "<null>" : Err.ToString());
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class setConfigRegister_args : TBase
+    {
+      private int _index;
+      private int _value;
+
+      /// <summary>
+      /// Index of register to apply to
+      /// </summary>
+      public int Index
+      {
+        get
+        {
+          return _index;
+        }
+        set
+        {
+          __isset.index = true;
+          this._index = value;
+        }
+      }
+
+      /// <summary>
+      /// Value to apply
+      /// </summary>
+      public int Value
+      {
+        get
+        {
+          return _value;
+        }
+        set
+        {
+          __isset.value = true;
+          this._value = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool index;
+        public bool value;
+      }
+
+      public setConfigRegister_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 1:
+              if (field.Type == TType.I32) {
+                Index = iprot.ReadI32();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            case 2:
+              if (field.Type == TType.I32) {
+                Value = iprot.ReadI32();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("setConfigRegister_args");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+        if (__isset.index) {
+          field.Name = "index";
+          field.Type = TType.I32;
+          field.ID = 1;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteI32(Index);
+          oprot.WriteFieldEnd();
+        }
+        if (__isset.value) {
+          field.Name = "value";
+          field.Type = TType.I32;
+          field.ID = 2;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteI32(Value);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("setConfigRegister_args(");
+        sb.Append("Index: ");
+        sb.Append(Index);
+        sb.Append(",Value: ");
+        sb.Append(Value);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class setConfigRegister_result : TBase
+    {
+      private emException _err;
+
+      public emException Err
+      {
+        get
+        {
+          return _err;
+        }
+        set
+        {
+          __isset.err = true;
+          this._err = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool err;
+      }
+
+      public setConfigRegister_result() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 1:
+              if (field.Type == TType.Struct) {
+                Err = new emException();
+                Err.Read(iprot);
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("setConfigRegister_result");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+
+        if (this.__isset.err) {
+          if (Err != null) {
+            field.Name = "Err";
+            field.Type = TType.Struct;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            Err.Write(oprot);
+            oprot.WriteFieldEnd();
+          }
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("setConfigRegister_result(");
         sb.Append("Err: ");
         sb.Append(Err== null ? "<null>" : Err.ToString());
         sb.Append(")");

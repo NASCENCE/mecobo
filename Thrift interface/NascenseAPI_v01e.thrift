@@ -77,6 +77,8 @@ enum emSequenceOperationType
 	CONSTANT = 5,
 	/** Outputs a Binary value on based on amplitude. Amplitude=0, output 0, else 1 */
 	DIGITAL = 6
+	/** Outputs a value based on contents of register 	*/
+	CONSTANT_FROM_REGISTER = 7,
 }
 
 /**
@@ -137,6 +139,9 @@ struct emSequenceItem
 	
 	/** If >=0 wait for a trigger on certain pin before running */
 	11: i32 waitForTrigger = -1, 
+	
+	/** if  CONSTANT_FROM_REGISTER, then use this value*/
+	12: i32 ValueSourceRegister = -1, 
 }
 
 /**
@@ -218,6 +223,15 @@ service emEvolvableMotherboard
 	void setLogServer(
 		/** Definition of experiment name and log server */
 		1:emLogServerSettings logServer
+		)
+	throws (1:emException err),
+	
+	/** Set config register */	
+	void setConfigRegister(
+		/** Index of register to apply to */
+		1:i32 index,
+		/** Value to apply */
+		2:i32 value
 		)
 	throws (1:emException err),
 }
