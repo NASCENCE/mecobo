@@ -40,5 +40,9 @@ namespace emInterfaces
     /// Outputs a Binary value on based on amplitude. Amplitude=0, output 0, else 1
     /// </summary>
     DIGITAL = 6,
+    /// <summary>
+    /// Outputs a value based on contents of register
+    /// </summary>
+    CONSTANT_FROM_REGISTER = 7,
   }
 }
