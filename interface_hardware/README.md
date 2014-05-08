@@ -6,7 +6,7 @@ producing your own version of the NASCENCE interface hardware.
 
 ### mecobo_motherboard
 
-This is the "motherboard", which we call "mecobo". It is essentially a IO-breakout board.
+This is the "motherboard", which we call "mecobo". It can connect to the material directly.
 
 ### mixed_signal_daughterboard
 
@@ -17,4 +17,4 @@ This is the mixed signal daughterboard, which is a daughterboard that connects t
 The directories also contain the subdirectory generated/. This contains the
 gerber and NC drill files you need to make a PCB without going through Altium.
 You should be able to zip up these files and send them to your favorite PCB
-manufacturer for production. 
+manufacturer for production.

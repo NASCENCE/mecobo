@@ -25,7 +25,7 @@ EM_CMSIS_3.20.0.zip
 
 ### specifications
 With 1 daughterboard connected, there is a maximum samplerate of about 200K
-samples/second output for each of the digital pins. For analogue input, a
+samples/second output for each of the analoge output pins. For analogue input, a
 maxium rate of 75K samples/second. These rates are divided by 8 for each
 stacked daughterboard. Note that these are absolute maximum ratings that can be
 achieved, and that these numbers depend highly on the usage pattern of the stack.
