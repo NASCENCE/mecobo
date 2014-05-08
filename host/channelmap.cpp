@@ -104,6 +104,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
     break;
 
     case emSequenceOperationType::type::ARBITRARY:
+    case emSequenceOperationType::type::PREDEFINED:
       //Use DAC channel.
       //Try to map to a analogue pin.
       if (numDAchannels < maxDAchannels) {
@@ -118,6 +119,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
         throw e;
       }
     break;
+
 
     //By default we give a Digital channel.
     default:

@@ -86,7 +86,9 @@ void setupSWOForPrint(void)
 
 /*** Typedef's and defines. ***/
 
-static int timeMs;
+static int timeMs = 0;
+static int timeTick = 0; //10,000 per second.
+static int lastTimeTick = 0;
 
 //USB Variables
 int packNum = 0;
@@ -136,24 +138,34 @@ int numInputChannels = 0;
 int nextKillTime = 0;
 
 
+uint8_t sinus[256];
+
 //ADC sequencer registers
 uint16_t adcSequence[4] = {0xE000,0xE000,0xE000,0xE000};
 
+static int blinky = 0;
 void TIMER1_IRQHandler(void)
 { 
   /* Clear flag for TIMER2 overflow interrupt */
   TIMER_IntClear(TIMER1, TIMER_IF_OF);
 
   /* Toggle LED ON/OFF */
-  GPIO_PinOutToggle(gpioPortB, 12);
+  if (blinky%5 == 0)
+    GPIO_PinOutToggle(gpioPortB, 12);
+  blinky++;
   //Retrieve sample value from pin controllers and queue them for sending. 
 }
 
 void TIMER2_IRQHandler(void)
 { 
   TIMER_IntClear(TIMER2, TIMER_IF_OF);
-  timeMs += 1;
+  if(timeTick%1000 == 0)
+    timeMs += 1;
+  timeTick++;
 }
+
+//"Update DAC tic" == fast clock that ticks. The frequency field of the 
+//in-flight items decide if they are to be updated? 
 
 int main(void)
 {
@@ -177,9 +189,9 @@ int main(void)
   NVIC_EnableIRQ(TIMER1_IRQn);
   NVIC_EnableIRQ(TIMER2_IRQn);
 
-  /* Set TIMER Top value */
-  TIMER_TopSet(TIMER1, 10000);
-  TIMER_TopSet(TIMER2, 47);
+  /* Set TIMER Top values */
+  TIMER_TopSet(TIMER1, 65535);
+  TIMER_TopSet(TIMER2, 75);
 
   printf("Initalizing timers\n");
   TIMER_Init(TIMER1, &timerInit);
@@ -189,6 +201,16 @@ int main(void)
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
+  
+  //Generate sine table for a half period (0 to 1)
+  printf("Generating sine table\n");
+  float incr = 6.2830/(float)256.0;
+  float j = 0.0;
+  for(int i = 0; i < 256; i++, j += incr) {
+    sinus[i] = (uint8_t)((sin(j)*(float)128.0)+(float)128.0);
+    printf("%u\n", sinus[i]);
+  }
+
 
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
@@ -245,6 +267,17 @@ int main(void)
     }
     printf("Complete.\n");
   
+
+    printf("SRAM 1 TEST SAME PATTERN\n");
+    uint8_t * pat = (uint8_t*)SRAM1_START;
+    for(int j = 0; j < SRAM1_BYTES; j++) {
+      ram[j] = 0xAA;
+      if(ram[j] != 0xAA) {
+    	  printf("Failed RAM test!\n");
+      }
+    }
+    printf("Complete.\n");
+
     printf("SRAM 2 TEST\n");
     ram = (uint8_t*)SRAM2_START;
     for(int i = 0; i < 4; i++) {
@@ -372,6 +405,17 @@ int main(void)
           nextKillTime = currentItem->endTime;
         }
       }
+
+
+      //Certain items in flight needs updating
+      if (lastTimeTick != timeTick) {
+        for(int flight = 0; flight < numItemsInFlight; flight++) {
+          if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
+            execute(itemsInFlight[flight]);
+          }
+        }
+        lastTimeTick = timeTick;
+      }
       //Kill items that are in flight and whose time has come.
       //We cannot guarantee the same as we do for scheduling;
       if(nextKillTime <= timeMs) {
@@ -392,7 +436,7 @@ int main(void)
       }
 
     }
-  } //for loop ends
+  } //main for loop ends
 }
 
 
@@ -617,8 +661,9 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 inline void execute(struct pinItem * item)
 {
-  printf("E: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
+  //printf("E: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
   uint16_t * addr = getPinAddress(item->pin);
+  int index = 0;
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIRECT_CONST:
       printf("  CONST: %d\n", item->constantValue);
@@ -639,8 +684,15 @@ inline void execute(struct pinItem * item)
       break;
 
     case PINCONFIG_DATA_TYPE_DAC_CONST:
-      printf("  CONST DAC VOLTAGE: %u\n", item->constantValue);
+      printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
       setVoltage(item->pin, item->constantValue);
+      break;
+
+    case PINCONFIG_DATA_TYPE_PREDEFINED_SINE:
+      index = (item->sampleRate*timeTick)%255;
+      //printf("  pin: %d SINE: rate: %u, time: %d, %d, index:%d\n", item->pin, item->sampleRate, timeTick, sinus[index], index);
+      setVoltage(item->pin, sinus[index]);
+      break;
 
     default:
       break;
@@ -691,7 +743,7 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
       printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
       //setup AD.
-      addr[0x01] = 10000; //overflow
+      addr[0x01] = sampleRate; //overflow
       addr[0x02] = 1; //divide
       //addr[0x04] = 0x803C; //convert channel 0 and give it back in straight binary. Sequencer -off-.
       addr[0x04] = adcSequence[0];
@@ -733,7 +785,7 @@ inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
     sample->channel = channel;
   }
 
-  //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
+  printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
 }
 
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)

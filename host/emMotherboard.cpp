@@ -14,8 +14,9 @@
 #include <queue>
 #include <thread>
 
-#include "emMotherboard.h"
+#include "Mecobo.h"
 //#include "rs232.h"
+#include "USB.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -32,7 +33,7 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
-  shared_ptr<emMotherboard> mobo;
+  shared_ptr<Mecobo> mecobo;
 
   std::thread runThread;
 
@@ -43,8 +44,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   std::map<int, std::queue<emSequenceItem>> pinSeq;
 
-  std::map<int,int> pinToChannel;
-  std::map<int,const std::vector<int>> channelToPin;
 
   //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
@@ -52,10 +51,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::vector<emSequenceItem> itemsInFlight;
 
   public:
-  emEvolvableMotherboardHandler(shared_ptr<emMotherboard> mobo) {
+  //constructor for this class
+  emEvolvableMotherboardHandler(shared_ptr<Mecobo> mobo) {
     // Your initialization goes here
     time = 0;
-    this->mobo = mobo;
+    this->mecobo = mobo;
   }
 
   int32_t ping() {
@@ -114,7 +114,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void runSequences() {
     
     //Reset board?
-    reset();
+    mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Submitting sequence to board." << std::endl;
     std::sort(seqItems.begin(), seqItems.end(), 
@@ -151,7 +151,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }
     std::cout << "-- Sequence done --" << std::endl;
     std::vector<sampleValue> samples;
-    getSampleBuffer(samples);
+    samples = mecobo->getSampleBuffer();
 
     //The samples we get back are associated with a certain channel,
     //we need to convert it to pins to see what the user actually
@@ -251,62 +251,22 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     uint16_t ampBinary = 0;
     emException err;
 
-    FPGA_IO_Pins_TypeDef channel = xbar.getChannelForItem(item);
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
         for (auto p : item.pin) {
           std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+          mecobo->scheduleConstantVoltage((int)p, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         }
-        
-        submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
         break;
 
-      //For now this is mapped to the DAC.
-      case emSequenceOperationType::type::ARBITRARY:
-        for (auto p : item.pin) {
-          std::cout << "Arbitrary voltage: " << item.amplitude << " on pin " << p << std::endl;
-        }
-        //Calculate the real amplitude value (binary encoding, 0 - 255)
-        //ampBinary = (uint16_t)((255.0/2.5) * item.amplitude);
-        ampBinary = item.amplitude;
-        submitItem(channel, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DAC_CONST, ampBinary);
-        break;
-
-      /*
-      case emSequenceOperationType::type::PREDEFINED:
-        //Since it's predefined, we have a waveFormType
-        if(item.waveFormType == emWaveFormType::PWM) {
-          period = 1.0/(double)item.frequency;
-
-          duty =  (item.cycleTime/100.0)*(period * (50*1000000));
-          aduty = ((100.0f - item.cycleTime)/100.0) * period * (50*1000000);
-
-
-          if(item.frequency < 382) {
-            std::cout << "Frequency is too low:" << item.frequency << std::endl;
-            std::cout << "Please set frequency to over 400Hz.";
-            
-            err.Reason = "Frequency too low; under 400Hz"; //reason;
-            err.Source = "emMotherboard sequencer";
-            throw err;
-            break;
-          }
-          std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
-          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
-        }
-        */
-        break;
-
-      //Record type implies analogue recordin ... if you haven't specified the waveform type to PWM, in which case we use digital
       case emSequenceOperationType::type::RECORD:
-        //Use one of the analoge recording channels for this pin.
-        //pinToChannel[item.pin] = FPGA_ADC_0_A;
-        //channelToPin[FPGA_ADC_0_A] = item.pin;
 
         for (auto p : item.pin) {
           std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          mecobo->scheduleRecording(p, item.startTime, item.endTime, item.frequency);
         }
+        //Error checking.
         /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
@@ -320,8 +280,47 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           break;
         }*/
         
-        submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+        //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
 
+        break;
+
+      //YAY DOUBLE CASE SWITCH CASE.
+      case emSequenceOperationType::type::PREDEFINED:
+        switch (item.waveFormType) {
+          case emWaveFormType::SINE:
+            for(auto p: item.pin) {
+        	std::cout << "PREDEFINED SINE pin" << p << std::endl;
+                mecobo->scheduleSine(p, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
+                //(item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, item.frequency, PINCONFIG_DATA_TYPE_PREDEFINED_SINE, ampBinary);
+            }
+            break;
+
+          case emWaveFormType::PWM:
+            for (auto p: item.pin) {
+              period = 1.0/(double)item.frequency;
+
+              duty =  (item.cycleTime/100.0)*(period * (50*1000000));
+              aduty = ((100.0f - item.cycleTime)/100.0) * period * (50*1000000);
+
+
+              if(item.frequency < 382) {
+        	    std::cout << "Frequency is too low:" << item.frequency << std::endl;
+        	    std::cout << "Please set frequency to over 400Hz.";
+
+        	    err.Reason = "Frequency too low; under 400Hz"; //reason;
+        	    err.Source = "emMotherboard sequencer";
+        	    throw err;
+        	    break;
+        	}
+
+        	std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
+        	//submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
+        	mecobo->schedulePWMoutput(p, item.startTime, item.endTime, item.amplitude);
+            }
+            break;
+          default:
+            break;
+        }
         break;
       default:
         break;
@@ -335,7 +334,8 @@ int main(int argc, char **argv) {
 
   std::cout << "Hi, I'm the evolutionary motherboard." << std::endl;
   std::cout << "I was built on " << __DATE__ << " at " __TIME__ << std::endl;
-  shared_ptr<emMotherboard> em(new emMotherboard());
+
+
   uint32_t forceProgFpga = 1;  //default program fpga.
   //Command line arguments
   if (argc > 1) {
@@ -347,13 +347,14 @@ int main(int argc, char **argv) {
   }
 
 
-  //If we want to program.
-    
- 
   std::cout << "Starting USB" << std::endl;
-  int boardAddr = startUsb();
+  //int boardAddr = startUsb();
+  USB usbChannel = USB();
+  int boardAddr = usbChannel.getUsbAddress();
 
   int port = 9090 + boardAddr;
+
+  shared_ptr<Mecobo> em(new Mecobo(usbChannel));
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(em));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));

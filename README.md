@@ -18,6 +18,8 @@ todo
    API call that updates these on-board registers. API is updated, but
    the implementation is not in place yet.
 
+- Multiple outputs to a single material pin should be allowed.
+
 hardware
 ========
  - Daughterboards has 16 pins. Each daughterboard has max 8 analogue inputs and 8 analogue outputs, along with potentially 16 digital channels througout the entire stack.

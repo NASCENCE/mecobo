@@ -19,12 +19,12 @@ void setupDAC()
 void setVoltage(uint16_t channel, uint16_t voltage)
 {
   uint16_t channelAddr = channel - DA_CHANNELS_START;
-  printf("channelAddr: %x\n", channelAddr);
+  //printf("channelAddr: channel: %u, %x\n",channel, channelAddr);
   
   uint16_t * dac = ((uint16_t*)EBI_ADDR_BASE) + (DAC0_POSITION * 0x100);
   uint16_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
   dac[DAC_PROGRAM_REGISTER] = wrd;
-  while(dac[0x0A])
-  printf("   Setup word sent to DAC: %x\n", wrd);
+  while(dac[0x0A]);
+  //printf("   Setup word sent to DAC: %x\n", wrd);
 }
 

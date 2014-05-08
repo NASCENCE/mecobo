@@ -54,7 +54,7 @@ int startUsb()
     std::cout << "Enter number, followed by [enter]: ";
     std::cin >> chosen;
    
-    addr = (int)libusb_get_device_address(mecobos[chosen]); 
+    addr = (int)libusb_get_device_address(mecobos[chosen]);
     int port = addr + 9090;
     std::cout << "---------------------------------" << std::endl;
     std::cout << "The server will start at port " << port << std::endl;

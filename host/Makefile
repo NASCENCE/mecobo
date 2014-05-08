@@ -5,7 +5,7 @@
 #	g++ -std=c++11 -lthrift emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01d_types.cpp NascenseAPI_v01d_constants.cpp client.cpp -o cli
 
 
-GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp rs232.c
+GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp USB.cpp Mecobo.cpp rs232.c 
 #ga.cpp
 GEN_OBJ := $(patsubst %.cpp,%.o, $(GEN_SRC))
 
