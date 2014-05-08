@@ -37,6 +37,7 @@ namespace emInterfaces
     private emWaveFormType _waveFormType;
     private emWaveForm _waveForm;
     private int _waitForTrigger;
+    private int _ValueSourceRegister;
 
     /// <summary>
     /// What the action is
@@ -209,6 +210,22 @@ namespace emInterfaces
       }
     }
 
+    /// <summary>
+    /// if  CONSTANT_FROM_REGISTER, then use this value
+    /// </summary>
+    public int ValueSourceRegister
+    {
+      get
+      {
+        return _ValueSourceRegister;
+      }
+      set
+      {
+        __isset.ValueSourceRegister = true;
+        this._ValueSourceRegister = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -226,6 +243,7 @@ namespace emInterfaces
       public bool waveFormType;
       public bool waveForm;
       public bool waitForTrigger;
+      public bool ValueSourceRegister;
     }
 
     public emSequenceItem() {
@@ -234,6 +252,7 @@ namespace emInterfaces
       this._cycleTime = 0;
       this._amplitude = 0;
       this._waitForTrigger = -1;
+      this._ValueSourceRegister = -1;
     }
 
     public void Read (TProtocol iprot)
@@ -332,6 +351,13 @@ namespace emInterfaces
           case 11:
             if (field.Type == TType.I32) {
               WaitForTrigger = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 12:
+            if (field.Type == TType.I32) {
+              ValueSourceRegister = iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -444,6 +470,14 @@ namespace emInterfaces
         oprot.WriteI32(WaitForTrigger);
         oprot.WriteFieldEnd();
       }
+      if (__isset.ValueSourceRegister) {
+        field.Name = "ValueSourceRegister";
+        field.Type = TType.I32;
+        field.ID = 12;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(ValueSourceRegister);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -472,6 +506,8 @@ namespace emInterfaces
       sb.Append(WaveForm== null ? "<null>" : WaveForm.ToString());
       sb.Append(",WaitForTrigger: ");
       sb.Append(WaitForTrigger);
+      sb.Append(",ValueSourceRegister: ");
+      sb.Append(ValueSourceRegister);
       sb.Append(")");
       return sb.ToString();
     }
