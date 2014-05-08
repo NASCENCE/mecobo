@@ -144,7 +144,7 @@ void Mecobo::programFPGA(const char * filename)
 
 }
 
-std::vector<sampleValue> Mecobo::getSampleBuffer()
+std::vector<int32_t> Mecobo::getSampleBuffer(int i)
 {
   std::vector<sampleValue> samples;
 
@@ -152,29 +152,48 @@ std::vector<sampleValue> Mecobo::getSampleBuffer()
   struct mecoPack pack;
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
+
+  //Retrieve bytes.
   uint32_t nSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
 
+  //Got the input buffer size back, now we collect it.
   std::cout << "SampleBuffer size collected: " << nSamples << std::endl;
   if(nSamples == 0) {
-    return samples;
+    return pinRecordings[i];
   } else {
     sampleValue* collectedSamples = new sampleValue[nSamples];
-    std::vector<sampleValue> collected;
-    //So ask for the samples back. Not more at least.
+
+    //Ask for samples back.
     createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack);
+
+    //Get bytes back. Note that the USB uses a raw byte pointer.
     std::cout << "Receiving bytes:" << sizeof(sampleValue) * nSamples << std::endl;
     usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, sizeof(sampleValue) * nSamples);
     std::cout << "Collected from USB" << std::endl;
     sampleValue * casted = (sampleValue *)collectedSamples;
+
     for(int i = 0; i < (int)nSamples; i++) {
       samples.push_back(casted[i]);
     }
+
     delete[] collectedSamples;
   }
 
-  return samples;
+  //The samples we get back are associated with a certain channel,
+  //we need to convert it to pins to see what the user actually
+  //expected out.
+  for(auto s : samples) {
+    //Since one channel can be on many pins we'll collect them all.
+    std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
+    for (auto p : pin) {
+      std::cout << "Samples for channel " << s.channel << "pin: " << p << " :" << s.sampleNum << std::endl;
+      pinRecordings[p].push_back((int32_t)s.value);
+    }
+  }
+
+  return pinRecordings[i];
 }
 
 void Mecobo::reset()
@@ -214,6 +233,33 @@ Mecobo::scheduleSine (int pin, int start, int end, int frequency, int amplitude,
 		      int phase)
 {
   throw std::runtime_error("Sine not implemented yet :(");
+}
+
+void
+Mecobo::runSchedule ()
+{
+  //Set up the crossbar for this sequence.
+  std::cout << "Setting up XBAR" << std::endl;
+  std::vector<uint8_t> test = xbar.getXbarConfigBytes();
+  this->setXbar(test);
+
+  struct mecoPack p;
+  createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
+  sendPacket(&p);
+}
+
+void
+Mecobo::setXbar(std::vector<uint8_t> & bytes)
+{
+  struct mecoPack p;
+  createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
+  sendPacket(&p);
+}
+
+void
+Mecobo::clearSchedule ()
+{
+  throw std::runtime_error("clearSchedule() not implemented yet");
 }
 
 void Mecobo::setLed(int led, int mode) {

@@ -42,9 +42,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   
   channelMap xbar;
 
-  std::map<int, std::queue<emSequenceItem>> pinSeq;
-
-
   //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
   //std::vector<int> recPins;
@@ -85,29 +82,23 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   bool reset() {
-    // Your implementation goes here
-    xbar = channelMap();
-    resetAllPins();
-    printf("Sent reset command!\n");
+    mecobo->reset();
+    clearSequences();
+    std::cout << "Board reset and sequences cleared" << std::endl;
     return true;
   }
 
   bool reprogramme(const std::string& bin, const int32_t length) {
-    // Your implementation goes here
-    printf("reprogramme\n");
+    std::cout << "Reprogrammed called. Not implemented yet." << std::endl;
     return true;
   }
 
   void getDebugState(emDebugInfo& _return) {
-    // Your implementation goes here
-    printf("getDebugState\n");
+    _return.stateBlob = std::string("Not implemented yet\n");
   }
 
   void clearSequences() {
-    // Your implementation goes here
-    
     printf("Clearing sequence queue.\n");
-    pinSeq.clear();
     seqItems.clear();
   }
 
@@ -116,7 +107,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //Reset board?
     mecobo->reset();
     //Sort the sequence before we submit the items to the board.
-    std::cout << "Submitting sequence to board." << std::endl;
+    std::cout << "Scheduling sequences on board." << std::endl;
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
@@ -128,62 +119,36 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
       if(item.endTime > lastEnd) {
         lastEnd = item.endTime;
-        std::cout << "Last item ends at" << lastEnd << std::endl;
+        std::cout << "Last item ends at " << lastEnd << std::endl;
       }
     }
     
-    //Set up the crossbar for this sequence.
-    std::cout << "Setting up XBAR" << std::endl;
-    uint8_t * bytting = new uint8_t[64];
-    xbar.getXbarConfigBytes(bytting);
-    setXbar(bytting);
-    delete[] bytting;
     
     std::cout << "Running sequences." << std::endl;
     steady_clock::time_point start = steady_clock::now();
     steady_clock::time_point end = steady_clock::now();
-    evoMoboRunSeq();
+    //evoMoboRunSeq();
+    mecobo->runSchedule();
 
     //If it took a little time to schedule that last item, add a little slack.
     lastEnd += 10;
     while(duration_cast<milliseconds>(end - start).count() < lastEnd) {
       end = steady_clock::now();
     }
-    std::cout << "-- Sequence done --" << std::endl;
-    std::vector<sampleValue> samples;
-    samples = mecobo->getSampleBuffer();
-
-    //The samples we get back are associated with a certain channel,
-    //we need to convert it to pins to see what the user actually
-    //expected out.
-    for(auto s : samples) {
-      //Since one channel can be on many pins we'll collect them all.
-      std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-      for (auto p : pin) {
-        std::cout << "Samples for channel " << s.channel << "pin: " << p << " :" << s.sampleNum << std::endl;
-        rec[p].push_back(s.value);
-      }
-    }
-
-    std::cout << "Sequence done, all qeueues empty." << std::endl;
-    std::cout << "Clearing sequences for you." << std::endl;
-    clearSequences();
+    std::cout << "No more items to submit." << std::endl;
   } 
 
 
   void stopSequences() {
-    // Your implementation goes here
     printf("stopSequences\n");
   }
 
   void joinSequences() {
-    // Your implementation goes here
     printf("joinSequences\n");
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
-    //TODO: Lots of error checking and all that jazzy.
-    std::cout << "Appending action" << std::endl;
+    std::cout << "Appending action " << std::endl;
     
     //append to vector that we will sort when doing runSequences (where we will do most work)
     seqItems.push_back(Item);
@@ -191,21 +156,12 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
-    //Asks for recording from a pin, but we have only channel recordins of course.
-    std::vector<int32_t> v;
-    std::vector<sampleValue> samples;
 
-    std::cout << "There are " << rec[srcPin].size() << "samples for pin " << srcPin << std::endl;
-    for(auto s : rec[srcPin]) {
-      v.push_back(s);
-    }
+    std::vector<int32_t> r = mecobo->getSampleBuffer(srcPin);
+    std::cout << "Pin " << srcPin << " has " << r.size() << " samples" << std::endl;
 
-    emWaveForm r;
-    r.SampleCount = v.size();
-    r.Samples = v;
-    _return = r;
-
-    rec[srcPin].clear();
+    _return.SampleCount = r.size();
+    _return.Samples = r;
   }
 
 
@@ -248,7 +204,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
     uint32_t sampleDiv = ((50*1000000)/(double)item.frequency);
-    uint16_t ampBinary = 0;
     emException err;
 
 

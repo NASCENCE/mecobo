@@ -33,7 +33,7 @@ class channelMap {
     //This will attempt to map a pin, but it WILL be annoyed if you try to use more channels than we have. 
     void mapPin(const std::vector<int> pins, FPGA_IO_Pins_TypeDef channel);
     FPGA_IO_Pins_TypeDef getChannelForItem(emSequenceItem item);
-    void getXbarConfigBytes(uint8_t * bytes);
+    std::vector<uint8_t> getXbarConfigBytes();
 
     //Since one channel can be on many pins, 
     std::vector<int> getPin(FPGA_IO_Pins_TypeDef channel);

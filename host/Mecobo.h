@@ -20,11 +20,13 @@ class Mecobo
 private:
 
   void createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command);
-
+  void setXbar(std::vector<uint8_t> & bytes);
   bool hasDaughterboard;
   USB usb;
   channelMap xbar;
-  std::map<int, std::vector<uint32_t>> rec;
+
+  //Recordings will be -5 to 5V.
+  std::map<int, std::vector<int32_t>> pinRecordings;
 
 public:
   Mecobo (USB & channel);
@@ -47,8 +49,12 @@ public:
   void schedulePWMoutput(int pin, int start, int end, int pwmValue);
   void scheduleSine(int pin, int start, int end, int frequency, int amplitude, int phase);
 
+  void runSchedule();
+  void clearSchedule();
 
-  std::vector<sampleValue> getSampleBuffer();
+  //Retrieves the sample buffer that's built up currently. This will of course cause a little bit of delay.
+  std::vector<int32_t> getSampleBuffer(int pin);
+
   void reset();
   void setLed(int a, int b);
 

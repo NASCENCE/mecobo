@@ -140,7 +140,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
   return channel;
 }
 
-void channelMap::getXbarConfigBytes(uint8_t * bytes)
+std::vector<uint8_t> channelMap::getXbarConfigBytes()
 {
   //Every 16 bits controls a new pin (Y-axis on the XBAR).
   //There are 32 Y-pins out of the XBARs. 16-bit words 0 to 15 control 
@@ -174,7 +174,9 @@ void channelMap::getXbarConfigBytes(uint8_t * bytes)
     config[configIndex] |= (1 << (channelToXbar[channel]));
     std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
   }
-  memcpy(bytes, (uint8_t*)config.data(), 64);
+
+  std::vector<uint8_t> ret(config.begin(), config.end());
+  return ret;
 }
 
 std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel) 
