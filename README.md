@@ -1,4 +1,4 @@
-mecobo
+# mecobo
 ======
 
 Firmware for the Mecobo IO breakout board, plus the linux driver
@@ -6,7 +6,7 @@ Firmware for the Mecobo IO breakout board, plus the linux driver
 Stuff from EFM you need:
 EM_CMSIS_3.20.0.zip
 
-todo
+## todo
 ======
  - Support programming the microcontroller using the on-board bootloader. The bootloader will set up a CDC USB connection if you tie SWCLK to high and give it a reset. 
 
@@ -20,8 +20,15 @@ todo
 
 - Multiple outputs to a single material pin should be allowed.
 
-hardware
-========
+## hardware
  - Daughterboards has 16 pins. Each daughterboard has max 8 analogue inputs and 8 analogue outputs, along with potentially 16 digital channels througout the entire stack.
 
- 
+### specifications
+With 1 daughterboard connected, there is a maximum samplerate of about 200K
+samples/second output for each of the digital pins. For analogue input, a
+maxium rate of 75K samples/second. These rates are divided by 8 for each
+stacked daughterboard. Note that these are absolute maximum ratings that can be
+achieved, and that these numbers depend highly on the usage pattern of the stack.
+
+With no daughterboard connected, each IO pin controlled by the fpga can toggle
+at rates > 10MHz. 
