@@ -8,14 +8,12 @@
 #include <thrift/transport/TBufferTransports.h>
 
 #include "channelmap.h"
-#include "mecohost.h"
 #include "../mecoprot.h"
 #include <map>
 #include <queue>
 #include <thread>
 
 #include "Mecobo.h"
-//#include "rs232.h"
 #include "USB.h"
 
 using namespace ::apache::thrift;
@@ -65,7 +63,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setLED(const int32_t index, const bool state) {
-    state ? moboSetLed(index, 0) : moboSetLed(index, 1);
+    state ? mecobo->setLed(index, 0) : mecobo->setLed(index, 1);
     std::cout << "Led " << index << "is " << state << std::endl;
   }
 
@@ -317,14 +315,11 @@ int main(int argc, char **argv) {
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
   if(forceProgFpga) {
-    programFPGA("mecobo.bin");
+    em->programFPGA("mecobo.bin");
   }
  
   std::cout << "Starting thrift server, listening at port " << port << std::endl;
   server.serve();
-
-  std::cout << "Stopping USB." << std::endl;
-  stopUsb();
   std::cout << "EvoMaterio exiting. Sayonara." << std::endl;
 
   return 0;
