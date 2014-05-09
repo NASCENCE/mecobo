@@ -37,6 +37,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   std::thread runThread;
 
+  steady_clock::time_point sequenceRunStart;
+  int lastSequenceItemEnd;
+
   int64_t time;
   std::vector<emSequenceItem> seqItems;
   
@@ -112,44 +115,40 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
 
-    int lastEnd = -1;
+    //Find the last item as well.
+    lastSequenceItemEnd = -1;
     for (auto item : seqItems) {
       setupItem(item);
 
-
-      if(item.endTime > lastEnd) {
-        lastEnd = item.endTime;
-        std::cout << "Last item ends at " << lastEnd << std::endl;
+      if(item.endTime > lastSequenceItemEnd) {
+        lastSequenceItemEnd = item.endTime;
+        std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
       }
     }
-    
-    
-    std::cout << "Running sequences." << std::endl;
-    steady_clock::time_point start = steady_clock::now();
-    steady_clock::time_point end = steady_clock::now();
-    //evoMoboRunSeq();
+
+    std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
+    sequenceRunStart = steady_clock::now();
     mecobo->runSchedule();
 
-    //If it took a little time to schedule that last item, add a little slack.
-    lastEnd += 10;
-    while(duration_cast<milliseconds>(end - start).count() < lastEnd) {
-      end = steady_clock::now();
-    }
-    std::cout << "No more items to submit." << std::endl;
+
   } 
 
 
   void stopSequences() {
-    printf("stopSequences\n");
+    std::cout << "stopSequences does nothing yet." << std::endl;
   }
 
   void joinSequences() {
-    printf("joinSequences\n");
+    //Hang around until things are done.
+    std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
+    steady_clock::time_point end;
+    while(duration_cast<milliseconds>(end - sequenceRunStart).count() < lastSequenceItemEnd) {
+      end = steady_clock::now();
+    }
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
-    std::cout << "Appending action " << std::endl;
-    
+    std::cout << "Appending action " << Item.operationType << std::endl;
     //append to vector that we will sort when doing runSequences (where we will do most work)
     seqItems.push_back(Item);
     return;
@@ -246,7 +245,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
             for(auto p: item.pin) {
         	std::cout << "PREDEFINED SINE pin" << p << std::endl;
                 mecobo->scheduleSine(p, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
-                //(item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, item.frequency, PINCONFIG_DATA_TYPE_PREDEFINED_SINE, ampBinary);
             }
             break;
 

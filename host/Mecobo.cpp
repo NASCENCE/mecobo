@@ -232,7 +232,28 @@ void
 Mecobo::scheduleSine (int pin, int start, int end, int frequency, int amplitude,
 		      int phase)
 {
-  throw std::runtime_error("Sine not implemented yet :(");
+
+  //TODO: Support phase.
+
+  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  //Find a channel (or it might throw an error).
+  if(hasDaughterboard) {
+    channel = xbar.getChannel(pin);
+  } else {
+    channel = (FPGA_IO_Pins_TypeDef)pin;
+  }
+
+  uint32_t data[USB_PACK_SIZE_BYTES/4];
+  data[PINCONFIG_START_TIME] = start;
+  data[PINCONFIG_END_TIME] = end;
+  data[PINCONFIG_DATA_FPGA_PIN] = channel;
+  data[PINCONFIG_DATA_CONST] = (uint32_t)amplitude;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
+  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_PREDEFINED_SINE;
+
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+  sendPacket(&p);
 }
 
 void
