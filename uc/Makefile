@@ -146,8 +146,6 @@ usb/src/em_usbhal.c \
 usb/src/em_usbdep.c \
 usb/src/em_usbdint.c \
 usb/src/em_usbtimer.c \
-ll.c \
-pinItemQueue.c \
 pinItem.c\
 dac.c\
 adc.c\

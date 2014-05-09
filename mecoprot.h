@@ -111,7 +111,8 @@ typedef enum {
   FPGA_ADC_0_E = 104,
   FPGA_ADC_0_F = 105,
   FPGA_ADC_0_G = 106,
-  FPGA_ADC_0_H = 107
+  FPGA_ADC_0_H = 107,
+  FPGA_DUMMY_0 = 200  //To remove range compiler warning.
   //Etc...
 } FPGA_IO_Pins_TypeDef;
 

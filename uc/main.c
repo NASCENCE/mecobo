@@ -10,8 +10,6 @@
 #include "em_timer.h"
 #include "bsp.h"
 #include "bsp_trace.h"
-#include "ll.h"
-#include "pinItemQueue.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -271,8 +269,8 @@ int main(void)
     printf("SRAM 1 TEST SAME PATTERN\n");
     uint8_t * pat = (uint8_t*)SRAM1_START;
     for(int j = 0; j < SRAM1_BYTES; j++) {
-      ram[j] = 0xAA;
-      if(ram[j] != 0xAA) {
+      pat[j] = 0xAA;
+      if(pat[j] != 0xAA) {
     	  printf("Failed RAM test!\n");
       }
     }
@@ -734,7 +732,7 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 {
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
   uint16_t * addr = getPinAddress(channel);
-  if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_START + 100))) {
+  if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_END))) {
     
     uint16_t boardChan = channel - AD_CHANNELS_START;
     //board 0
