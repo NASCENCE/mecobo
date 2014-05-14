@@ -22,24 +22,30 @@ cli.clearSequences()
 it = emSequenceItem()
 it.pin = [15]
 it.startTime = 0
-it.endTime = 100
-it.amplitude = 100
-it.operationType = emSequenceOperationType().ARBITRARY   #implies analogue 
+it.endTime = 1000
+it.amplitude = 255
+it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
 cli.appendSequenceAction(it)
 
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
-it.endTime = 100
-it.frequency = 10
+it.endTime = 1000
+it.frequency = 1
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 cli.runSequences()
+cli.joinSequences()
 
+pr = []
 res = cli.getRecording(0).Samples
+for i in res:
+  pr.append(i * (5.0/4096.0))
+
 
 cli.reset()
 transport.close()
 
-plt.plot(res)
+plt.ylim(-6, 6)
+plt.plot(pr)
 plt.show()

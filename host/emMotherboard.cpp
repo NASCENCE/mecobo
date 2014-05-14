@@ -31,7 +31,9 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
-  shared_ptr<Mecobo> mecobo;
+  Mecobo * mecobo;
+  int port;
+  int boardAddr;
 
   std::thread runThread;
 
@@ -50,10 +52,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   public:
   //constructor for this class
-  emEvolvableMotherboardHandler(shared_ptr<Mecobo> mobo) {
+  emEvolvableMotherboardHandler(int force) {
     // Your initialization goes here
     time = 0;
-    this->mecobo = mobo;
+    std::cout << "Starting USB subsystem." << std::endl;
+    mecobo = new Mecobo();
+    if (force)  {
+      mecobo->programFPGA("mecobo.bin");
+    }  
   }
 
   int32_t ping() {
@@ -297,28 +303,16 @@ int main(int argc, char **argv) {
     }
   }
 
-
-  std::cout << "Starting USB" << std::endl;
-  //int boardAddr = startUsb();
-  USB usbChannel = USB();
-  int boardAddr = usbChannel.getUsbAddress();
-
-  int port = 9090 + boardAddr;
-
-  shared_ptr<Mecobo> em(new Mecobo(usbChannel));
-
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(em));
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+  shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-  if(forceProgFpga) {
-    em->programFPGA("mecobo.bin");
-  }
- 
-  std::cout << "Starting thrift server, listening at port " << port << std::endl;
+
+  //std::cout << "Starting thrift server, listening at port " << port << std::endl;
+  std::cout << "Thrift starting" << std::endl;
   server.serve();
   std::cout << "EvoMaterio exiting. Sayonara." << std::endl;
 

@@ -223,7 +223,7 @@ int main(void)
   if(!skip_boot_tests) {
   int i = 0;
   printf("Check if FPGA is alive.\n");
-  uint16_t * a = getPinAddress(42) + PINCONFIG_STATUS_REG;
+  uint16_t * a = getPinAddress(1) + PINCONFIG_STATUS_REG;
   uint16_t foo = *a;
   if (foo != 42) {
     fpga_alive = 0;
@@ -668,7 +668,7 @@ inline void execute(struct pinItem * item)
       addr[PINCONFIG_DUTY_CYCLE] = item->constantValue;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
       break;
-    case PINCONFIG_DATA_TYPE_RECORD:
+    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
       printf("  RECORD: %d at rate %d\n", item->pin, item->sampleRate);
       startInput(item->pin, item->sampleRate);
       break;
@@ -740,15 +740,19 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       //Program sequence register with channel.
       adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
       printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
-      //setup AD.
+
+      //setup FPGA AD controller
       addr[0x01] = sampleRate; //overflow
       addr[0x02] = 1; //divide
-      //addr[0x04] = 0x803C; //convert channel 0 and give it back in straight binary. Sequencer -off-.
+
+      //Sequence register write.
       addr[0x04] = adcSequence[0];
       while(addr[0x0A]);
  
-      //Program the ADC to use this channel as well now. Result in straight binary.
-      addr[0x04] = 0x8034;
+      //Program the ADC to use this channel as well now. Result in two comp, internal ref.
+      //sequencer on.
+      //Control register
+      addr[0x04] = 0x8014;
       while(addr[0x0A]);
 
       printf("ADC programmed to new sequences\n");
@@ -775,7 +779,7 @@ inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
   if(boardChan < 16) {
     got = addr[PINCONFIG_SAMPLE_REG];
     sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-    sample->value = got & 0x1FFF;// >> 4;
+    sample->value = got;// take off the address bits.
     sample->channel = channel;
   } else {
     sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
@@ -802,7 +806,7 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
     return (uint16_t*)(EBI_ADDR_BASE) + (controllerNr * 0x100) + (0x10*boardChan);
   }
 
-  //DA channels -- This isn't used I think.
+  
   if ((DA_CHANNELS_START <= channel) && (channel <= DA_CHANNELS_END)) {
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
   }
@@ -905,6 +909,7 @@ void execCurrentPack()
     numSamples = 0;
     numInputChannels = 0;
     nextKillTime = 0;
+    adcSequence[0] = 0;
     printf("RESET. NumSamples: %u\n", numSamples);
 
     resetAllPins();

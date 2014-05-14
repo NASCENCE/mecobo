@@ -25,9 +25,11 @@ private:
 	std::vector<uint8_t> endpoints;
 	std::vector<uint8_t> debugEndpoints;
 
+	libusb_device ** devs;
 	struct libusb_device_handle * mecoboHandle;
 	std::vector<libusb_device *> mecoboBoards;
 	struct libusb_context * usbContext;
+
 	int numMecobos = 0;
 	int usbAddress = -1;
 

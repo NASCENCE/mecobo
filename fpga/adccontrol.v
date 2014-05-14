@@ -92,7 +92,7 @@ always @ (posedge clk) begin
 
       //Check if busy.
       if (addr[3:0] == BUSY) begin
-        data_out <= {15'h0, (shift_out|shift_in)};
+        data_out <= {13'h0, shift_out,shift_in, ebi_capture_reg[15])};
       end
 
     end else

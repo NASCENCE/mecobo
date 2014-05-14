@@ -58,7 +58,21 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_15] = 15;
 }
 
-void channelMap::mapPin(const std::vector<int> pin, FPGA_IO_Pins_TypeDef channel) 
+void channelMap::reset()
+{
+  numADchannels = 0;
+  maxADchannels = 8 * numCards;
+  numDAchannels = 0;
+  maxDAchannels = 8 * numCards;
+  numIOchannels = 0;
+  maxIOchannels = 16 * numCards;
+
+  pinToChannel.clear();
+  channelToPin.clear();
+}
+
+
+void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
   /*
   if(pinToChannel.count(pin)) {
@@ -67,14 +81,14 @@ void channelMap::mapPin(const std::vector<int> pin, FPGA_IO_Pins_TypeDef channel
     throw e;
     return;
   }*/
-  for (auto p : pin) {
-    pinToChannel[p] = channel;
-  }
-  channelToPin[channel] = pin;
+  
+  std::cout << "channel " << channel << " added to map." << std::endl;
+  pinToChannel[pin] = channel;
+  channelToPin[channel].push_back(pin);
   return;
 }
 
-FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item) 
+void channelMap::getChannelForPin(int pin, int pinconfigDataType) 
 {
   if((numADchannels + numIOchannels + numDAchannels) >= (16 * numCards)) {
     emException e;
@@ -87,12 +101,13 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
   //TODO: EEEH
   FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
 
-  switch(item.operationType) {
-    case emSequenceOperationType::type::RECORD:
+  switch(pinconfigDataType) {
+    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
       //Try to map to a analogue pin.
       if (numADchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-        mapPin(item.pin, channel);
+        std::cout << "Mapped channel " << channel << " to pin " << pin;
+        mapPin(pin, channel);
         numADchannels++;
       } else {
         std::cout << "All out of AD channels" << std::endl;
@@ -103,13 +118,13 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
       }
     break;
 
-    case emSequenceOperationType::type::ARBITRARY:
-    case emSequenceOperationType::type::PREDEFINED:
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       //Use DAC channel.
       //Try to map to a analogue pin.
       if (numDAchannels < maxDAchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
-        mapPin(item.pin, channel);
+        mapPin(pin, channel);
         numDAchannels++;
       } else {
         std::cout << "All out of DA channels" << std::endl;
@@ -125,7 +140,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
     default:
       if (numIOchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
-        mapPin(item.pin, channel);
+        mapPin(pin, channel);
         numIOchannels++;
       } else {
         std::cout << "All out of IO channels" << std::endl;
@@ -137,7 +152,6 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForItem(emSequenceItem item)
       break;
 
   }
-  return channel;
 }
 
 std::vector<uint8_t> channelMap::getXbarConfigBytes()
@@ -171,11 +185,17 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
       configIndex = 31 - pin ;
     }
 
+
+    std::cout << "blah:" << channelToXbar[channel] << "blah:" << channel << std::endl;
     config[configIndex] |= (1 << (channelToXbar[channel]));
-    std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+    std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
   }
 
-  std::vector<uint8_t> ret(config.begin(), config.end());
+  std::vector<uint8_t> ret;
+  uint8_t * rawData = (uint8_t*)config.data();
+  for (int i = 0; i < 64; i ++) {
+    ret.push_back(rawData[i]);;
+  }
   return ret;
 }
 

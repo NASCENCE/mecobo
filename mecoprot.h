@@ -126,7 +126,7 @@ struct mecoPack {
 struct sampleValue {
   uint16_t sampleNum; 
   uint8_t channel;
-  uint16_t value;
+  int16_t value;
 };
 
 

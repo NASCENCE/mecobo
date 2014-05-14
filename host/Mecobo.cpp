@@ -9,10 +9,10 @@
 #include <stdexcept>
 
 
-Mecobo::Mecobo (USB & usb)
+Mecobo::Mecobo ()
 {
-  this->usb = usb;
   hasDaughterboard = true;
+  std::cout << "Mecobo initialized" << std::endl;
 }
 
 Mecobo::~Mecobo ()
@@ -25,6 +25,9 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
+
+
   if(hasDaughterboard) {
     channel = xbar.getChannel(pin);
   } else {
@@ -48,6 +51,8 @@ void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
+
   if(hasDaughterboard) {
     channel = xbar.getChannel(pin);
   } else {
@@ -59,6 +64,7 @@ void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
@@ -188,8 +194,9 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int i)
     //Since one channel can be on many pins we'll collect them all.
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
-      std::cout << "Samples for channel " << s.channel << "pin: " << p << " :" << s.sampleNum << std::endl;
-      pinRecordings[p].push_back((int32_t)s.value);
+      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
+      //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+      pinRecordings[p].push_back(v);
     }
   }
 
@@ -198,6 +205,8 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int i)
 
 void Mecobo::reset()
 {
+  xbar.reset();
+  pinRecordings.clear();
   struct mecoPack p;
   createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
   sendPacket(&p);

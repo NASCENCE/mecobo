@@ -14,9 +14,9 @@ USB::USB() {
 	  if(r < 0) {
 	    printf("Init Error\n"); //there was an error
 	  }
-	  libusb_set_debug(usbContext, 3); //set verbosity level to 3, as suggested in the documentation
+	  
+    libusb_set_debug(usbContext, 3); //set verbosity level to 3, as suggested in the documentation
 
-	  libusb_device ** devs;
 	  int numDevices = libusb_get_device_list(usbContext, &devs);
 	  for(int i = 0; i < numDevices; i++) {
 	    libusb_device * dev = devs[i];
@@ -39,7 +39,7 @@ USB::USB() {
 	    }
 	    std::cout << "Enter number, followed by [enter]: ";
 	    std::cin >> chosen;
-
+    
 	    addr = (int)libusb_get_device_address(mecoboBoards[chosen]);
 	    int port = addr + 9090;
 	    std::cout << "---------------------------------" << std::endl;
@@ -49,28 +49,38 @@ USB::USB() {
 
 	  int err = libusb_open(mecoboBoards[chosen], &mecoboHandle);
 
-	  if(err) {
-	    printf("Could not open device with vid 2544, pid 0003. I'm dying.\n");
+	  if(err < 0) {
+	    printf("Could not open device with vid 2544, pid 0003. Exiting.\n");
 	    exit(-1);
 	  }
 
-	  libusb_detach_kernel_driver(mecoboHandle, 0x1);
+    if (libusb_kernel_driver_active(mecoboHandle, 0x1) == 1) {
+      
+      err = libusb_detach_kernel_driver(mecoboHandle, 0x1);
+      if (err) {
+        std::cout << "Failed to detach kernel driver for USB. Someone stole the board?" << std::endl;
+        exit(-1);
+      }
+    }
 
-	  if(libusb_claim_interface(mecoboHandle, 0x1) != 0) {
-	    printf("Could not claim interface 0x1 of Mecobo\n");
+	  if((err = libusb_claim_interface(mecoboHandle, 0x1)) < 0) {
+
+	    printf("Could not claim interface 0x1 of Mecobo, error number %d\n", err);
 	    exit(-1);
 	  }
 
-	  printf("Getting endpoints from USB driver\n");
+    std::cout << "Getting endpoints from USB driver" << std::endl;
 	  getEndpoints(endpoints, mecoboBoards[chosen], 1);
 	  getEndpoints(debugEndpoints, mecoboBoards[chosen], 0);
 
 	  usbAddress = addr;
+    std::cout << "USB init done" << std::endl;
 }
 
 USB::~USB() {
 	  libusb_release_interface(mecoboHandle, 0x1);
 	  libusb_attach_kernel_driver(mecoboHandle, 0x1);
+    libusb_free_device_list(devs, 1);
 
 	  libusb_close(mecoboHandle);
 	  libusb_exit(usbContext); //close the session

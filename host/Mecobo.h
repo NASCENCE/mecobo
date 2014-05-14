@@ -29,7 +29,7 @@ private:
   std::map<int, std::vector<int32_t>> pinRecordings;
 
 public:
-  Mecobo (USB & channel);
+  Mecobo ();
   virtual
   ~Mecobo ();
 
@@ -41,7 +41,7 @@ public:
   //void submitSequenceItem(emInterfaces::emSequenceItem & item);
 
   //Various board capabilities
-  void scheduleConstantVoltage(int pin, int start, int end, int amplitude);
+  void scheduleConstantVoltage(int pins, int start, int end, int amplitude);
   void scheduleRecording(int pin, int start, int end, int frequency);
 
   void scheduleDigitalRecording(int pin, int start, int end, int frequency);
@@ -60,5 +60,12 @@ public:
 
 };
 
+template <typename T, unsigned B>
+inline T signextend(const T x)
+{
+    struct {T x:B;} s;
+      return s.x = x;
+
+}
 
 #endif /* MECOBO_H_ */
