@@ -266,7 +266,7 @@ always @ (*) begin
       shift_out <= 1'b0; //shifts data out from ADC
       load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
       reset_ebi_capture_reg <= 1'b0;
-      inc_clkcounter <= 1'b1;
+      inc_clkcounter <= 1'b1;  //note : increase on next posedge.
       res_clkcounter <= 1'b0;
       copy_to_tmp <= 1'b0;
     end

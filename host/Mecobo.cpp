@@ -27,7 +27,6 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
   //Find a channel (or it might throw an error).
   xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
 
-
   if(hasDaughterboard) {
     channel = xbar.getChannel(pin);
   } else {
@@ -38,12 +37,14 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
-  data[PINCONFIG_DATA_CONST] = (uint32_t)amplitude;
+  data[PINCONFIG_DATA_CONST] = (int32_t)amplitude;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DAC_CONST;
+  data[PINCONFIG_SAMPLE_RATE] = 0;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
   sendPacket(&p);
+  std::cout << "ITEM SCHEDULED ON MECOBO" << std::endl;
 }
 
 void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
@@ -194,6 +195,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int i)
     //Since one channel can be on many pins we'll collect them all.
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
+      //Cast from 13 bit to 32 bit two's complement int.
       int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
       pinRecordings[p].push_back(v);

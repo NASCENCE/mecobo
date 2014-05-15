@@ -157,8 +157,6 @@ void TIMER1_IRQHandler(void)
 void TIMER2_IRQHandler(void)
 { 
   TIMER_IntClear(TIMER2, TIMER_IF_OF);
-  if(timeTick%1000 == 0)
-    timeMs += 1;
   timeTick++;
 }
 
@@ -348,7 +346,6 @@ int main(void)
   printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
 
-  nextKillTime = 0;
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
   printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
@@ -412,10 +409,13 @@ int main(void)
             execute(itemsInFlight[flight]);
           }
         }
+        //update counters.
         lastTimeTick = timeTick;
+        timeMs = timeTick/10;
       }
+
       //Kill items that are in flight and whose time has come.
-      //We cannot guarantee the same as we do for scheduling;
+      //We cannot guarantee the same as we do for starting so we need to check.
       if(nextKillTime <= timeMs) {
         if (numItemsInFlight > 0)  {
           //Iterate array of items in flight, kill whatever needs killing,
@@ -659,7 +659,7 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 inline void execute(struct pinItem * item)
 {
-  //printf("E: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
+  printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
   uint16_t * addr = getPinAddress(item->pin);
   int index = 0;
   switch(item->type) {
@@ -699,7 +699,6 @@ inline void execute(struct pinItem * item)
 
 void killItem(struct pinItem * item)
 {
-  printf("K: %d, Tend: %d CurT:%d\n", item->pin, item->endTime, timeMs);
   uint16_t * addr = getPinAddress(item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIRECT_CONST:
@@ -741,18 +740,30 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
       printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
+      //Range register 1
+      addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+      for(int i = 0; i < 100000; i++);
+      while(addr[0x0A]);
+
+      //Range register 2
+      addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+      for(int i = 0; i < 100000; i++);
+      while(addr[0x0A]);
+
       //setup FPGA AD controller
       addr[0x01] = sampleRate; //overflow
       addr[0x02] = 1; //divide
-
       //Sequence register write.
+      
       addr[0x04] = adcSequence[0];
+      for(int i = 0; i < 100000; i++);
       while(addr[0x0A]);
  
       //Program the ADC to use this channel as well now. Result in two comp, internal ref.
       //sequencer on.
       //Control register
       addr[0x04] = 0x8014;
+      for(int i = 0; i < 100000; i++);
       while(addr[0x0A]);
 
       printf("ADC programmed to new sequences\n");
@@ -772,24 +783,14 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
 {
   uint16_t * addr = getPinAddress(channel);
-  uint16_t got = 0;
-  uint16_t boardChan = channel - AD_CHANNELS_START;
-  //printf("Address got: %x\n", addr);
-  //this is the common interface to get stuff.
-  if(boardChan < 16) {
-    got = addr[PINCONFIG_SAMPLE_REG];
-    sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-    sample->value = got;// take off the address bits.
-    sample->channel = channel;
-  } else {
-    sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-    sample->value = addr[PINCONFIG_SAMPLE_REG];
-    sample->channel = channel;
-  }
+  sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
+  sample->value = addr[PINCONFIG_SAMPLE_REG];
+  sample->channel = channel;
 
-  printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
+  //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
 }
 
+//TODO: MAKE LOOKUPTABLE
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
 {
 
@@ -805,7 +806,6 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
     //Each board has 1 controller, each channel is at 16 uint16_t's offset.
     return (uint16_t*)(EBI_ADDR_BASE) + (controllerNr * 0x100) + (0x10*boardChan);
   }
-
   
   if ((DA_CHANNELS_START <= channel) && (channel <= DA_CHANNELS_END)) {
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
@@ -835,8 +835,16 @@ void execCurrentPack()
       item.type = d[PINCONFIG_DATA_TYPE];
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       itemsToApply[itaPos++] = item;
+     
+      //find lowest first killtime.
+      if(numItems == 0) {
+        nextKillTime = item.endTime;
+      } else if (item.endTime < nextKillTime) {
+        nextKillTime = item.endTime;
+      }
+      
       numItems++;
-      printf("Item added to pin %d, starting at %d, samplerate %d\n", item.pin, item.startTime, item.sampleRate);
+      printf("Item added to pin %d, starting at %d, ending at %d, samplerate %d\n", item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       printf("Curr data NULL\n");
     }
@@ -846,7 +854,7 @@ void execCurrentPack()
   {
     printf("Starting sequence run\n");
     runItems = 1;
-    timeMs = 0;
+    timeTick = 0;
     itaPos = 0;
   }
 
@@ -910,6 +918,9 @@ void execCurrentPack()
     numInputChannels = 0;
     nextKillTime = 0;
     adcSequence[0] = 0;
+
+    timeTick = 0;
+
     printf("RESET. NumSamples: %u\n", numSamples);
 
     resetAllPins();

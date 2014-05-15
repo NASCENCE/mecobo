@@ -19,23 +19,28 @@ transport.open();
 
 cli.reset()
 cli.clearSequences()
-it = emSequenceItem()
-it.pin = [15]
-it.startTime = 0
-it.endTime = 1000
-it.amplitude = 255
-it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
-cli.appendSequenceAction(it)
+
+for i in xrange(0,10):
+  start = i*100
+  end = i*100 + 100
+  it = emSequenceItem()
+  it.pin = [15]
+  it.startTime = start
+  it.endTime = end
+  it.amplitude = i*20
+  it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
+  cli.appendSequenceAction(it)
 
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
 it.endTime = 1000
-it.frequency = 1
+it.frequency = 10000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 cli.runSequences()
 cli.joinSequences()
+
 
 pr = []
 res = cli.getRecording(0).Samples
