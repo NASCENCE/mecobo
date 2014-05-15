@@ -659,26 +659,36 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 inline void execute(struct pinItem * item)
 {
+  uint16_t * addr = NULL;// = getPinAddress(item->pin);
   printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
-  uint16_t * addr = getPinAddress(item->pin);
   int index = 0;
   switch(item->type) {
-    case PINCONFIG_DATA_TYPE_DIRECT_CONST:
-      printf("  CONST: %d\n", item->constantValue);
-      addr[PINCONFIG_DUTY_CYCLE] = item->constantValue;  //TODO: FPGA will be updated with a constVal register.
-      addr[PINCONFIG_LOCAL_CMD] = CMD_CONST;
+    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+      addr = getPinAddress(item->pin);
+      printf("  DIGITAL: Digital duty: %d, anti: %d\n", item->duty, item->antiDuty);
+      addr[PINCONFIG_DUTY_CYCLE] = item->duty;
+      addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
+      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
-    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-      printf("  RECORD: %d at rate %d\n", item->pin, item->sampleRate);
+
+    case PINCONFIG_DATA_TYPE_RECORD:
+      printf("  RECORD DIGITAL: %d at rate %d\n", item->pin, item->sampleRate);
       startInput(item->pin, item->sampleRate);
       break;
+
+    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+      printf("  RECORD ANAL: %d at rate %d\n", item->pin, item->sampleRate);
+      startInput(item->pin, item->sampleRate);
+      break;
+
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       printf("  PWM: duty %d, aduty: %d", item->duty, item->antiDuty);
-      addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
-      addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
-      addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
-      addr[PINCONFIG_RUN_INF]        = 1;
-      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+      printf("  NOT IMPLEMENTED :(\n)");
+      //addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
+      //addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
+      //addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
+      //addr[PINCONFIG_RUN_INF]        = 1;
+      //addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_DAC_CONST:
@@ -687,8 +697,8 @@ inline void execute(struct pinItem * item)
       break;
 
     case PINCONFIG_DATA_TYPE_PREDEFINED_SINE:
+      //This reeeeally doesn't work all that well. execute happens too slow?
       index = (item->sampleRate*timeTick)%255;
-      //printf("  pin: %d SINE: rate: %u, time: %d, %d, index:%d\n", item->pin, item->sampleRate, timeTick, sinus[index], index);
       setVoltage(item->pin, sinus[index]);
       break;
 
@@ -701,14 +711,16 @@ void killItem(struct pinItem * item)
 {
   uint16_t * addr = getPinAddress(item->pin);
   switch(item->type) {
-    case PINCONFIG_DATA_TYPE_DIRECT_CONST:
+    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
+      addr[PINCONFIG_ANTIDUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       break;
+    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       for(int i = 0; i < numInputChannels; i++) {
         if (inputChannels[i] == item->pin) {
@@ -770,6 +782,7 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
     }
   }
   
+  //Digital channel.
   else {
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
     addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;

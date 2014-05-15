@@ -225,6 +225,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           mecobo->scheduleRecording(p, item.startTime, item.endTime, item.frequency);
         }
         //Error checking.
+        //
         /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
@@ -241,6 +242,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
 
         break;
+
+      case emSequenceOperationType::type::DIGITAL:
+        for (auto p : item.pin) {
+          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin " << p << std::endl;
+          mecobo->scheduleDigitalOutput((int)p, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
+        }
+        break;
+
 
       //YAY DOUBLE CASE SWITCH CASE.
       case emSequenceOperationType::type::PREDEFINED:

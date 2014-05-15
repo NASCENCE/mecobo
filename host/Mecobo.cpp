@@ -220,23 +220,67 @@ Mecobo::isFpgaConfigured ()
   return true;
 }
 
+
 void
 Mecobo::scheduleDigitalRecording (int pin, int start, int end, int frequency)
 {
-  throw std::runtime_error("digital output Not implemented.");
+  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_RECORD);
+
+  if(hasDaughterboard) {
+    channel = xbar.getChannel(pin);
+  } else {
+    channel = (FPGA_IO_Pins_TypeDef)pin;
+  }
+
+  uint32_t data[USB_PACK_SIZE_BYTES/4];
+  data[PINCONFIG_START_TIME] = start;
+  data[PINCONFIG_END_TIME] = end;
+  data[PINCONFIG_DATA_FPGA_PIN] = channel;
+  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
+
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+  sendPacket(&p);
 }
 
+
 void
-Mecobo::scheduleDigitalOutput (int pin, int start, int end, int frequency,
+Mecobo::scheduleDigitalOutput (int pin, int start, int end, int cycleLength,
 			       int dutyCycle)
 {
-  throw std::runtime_error("digital output Not implemented.");
+  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
+
+  //Find a channel (or it might throw an error).
+  if(hasDaughterboard) {
+    channel = xbar.getChannel(pin);
+  } else {
+    channel = (FPGA_IO_Pins_TypeDef)pin;
+  }
+
+  uint32_t data[USB_PACK_SIZE_BYTES/4];
+  data[PINCONFIG_START_TIME] = start;
+  data[PINCONFIG_END_TIME] = end;
+  data[PINCONFIG_DATA_FPGA_PIN] = channel;
+  data[PINCONFIG_DATA_DUTY] = dutyCycle;
+  data[PINCONFIG_DATA_ANTIDUTY] = cycleLength - dutyCycle;
+  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_OUT;
+
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+  sendPacket(&p);
+
 }
 
 void
 Mecobo::schedulePWMoutput (int pin, int start, int end, int pwmValue)
 {
   throw std::runtime_error("PWM not implemented yet :/");
+  //submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
 }
 
 void

@@ -152,8 +152,8 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
       }
     break;
 
-
-    //By default we give a Digital channel.
+    //By default we give a Digital channel -- these can be both recording and analogue,
+    //depending on the command given.
     default:
       if (numIOchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
