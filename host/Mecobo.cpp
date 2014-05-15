@@ -39,7 +39,7 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_CONST] = (int32_t)amplitude;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DAC_CONST;
-  data[PINCONFIG_SAMPLE_RATE] = 0;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = 0;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
@@ -247,6 +247,9 @@ Mecobo::scheduleSine (int pin, int start, int end, int frequency, int amplitude,
   //TODO: Support phase.
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
+
   //Find a channel (or it might throw an error).
   if(hasDaughterboard) {
     channel = xbar.getChannel(pin);
