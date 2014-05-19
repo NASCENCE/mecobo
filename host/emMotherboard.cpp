@@ -119,6 +119,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     if (seqItems.size() > 50) {
       err.Reason = "No more than 50 items please!";
       err.Source = "runSequences()";
+      throw err;
     }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
