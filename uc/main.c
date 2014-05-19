@@ -97,6 +97,7 @@ static uint8_t * inBuffer;
 static struct mecoPack currentPack;
 static struct mecoPack packToSend;
 static int sendPackReady = 0;
+static int sendInProgress = 0;
 
 //Keep track of which pins are input pins. 
 static int nPins = 250;
@@ -126,12 +127,21 @@ static int runItems = 0;
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 
-static const int MAX_SAMPLES = SRAM1_BYTES/sizeof(struct sampleValue);
+//Circular buffer in SRAM1, modulo MAX_SAMPLES
+static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
+#define MAX_INPUT_CHANNELS 10
+#define MAX_CHANNELS 150
+static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
+//Such a waste of space, should use hash map.
+static int channelMemoryOffsets[MAX_CHANNELS];  //Look-up table for offset into sample buffer.
+static int channelMemoryIndexes[MAX_CHANNELS];  //Look-up table for indexing into sample buffer, per offset.
 
 struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
+int sampleBufferStart = 0;
+int sampleBufferEnd = 0;
 
-int inputChannels[10];
+int inputChannels[MAX_INPUT_CHANNELS];
 int numInputChannels = 0;
 int nextKillTime = 0;
 
@@ -221,9 +231,9 @@ int main(void)
   if(!skip_boot_tests) {
   int i = 0;
   printf("Check if FPGA is alive.\n");
-  uint16_t * a = getPinAddress(1) + PINCONFIG_STATUS_REG;
+  uint16_t * a = getPinAddress(2) + PINCONFIG_STATUS_REG;
   uint16_t foo = *a;
-  if (foo != 42) {
+  if (foo != 2) {
     fpga_alive = 0;
     printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
   } else {
@@ -345,6 +355,14 @@ int main(void)
   printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
   printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
+  for(int i = 0; i < MAX_CHANNELS; i++) {
+    channelMemoryOffsets[i] = -1;
+    FPGA_IO_Pins_TypeDef c = (FPGA_IO_Pins_TypeDef)i;
+    if(AD_CHANNELS_START <= c && c <= AD_CHANNELS_END) {
+      channelMemoryOffsets[i] = (c - AD_CHANNELS_START) * BUFFERSIZE;
+      printf("initialized channleMemIdex[%d] to %d\n", i, (c - AD_CHANNELS_START) * BUFFERSIZE );
+    }
+  }
 
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
@@ -374,14 +392,8 @@ int main(void)
     //TODO: Make pinControllers notify uC when it has new data, interrupt?
     if(runItems) {
       for(int ch = 0; ch < numInputChannels; ch++) {
-        struct sampleValue val;
-        getInput(&val, (FPGA_IO_Pins_TypeDef)inputChannels[ch]);
-        if(val.sampleNum != (uint16_t)lastCollected[inputChannels[ch]]) {
-          lastCollected[inputChannels[ch]] = val.sampleNum; 
-          if(numSamples < MAX_SAMPLES) {
-            sampleBuffer[numSamples++] = val;
-          }
-        }
+        //struct sampleValue val;
+        getInput((FPGA_IO_Pins_TypeDef)inputChannels[ch]);
       }
 
 
@@ -508,6 +520,7 @@ int UsbDataSent(USB_Status_TypeDef status,
   (void) remaining;
 
   printf("USB DATA SENT HURRA\n");
+  sendInProgress = 0;
   if ((status == USB_STATUS_OK) && (xf > 0)) 
   {
     //we probably sent some data :-)
@@ -516,6 +529,11 @@ int UsbDataSent(USB_Status_TypeDef status,
         (packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE)) 
     {
       free(packToSend.data);
+    }
+
+    //Reset sample counter now.
+    if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
+      numSamples = 0;
     }
   }
 
@@ -665,7 +683,7 @@ inline void execute(struct pinItem * item)
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       addr = getPinAddress(item->pin);
-      printf("  DIGITAL: Digital duty: %d, anti: %d\n", item->duty, item->antiDuty);
+      printf("  DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", item->pin, item->duty, item->antiDuty, addr);
       addr[PINCONFIG_DUTY_CYCLE] = item->duty;
       addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
@@ -762,6 +780,9 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       for(int i = 0; i < 100000; i++);
       while(addr[0x0A]);
 
+      //power bits.
+      addr[0x04] = 0x8014;
+
       //setup FPGA AD controller
       addr[0x01] = sampleRate; //overflow
       addr[0x02] = 1; //divide
@@ -793,12 +814,32 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 }
 
 //TODO: We can get away with only 1 read here. In time. 
-inline void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel)
+inline void getInput(FPGA_IO_Pins_TypeDef channel)
 {
+  
   uint16_t * addr = getPinAddress(channel);
-  sample->sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-  sample->value = addr[PINCONFIG_SAMPLE_REG];
-  sample->channel = channel;
+  
+  struct sampleValue val;
+ 
+  //Get offset into sampleBuffer to store sample.
+  //This offset is dependant on the channel of course.
+  //Assumes that channelMemoryIndexes is preseeded with 
+  //correct values.
+
+  val.sampleNum = addr[PINCONFIG_SAMPLE_CNT];
+  val.channel = (uint8_t)channel;
+  val.value = addr[PINCONFIG_SAMPLE_REG];
+ 
+  //Copy to sample buffer.
+  if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
+    lastCollected[channel] = val.sampleNum; 
+    //NOTE: This wraps around the per-channel buffer, so we'll drop samples for sure.
+    //int offset = channelMemoryOffsets[channel]+(channelMemoryIndexes[channel]%BUFFERSIZE); 
+    //sampleBuffer[offset] = val;
+    sampleBuffer[numSamples++] = val;
+    //printf("Input into sampleBuffer at pos %d\n",offset);
+    //channelMemoryIndexes[channel]++;
+  }
 
   //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
 }
@@ -912,7 +953,7 @@ void execCurrentPack()
     pack.size = sizeof(struct sampleValue);
     pack.command = currentPack.command;
     pack.data = (malloc(sizeof(struct sampleValue)));
-    getInput(&value, (*currentPack.data));
+    //getInput(&value, (*currentPack.data));
     memcpy(pack.data, &value, sizeof(struct sampleValue));
     //ship it!
     packToSend = pack;
@@ -933,6 +974,9 @@ void execCurrentPack()
     adcSequence[0] = 0;
 
     timeTick = 0;
+    for(int i = 0; i < MAX_CHANNELS; i++) {
+      channelMemoryIndexes[i] = 0;
+    }
 
     printf("RESET. NumSamples: %u\n", numSamples);
 
@@ -946,20 +990,16 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
     //Send back the whole sending buffer.
-    printf("Sending back the input buffers, of sample size %d\n", numSamples);
+    //Max packet size is 64000 bytes, so we need to split into several xfer's.
+    
+    //Data contains the number of samples to xfer.
+    uint32_t * txSamples = (uint32_t *)(currentPack.data);
 
-    uint32_t * d = (uint32_t *)(currentPack.data);
-    int bytes = sizeof(struct sampleValue) * *d;
-    //int packSize = 64000;
-
-    //int packNum = 0;
-    /*
-    for(; packNum < (bytes/packSize); packNum++) {
-      sendPacket(packSize, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer + (packNum*packSize));
-      printf("pack sent\n");
-    }*/
-    //Rest packet.
+    int bytes = sizeof(struct sampleValue) * *txSamples;
+    //int offset = channelMemoryOffsets[*d] * BUFFERSIZE;
+    printf("Sending back %d BYTES from sampleBuffer\n", bytes);
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
+    
     printf("Back to main loop\n");
   }
 
@@ -1024,7 +1064,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
   packToSend = pack; //This copies the pack structure.
   printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
-  
+  sendInProgress = 1;
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }
 

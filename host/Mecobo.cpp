@@ -7,6 +7,7 @@
 
 #include "Mecobo.h"
 #include <stdexcept>
+#include <cmath>
 
 
 Mecobo::Mecobo ()
@@ -54,6 +55,8 @@ void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
   //Find a channel (or it might throw an error).
   xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
 
+  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  std::cout << "Divisor found:" << divisor << std::endl;
   if(hasDaughterboard) {
     channel = xbar.getChannel(pin);
   } else {
@@ -65,7 +68,7 @@ void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = divisor;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
@@ -151,7 +154,7 @@ void Mecobo::programFPGA(const char * filename)
 
 }
 
-std::vector<int32_t> Mecobo::getSampleBuffer(int i)
+std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 {
   std::vector<sampleValue> samples;
 
@@ -160,34 +163,51 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int i)
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
 
+  //Don't know.
+  pinRecordings.clear();
   //Retrieve bytes.
   uint32_t nSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
 
   //Got the input buffer size back, now we collect it.
-  std::cout << "SampleBuffer size collected: " << nSamples << std::endl;
+  std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
-    return pinRecordings[i];
+    return pinRecordings[materialPin];
   } else {
+    std::cout << "sizeof(sampeValue): " << sizeof(sampleValue) << std::endl;
+    if(nSamples >= 64000/sizeof(sampleValue)) {
+      nSamples = 64000/sizeof(sampleValue);
+      std::cout << "WARNING: Receiving less (" << nSamples << ") than what we could because of USB." << std::endl;
+    } 
+    int totalBytes = nSamples * sizeof(sampleValue);
+
     sampleValue* collectedSamples = new sampleValue[nSamples];
 
+    std::cout << "Receiving bytes:" << totalBytes << std::endl;
+
     //Ask for samples back.
+    //uint32_t ch = xbar.getChannel(materialPin);
     createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack);
 
-    //Get bytes back. Note that the USB uses a raw byte pointer.
-    std::cout << "Receiving bytes:" << sizeof(sampleValue) * nSamples << std::endl;
-    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, sizeof(sampleValue) * nSamples);
-    std::cout << "Collected from USB" << std::endl;
-    sampleValue * casted = (sampleValue *)collectedSamples;
+    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, totalBytes);
 
+    sampleValue * casted = (sampleValue *)collectedSamples;
     for(int i = 0; i < (int)nSamples; i++) {
       samples.push_back(casted[i]);
     }
 
+    //std::sort(samples.begin(), samples.end(), 
+     //   [](sampleValue const & a, sampleValue const & b) { return a.sampleNum < b.sampleNum; });
+    
     delete[] collectedSamples;
   }
 
+  //TODO: Sort the samples here, we could have a wrapped-around buffer.
+  //Assumtion is that the sequence numbers from the FPGA are always
+  //increasing, which can also be false, so this is "best effort"
+  //to recreate the wave, but the general trend exists of course.
+  
   //The samples we get back are associated with a certain channel,
   //we need to convert it to pins to see what the user actually
   //expected out.
@@ -202,7 +222,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int i)
     }
   }
 
-  return pinRecordings[i];
+  return pinRecordings[materialPin];
 }
 
 void Mecobo::reset()
@@ -233,6 +253,7 @@ Mecobo::scheduleDigitalRecording (int pin, int start, int end, int frequency)
   } else {
     channel = (FPGA_IO_Pins_TypeDef)pin;
   }
+
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
