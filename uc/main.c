@@ -134,8 +134,6 @@ static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
 #define MAX_CHANNELS 150
 static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
 //Such a waste of space, should use hash map.
-static int channelMemoryOffsets[MAX_CHANNELS];  //Look-up table for offset into sample buffer.
-static int channelMemoryIndexes[MAX_CHANNELS];  //Look-up table for indexing into sample buffer, per offset.
 
 struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
@@ -356,15 +354,6 @@ int main(void)
   printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
   printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
-  for(int i = 0; i < MAX_CHANNELS; i++) {
-    channelMemoryOffsets[i] = -1;
-    FPGA_IO_Pins_TypeDef c = (FPGA_IO_Pins_TypeDef)i;
-    if(AD_CHANNELS_START <= c && c <= AD_CHANNELS_END) {
-      channelMemoryOffsets[i] = (c - AD_CHANNELS_START) * BUFFERSIZE;
-      printf("initialized channleMemIdex[%d] to %d\n", i, (c - AD_CHANNELS_START) * BUFFERSIZE );
-    }
-  }
- 
   //Default all regs to output 0V
   for(int i = 0; i < 8; i++) {
     DACreg[i] = 128;
@@ -837,11 +826,6 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
   
   struct sampleValue val;
  
-  //Get offset into sampleBuffer to store sample.
-  //This offset is dependant on the channel of course.
-  //Assumes that channelMemoryIndexes is preseeded with 
-  //correct values.
-
   val.sampleNum = addr[PINCONFIG_SAMPLE_CNT];
   val.channel = (uint8_t)channel;
   val.value = addr[PINCONFIG_SAMPLE_REG];
@@ -850,11 +834,7 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
   if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
     lastCollected[channel] = val.sampleNum; 
     //NOTE: This wraps around the per-channel buffer, so we'll drop samples for sure.
-    //int offset = channelMemoryOffsets[channel]+(channelMemoryIndexes[channel]%BUFFERSIZE); 
-    //sampleBuffer[offset] = val;
     sampleBuffer[numSamples++] = val;
-    //printf("Input into sampleBuffer at pos %d\n",offset);
-    //channelMemoryIndexes[channel]++;
   }
 
   //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
@@ -980,9 +960,6 @@ void execCurrentPack()
     adcSequence[0] = 0;
 
     timeTick = 0;
-    for(int i = 0; i < MAX_CHANNELS; i++) {
-      channelMemoryIndexes[i] = 0;
-    }
 
     printf("RESET. NumSamples: %u\n", numSamples);
 
@@ -1002,7 +979,6 @@ void execCurrentPack()
     uint32_t * txSamples = (uint32_t *)(currentPack.data);
 
     int bytes = sizeof(struct sampleValue) * *txSamples;
-    //int offset = channelMemoryOffsets[*d] * BUFFERSIZE;
     printf("Sending back %d BYTES from sampleBuffer\n", bytes);
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)sampleBuffer);
     
