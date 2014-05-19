@@ -350,10 +350,10 @@ int main(void)
 
 
   //itemsToApply will be ordered by start time, hurrah!
-  itemsToApply = malloc(sizeof(struct pinItem) * 50);
-  itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
-  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
-  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
+  itemsToApply = malloc(sizeof(struct pinItem) * 150);
+  itemsInFlight = malloc(sizeof(struct pinItem *) * 150);
+  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*150);
+  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*150);
 
   for(int i = 0; i < MAX_CHANNELS; i++) {
     channelMemoryOffsets[i] = -1;

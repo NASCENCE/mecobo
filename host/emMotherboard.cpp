@@ -111,10 +111,15 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   void runSequences() {
     
+    emException err;
     //Reset board?
     mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Scheduling sequences on board." << std::endl;
+    if (seqItems.size() > 100) {
+      err.Reason = "No more than 100 items please!";
+      err.Source = "runSequences()";
+    }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
