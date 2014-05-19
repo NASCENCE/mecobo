@@ -269,7 +269,7 @@ Mecobo::scheduleDigitalRecording (int pin, int start, int end, int frequency)
 
 
 void
-Mecobo::scheduleDigitalOutput (int pin, int start, int end, int cycleLength,
+Mecobo::scheduleDigitalOutput (int pin, int start, int end, int frequency,
 			       int dutyCycle)
 {
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
@@ -283,12 +283,17 @@ Mecobo::scheduleDigitalOutput (int pin, int start, int end, int cycleLength,
     channel = (FPGA_IO_Pins_TypeDef)pin;
   }
 
+
+  int period = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  int duty = period * ((double)dutyCycle/100.0);
+
+  std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
-  data[PINCONFIG_DATA_DUTY] = dutyCycle;
-  data[PINCONFIG_DATA_ANTIDUTY] = cycleLength - dutyCycle;
+  data[PINCONFIG_DATA_DUTY] = duty;
+  data[PINCONFIG_DATA_ANTIDUTY] = period - duty;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_OUT;
 
   struct mecoPack p;
