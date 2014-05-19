@@ -27,7 +27,7 @@ namespace EMUtils
 
             public static emSequenceOperationType RandomSequenceOperationType()
             {
-                emSequenceOperationType[] AllowedTypes = new[] { emSequenceOperationType.ARBITRARY, emSequenceOperationType.CONSTANT, emSequenceOperationType.CONSTANT_FROM_REGISTER, emSequenceOperationType.DIGITAL, emSequenceOperationType.PREDEFINED };
+                emSequenceOperationType[] AllowedTypes = new[] { emSequenceOperationType.CONSTANT,  emSequenceOperationType.DIGITAL};// emSequenceOperationType.ARBITRARY, emSequenceOperationType.CONSTANT, emSequenceOperationType.CONSTANT_FROM_REGISTER, emSequenceOperationType.DIGITAL, emSequenceOperationType.PREDEFINED };
                 return AllowedTypes[RNG.Next(0, AllowedTypes.Length)];
             }
         }
@@ -275,7 +275,7 @@ namespace EMUtils
                 RecordItem.StartTime = 0;
                 RecordItem.EndTime = -1;
                 RecordItem.Pin = new List<int>(); RecordItem.Pin.Add(Ind.ListenPin);
-                RecordItem.Frequency = 20000;
+                RecordItem.Frequency = 10000;
                 RecordItem.OperationType = emSequenceOperationType.RECORD;
 
                 emSequenceItem PaddleItem = new emSequenceItem();
@@ -312,20 +312,32 @@ namespace EMUtils
                     {
                         if (ForbiddenPins.Contains(Ind.Genotype[i].Pin[pIndex])) continue;
                         PinsUsed.Add(Ind.Genotype[i].Pin[pIndex]);
+                        if (Ind.Genotype[i].OperationType == emSequenceOperationType.DIGITAL)
+                        {
+                            if (Ind.Genotype[i].Amplitude >= 1)
+                                Ind.Genotype[i].CycleTime = 100;
+                            else
+                                Ind.Genotype[i].CycleTime = 0;
+                        }
+
                         this.Motherboard.appendSequenceAction(Ind.Genotype[i]);
                     }
                 }
-
+                
                 this.Motherboard.runSequences();
+                
             }
-
+            Stopwatch LastReadStopWatch = null;
             public double UpdateStep(Individual Ind, double PaddlePosition, double BallYPosition)
             {
                 emWaveForm EmOutput = this.Motherboard.getRecording(Ind.ListenPin);
                 if (EmOutput.SampleCount < 10) return 0;
                 int CountHigh = 0;
-                int Threshold = 1024;
-                for (int i = 0; i < EmOutput.Samples.Count; i++) if (EmOutput.Samples[i] >= Threshold) CountHigh++;
+                int Threshold = 0;
+                double[] SampleValues = new double[EmOutput.Samples.Count];
+                for (int i = 0; i < EmOutput.Samples.Count; i++)
+                    SampleValues[i] = (5d / 4096d) * EmOutput.Samples[i];
+                for (int i = 0; i < EmOutput.Samples.Count; i++) if (SampleValues[i] >= Threshold) CountHigh++;
                 if (CountHigh > EmOutput.Samples.Count / 2)
                     return 1;
                 else
