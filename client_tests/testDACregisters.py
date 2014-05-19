@@ -2,7 +2,7 @@ import sys
 from time import *
 import numpy
 import matplotlib.pyplot as plt
-sys.path.append('../Thrift interface/gen-py/NascenseAPI_v01e/')
+sys.path.append('./NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
 
@@ -25,7 +25,7 @@ cli.clearSequences()
 
 #10 seconds of toggling.
 it = emSequenceItem()
-it.pin = 7
+it.pin = [7]
 it.startTime = 0
 it.endTime = 10000
 it.ValueSourceRegister = 3 #use register 3
@@ -41,11 +41,3 @@ for i in xrange(0,10):
 cli.joinSequences()
 cli.reset()
 transport.close()
-
-data = []
-for i in res:
-  data.append(i * (5.0/4096.0))
-plt.ylim(-6,6)
-plt.plot(data)
-plt.show()
-
