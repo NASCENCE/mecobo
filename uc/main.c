@@ -732,7 +732,7 @@ inline void execute(struct pinItem * item)
 
     case PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER:
       //Note: Index is coded in constantValue
-      printf("  CONST REGISTER DAC VOLTAGE,channel %d, %d\n", item->pin, DACreg[item->constantValue]);
+      //printf("  CONST REGISTER DAC VOLTAGE,channel %d, %d\n", item->pin, DACreg[item->constantValue]);
       setVoltage(item->pin, DACreg[item->constantValue]);
       break;
 
@@ -965,25 +965,6 @@ void execCurrentPack()
     led(d[LED_SELECT], d[LED_MODE]);
   }
 
-  if(currentPack.command == USB_CMD_STREAM_INPUT) {
-    /* Start input in pin controller */
-    //uint32_t * d = (uint32_t *)(currentPack.data);
-    //startInput((d[PINCONFIG_DATA_FPGA_PIN]));
-  }
-
-
-  if(currentPack.command == USB_CMD_READ_PIN) {
-    struct mecoPack pack;
-    struct sampleValue value;
-    pack.size = sizeof(struct sampleValue);
-    pack.command = currentPack.command;
-    pack.data = (malloc(sizeof(struct sampleValue)));
-    //getInput(&value, (*currentPack.data));
-    memcpy(pack.data, &value, sizeof(struct sampleValue));
-    //ship it!
-    packToSend = pack;
-    sendPackReady = 1; 
-  }
 
   if(currentPack.command == USB_CMD_RESET_ALL) {
 
