@@ -48,6 +48,34 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
   std::cout << "ITEM SCHEDULED ON MECOBO" << std::endl;
 }
 
+
+void Mecobo::scheduleConstantVoltageFromRegister(int pin, int start, int end, int reg)
+{
+
+  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  //Find a channel (or it might throw an error).
+  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
+
+  if(hasDaughterboard) {
+    channel = xbar.getChannel(pin);
+  } else {
+    channel = (FPGA_IO_Pins_TypeDef)pin;
+  }
+
+  uint32_t data[USB_PACK_SIZE_BYTES/4];
+  data[PINCONFIG_START_TIME] = start;
+  data[PINCONFIG_END_TIME] = end;
+  data[PINCONFIG_DATA_FPGA_PIN] = channel;
+  data[PINCONFIG_DATA_CONST] = (int32_t)reg;
+  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = 0;
+
+  struct mecoPack p;
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+  sendPacket(&p);
+  std::cout << "CONSTANT_FROM_REGISTER SCHEDULED ON MECOBO" << std::endl;
+}
+
 void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
 {
 
@@ -374,4 +402,13 @@ void Mecobo::setLed(int led, int mode) {
   dat[LED_MODE] = (uint32_t)mode;
   createMecoPack(&p, (uint8_t*)dat, 8, USB_CMD_LED);
   sendPacket(&p);
+}
+
+void Mecobo::updateRegister(int index, int value)
+{
+  struct mecoPack p;
+  int32_t data[2];
+  data[0] = index;
+  data[1] = value;
+  createMecoPack(&p, (uint8_t*)data, 8, USB_CMD_UPDATE_REGISTER);
 }

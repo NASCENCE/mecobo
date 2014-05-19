@@ -126,6 +126,7 @@ static int runItems = 0;
 #define SRAM2_BYTES 256*1024 
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
+int32_t DACreg[8];
 
 //Circular buffer in SRAM1, modulo MAX_SAMPLES
 static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
@@ -350,10 +351,10 @@ int main(void)
 
 
   //itemsToApply will be ordered by start time, hurrah!
-  itemsToApply = malloc(sizeof(struct pinItem) * 150);
-  itemsInFlight = malloc(sizeof(struct pinItem *) * 150);
-  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*150);
-  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*150);
+  itemsToApply = malloc(sizeof(struct pinItem) * 50);
+  itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
+  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
+  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
   for(int i = 0; i < MAX_CHANNELS; i++) {
     channelMemoryOffsets[i] = -1;
@@ -363,6 +364,12 @@ int main(void)
       printf("initialized channleMemIdex[%d] to %d\n", i, (c - AD_CHANNELS_START) * BUFFERSIZE );
     }
   }
+ 
+  //Default all regs to output 0V
+  for(int i = 0; i < 8; i++) {
+    DACreg[i] = 128;
+  }
+
 
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
@@ -414,10 +421,13 @@ int main(void)
       }
 
 
-      //Certain items in flight needs updating
+      //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
         for(int flight = 0; flight < numItemsInFlight; flight++) {
           if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
+            execute(itemsInFlight[flight]);
+          }
+          if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) {
             execute(itemsInFlight[flight]);
           }
         }
@@ -720,6 +730,11 @@ inline void execute(struct pinItem * item)
       setVoltage(item->pin, sinus[index]);
       break;
 
+    case PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER:
+      //Note: Index is coded in constantValue
+      setVoltage(item->pin, DACreg[item->constantValue]);
+      break;
+
     default:
       break;
   }
@@ -925,6 +940,15 @@ void execCurrentPack()
     xbar[0x20] = 0x0; //whatever written to this register will be interpreted as a cmd.
 
     printf("\nXBAR configured\n");
+  }
+
+
+  if(currentPack.command == USB_CMD_UPDATE_REGISTER)
+  {
+    printf("Updating Register\n");
+    int * d = (int*)(currentPack.data);
+    printf("REG %d: %d\n", d[0], d[1]); 
+    DACreg[d[0]] = d[1];
   }
 
 

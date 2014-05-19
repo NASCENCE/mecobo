@@ -191,6 +191,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     printf("setLogServer\n");
   }
 
+  void setConfigRegister(const int32_t index, const int32_t value) {
+    mecobo->updateRegister(index, value);
+  }
+
   private:
   std::string stringRepItem(emSequenceItem & em) 
   {
@@ -223,6 +227,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           mecobo->scheduleConstantVoltage((int)p, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         }
         break;
+
+      case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
+        for (auto p : item.pin) {
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+          mecobo->scheduleConstantVoltageFromRegister((int)p, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
+        }
+        break;
+
 
       case emSequenceOperationType::type::RECORD:
 
