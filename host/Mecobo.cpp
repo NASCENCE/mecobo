@@ -411,4 +411,5 @@ void Mecobo::updateRegister(int index, int value)
   data[0] = index;
   data[1] = value;
   createMecoPack(&p, (uint8_t*)data, 8, USB_CMD_UPDATE_REGISTER);
+  sendPacket(&p);
 }

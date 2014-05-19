@@ -192,6 +192,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setConfigRegister(const int32_t index, const int32_t value) {
+    std::cout << "Setting config register " << index << " to " << value << std::endl;
     mecobo->updateRegister(index, value);
   }
 

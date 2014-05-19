@@ -688,7 +688,7 @@ static inline uint32_t get_bit(uint32_t val, uint32_t bit)
 inline void execute(struct pinItem * item)
 {
   uint16_t * addr = NULL;// = getPinAddress(item->pin);
-  printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
+  //printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
   int index = 0;
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
@@ -732,6 +732,7 @@ inline void execute(struct pinItem * item)
 
     case PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER:
       //Note: Index is coded in constantValue
+      printf("  CONST REGISTER DAC VOLTAGE,channel %d, %d\n", item->pin, DACreg[item->constantValue]);
       setVoltage(item->pin, DACreg[item->constantValue]);
       break;
 
