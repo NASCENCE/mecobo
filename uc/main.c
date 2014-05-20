@@ -127,6 +127,7 @@ static int runItems = 0;
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 int32_t DACreg[8];
+int registersUpdated = 0;
 
 //Circular buffer in SRAM1, modulo MAX_SAMPLES
 static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
@@ -416,8 +417,9 @@ int main(void)
           if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
             execute(itemsInFlight[flight]);
           }
-          if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) {
+          if(registersUpdated && (itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER)) {
             execute(itemsInFlight[flight]);
+            registersUpdated--;
           }
         }
         //update counters.
@@ -434,7 +436,8 @@ int main(void)
           for(int i = 0; i < iifPos; i++) {
             struct pinItem * it = itemsInFlight[i];
             if(it != NULL) {
-              if(it->endTime <= timeMs) {
+              //-1 is special case: run until reset.
+              if((it->endTime != -1) && it->endTime <= timeMs) {
                 killItem(it);
                 itemsInFlight[i] = NULL;
                 numItemsInFlight--;
@@ -930,6 +933,7 @@ void execCurrentPack()
     int * d = (int*)(currentPack.data);
     printf("REG %d: %d\n", d[0], d[1]); 
     DACreg[d[0]] = d[1];
+    registersUpdated++;
   }
 
 
