@@ -24,8 +24,12 @@ namespace EMUtils
                 return;
             }
 
-            MainForm MF = new MainForm();
-            MF.ShowDialog();
+            //PongForm PF = new PongForm();
+            //PF.ShowDialog();
+            EMUtils.Experiment_Pong.Pong.Go();
+
+            //MainForm MF = new MainForm();
+            //MF.ShowDialog();
           
         }
     }

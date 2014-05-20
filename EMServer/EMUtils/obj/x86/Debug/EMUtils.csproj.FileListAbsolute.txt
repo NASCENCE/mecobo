@@ -65,3 +65,4 @@ C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.O
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.csproj.GenerateResource.Cache
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMUtils.exe
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMUtils.pdb
+C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.PongForm.resources

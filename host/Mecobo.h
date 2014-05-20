@@ -48,6 +48,8 @@ public:
   void scheduleDigitalOutput(int pin, int start, int end, int frequency, int dutyCycle);
   void schedulePWMoutput(int pin, int start, int end, int pwmValue);
   void scheduleSine(int pin, int start, int end, int frequency, int amplitude, int phase);
+  void scheduleConstantVoltageFromRegister(int pin, int start, int end, int reg);
+  
 
   void runSchedule();
   void clearSchedule();
@@ -57,6 +59,7 @@ public:
 
   void reset();
   void setLed(int a, int b);
+  void updateRegister(int index, int value);
 
 };
 

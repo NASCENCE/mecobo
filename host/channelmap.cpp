@@ -56,6 +56,10 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_13] = 13;
   channelToXbar[FPGA_DIGI_14] = 14;
   channelToXbar[FPGA_DIGI_15] = 15;
+
+  for(int i = 0; i < 16*numCards; i++) {
+    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+  }
 }
 
 void channelMap::reset()
@@ -69,6 +73,11 @@ void channelMap::reset()
 
   pinToChannel.clear();
   channelToPin.clear();
+
+  for(int i = 0; i < 16*numCards; i++) {
+    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+  }
+
 }
 
 
@@ -100,10 +109,13 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
 
   //TODO: EEEH
   FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
-
+ 
   switch(pinconfigDataType) {
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
       //Try to map to a analogue pin.
+      if((channel = getChannel(pin)) != FPGA_IO_Pins_TypeDef::INVALID) {
+        return;
+      }
       if (numADchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
         std::cout << "Mapped channel " << channel << " to pin " << pin;
@@ -120,6 +132,11 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
 
     case PINCONFIG_DATA_TYPE_DAC_CONST:
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+
+      //Check if pin is mapped to a channel before, reuse channel if so.
+      if((channel = getChannel(pin)) != FPGA_IO_Pins_TypeDef::INVALID) {
+        return;
+      }
       //Use DAC channel.
       //Try to map to a analogue pin.
       if (numDAchannels < maxDAchannels) {
@@ -135,8 +152,8 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
       }
     break;
 
-
-    //By default we give a Digital channel.
+    //By default we give a Digital channel -- these can be both recording and analogue,
+    //depending on the command given.
     default:
       if (numIOchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
@@ -170,6 +187,12 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
 
   for (auto pc : pinToChannel) {
     FPGA_IO_Pins_TypeDef channel = pc.second;
+   
+    //Skip invalid mappings
+    if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
+      continue;
+    }
+
     int pin = pc.first;
     int configIndex = -1;
 
@@ -186,7 +209,6 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     }
 
 
-    std::cout << "blah:" << channelToXbar[channel] << "blah:" << channel << std::endl;
     config[configIndex] |= (1 << (channelToXbar[channel]));
     std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
   }

@@ -11,6 +11,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartWorkingDirectory>C:\Users\Simon\Dropbox\API\EMServer\bin\</StartWorkingDirectory>
+    <StartWorkingDirectory>C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\</StartWorkingDirectory>
   </PropertyGroup>
 </Project>

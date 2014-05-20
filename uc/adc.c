@@ -23,10 +23,12 @@ void setupADC()
 
   //Range register 1
   ad[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+  for(int i = 0; i < 100000; i++);
   while(ad[0x0A]);
 
   //Range register 2
   ad[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+  for(int i = 0; i < 100000; i++);
   while(ad[0x0A]);
 }
 

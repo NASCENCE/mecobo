@@ -111,10 +111,16 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   void runSequences() {
     
+    emException err;
     //Reset board?
     mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Scheduling sequences on board." << std::endl;
+    if (seqItems.size() > 50) {
+      err.Reason = "No more than 50 items please!";
+      err.Source = "runSequences()";
+      throw err;
+    }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
@@ -185,6 +191,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     printf("setLogServer\n");
   }
 
+  void setConfigRegister(const int32_t index, const int32_t value) {
+    std::cout << "Setting config register " << index << " to " << value << std::endl;
+    mecobo->updateRegister(index, value);
+  }
+
   private:
   std::string stringRepItem(emSequenceItem & em) 
   {
@@ -218,6 +229,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         }
         break;
 
+      case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
+        for (auto p : item.pin) {
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+          mecobo->scheduleConstantVoltageFromRegister((int)p, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
+        }
+        break;
+
+
       case emSequenceOperationType::type::RECORD:
 
         for (auto p : item.pin) {
@@ -225,6 +244,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           mecobo->scheduleRecording(p, item.startTime, item.endTime, item.frequency);
         }
         //Error checking.
+        //
         /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
@@ -241,6 +261,14 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
 
         break;
+
+      case emSequenceOperationType::type::DIGITAL:
+        for (auto p : item.pin) {
+          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin " << p << std::endl;
+          mecobo->scheduleDigitalOutput((int)p, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
+        }
+        break;
+
 
       //YAY DOUBLE CASE SWITCH CASE.
       case emSequenceOperationType::type::PREDEFINED:

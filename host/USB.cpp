@@ -143,7 +143,7 @@ void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
   int transfered = 0;
   int ret = 0;
   while(bytesRemaining > 0) {
-    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 100);
+    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5000);
     if(ret != 0) {
       printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
     }

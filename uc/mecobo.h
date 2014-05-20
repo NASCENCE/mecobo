@@ -127,7 +127,7 @@ extern "C" {
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);
 void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate);
-void getInput(struct sampleValue * sample, FPGA_IO_Pins_TypeDef channel);
+void getInput(FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
