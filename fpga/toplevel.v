@@ -30,7 +30,6 @@ inout [57:1] HN;
 
 
 assign led[1] =  read_enable;
-assign led[3] =  1'b0;
 //Invert control signals
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
@@ -62,14 +61,56 @@ wire adc_din;
 wire adc_dout;
 wire adc_cs;
 
+wire sys_clk;
+wire xbar_clk;
+wire da_clk;
+wire ad_clk;
+
+wire xbar_predivided;
+
 //----------------------------------- CLOCKING -------------------------
 //DCM instance for clock division
-wire sys_clk = clk_int[1];
-wire xbar_clk = clk_int[2];
-wire da_clk = clk_int[4];
-wire ad_clk = clk_int[3];
+main_clocks clocks
+(
+  .CLK_IN_50(osc),
+  .CLK_OUT_75(sys_clk),
+  .CLK_OUT_5(xbar_predivided),
+  .CLK_OUT_10(ad_clk),
+  .CLK_OUT_30(da_clk),
+  .RESET(reset),
+  .LOCKED(led[2])
+);
 
 
+xbar_clock(
+  .CLK_IN_5(xbar_predivided),
+  .XBAR_CLK(xbar_clk),
+  .RESET(reset),
+  .LOCKED(led[3])
+);
+
+ODDR2 clkout_oddr_ad
+ (.Q  (HN[4]),
+  .C0 (ad_clk),
+  .C1 (~ad_clk),
+  .CE (1'b1),
+  .D0 (1'b1),
+  .D1 (1'b0),
+  .R  (1'b0),
+  .S  (1'b0));
+
+ODDR2 clkout_oddr_da
+ (.Q  (HN[2]),
+  .C0 (da_clk),
+  .C1 (~da_clk),
+  .CE (1'b1),
+  .D0 (1'b1),
+  .D1 (1'b0),
+  .R  (1'b0),
+  .S  (1'b0));
+
+
+/*
 wire [5:1] clk_int;
 wire [5:1] clk_n;
 wire [5:1] clk;
@@ -118,7 +159,7 @@ assign clk[5] = clk_int[5];
 assign ce[1] = 1'b1; //always on.
 //XBar clock needs to be toggleable. We'll invert it so that we know that the
 //flank goes to the XBAR after we've set up the data line.
-assign HN[6] = clk_out[2];
+//assign HN[6] = clk_out[2];
 wire xbar_clock_enable; //from xbar control
 assign ce[2] = xbar_clock_enable;
 
@@ -127,7 +168,7 @@ assign HN[4] = clk_out[3]; //ad_clk;
 assign ce[3] = 1'b1; 
 assign HN[2] = clk_out[4]; //da_clk;
 assign ce[4] = 1'b1; 
-
+*/
 
 
 
@@ -195,7 +236,7 @@ xbar_control #(.POSITION(200))
       .data_out(data_out),
       .data(data_in),
       .addr(ebi_addr),
-      .xbar_clock_enable(xbar_clock_enable), //clock from xbar and out to device (BUFCE in module)
+      .xbar_clock(HN[6]), //clock from xbar and out to device 
       .pclk(HN[1]),
       .sin(HN[9]));
 

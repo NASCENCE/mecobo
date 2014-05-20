@@ -9,7 +9,7 @@ input [15:0] data,
 output reg [15:0] data_out,
 input [18:0] addr,
 //facing the DAC
-output reg xbar_clock_enable, //enable on clock that goes to XBAR.
+output reg xbar_clock, //clock going to xbar
 output reg pclk, //keep low until we're done, single pulse will set transistors in xbar.
 output sin);
 
@@ -71,12 +71,13 @@ reg load_shift_reg;
 reg count_up;
 reg count_res;
 
-parameter init = 4'b0001;
-parameter load = 4'b0010;
-parameter pulse = 4'b0100;
-parameter load_shift = 4'b1000;
+parameter init = 5'b00001;
+parameter load = 5'b00010;
+parameter pulse_pclk = 5'b00100;
+parameter pulse_xbar_clk = 5'b01000;
+parameter load_shift = 5'b10000;
 
-reg[3:0] state;
+reg[4:0] state;
 
 initial begin
   state <= init;
@@ -96,17 +97,20 @@ always @ (posedge sclk) begin
       end
 
       load: begin
-        state <= load;
+        state <= pulse_xbar_clk;
         if (counter == 511) 
-          state <= pulse;
+          state <= pulse_pclk;
         else if (counter[3:0] == 15)
           state <= load_shift;
       end
 
+      pulse_xbar_clk:
+        state <= load;
+
       load_shift:
         state <= load;
 
-      pulse:
+      pulse_pclk:
         state <= init;
 
       default:
@@ -123,7 +127,7 @@ always @ (*) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
+        xbar_clock <= 1'b0;
         pclk <= 1'b1;
   end else begin
     */
@@ -134,7 +138,7 @@ always @ (*) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
+        xbar_clock <= 1'b0;
         pclk <= 1'b1;
         load_shift_reg <= 1'b0;
       end
@@ -143,7 +147,7 @@ always @ (*) begin
         shift_out_enable <= 1'b1;
         count_up <= 1'b1;
         count_res <= 1'b0;
-        xbar_clock_enable <= 1'b1;
+        xbar_clock <= 1'b0;
         pclk <= 1'b1;
         load_shift_reg <= 1'b0;
       end
@@ -152,18 +156,26 @@ always @ (*) begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b0;
-        xbar_clock_enable <= 1'b0;
+        xbar_clock <= 1'b0;
         pclk <= 1'b1;
         load_shift_reg <= 1'b1;
       end
 
-
-      pulse: begin
+      pulse_pclk: begin
         shift_out_enable <= 1'b0;
         count_up <= 1'b0;
         count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
+        xbar_clock <= 1'b0;
         pclk <= 1'b0; //give a pulse.
+        load_shift_reg <= 1'b0;
+      end
+
+      pulse_xbar_clk: begin
+        shift_out_enable <= 1'b0;
+        count_up <= 1'b0;
+        count_res <= 1'b0;
+        xbar_clock <= 1'b1;
+        pclk <= 1'b1;
         load_shift_reg <= 1'b0;
       end
 
@@ -171,7 +183,7 @@ always @ (*) begin
         shift_out_enable <= 1'b1;
         count_up <= 1'b1;
         count_res <= 1'b0;
-        xbar_clock_enable <= 1'b0;
+        xbar_clock <= 1'b0;
         load_shift_reg <= 1'b0;
         pclk <= 1'b1;
       end
