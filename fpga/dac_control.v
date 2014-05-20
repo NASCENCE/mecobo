@@ -24,7 +24,7 @@ assign cs = (enable & (addr[18:8] == POSITION));
 reg [15:0] ebi_captured_data = 0;
 always @ (posedge ebi_clk) begin
   if (reset) begin
-    out_data <= 0;
+    out_data <= 16'h0000;
   end
   else begin
     //Capture or reset the capture register.

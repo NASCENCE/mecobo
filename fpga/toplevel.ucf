@@ -8,6 +8,10 @@ NET "led[1]" LOC = N1;
 NET "led[2]" LOC = M3;
 NET "led[3]" LOC = M1;
 
+#ADC slew
+NET "HN[48]" SLEW = "SLOW";
+NET "HN[32]" SLEW = "SLOW";
+NET "HN[40]" SLEW = "SLOW";
 
 # North Header
 NET "HN[2]" LOC = F16;
@@ -67,6 +71,27 @@ NET "HN[51]" LOC = U18;
 NET "HN[53]" LOC = P15;
 NET "HN[55]" LOC = T17;
 NET "HN[57]" LOC = U17;
+
+
+
+NET "HW[1]" OUT_TERM = UNTUNED_75;
+NET "HW[2]" OUT_TERM = UNTUNED_75;
+NET "HW[3]" OUT_TERM = UNTUNED_75;
+NET "HW[4]" OUT_TERM = UNTUNED_75;
+NET "HW[5]" OUT_TERM = UNTUNED_75;
+NET "HW[6]" OUT_TERM = UNTUNED_75;
+NET "HW[7]" OUT_TERM = UNTUNED_75;
+NET "HW[8]" OUT_TERM = UNTUNED_75;
+
+#NET "HW[1]" DRIVE = 16;
+#NET "HW[2]" DRIVE = 16;
+#NET "HW[3]" DRIVE = 16;
+#NET "HW[4]" DRIVE = 16;
+#NET "HW[5]" DRIVE = 16;
+#NET "HW[6]" DRIVE = 16;
+#NET "HW[7]" DRIVE = 16;
+#NET "HW[8]" DRIVE = 16;
+
 
 # West Header
 NET  "HW[1]" LOC = D14;

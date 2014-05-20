@@ -92,7 +92,7 @@ always @ (posedge clk) begin
 
       //Check if busy.
       if (addr[3:0] == BUSY) begin
-        data_out <= {13'h0, shift_out,shift_in, ebi_capture_reg[15])};
+        data_out <= {13'h0, shift_out,shift_in, ebi_capture_reg[15]};
       end
 
     end else
@@ -249,7 +249,7 @@ always @ (*) begin
 
     //This state shall copy to tmp registers.
     copy: begin
-      cs <= 1'b1;  
+      cs <= 1'b0;  
       shift_in <= 1'b0;  //shifts data into ADC
       shift_out <= 1'b0; //shifts data out from ADC
       load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
@@ -300,7 +300,7 @@ end
 //TODO: statemachine that controls the sample rate copying.
 //Controlled by fast clock. 
 genvar i;
-for (i = 0; i < 8; i = i+1) begin
+for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
   always @ (posedge clk) begin
     if (reset) begin
       sample_register[i] <= 0;
