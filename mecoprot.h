@@ -78,7 +78,7 @@ typedef enum {
   FPGA_DIGI_7 = 14,
   FPGA_DIGI_8 = 5,
   FPGA_DIGI_9 = 7,
-  FPGA_DIGI_10 = 11,
+  FPGA_DIGI_10 = 9,
   FPGA_DIGI_11 = 13,
   FPGA_DIGI_12 = 24,
   FPGA_DIGI_13 = 26,

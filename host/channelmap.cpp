@@ -58,7 +58,7 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_15] = 15;
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToChannel[i].push_back(FPGA_IO_Pins_TypeDef::INVALID);
   }
 }
 
@@ -75,7 +75,7 @@ void channelMap::reset()
   channelToPin.clear();
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToChannel[i].push_back(FPGA_IO_Pins_TypeDef::INVALID);
   }
 
 }
@@ -92,12 +92,12 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
   }*/
   
   std::cout << "channel " << channel << " added to map." << std::endl;
-  pinToChannel[pin] = channel;
+  pinToChannel[pin].push_back(channel);
   channelToPin[channel].push_back(pin);
   return;
 }
 
-void channelMap::getChannelForPin(int pin, int pinconfigDataType) 
+FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pinconfigDataType) 
 {
   if((numADchannels + numIOchannels + numDAchannels) >= (16 * numCards)) {
     emException e;
@@ -113,13 +113,15 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
   switch(pinconfigDataType) {
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
       //Try to map to a analogue pin.
-      if((channel = getChannel(pin)) != FPGA_IO_Pins_TypeDef::INVALID) {
-        return;
+      if((channel = getChannel(pin[0])) != FPGA_IO_Pins_TypeDef::INVALID) {
+        return channel;
       }
       if (numADchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-        std::cout << "Mapped channel " << channel << " to pin " << pin;
-        mapPin(pin, channel);
+        std::cout << "Mapped channel " << channel << " to pin " << pin[0];
+        for (auto p: pin) {
+          mapPin(p, channel);
+        }
         numADchannels++;
       } else {
         std::cout << "All out of AD channels" << std::endl;
@@ -134,14 +136,19 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
 
       //Check if pin is mapped to a channel before, reuse channel if so.
-      if((channel = getChannel(pin)) != FPGA_IO_Pins_TypeDef::INVALID) {
-        return;
+      //this doesn't make sense! should check if a CHANNEL is
+      //used before.
+      //this is for the opposite case. one pin, several channels.
+      if((channel = getChannel(pin[0])) != FPGA_IO_Pins_TypeDef::INVALID) {
+        return channel;
       }
       //Use DAC channel.
       //Try to map to a analogue pin.
       if (numDAchannels < maxDAchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
-        mapPin(pin, channel);
+        for(auto p : pin) {
+          mapPin(p, channel);
+        }
         numDAchannels++;
       } else {
         std::cout << "All out of DA channels" << std::endl;
@@ -157,7 +164,9 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
     default:
       if (numIOchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
-        mapPin(pin, channel);
+        for(auto p: pin) {
+          mapPin(p, channel);
+        }
         numIOchannels++;
       } else {
         std::cout << "All out of IO channels" << std::endl;
@@ -169,6 +178,7 @@ void channelMap::getChannelForPin(int pin, int pinconfigDataType)
       break;
 
   }
+  return channel;
 }
 
 std::vector<uint8_t> channelMap::getXbarConfigBytes()
@@ -182,35 +192,47 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
 
   std::vector<uint16_t> config;
   for(int i = 0; i < 32; i++) {
-    config.push_back(0);
+    uint16_t data = 0;
+    //hack to open up the digital ports
+    if(i < 16) {
+      //data = 1 << (15-i);
+    }
+    config.push_back(data);
   }
 
-  for (auto pc : pinToChannel) {
-    FPGA_IO_Pins_TypeDef channel = pc.second;
+  for(auto channels : pinToChannel) {
+  for (auto pc : channels.second) {
+    FPGA_IO_Pins_TypeDef channel = pc;
    
     //Skip invalid mappings
     if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
       continue;
     }
 
-    int pin = pc.first;
+    int pin = channels.first;
     int configIndex = -1;
 
-    //The first 16 words control the bottom channels (i.e. digital), but inversly. word 0 controls Y15, etc.
+    //The first 16 words control the digital channels.  word 0 controls Y15, etc.
     //The next 16 words control the AD/DA-chans.
     //Since we have mapped the PINs to the Y's of the XBARS,
     //we have two choices to drive/source one pin.
     //xbar1, or xbar2. We add 16 to program xbar1.
-    
-    if (channel < 50) { //Digital channels
+
+    if (channel < IO_CHANNELS_END) { //Digital channels
       configIndex = 15 - pin;
     } else {
-      configIndex = 31 - pin ;
+      configIndex = 31 - pin;
+
+      //This is not a digital channel. Now, we need to open up this pin to expose
+      //highZ from the FPGA because analog is hard.
+
+      config[15 - pin] |= 1 << (15-pin);
     }
 
 
     config[configIndex] |= (1 << (channelToXbar[channel]));
     std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+  }
   }
 
   std::vector<uint8_t> ret;
@@ -229,6 +251,6 @@ std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel)
 //one pin can only have one channel assigned to it.
 FPGA_IO_Pins_TypeDef channelMap::getChannel(int pin) 
 {
-  return pinToChannel[pin];
+  return pinToChannel[pin][0];
 }
 

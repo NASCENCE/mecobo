@@ -21,17 +21,16 @@ Mecobo::~Mecobo ()
   // TODO Auto-generated destructor stub
 }
 
-void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
+void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, int amplitude)
 {
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
 
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+  channel = xbar.getChannelForPins(pins, PINCONFIG_DATA_TYPE_DAC_CONST);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pins[0];
   }
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
@@ -49,17 +48,16 @@ void Mecobo::scheduleConstantVoltage(int pin, int start, int end, int amplitude)
 }
 
 
-void Mecobo::scheduleConstantVoltageFromRegister(int pin, int start, int end, int reg)
+void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start, int end, int reg)
 {
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
 
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+  channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
@@ -76,19 +74,18 @@ void Mecobo::scheduleConstantVoltageFromRegister(int pin, int start, int end, in
   std::cout << "CONSTANT_FROM_REGISTER SCHEDULED ON MECOBO" << std::endl;
 }
 
-void Mecobo::scheduleRecording(int pin, int start, int end, int frequency)
+void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int frequency)
 {
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
 
   int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
   std::cout << "Divisor found:" << divisor << std::endl;
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+    channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
@@ -244,7 +241,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
       //Cast from 13 bit to 32 bit two's complement int.
-      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
+      int v = signextend<signed int, 13>(0x00001FF0 & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
       pinRecordings[p].push_back(v);
     }
@@ -270,16 +267,15 @@ Mecobo::isFpgaConfigured ()
 
 
 void
-Mecobo::scheduleDigitalRecording (int pin, int start, int end, int frequency)
+Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int frequency)
 {
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_RECORD);
 
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+    channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
 
@@ -297,18 +293,17 @@ Mecobo::scheduleDigitalRecording (int pin, int start, int end, int frequency)
 
 
 void
-Mecobo::scheduleDigitalOutput (int pin, int start, int end, int frequency,
+Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int frequency,
 			       int dutyCycle)
 {
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
 
   //Find a channel (or it might throw an error).
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+    channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
 
@@ -331,14 +326,14 @@ Mecobo::scheduleDigitalOutput (int pin, int start, int end, int frequency,
 }
 
 void
-Mecobo::schedulePWMoutput (int pin, int start, int end, int pwmValue)
+Mecobo::schedulePWMoutput (std::vector<int> pin, int start, int end, int pwmValue)
 {
   throw std::runtime_error("PWM not implemented yet :/");
   //submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
 }
 
 void
-Mecobo::scheduleSine (int pin, int start, int end, int frequency, int amplitude,
+Mecobo::scheduleSine (std::vector<int> pin, int start, int end, int frequency, int amplitude,
 		      int phase)
 {
 
@@ -346,13 +341,12 @@ Mecobo::scheduleSine (int pin, int start, int end, int frequency, int amplitude,
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
-  xbar.getChannelForPin(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
 
   //Find a channel (or it might throw an error).
   if(hasDaughterboard) {
-    channel = xbar.getChannel(pin);
+  channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DAC_CONST);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin;
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];

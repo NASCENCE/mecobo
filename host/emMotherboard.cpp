@@ -223,26 +223,20 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
-        for (auto p : item.pin) {
-          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
-          mecobo->scheduleConstantVoltage((int)p, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
-        }
+        std::cout << "CONSTANT added: " << item.amplitude << " on pin " << "" << std::endl;
+        mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
 
       case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
-        for (auto p : item.pin) {
-          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
-          mecobo->scheduleConstantVoltageFromRegister((int)p, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
-        }
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << "" << std::endl;
+          mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
         break;
 
 
       case emSequenceOperationType::type::RECORD:
 
-        for (auto p : item.pin) {
-          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
-          mecobo->scheduleRecording(p, item.startTime, item.endTime, item.frequency);
-        }
+          std::cout << "RECORDING [analogue] added on pin " << "" << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
         //Error checking.
         //
         /*
@@ -263,10 +257,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         break;
 
       case emSequenceOperationType::type::DIGITAL:
-        for (auto p : item.pin) {
-          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin " << p << std::endl;
-          mecobo->scheduleDigitalOutput((int)p, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
-        }
+          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin "<< std::endl;
+          mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
         break;
 
 
@@ -274,10 +266,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::PREDEFINED:
         switch (item.waveFormType) {
           case emWaveFormType::SINE:
-            for(auto p: item.pin) {
-        	std::cout << "PREDEFINED SINE pin" << p << std::endl;
-                mecobo->scheduleSine(p, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
-            }
+        	std::cout << "PREDEFINED SINE " << std::endl;
+                mecobo->scheduleSine(item.pin, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
             break;
 
           case emWaveFormType::PWM:
@@ -296,12 +286,12 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         	    err.Source = "emMotherboard sequencer";
         	    throw err;
         	    break;
-        	}
+        	  }
 
         	std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
         	//submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
-        	mecobo->schedulePWMoutput(p, item.startTime, item.endTime, item.amplitude);
             }
+        	  mecobo->schedulePWMoutput(item.pin, item.startTime, item.endTime, item.amplitude);
             break;
           default:
             break;

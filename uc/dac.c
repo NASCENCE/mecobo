@@ -14,6 +14,10 @@ void setupDAC()
   while(dac[10]);
   dac[DAC_PROGRAM_REGISTER] = 0xA002; //LDAC single update (update DAC regs once)
   while(dac[10]);
+
+  for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
+    setVoltage(i, 128);
+  }
 }
 
 void setVoltage(uint16_t channel, uint16_t voltage)
@@ -25,6 +29,6 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   uint16_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
   dac[DAC_PROGRAM_REGISTER] = wrd;
   while(dac[0x0A]);
-  //printf("   Setup word sent to DAC: %x\n", wrd);
+  printf("   Setup word sent to DAC: %x\n", wrd);
 }
 
