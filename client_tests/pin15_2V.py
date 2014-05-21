@@ -23,10 +23,10 @@ cli.reset()
 cli.clearSequences()
 
 it = emSequenceItem()
-it.pin = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+it.pin = [13,12,11,10,9,8,6,5,4,3,2]
 it.startTime = 0
 it.endTime = 1200
-it.amplitude = 255
+it.amplitude = 200
 it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
 cli.appendSequenceAction(it)
 
@@ -40,7 +40,7 @@ cli.appendSequenceAction(it)
 #cli.appendSequenceAction(it)
 
 it = emSequenceItem()
-it.pin = [0]
+it.pin = [7]
 it.startTime = 100
 it.endTime = 1100
 it.frequency = 1000
@@ -51,7 +51,7 @@ cli.runSequences()
 cli.joinSequences()
 
 res = []
-for i in cli.getRecording(0).Samples:
+for i in cli.getRecording(7).Samples:
   res.append(i * (5.0/4096.0));
 
 plt.ylim(-6,6)
