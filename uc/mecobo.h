@@ -18,6 +18,16 @@
 
 #define FPGA_BASE_ADDR 0
 
+//LED defines
+#define FRONT_LED_0 0
+#define FRONT_LED_1 1
+#define FRONT_LED_2 2
+#define FRONT_LED_3 3
+
+#define BOARD_LED_U0 4
+#define BOARD_LED_U1 5
+#define BOARD_LED_U2 6
+#define BOARD_LED_U3 7
 
 /* Define USB endpoint addresses */
 #define EP_DATA_OUT1       0x01  /* Endpoint for USB data reception.       */
@@ -136,6 +146,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
 void resetAllPins();
 void led(int l, int mode);
 void programFPGA();
+
 
 #endif //__MECOBO_H_
 

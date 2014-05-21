@@ -24,8 +24,8 @@ cli.reset()
 cli.clearSequences()
 
 #10 seconds of toggling.
-for pin in [4,5,6,8,9,10,11,12]:
-  for i in xrange(0,6):
+for pin in [0,1,5,6,7,10,11,12]:
+  for i in xrange(0,3):
     start = i*4000;
     end =   i*4000 + 4000;
     if i%2 == 0:
@@ -42,7 +42,7 @@ for pin in [4,5,6,8,9,10,11,12]:
 
 
 it = emSequenceItem()
-it.pin = [7]
+it.pin = [15]
 it.startTime = 100
 it.endTime = 10100
 it.frequency = 10000
@@ -57,7 +57,7 @@ totalSum = 0
 res = []
 for i in xrange(0,20):
   sleep(0.5)
-  r = cli.getRecording(7).Samples
+  r = cli.getRecording(15).Samples
   totalSum += len(r)
   res.extend(r)
 

@@ -1,3 +1,19 @@
+//LEDS on front case (left to right):
+//GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1);  //Led 1
+//GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1);  //Led 2
+//GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1);  //Led 3
+//GPIO_PinModeSet(gpioPortB, 8, gpioModePushPull, 1);  //Led 4
+
+//LEDS on board "north to south"
+//A10 : U0
+//A9: U1
+//B12: U2
+//D0: U3
+//GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U0
+//GPIO_PinModeSet(gpioPortA, 9, gpioModePushPull, 1);  //Led U1
+//GPIO_PinModeSet(gpioPortB, 12, gpioModePushPull, 1);  //Led U2
+
+
 #include "em_device.h"
 #include "em_cmu.h"
 #include "em_dma.h"
@@ -82,8 +98,13 @@ void setupSWOForPrint(void)
   ITM->TER  = 0x1;
 }
 
-/*** Typedef's and defines. ***/
 
+
+//MAP DEFINING WHERE THE CHANNELS ARE LOCATED IN MEMORY
+//static uint32_t channelMap[16] = {};
+
+
+/*** Typedef's and defines. ***/
 static int timeMs = 0;
 static int timeTick = 0; //10,000 per second.
 static int lastTimeTick = 0;
@@ -151,6 +172,7 @@ uint8_t sinus[256];
 //ADC sequencer registers
 uint16_t adcSequence[4] = {0xE000,0xE000,0xE000,0xE000};
 
+
 static int blinky = 0;
 void TIMER1_IRQHandler(void)
 { 
@@ -158,10 +180,16 @@ void TIMER1_IRQHandler(void)
   TIMER_IntClear(TIMER1, TIMER_IF_OF);
 
   /* Toggle LED ON/OFF */
-  if (blinky%5 == 0)
-    GPIO_PinOutToggle(gpioPortB, 12);
+  if (blinky<5) {
+    led(BOARD_LED_U0, 0);
+  }  
+  if (blinky == 10) {
+    led(BOARD_LED_U0, 1);
+    blinky = 0;
+  }
   blinky++;
-  //Retrieve sample value from pin controllers and queue them for sending. 
+  
+    //Retrieve sample value from pin controllers and queue them for sending. 
 }
 
 void TIMER2_IRQHandler(void)
@@ -175,13 +203,30 @@ void TIMER2_IRQHandler(void)
 
 int main(void)
 {
+
+  //A10 
   eADesigner_Init();
+
+  //release fpga reset (active high)
+  //GPIO_PinOutClear(gpioPortB, 3);
+
+  /*
+   * When using a debugger it is practical to uncomment the following three
+   * lines to force host to re-enumerate the device.
+   */
   setupSWOForPrint();
   printf("Printing online.\n");
-  GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
+  
+//Cycle leds.
+  for(int i = 0; i < 8; i++) {
+    led(i, 1);
+    USBTIMER_DelayMs(60);
+    led(i, 0);
+  }
+
+    printf("USB CONNECTED\n");
 
   printf("Starting timer clocks\n");
-  GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
   //Turn on timers
   CMU_ClockEnable(cmuClock_TIMER1, true);
   CMU_ClockEnable(cmuClock_TIMER2, true);
@@ -218,6 +263,8 @@ int main(void)
   }
 
 
+
+
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
  
@@ -243,6 +290,7 @@ int main(void)
 
   if(fpga_alive) {
     printf("Setting up DAC and ADCs\n");
+    //led(BOARD_LED_U2, 1);
     setupDAC();
     setupADC();
   }
@@ -300,16 +348,6 @@ int main(void)
   }
   printf("Complete.\n");
 
-  //debug leds.
-  GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U2
-  GPIO_PinModeSet(gpioPortB,  12, gpioModePushPull, 0);  //LED U1
-  GPIO_PinModeSet(gpioPortD,  0, gpioModePushPull, 0);  //LED U3
-  GPIO_PinModeSet(gpioPortB,  3, gpioModePushPull, 1);  //FPGA RESET, active high.
-
-  //Turn off all LEDS
-  for(int l = 1; l < 6; l++) {
-    led(l, 1);
-  }
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
@@ -317,23 +355,7 @@ int main(void)
   for(int i = 0; i < nPins; i++) {
     lastCollected[i] = -1;
   }
-  printf("Initializing USB\n");
-  USBD_Init(&initstruct);
-  printf("USB Initialized.\n");
-
-  //release fpga reset (active high)
-  //GPIO_PinOutClear(gpioPortB, 3);
-
-  /*
-   * When using a debugger it is practical to uncomment the following three
-   * lines to force host to re-enumerate the device.
-   */
-  USBD_Disconnect();
-  USBTIMER_DelayMs(100);
-  USBD_Connect();
-  printf("USB CONNECTED\n");
-
-  //Put FPGA out of reset
+    //Put FPGA out of reset
   GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 5); //Reset
   GPIO_PinOutClear(gpioPortB, 5); //Reset clear
@@ -360,6 +382,15 @@ int main(void)
     DACreg[i] = 128;
   }
 
+  //Note: Do this late, things have to have had a chance to settle.
+  printf("Initializing USB\n");
+  USBD_Init(&initstruct);
+  printf("USB Initialized.\n");
+  USBD_Disconnect();
+  USBTIMER_DelayMs(100);
+  USBD_Connect();
+  led(BOARD_LED_U3, 1);
+
 
   printf("It's just turtles all the way down.\n");
   printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
@@ -378,7 +409,7 @@ int main(void)
           GPIO_PinOutClear(gpioPortA, 8); //clk low
           GPIO_PinOutSet(gpioPortA, 8); //clk high
         }
-        GPIO_PinOutSet(gpioPortD, 0); //turn on led (we're configured)
+        led(BOARD_LED_U2, 1);
       }
     }
 
@@ -468,7 +499,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
       currentPack.data = NULL;
       gotHeader = 1;
     } else {
-      printf("Expected header of size 8, got ...something not 8.\n");
+      printf("Expected header of size 8, got %u.\n", xf);
     }
   }
 
@@ -558,6 +589,7 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
   if (newState == USBD_STATE_CONFIGURED) {
     USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
   }
+
 }
 
 void eADesigner_Init(void)
@@ -576,6 +608,14 @@ void eADesigner_Init(void)
   /* Enable GPIO clock */
   CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_GPIO;
 
+  
+   /* Pin PB11 is configured to Push-pull */
+    GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE11_MASK) | GPIO_P_MODEH_MODE11_PUSHPULL;
+
+  /* Pin PB8 is configured to Push-pull */
+  GPIO->P[1].MODEH = (GPIO->P[1].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
+    /* Pin PD8 is configured to Push-pull */
+    GPIO->P[3].MODEH = (GPIO->P[3].MODEH & ~_GPIO_P_MODEH_MODE8_MASK) | GPIO_P_MODEH_MODE8_PUSHPULL;
   /* Pin PA0 is configured to Push-pull */
   GPIO->P[0].MODEL = (GPIO->P[0].MODEL & ~_GPIO_P_MODEL_MODE0_MASK) | GPIO_P_MODEL_MODE0_PUSHPULL;
   /* Pin PA1 is configured to Push-pull */
@@ -1076,25 +1116,34 @@ void resetAllPins()
 
 void led(int l, int mode) 
 {
-  printf("led: %d, m: %d\n", l, mode);
   switch(l) {
-    case 1:
-  GPIO_PinModeSet(gpioPortF,  7, gpioModePushPull, mode);
-  break;
-    case 2:
-  GPIO_PinModeSet(gpioPortC,  11, gpioModePushPull, mode);
-  break;
-    case 3:
-  GPIO_PinModeSet(gpioPortB,  8, gpioModePushPull, mode);
-  break;
-    case 4:
-  GPIO_PinModeSet(gpioPortD,  8, gpioModePushPull, mode);
-  break;
-    case 5:
-  GPIO_PinModeSet(gpioPortF,  6, gpioModePushPull, mode);
-  break;
+    case FRONT_LED_0:
+      GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1-mode);  //Led 1
+      break;
+    case FRONT_LED_1:
+      GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1-mode);  //Led 2
+      break; 
+    case FRONT_LED_2:
+      GPIO_PinModeSet(gpioPortB, 8, gpioModePushPull, 1-mode);  //Led 4
+      break;
+    case FRONT_LED_3:
+      GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1-mode);  //Led 3
+      break;
+
+    case BOARD_LED_U0:
+      GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull,mode);  //Led U0
+      break;
+    case BOARD_LED_U1:
+      GPIO_PinModeSet(gpioPortA, 9, gpioModePushPull,mode);  //Led U1
+      break;
+    case BOARD_LED_U2:
+      GPIO_PinModeSet(gpioPortB, 12, gpioModePushPull,mode);  //Led U2
+      break;
+    case BOARD_LED_U3:
+      GPIO_PinModeSet(gpioPortD, 0, gpioModePushPull,mode);  //Led U3
+      break;
     default:
-  break;
+      break;
   }
 }
 

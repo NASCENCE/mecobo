@@ -23,21 +23,41 @@ transport.open();
 cli.reset()
 cli.clearSequences()
 
+recPin = 0
 #10 seconds of toggling.
 it = emSequenceItem()
-it.pin = [7]
+it.pin = [15]
 it.startTime = 0
-it.endTime = 10000
+it.endTime = 2000
 it.ValueSourceRegister = 3 #use register 3
 it.operationType = emSequenceOperationType().CONSTANT_FROM_REGISTER   #implies analogue 
 cli.appendSequenceAction(it)
+
+#Record
+it = emSequenceItem()
+it.pin = [recPin]
+it.startTime = 0
+it.endTime = 2000
+it.frequency = 1000
+it.operationType = emSequenceOperationType().RECORD   #implies analogue 
+cli.appendSequenceAction(it)
+
+
 cli.runSequences()
 
 res = []
-for i in xrange(0,10):
+for i in xrange(0,2):
   sleep(1)
-  cli.setConfigRegister(3, (i*50)%255)
+  cli.setConfigRegister(3, 223)
+  for i in cli.getRecording(recPin).Samples:
+    res.append(i * (5.0/4096.0))
 
 cli.joinSequences()
 cli.reset()
 transport.close()
+
+plt.ylim(-6, 6)
+plt.plot(res)
+plt.show()
+
+
