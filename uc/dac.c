@@ -29,6 +29,6 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   uint16_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
   dac[DAC_PROGRAM_REGISTER] = wrd;
   while(dac[0x0A]);
-  printf("   Setup word sent to DAC: %x\n", wrd);
+  //printf("   Setup word sent to DAC: %x\n", wrd);
 }
 

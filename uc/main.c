@@ -499,7 +499,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
       currentPack.data = NULL;
       gotHeader = 1;
     } else {
-      printf("Expected header of size 8, got %u.\n", xf);
+      printf("Expected header of size 8, got %u.\n", (unsigned int)xf);
     }
   }
 
@@ -1005,11 +1005,11 @@ void execCurrentPack()
 
     timeTick = 0;
 
-    //Reset all DAC regs as well.
+    //Reset all DAC outputs to known values.
 
-  for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
-    setVoltage(i, 0);
-  }
+    for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
+      setVoltage(i, 128);
+    }
 
     printf("RESET. NumSamples: %u\n", numSamples);
 

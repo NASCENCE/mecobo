@@ -1,8 +1,8 @@
 import sys
-sys.path.append('../Thrift interface/gen-py/NascenseAPI_v01e/')
 from time import *
 import numpy
 import matplotlib.pyplot as plt
+sys.path.append('../Thrift interface/gen-py/NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
 
@@ -13,7 +13,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 transport = TSocket.TSocket('129.241.102.247', 9090)
-#transport = TSocket.TSocket('localhost', 9090)
 transport = TTransport.TBufferedTransport(transport)
 
 prot = TBinaryProtocol.TBinaryProtocol(transport)
@@ -23,42 +22,55 @@ transport.open();
 cli.reset()
 cli.clearSequences()
 
-cli.setConfigRegister(3, 1)
+cli.setConfigRegister(1, 1)
 recPin = 0
 #10 seconds of toggling.
 it = emSequenceItem()
-it.pin = [15]
+it.pin = [4]
 it.startTime = 0
 it.endTime = 5000
-it.ValueSourceRegister = 3 #use register 3
+it.ValueSourceRegister = 1 #use register 1
 it.operationType = emSequenceOperationType().CONSTANT_FROM_REGISTER   #implies analogue 
 cli.appendSequenceAction(it)
 
-#Record
 it = emSequenceItem()
-it.pin = [recPin]
+it.pin = [8]
+it.startTime = 0
+it.endTime = 5000
+it.amplitude = 255
+it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
+cli.appendSequenceAction(it)
+
+it = emSequenceItem()
+#it.pin = xrange(0,16)
+it.pin = [4]
+it.startTime = 0
+it.endTime = 5000
+it.frequency = 1
+it.cycleTime = 0
+it.operationType = emSequenceOperationType().DIGITAL   #implies analogue 
+cli.appendSequenceAction(it)
+
+it = emSequenceItem()
+it.pin = [7]
 it.startTime = 0
 it.endTime = 5000
 it.frequency = 1000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 
-
 cli.runSequences()
 
-res = []
-for i in xrange(1,5):
-  sleep(1)
-  cli.setConfigRegister(3, (50*i%255))
-  for i in cli.getRecording(recPin).Samples:
-    res.append(i * (5.0/4096.0))
-
+sleep(2.5)
+cli.setConfigRegister(1,255)
 cli.joinSequences()
+res = []
+for i in cli.getRecording(7).Samples:
+  res.append(i * (5.0/4096.0));
+
+plt.ylim(-6,6)
 cli.reset()
 transport.close()
-
-plt.ylim(-6, 6)
 plt.plot(res)
+plt.draw()
 plt.show()
-
-
