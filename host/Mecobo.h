@@ -41,14 +41,14 @@ public:
   //void submitSequenceItem(emInterfaces::emSequenceItem & item);
 
   //Various board capabilities
-  void scheduleConstantVoltage(int pins, int start, int end, int amplitude);
-  void scheduleRecording(int pin, int start, int end, int frequency);
+  void scheduleConstantVoltage(std::vector<int> pins, int start, int end, int amplitude);
+  void scheduleRecording(std::vector<int> pins, int start, int end, int frequency);
 
-  void scheduleDigitalRecording(int pin, int start, int end, int frequency);
-  void scheduleDigitalOutput(int pin, int start, int end, int frequency, int dutyCycle);
-  void schedulePWMoutput(int pin, int start, int end, int pwmValue);
-  void scheduleSine(int pin, int start, int end, int frequency, int amplitude, int phase);
-  void scheduleConstantVoltageFromRegister(int pin, int start, int end, int reg);
+  void scheduleDigitalRecording(std::vector<int> pins, int start, int end, int frequency);
+  void scheduleDigitalOutput(std::vector<int> pins, int start, int end, int frequency, int dutyCycle);
+  void schedulePWMoutput(std::vector<int> pins, int start, int end, int pwmValue);
+  void scheduleSine(std::vector<int> pins, int start, int end, int frequency, int amplitude, int phase);
+  void scheduleConstantVoltageFromRegister(std::vector<int> pins, int start, int end, int reg);
   
 
   void runSchedule();

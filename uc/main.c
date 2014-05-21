@@ -965,6 +965,12 @@ void execCurrentPack()
 
     timeTick = 0;
 
+    //Reset all DAC regs as well.
+
+  for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
+    setVoltage(i, 0);
+  }
+
     printf("RESET. NumSamples: %u\n", numSamples);
 
     resetAllPins();
