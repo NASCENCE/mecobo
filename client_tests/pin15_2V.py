@@ -23,7 +23,7 @@ cli.reset()
 cli.clearSequences()
 
 it = emSequenceItem()
-it.pin = [13,12,11,10,9,8,6,5,4,3,2]
+it.pin = [15,14,13,12,11,10,9,8,6,5,4,3,2,1,0]
 it.startTime = 0
 it.endTime = 1200
 it.amplitude = 200
