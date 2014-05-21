@@ -42,7 +42,7 @@ always @ (posedge clk) begin
 end
 
 //Drive output pin from pin_output statemachine if mode is output
-assign pin = (enable_pin_output) ? pin_output : 1'bZ;
+assign pin = (enable_pin_output) ? pin_output : 1'bZ; //Z or 0
 //else we have input from pin.
 assign pin_input = pin;
 

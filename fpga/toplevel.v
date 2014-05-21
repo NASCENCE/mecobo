@@ -110,68 +110,8 @@ ODDR2 clkout_oddr_da
   .S  (1'b0));
 
 
-/*
-wire [5:1] clk_int;
-wire [5:1] clk_n;
-wire [5:1] clk;
-wire [5:1] ce;
-wire [5:1] clk_out;
-
-clockgen clknetwork
-   (// Clock in ports
-    .CLK_IN1            (osc),
-    // Clock out ports
-    .SYSCLK           (clk_int[1]),
-    .XBAR           (clk_int[2]),
-    .AD           (clk_int[3]),
-    .DA           (clk_int[4]),
-    .FAST           (clk_int[5]),
-    // Status and control signals
-    .RESET              (reset),
-    .LOCKED             (led[2]));
-
-genvar clk_out_pins;
-
-generate 
-  for (clk_out_pins = 1; clk_out_pins <= 5; clk_out_pins = clk_out_pins + 1) 
-  begin: gen_outclk_oddr
-  assign clk_n[clk_out_pins] = ~clk[clk_out_pins];
-
-  ODDR2 clkout_oddr
-   (.Q  (clk_out[clk_out_pins]),
-    .C0 (clk[clk_out_pins]),
-    .C1 (clk_n[clk_out_pins]),
-    .CE (ce[clk_out_pins]),
-    .D0 (1'b1),
-    .D1 (1'b0),
-    .R  (1'b0),
-    .S  (1'b0));
-  end
-endgenerate
-
-assign clk[1] = clk_int[1];
-assign clk[2] = ~clk_int[2];
-assign clk[3] = clk_int[3];
-assign clk[4] = clk_int[4];
-assign clk[5] = clk_int[5];
-
-//Enable all by default some clocks.
-assign ce[1] = 1'b1; //always on.
-//XBar clock needs to be toggleable. We'll invert it so that we know that the
-//flank goes to the XBAR after we've set up the data line.
-//assign HN[6] = clk_out[2];
-wire xbar_clock_enable; //from xbar control
-assign ce[2] = xbar_clock_enable;
-
-//clocks going out.
-assign HN[4] = clk_out[3]; //ad_clk;
-assign ce[3] = 1'b1; 
-assign HN[2] = clk_out[4]; //da_clk;
-assign ce[4] = 1'b1; 
-*/
-
-
-
+// CONTROL MODULES
+// -------------------------------------
 //Standard pin controllers
 genvar i;
 generate
