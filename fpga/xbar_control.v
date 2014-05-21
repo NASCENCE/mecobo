@@ -9,7 +9,7 @@ input [15:0] data,
 output reg [15:0] data_out,
 input [18:0] addr,
 //facing the DAC
-output reg xbar_clock_enable, //enable on clock that goes to XBAR.
+output reg xbar_clock, //clock going to xbar
 output reg pclk, //keep low until we're done, single pulse will set transistors in xbar.
 output sin);
 
@@ -54,7 +54,7 @@ begin
 
     if (cs & re) begin
       if(addr[7:0] == BUSY) 
-        data_out <= {15'b0, shift_out_enable};
+        data_out <= {14'b0,  busy};
       if(addr[7:0] == ID_REG)
         data_out <= 16'h7ba2; //kinda looks like 'XbaR'... no?
     end else
@@ -70,13 +70,15 @@ reg shift_out_enable;
 reg load_shift_reg;
 reg count_up;
 reg count_res;
+reg busy;
 
-parameter init = 4'b0001;
-parameter load = 4'b0010;
-parameter pulse = 4'b0100;
-parameter load_shift = 4'b1000;
+parameter init =            5'b00001;
+parameter load =            5'b00010;
+parameter pulse_pclk =      5'b00100;
+parameter pulse_xbar_clk =  5'b01000;
+parameter load_shift =      5'b10000;
 
-reg[3:0] state;
+reg[4:0] state;
 
 initial begin
   state <= init;
@@ -95,10 +97,13 @@ always @ (posedge sclk) begin
         end
       end
 
-      load: begin
+      load: 
+        state <= pulse_xbar_clk;
+
+      pulse_xbar_clk: begin
         state <= load;
         if (counter == 511) 
-          state <= pulse;
+          state <= pulse_pclk;
         else if (counter[3:0] == 15)
           state <= load_shift;
       end
@@ -106,74 +111,88 @@ always @ (posedge sclk) begin
       load_shift:
         state <= load;
 
-      pulse:
+      pulse_pclk:
         state <= init;
 
       default:
         state <= init;
 
     endcase
-  end
-end
+  end //reset if end
+end //always end
 
 //Output functions.
 always @ (*) begin
-  /*
-  if (reset) begin
-        shift_out_enable <= 1'b0;
-        count_up <= 1'b0;
-        count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
-        pclk <= 1'b1;
-  end else begin
-    */
-    //State machine start.
-    case (state)
-      //Idle / init, waiting for something to do.
-      init: begin
-        shift_out_enable <= 1'b0;
-        count_up <= 1'b0;
-        count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
-        pclk <= 1'b1;
-        load_shift_reg <= 1'b0;
-      end
+/*
+if (reset) begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b1;
+      xbar_clock <= 1'b0;
+      pclk <= 1'b1;
+end else begin
+  */
+  //State machine start.
+  case (state)
+    //Idle / init, waiting for something to do.
+    init: begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b1;
+      xbar_clock <= 1'b0;
+      pclk <= 1'b1;
+      load_shift_reg <= 1'b0;
+      busy <= 1'b0;
+    end
 
-      load: begin
-        shift_out_enable <= 1'b1;
-        count_up <= 1'b1;
-        count_res <= 1'b0;
-        xbar_clock_enable <= 1'b1;
-        pclk <= 1'b1;
-        load_shift_reg <= 1'b0;
-      end
+    load: begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b0;
+      xbar_clock <= 1'b0;
+      pclk <= 1'b1;
+      load_shift_reg <= 1'b0;
+      busy <= 1'b1;
+    end
 
-      load_shift: begin
-        shift_out_enable <= 1'b0;
-        count_up <= 1'b0;
-        count_res <= 1'b0;
-        xbar_clock_enable <= 1'b0;
-        pclk <= 1'b1;
-        load_shift_reg <= 1'b1;
-      end
+    load_shift: begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b0;
+      xbar_clock <= 1'b0;
+      pclk <= 1'b1;
+      load_shift_reg <= 1'b1;
+      busy <= 1'b1;
+    end
 
+    pulse_pclk: begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b1;
+      xbar_clock <= 1'b0;
+      pclk <= 1'b0; //give a pulse.
+      load_shift_reg <= 1'b0;
+      busy <= 1'b1;
+    end
 
-      pulse: begin
-        shift_out_enable <= 1'b0;
-        count_up <= 1'b0;
-        count_res <= 1'b1;
-        xbar_clock_enable <= 1'b0;
-        pclk <= 1'b0; //give a pulse.
-        load_shift_reg <= 1'b0;
-      end
+    pulse_xbar_clk: begin
+      shift_out_enable <= 1'b1;  //shift one bit on next flank
+      count_up <= 1'b1; //count up on next flank.
+      count_res <= 1'b0;
+      xbar_clock <= 1'b1;  //output, give xbar a flank now, [15] of shift reg is stable.
+      pclk <= 1'b1;
+      load_shift_reg <= 1'b0;
+      busy <= 1'b1;
+    end
 
-      default: begin
-        shift_out_enable <= 1'b1;
-        count_up <= 1'b1;
-        count_res <= 1'b0;
-        xbar_clock_enable <= 1'b0;
-        load_shift_reg <= 1'b0;
-        pclk <= 1'b1;
+    default: begin
+      shift_out_enable <= 1'b0;
+      count_up <= 1'b0;
+      count_res <= 1'b0;
+      xbar_clock <= 1'b0;
+      load_shift_reg <= 1'b0;
+      pclk <= 1'b1;
+      busy <= 1'b1;
       end
 
     endcase
@@ -197,12 +216,9 @@ always @ (posedge sclk) begin
 
     if (load_shift_reg)
       shift_out_register <= ebi_captured_data[counter[8:4]];
-    else begin
+    else
       if (shift_out_enable)
         shift_out_register <= {shift_out_register[14:0], 1'b0};
-      else
-        shift_out_register <= 0;
-    end
   end
 end
 

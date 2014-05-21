@@ -98,8 +98,13 @@ void setupSWOForPrint(void)
   ITM->TER  = 0x1;
 }
 
-/*** Typedef's and defines. ***/
 
+
+//MAP DEFINING WHERE THE CHANNELS ARE LOCATED IN MEMORY
+//static uint32_t channelMap[16] = {};
+
+
+/*** Typedef's and defines. ***/
 static int timeMs = 0;
 static int timeTick = 0; //10,000 per second.
 static int lastTimeTick = 0;
