@@ -241,7 +241,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
       //Cast from 13 bit to 32 bit two's complement int.
-      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
+      int v = signextend<signed int, 13>(0x00001FF0 & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
       pinRecordings[p].push_back(v);
     }

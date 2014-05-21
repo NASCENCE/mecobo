@@ -195,7 +195,7 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     uint16_t data = 0;
     //hack to open up the digital ports
     if(i < 16) {
-      data = 1 << (15-i);
+      //data = 1 << (15-i);
     }
     config.push_back(data);
   }
@@ -217,11 +217,16 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     //Since we have mapped the PINs to the Y's of the XBARS,
     //we have two choices to drive/source one pin.
     //xbar1, or xbar2. We add 16 to program xbar1.
-    
-    if (channel < 50) { //Digital channels
+
+    if (channel < IO_CHANNELS_END) { //Digital channels
       configIndex = 15 - pin;
     } else {
-      configIndex = 31 - pin ;
+      configIndex = 31 - pin;
+
+      //This is not a digital channel. Now, we need to open up this pin to expose
+      //highZ from the FPGA because analog is hard.
+
+      config[15 - pin] |= 1 << (15-pin);
     }
 
 
