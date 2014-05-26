@@ -91,15 +91,20 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
     return;
   }*/
   
-  std::cout << "channel " << channel << " added to map." << std::endl;
+  std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
   pinToChannel[pin].push_back(channel);
   channelToPin[channel].push_back(pin);
   return;
 }
 
+
+//We allow the same channel to drive multiple pins.
 FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pinconfigDataType) 
 {
   if((numADchannels + numIOchannels + numDAchannels) >= (16 * numCards)) {
+
+    //TODO:It's possible that we should be able to reuse a channel here, if it's already assigned to a
+    //given channel type and we want to keep using it as such.
     emException e;
     e.Reason = "Maximum channels in one sequence used. 16 for 1 daughterboard. ";
     e.Source = "channelMap::mapItem()";
@@ -107,18 +112,13 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
     throw e;
   }
 
-  //TODO: EEEH
   FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
  
   switch(pinconfigDataType) {
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-      //Try to map to a analogue pin.
-      if((channel = getChannel(pin[0])) != FPGA_IO_Pins_TypeDef::INVALID) {
-        return channel;
-      }
+
       if (numADchannels < maxADchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-        std::cout << "Mapped channel " << channel << " to pin " << pin[0];
         for (auto p: pin) {
           mapPin(p, channel);
         }
@@ -134,15 +134,6 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
 
     case PINCONFIG_DATA_TYPE_DAC_CONST:
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-
-      //Check if pin is mapped to a channel before, reuse channel if so.
-      //this doesn't make sense! should check if a CHANNEL is
-      //used before.
-      //this is for the opposite case. one pin, several channels.
-      if((channel = getChannel(pin[0])) != FPGA_IO_Pins_TypeDef::INVALID) {
-        return channel;
-      }
-      //Use DAC channel.
       //Try to map to a analogue pin.
       if (numDAchannels < maxDAchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
@@ -199,39 +190,39 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
 
   for(auto channels : pinToChannel) { 
   //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable.
-  for (auto pc : channels.second) {
-    FPGA_IO_Pins_TypeDef channel = pc;
-   
-    //Skip invalid mappings
-    if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
-      continue;
-    }
-
-    int pin = channels.first;
-    int configIndex = -1;
-
-    //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
-    //The next 16 words control the AD/DA-chans.
-    //Since we have mapped the PINs to the Y's of the XBARS,
-    //we have two choices to drive/source one pin.
-    //xbar1, or xbar2. We add 16 to program xbar1.
-
-    if (channel < IO_CHANNELS_END) { //Digital channels
-      configIndex = 15 - pin;
-    } else {
-      configIndex = 31 - pin;
-      //This is not a digital channel.
-      
-      if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
-        //This is an AD pin, so we'll open up the switch that "exposes"" a high impedance 
-        //through the XBAR so as to avoid it ("digital channels xbar")from eating energy.
-        config[15 - pin] |= 1 << (15-pin);
-      }
-    }
+    for (auto pc : channels.second) {
+      FPGA_IO_Pins_TypeDef channel = pc;
     
-    config[configIndex] |= (1 << (channelToXbar[channel]));
-    std::cout << "Config word Y" << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
-  }
+      //Skip invalid mappings
+      if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
+        continue;
+      }
+
+      int pin = channels.first;
+      int configIndex = -1;
+
+      //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
+      //The next 16 words control the AD/DA-chans.
+      //Since we have mapped the PINs to the Y's of the XBARS,
+      //we have two choices to drive/source one pin.
+      //xbar1, or xbar2. We add 16 to program xbar1.
+
+      if (channel < IO_CHANNELS_END) { //Digital channels
+        configIndex = 15 - pin;
+      } else {
+        configIndex = 31 - pin;
+        //This is not a digital channel.
+        
+        if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
+          //This is an AD pin, so we'll open up the switch that "exposes"" a high impedance 
+          //through the XBAR so as to avoid it ("digital channels xbar")from eating energy.
+          config[15 - pin] |= 1 << (15-pin);
+        }
+      }
+      
+      config[configIndex] |= (1 << (channelToXbar[channel]));
+      std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+    }
   }
  
   //After all the explicitly defined channels, we'll open the switches connecting

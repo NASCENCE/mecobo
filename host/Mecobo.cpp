@@ -241,7 +241,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
       //Cast from 13 bit to 32 bit two's complement int.
-      int v = signextend<signed int, 13>(0x00001FF0 & (int32_t)s.value);
+      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
       pinRecordings[p].push_back(v);
     }
@@ -306,8 +306,11 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
     channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
-
-  int period = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  int period = 0;
+  if(frequency != 0) {
+    period = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  }
+  
   int duty = period * ((double)dutyCycle/100.0);
 
   std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
