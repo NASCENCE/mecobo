@@ -223,19 +223,25 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
-        std::cout << "CONSTANT added: " << item.amplitude << " on pin " << "" << std::endl;
+        for(auto p : item.pin) {
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+        }
         mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
 
       case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
-          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << "" << std::endl;
+        for(auto p : item.pin) {
+          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+        }
           mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
         break;
 
 
       case emSequenceOperationType::type::RECORD:
 
-          std::cout << "RECORDING [analogue] added on pin " << "" << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        for(auto p : item.pin) {
+          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        }
           mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
         //Error checking.
         //
@@ -257,7 +263,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         break;
 
       case emSequenceOperationType::type::DIGITAL:
-          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin "<< std::endl;
+        for(auto p : item.pin) {
+          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin "<< p <<  std::endl;
+        }
           mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
         break;
 
@@ -266,7 +274,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::PREDEFINED:
         switch (item.waveFormType) {
           case emWaveFormType::SINE:
-        	std::cout << "PREDEFINED SINE " << std::endl;
+          for(auto p : item.pin) {
+        	  std::cout << "PREDEFINED SINE " << std::endl;
+          }
                 mecobo->scheduleSine(item.pin, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
             break;
 

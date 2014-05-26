@@ -119,6 +119,7 @@ static struct mecoPack currentPack;
 static struct mecoPack packToSend;
 static int sendPackReady = 0;
 static int sendInProgress = 0;
+static int executeInProgress = 0;
 
 //Keep track of which pins are input pins. 
 static int nPins = 250;
@@ -490,6 +491,13 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
 {
   (void) remaining;
   int gotHeader = 0;
+
+  //idle while send finishes if we're doing that.
+  //This is supposed to fix the race where this routine would be called
+  //before we were finished with freeing data from the old 
+  //package.
+  while(sendInProgress && executeInProgress);
+
   if ((status == USB_STATUS_OK) && (xf > 0)) {
     //Got some data, check if we have header.
     if (xf == 8) {
@@ -551,9 +559,8 @@ int UsbDataSent(USB_Status_TypeDef status,
     uint32_t remaining)
 {
   (void) remaining;
+  
 
-  printf("USB DATA SENT HURRA\n");
-  sendInProgress = 0;
   if ((status == USB_STATUS_OK) && (xf > 0)) 
   {
     //we probably sent some data :-)
@@ -561,14 +568,20 @@ int UsbDataSent(USB_Status_TypeDef status,
     if((packToSend.command != USB_CMD_GET_INPUT_BUFFER) &&
         (packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE)) 
     {
-      free(packToSend.data);
-    }
+      if(packToSend.data != NULL) {
+        free(packToSend.data);
+      } else {
+        printf("Tried to free NULL-pointer\n");
+      }
+    } 
 
     //Reset sample counter now.
     if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
       numSamples = 0;
     }
   }
+  sendInProgress = 0;
+  printf("USB DATA SENT HURRA\n");
 
   return USB_STATUS_OK;
 }
@@ -819,12 +832,16 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
       printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
       //Range register 1
-      addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+      //addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+      //1101 0101 0100 0000 = D reg 1, +/- 2.5 : 
+      addr[0x04] = 0xD540; //range register written to +-5V on all channels for chans 0 to 4
       for(int i = 0; i < 100000; i++);
       while(addr[0x0A]);
 
       //Range register 2
-      addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+      //addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+      //1011 0101 0100 0000
+      addr[0x04] = 0xB540; //range register written to +-5V on all channels for chans 0 to 4
       for(int i = 0; i < 100000; i++);
       while(addr[0x0A]);
 
@@ -910,7 +927,7 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
 
 void execCurrentPack()
 {
-
+  executeInProgress = 1;
   if(currentPack.command == USB_CMD_STATUS) {
     //sendPacket(STATUS_BYTES, USB_CMD_STATUS, (uint8_t*)dat);
   }
@@ -928,7 +945,7 @@ void execCurrentPack()
       item.type = d[PINCONFIG_DATA_TYPE];
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       itemsToApply[itaPos++] = item;
-     
+    
       //find lowest first killtime.
       if(numItems == 0) {
         nextKillTime = item.endTime;
@@ -1083,8 +1100,13 @@ void execCurrentPack()
   }
 
   if(currentPack.size > 0) {
-    free(currentPack.data);
+    if(currentPack.data != NULL){
+      free(currentPack.data);
+    } else {
+      printf("Tried to free currentPack.data NULL\n");
+    }
   }
+  executeInProgress = 0;
 }
 
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
