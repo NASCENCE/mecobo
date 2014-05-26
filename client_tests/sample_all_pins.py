@@ -12,7 +12,8 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-transport = TSocket.TSocket('129.241.102.247', 9090)
+transport = TSocket.TSocket('localhost', 9090)
+#transport = TSocket.TSocket('129.241.102.247', 9090)
 transport = TTransport.TBufferedTransport(transport)
 
 prot = TBinaryProtocol.TBinaryProtocol(transport)
