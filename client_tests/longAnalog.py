@@ -24,7 +24,7 @@ cli.reset()
 cli.clearSequences()
 
 #10 seconds of toggling.
-for pin in [0,1,5,6,7,10,11,12]:
+for pin in [0,1,5,6,10,11,12]:
   for i in xrange(0,3):
     start = i*4000;
     end =   i*4000 + 4000;

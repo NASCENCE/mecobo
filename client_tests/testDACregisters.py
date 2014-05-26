@@ -47,11 +47,13 @@ cli.appendSequenceAction(it)
 cli.runSequences()
 
 res = []
-for i in xrange(1,5):
+volt = 255
+for i in xrange(1,6):
   sleep(1)
-  cli.setConfigRegister(3, (50*i%255))
+  cli.setConfigRegister(3, volt)
+  volt = 1
   for i in cli.getRecording(recPin).Samples:
-    res.append(i * (5.0/4096.0))
+    res.append(i * (2.5/4096.0))
 
 cli.joinSequences()
 cli.reset()

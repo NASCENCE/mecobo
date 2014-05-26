@@ -217,14 +217,7 @@ int main(void)
    */
   setupSWOForPrint();
   printf("Printing online.\n");
-  
-//Cycle leds.
-  for(int i = 0; i < 8; i++) {
-    led(i, 1);
-    USBTIMER_DelayMs(60);
-    led(i, 0);
-  }
-
+ 
     printf("USB CONNECTED\n");
 
   printf("Starting timer clocks\n");
@@ -253,7 +246,7 @@ int main(void)
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
-  
+ 
   //Generate sine table for a half period (0 to 1)
   printf("Generating sine table\n");
   float incr = 6.2830/(float)256.0;
@@ -291,7 +284,6 @@ int main(void)
 
   if(fpga_alive) {
     printf("Setting up DAC and ADCs\n");
-    //led(BOARD_LED_U2, 1);
     setupDAC();
     setupADC();
   }
@@ -391,6 +383,14 @@ int main(void)
   USBTIMER_DelayMs(100);
   USBD_Connect();
   led(BOARD_LED_U3, 1);
+ 
+  printf("Cycling LEDs :-)\n");
+//Cycle leds.
+  for(int i = 0; i < 48; i++) {
+    led(i%8, 1);
+    USBTIMER_DelayMs(60);
+    led(i%8, 0);
+  }
 
 
   printf("It's just turtles all the way down.\n");
@@ -1146,10 +1146,10 @@ void led(int l, int mode)
       GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1-mode);  //Led 2
       break; 
     case FRONT_LED_2:
-      GPIO_PinModeSet(gpioPortB, 8, gpioModePushPull, 1-mode);  //Led 4
+      GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1-mode);  //Led 4
       break;
     case FRONT_LED_3:
-      GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1-mode);  //Led 3
+      GPIO_PinModeSet(gpioPortB, 8, gpioModePushPull, 1-mode);  //Led 3
       break;
 
     case BOARD_LED_U0:
