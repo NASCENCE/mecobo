@@ -149,6 +149,7 @@ usb/src/em_usbtimer.c \
 pinItem.c\
 dac.c\
 adc.c\
+efm32.c\
 main.c
 
 CXX_SRC += \

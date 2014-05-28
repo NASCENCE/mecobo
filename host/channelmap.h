@@ -29,6 +29,7 @@ class channelMap {
 
     std::map<FPGA_IO_Pins_TypeDef, int> channelToXbar;
 
+    bool isADChannel(FPGA_IO_Pins_TypeDef channel);
   public:
     //This will attempt to map a pin, but it WILL be annoyed if you try to use more channels than we have. 
     void mapPin(int pin, FPGA_IO_Pins_TypeDef channel);
