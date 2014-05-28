@@ -342,8 +342,9 @@ int main(void)
         if (currentItem->startTime <= timeMs) {
           execute(currentItem);
           itemsInFlight[iifPos++] = currentItem;
-
-          numItems--;
+          if(currentItem->endTime != (-1)) {
+            numItems--;
+          }
           numItemsInFlight++;
           itaPos++;
         }
@@ -738,11 +739,14 @@ void execCurrentPack()
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       itemsToApply[itaPos++] = item;
     
-      //find lowest first killtime.
-      if(numItems == 0) {
-        nextKillTime = item.endTime;
-      } else if (item.endTime < nextKillTime) {
-        nextKillTime = item.endTime;
+      //find lowest first killtime, but ignore -1 endtimes,
+      //they should run forever.
+      if(item.endTime != -1) {
+        if(numItems == 0) {
+          nextKillTime = item.endTime;
+        } else if (item.endTime < nextKillTime) {
+          nextKillTime = item.endTime;
+        }
       }
       
       numItems++;
