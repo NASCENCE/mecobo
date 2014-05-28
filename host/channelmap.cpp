@@ -217,39 +217,18 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
       //we have two choices to drive/source one pin.
       //xbar1, or xbar2. We add 16 to program xbar1.
 
-      if (channel < IO_CHANNELS_END) { //Digital channels
-        configIndex = 15 - pin;
-      } else {
-        configIndex = 31 - pin;
-        //This is not a digital channel.
-        
-        if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
-          //This is an AD pin, so we'll open up the switch that "exposes"" a high impedance 
-          //through the XBAR so as to avoid it ("digital channels xbar")from eating energy.
-          //config[15 - pin] |= 1 << (15-pin);
-        }
-      }
+    if (channel < IO_CHANNELS_END) { //Digital channels
+      configIndex = 15 - pin;
+    } else {
+      configIndex = 31 - pin;
+      //This is not a digital channel.
+      //
+    }
       
       config[configIndex] |= (1 << (channelToXbar[channel]));
       std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
     }
   }
- 
-  //After all the explicitly defined channels, we'll open the switches connecting
-  //FPGA pins to the material (if they are unused, they are HIGH-Z)
-  //A pin (the "channels" can have two Y-sources, 16 pins inbetween).
-  //if the previous phase left any of them unconnected (i.e. a DAC did not use it, neither did an ADC),
-  //then we'll simply open the DIGITAL switch.
- 
-  /*
-  for(int i = 0; i < 16; i++){
-    if ((config[i] == 0) && (config[i+16] == 0)) {
-      if(i < 16) {
-        config[i] = 1 << (15-i);
-      }
-    }
-  }
-  */
 
   std::vector<uint8_t> ret;
   uint8_t * rawData = (uint8_t*)config.data();
