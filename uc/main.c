@@ -337,19 +337,29 @@ int main(void)
       }
 
 
+      //This is the execution stage.
+      //Special cases are required for items
+      //that should stay in-flight forever.
       if(numItems > 0) {
         struct pinItem * currentItem = &(itemsToApply[itaPos]);
         if (currentItem->startTime <= timeMs) {
           execute(currentItem);
-          itemsInFlight[iifPos++] = currentItem;
-          if(currentItem->endTime != (-1)) {
-            numItems--;
-          }
-          numItemsInFlight++;
+            if (currentItem->endTime == (-1)) {
+
+            } else {
+
+              itemsInFlight[iifPos++] = currentItem;
+                //Do not decrease counter if this is a run-forever
+                //style item.
+                numItems--;
+                numItemsInFlight++;
+            }
+          //Items To Apply queue increase.
           itaPos++;
         }
 
-        if (currentItem->endTime < nextKillTime) {
+        //See if we should upate the kill time.
+        if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
           nextKillTime = currentItem->endTime;
         }
       }
