@@ -80,16 +80,26 @@ void channelMap::reset()
 
 }
 
+bool channelMap::isADChannel(FPGA_IO_Pins_TypeDef chan) 
+{
+  return ((AD_CHANNELS_START <= chan) && (chan <= AD_CHANNELS_END));
+}
 
 void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
   /*
   if(pinToChannel.count(pin)) {
-    emException e;
-    e.Reason = "Pin already assigned in this sequence";
-    throw e;
-    return;
-  }*/
+      }*/
+  //Check if we record from the same pin twice
+
+  for(auto chan : pinToChannel[pin]) {
+    if(isADChannel(chan) && isADChannel(channel)) {
+      emException e;
+      e.Reason = "Can't record the same pin twice, ignored.";
+      throw e;
+      return;
+    }
+  }
   
   std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
   pinToChannel[pin].push_back(channel);
@@ -216,7 +226,7 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
         if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
           //This is an AD pin, so we'll open up the switch that "exposes"" a high impedance 
           //through the XBAR so as to avoid it ("digital channels xbar")from eating energy.
-          config[15 - pin] |= 1 << (15-pin);
+          //config[15 - pin] |= 1 << (15-pin);
         }
       }
       
@@ -230,7 +240,8 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
   //A pin (the "channels" can have two Y-sources, 16 pins inbetween).
   //if the previous phase left any of them unconnected (i.e. a DAC did not use it, neither did an ADC),
   //then we'll simply open the DIGITAL switch.
-  
+ 
+  /*
   for(int i = 0; i < 16; i++){
     if ((config[i] == 0) && (config[i+16] == 0)) {
       if(i < 16) {
@@ -238,6 +249,7 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
       }
     }
   }
+  */
 
   std::vector<uint8_t> ret;
   uint8_t * rawData = (uint8_t*)config.data();
