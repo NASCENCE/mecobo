@@ -1,0 +1,38 @@
+Friday, May 30, 2014	11:07:40 AM		Logging to file ./clientlog//EMClient__000000054.txt
+Friday, May 30, 2014	11:07:40 AM		SETTING	LogServer	True
+Friday, May 30, 2014	11:07:40 AM		SETTING	LogServerPath	./serverlog
+Friday, May 30, 2014	11:07:40 AM		SETTING	LogClient	True
+Friday, May 30, 2014	11:07:40 AM		SETTING	LogClientPath	./clientlog
+Friday, May 30, 2014	11:07:40 AM		SETTING	Server	129.241.102.247
+Friday, May 30, 2014	11:07:40 AM		SETTING	ServerPort	9090
+Friday, May 30, 2014	11:07:40 AM		SETTING	DataAPIServerPort	9091
+Friday, May 30, 2014	11:07:40 AM		SETTING	DataAPIServer	localhost
+Friday, May 30, 2014	11:07:40 AM	Microsoft CLR? NO
+Friday, May 30, 2014	11:07:40 AM	Ping response = 0
+Friday, May 30, 2014	11:07:40 AM	Ping response took 4ms or 47543 ticks
+Friday, May 30, 2014	11:07:40 AM	Loading PONGBESTIND
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_000
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_001
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_002
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_003
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_004
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_005
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_006
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_007
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_008
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_009
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_010
+Friday, May 30, 2014	11:07:40 AM		Loading PONGBESTIND_011
+Friday, May 30, 2014	11:07:40 AM	Finished loading
+Friday, May 30, 2014	11:07:51 AM	0         	0.222222222222222	0         	10897     
+Friday, May 30, 2014	11:08:02 AM	1         	0.413793103448276	5         	21830     
+Friday, May 30, 2014	11:08:12 AM	2         	0         	8         	32774     
+Friday, May 30, 2014	11:08:23 AM	3         	0.32      	9         	43730     
+Friday, May 30, 2014	11:08:34 AM	4         	0         	14        	54722     
+Friday, May 30, 2014	11:08:45 AM	5         	0         	17        	65662     
+Friday, May 30, 2014	11:08:56 AM	6         	0.222222222222222	19        	76566     
+Friday, May 30, 2014	11:09:07 AM	7         	0         	23        	87442     
+Friday, May 30, 2014	11:09:18 AM	8         	0.444444444444444	26        	98378     
+Friday, May 30, 2014	11:09:29 AM	9         	0.64      	29        	109406    
+Friday, May 30, 2014	11:09:40 AM	10        	0         	32        	120414    
+Friday, May 30, 2014	11:09:51 AM	11        	0         	35        	131334    

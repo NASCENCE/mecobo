@@ -31,9 +31,11 @@
             this.components = new System.ComponentModel.Container();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.PlayerBScoreLabel = new System.Windows.Forms.Label();
             this.PlayerAScoreLabel = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.PictureBox();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panel2)).BeginInit();
             this.SuspendLayout();
@@ -46,6 +48,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.PlayerBScoreLabel);
             this.panel1.Controls.Add(this.PlayerAScoreLabel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -53,6 +56,18 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(863, 230);
             this.panel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label1.Font = new System.Drawing.Font("ModeSeven", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(275, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(275, 230);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "0";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PlayerBScoreLabel
             // 
@@ -87,6 +102,10 @@
             this.panel2.TabIndex = 1;
             this.panel2.TabStop = false;
             // 
+            // timer2
+            // 
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
             // PongForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -97,9 +116,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PongForm";
             this.Text = "PongForm";
-            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.PongForm_Load);
+            this.Shown += new System.EventHandler(this.PongForm_Shown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PongForm_KeyPress);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panel2)).EndInit();
@@ -114,5 +133,7 @@
         private System.Windows.Forms.PictureBox panel2;
         private System.Windows.Forms.Label PlayerBScoreLabel;
         private System.Windows.Forms.Label PlayerAScoreLabel;
+        private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.Label label1;
     }
 }

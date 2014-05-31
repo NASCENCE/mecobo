@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define WITHoutGOO
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace EMUtils
@@ -15,10 +17,14 @@ namespace EMUtils
         public PongForm()
         {
             InitializeComponent();
-            this.TopMost = true;
+            this.TopMost = false;
         }
         PongGame Game = null;
         Graphics Canvas;
+
+        Thread GooThread = null;
+
+
         private void PongForm_Load(object sender, EventArgs e)
         {
             Game = new PongGame();
@@ -27,6 +33,7 @@ namespace EMUtils
             this.timer1.Enabled = true;
         }
         public bool Busy = false;
+        public Experiment_Pong.Individual Ind;
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (Busy) return;
@@ -37,11 +44,18 @@ namespace EMUtils
             this.Game.UpdateStates();
             this.PlayerAScoreLabel.Text = this.Game.PlayerAScore.ToString();
             this.PlayerBScoreLabel.Text = this.Game.PlayerBScore.ToString();
+            this.label1.Text = this.UpdateCounter.ToString()+"_"+this.UpdateText;
             Busy = false;
         }
 
         private void PongForm_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (e.KeyChar == 'q')
+            {
+                this.timer1.Enabled = false;
+                this.Visible = false;
+                this.Close();
+            }
             if (e.KeyChar == 'a')
             {
                 if (this.Game.CurrentState.PaddleASpeed > 0) this.Game.CurrentState.PaddleASpeed = 0;
@@ -76,6 +90,56 @@ namespace EMUtils
             this.Canvas.Dispose();
             this.Canvas = this.panel2.CreateGraphics();
             Busy = false;
+        }
+
+        public Experiment_Pong.PongFitnessFunction FitnessFunction { get; set; }
+
+        public bool EmBusy = false;
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+          
+        }
+        int UpdateCounter = 0;
+        private string UpdateText;
+        private void GooComputeThread()
+        {
+
+           if (EmBusy) return;
+           while (this.Visible)
+           {
+               UpdateCounter++;
+               EmBusy = true;
+               double AvgOutputVoltage = 0;
+               double US = this.FitnessFunction.UpdateStep(this.Ind, this.Game.CurrentState.PaddleBPosition, this.Game.CurrentState.BallY,out AvgOutputVoltage);
+               EmBusy = false;
+
+               if (AvgOutputVoltage < this.Ind.Threshold)
+               {
+                   if (this.Game.CurrentState.PaddleBSpeed > 0) this.Game.CurrentState.PaddleBSpeed = 0;
+                   this.Game.CurrentState.PaddleBSpeed = -10;
+                   this.UpdateText = "M";
+               }
+               if (AvgOutputVoltage >=this.Ind.Threshold)
+               {
+                   if (this.Game.CurrentState.PaddleBSpeed < 0) this.Game.CurrentState.PaddleBSpeed = 0;
+                   this.Game.CurrentState.PaddleBSpeed = 10;
+                   this.UpdateText = "K";
+               }
+               Application.DoEvents();
+               Thread.Sleep(0);
+
+           }
+        }
+
+        private void PongForm_Shown(object sender, EventArgs e)
+        {
+#if WITHGOO
+            this.FitnessFunction.Motherboard.reset();
+            this.FitnessFunction.ApplyConfigFromIndividual(this.Ind);
+
+            this.GooThread = new Thread(GooComputeThread);
+            this.GooThread.Start();
+#endif
         }
     }
 
