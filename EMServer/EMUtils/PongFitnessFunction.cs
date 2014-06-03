@@ -35,7 +35,7 @@ namespace EMUtils
 
             public static emSequenceOperationType RandomSequenceOperationType()
             {
-                emSequenceOperationType[] AllowedTypes = new[] { emSequenceOperationType.CONSTANT, emSequenceOperationType.DIGITAL };// emSequenceOperationType.ARBITRARY, emSequenceOperationType.CONSTANT, emSequenceOperationType.CONSTANT_FROM_REGISTER, emSequenceOperationType.DIGITAL, emSequenceOperationType.PREDEFINED };
+                emSequenceOperationType[] AllowedTypes = new[] { emSequenceOperationType.CONSTANT};// emSequenceOperationType.ARBITRARY, emSequenceOperationType.CONSTANT, emSequenceOperationType.CONSTANT_FROM_REGISTER, emSequenceOperationType.DIGITAL, emSequenceOperationType.PREDEFINED };
                 return AllowedTypes[RNG.Next(0, AllowedTypes.Length)];
             }
         }
@@ -263,7 +263,7 @@ namespace EMUtils
         public class IndividualAndPopulationFactory
         {
             public static int PopulationSize = 2;
-            public static int ItemsInGenotype = 12;
+            public static int ItemsInGenotype = 4;
             public static int[] AvailablePins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15};
             public static int MaxPinsPerSequenceItem = 1;
             public static int MaxTime = 128;
@@ -568,7 +568,7 @@ namespace EMUtils
                 Thread.Sleep(200);
                 Shuffle();
                 List<double> OutputVoltages = new List<double>();
-                int RepeatCounts = 1;
+                int RepeatCounts = 2;
                 int PositionsToTest = (int)TestStates.GetLongLength(0);
                 for (int r = 0; r < RepeatCounts; r++)
                 {
@@ -609,7 +609,7 @@ namespace EMUtils
                 }
                 Ind.Fitness = Math.Abs(CM.MCC);
 
-                /*
+                
                 double TestThreshold = -5;
                 while (TestThreshold < 5)
                 {
@@ -654,7 +654,7 @@ namespace EMUtils
                     }
 
                     TestThreshold += 0.01;
-                }*/
+                }
                 return Ind.Fitness;
             }
         }
@@ -675,11 +675,11 @@ namespace EMUtils
 
                 for (int i = 0; i < 25; i++)
                 {
-                    FitFunc.TestIndividual(Pop.Individuals[0]);
-                    Reporting.Say(i + "\t" + Pop.Individuals[0].Fitness);
+//                    FitFunc.TestIndividual(Pop.Individuals[0]);
+  //                  Reporting.Say(i + "\t" + Pop.Individuals[0].Fitness);
                     Console.WriteLine("**********************");
                 }
-                return;
+    //            return;
                 if (File.Exists("PONGBESTIND"))
                 {
                     Individual B = Individual.Load("PONGBESTIND");
