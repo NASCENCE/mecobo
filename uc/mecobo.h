@@ -131,8 +131,6 @@ extern "C" {
 }
 #endif
 
-
-
 //Start output on given pin
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);

@@ -34,7 +34,7 @@ it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
 it.endTime = 1100
-it.frequency = 10000
+it.frequency = 1000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 
@@ -43,7 +43,7 @@ cli.joinSequences()
 
 res = []
 for i in cli.getRecording(0).Samples:
-  res.append(i * (2.5/4096.0));
+  res.append(i * (5.0/4096.0));
 
 plt.ylim(-6,6)
 cli.reset()

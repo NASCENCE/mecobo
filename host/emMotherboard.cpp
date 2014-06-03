@@ -12,6 +12,9 @@
 #include <map>
 #include <queue>
 #include <thread>
+#include <chrono>
+#include <thread>
+
 
 #include "Mecobo.h"
 #include "USB.h"
@@ -89,6 +92,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   bool reset() {
+    //mecobo->discharge();
     mecobo->reset();
     clearSequences();
     std::cout << "Board reset and sequences cleared" << std::endl;
@@ -132,14 +136,12 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
       if(item.endTime > lastSequenceItemEnd) {
         lastSequenceItemEnd = item.endTime;
-        std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
       }
     }
 
     std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
-    sequenceRunStart = steady_clock::now();
     mecobo->runSchedule();
-
+    sequenceRunStart = steady_clock::now();
 
   } 
 
@@ -151,9 +153,17 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void joinSequences() {
     //Hang around until things are done.
     std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
-    steady_clock::time_point end;
-    while(duration_cast<milliseconds>(end - sequenceRunStart).count() < lastSequenceItemEnd) {
-      end = steady_clock::now();
+    std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
+    int totalWaitMs = 0;
+    int items = 0;
+    while((items = mecobo->status().itemsInQueue) > 0) {
+      //Ask again in 10ms.
+      std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+      totalWaitMs += 100;
+      if (totalWaitMs > (lastSequenceItemEnd*2)) {
+        std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
+        break;
+      }
     }
   }
 
@@ -192,6 +202,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setConfigRegister(const int32_t index, const int32_t value) {
+    if((value < 0) || (value > 255)) {
+
+      emException err;
+      err.Reason = "Value in config registers must be between 0 and 255";
+      err.Source = "setConfigRegister(register index, value)";
+      throw err;
+    }
     std::cout << "Setting config register " << index << " to " << value << std::endl;
     mecobo->updateRegister(index, value);
   }
@@ -224,14 +241,16 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
         for(auto p : item.pin) {
-          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+          std::cout << "CONSTANT. Amplitude:" << item.amplitude << " Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
         mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
 
       case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
         for(auto p : item.pin) {
-          std::cout << "CONSTANT added: " << item.amplitude << " on pin " << p << std::endl;
+          std::cout << "CONSTANT FROM REG. Amplitude:" << item.amplitude << " Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
           mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
         break;
@@ -264,7 +283,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
       case emSequenceOperationType::type::DIGITAL:
         for(auto p : item.pin) {
-          std::cout << "DIGITAL OUTPUT added: " << item.amplitude << " on pin "<< p <<  std::endl;
+            std::cout << "DIGITAL. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
           mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
         break;
@@ -275,7 +295,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         switch (item.waveFormType) {
           case emWaveFormType::SINE:
           for(auto p : item.pin) {
-        	  std::cout << "PREDEFINED SINE " << std::endl;
+        	  std::cout << "PREDEFINED SINE on " << p << std::endl;
           }
                 mecobo->scheduleSine(item.pin, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
             break;
@@ -298,7 +318,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         	    break;
         	  }
 
-        	std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
+        	std::cout << "PREDEFINED PWM added on pin " << p << ": Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
         	//submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
             }
         	  mecobo->schedulePWMoutput(item.pin, item.startTime, item.endTime, item.amplitude);

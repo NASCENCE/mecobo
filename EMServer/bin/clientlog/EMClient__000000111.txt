@@ -1,0 +1,36 @@
+22 May 2014	06:59:25		Logging to file ./clientlog//EMClient__000000111.txt
+22 May 2014	06:59:25		SETTING	LogServer	True
+22 May 2014	06:59:25		SETTING	LogServerPath	./serverlog
+22 May 2014	06:59:25		SETTING	LogClient	True
+22 May 2014	06:59:25		SETTING	LogClientPath	./clientlog
+22 May 2014	06:59:25		SETTING	Server	129.241.102.247
+22 May 2014	06:59:25		SETTING	ServerPort	9090
+22 May 2014	06:59:25		SETTING	DataAPIServerPort	9091
+22 May 2014	06:59:25		SETTING	DataAPIServer	localhost
+22 May 2014	06:59:25	Microsoft CLR? YES
+22 May 2014	06:59:25	Ping response = 0
+22 May 2014	06:59:25	Ping response took 84ms or 205323 ticks
+22 May 2014	06:59:36	0         	3         	0         	10374     
+22 May 2014	06:59:45	1         	3         	5         	19158     
+22 May 2014	06:59:53	2         	3         	14        	27646     
+22 May 2014	07:00:02	3         	2         	19        	36037     
+22 May 2014	07:00:10	4         	2         	24        	44350     
+22 May 2014	07:00:18	5         	3         	29        	52689     
+22 May 2014	07:00:27	6         	2         	33        	61133     
+22 May 2014	07:00:35	7         	3         	39        	69666     
+22 May 2014	07:00:44	8         	3         	43        	77989     
+22 May 2014	07:00:52	9         	2         	49        	86334     
+22 May 2014	07:01:00	10        	2         	54        	94616     
+22 May 2014	07:01:08	11        	2         	59        	102934    
+22 May 2014	07:01:17	12        	2         	64        	111225    
+22 May 2014	07:01:25	13        	2         	69        	119502    
+22 May 2014	07:01:34	14        	2         	74        	128442    
+22 May 2014	07:01:42	15        	3         	76        	136840    
+22 May 2014	07:01:51	16        	2         	84        	145261    
+22 May 2014	07:01:59	17        	2         	89        	153560    
+22 May 2014	07:02:07	18        	2         	94        	161818    
+22 May 2014	07:02:17	19        	6         	97        	171153    
+22 May 2014	07:02:25	20        	2         	103       	179447    
+22 May 2014	07:02:33	21        	3         	108       	187821    
+22 May 2014	07:02:42	22        	3         	110       	196265    
+22 May 2014	07:02:50	23        	3         	118       	204557    
