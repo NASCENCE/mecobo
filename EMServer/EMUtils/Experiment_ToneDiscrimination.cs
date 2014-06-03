@@ -149,6 +149,12 @@ namespace EMUtils
                     return 1;
                 return 0;
             }
+
+            public static void Save(Individual Ind, string FileName)
+            {
+                System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(Ind.GetType());
+                x.Serialize(new FileStream(FileName, FileMode.Create), Ind);                
+            }
         }
 
         public class Population
@@ -462,7 +468,7 @@ namespace EMUtils
 
             public static Individual RandomIndividual()
             {
-                ItemsInGenotype = AvailablePins.Length;
+                //ItemsInGenotype = AvailablePins.Length;
                 Individual Ind = new Individual();
                 Ind.Fitness = double.NaN;
                 Ind.Genotype = new List<emSequenceItem>();
@@ -537,10 +543,10 @@ namespace EMUtils
             string OutputFileName = "";
             for (int Epoch = 0; Epoch < 1000; Epoch++)
             {
-                FitFunc.Motherboard.setLED(4, false);
+                FitFunc.Motherboard.setLED(0, false);
                 FitFunc.TestPopulation(Pop);
-                FitFunc.Motherboard.setLED(4, true);
-                FitFunc.Motherboard.setLED(5, true);
+                FitFunc.Motherboard.setLED(0, true);
+                FitFunc.Motherboard.setLED(1, true);
                 Pop.Sort();
                 Individual BestInd = Pop.Individuals[0];
                 Reporting.Say(string.Format("{0,-10}\t{1,-10}\t{2,-10}\t{3,-10}", Epoch, BestInd.Fitness, BestInd.EvaluationIndex, Timer.ElapsedMilliseconds));
@@ -599,7 +605,7 @@ namespace EMUtils
 
                 Pop.Simple1PlusNEvoStrat(0.1);
 
-                FitFunc.Motherboard.setLED(5, false);
+                FitFunc.Motherboard.setLED(1, false);
             }
         }
     }

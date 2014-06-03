@@ -1,0 +1,70 @@
+25 May 2014	06:53:45		Logging to file ./clientlog//EMClient__000000185.txt
+25 May 2014	06:53:45		SETTING	LogServer	True
+25 May 2014	06:53:45		SETTING	LogServerPath	./serverlog
+25 May 2014	06:53:45		SETTING	LogClient	True
+25 May 2014	06:53:45		SETTING	LogClientPath	./clientlog
+25 May 2014	06:53:45		SETTING	Server	129.241.102.247
+25 May 2014	06:53:45		SETTING	ServerPort	9090
+25 May 2014	06:53:45		SETTING	DataAPIServerPort	9091
+25 May 2014	06:53:45		SETTING	DataAPIServer	localhost
+25 May 2014	06:53:45	Microsoft CLR? YES
+25 May 2014	06:53:46	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:53:46	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:53:46	Retrying connection attempt ... 1 of 10
+25 May 2014	06:53:57	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:53:57	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:53:57	Retrying connection attempt ... 2 of 10
+25 May 2014	06:54:08	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:54:08	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:54:08	Retrying connection attempt ... 3 of 10
+25 May 2014	06:54:20	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:54:20	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:54:20	Retrying connection attempt ... 4 of 10
+25 May 2014	06:54:31	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:54:31	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:54:31	Retrying connection attempt ... 5 of 10
+25 May 2014	06:54:42	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:54:42	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:54:42	Retrying connection attempt ... 6 of 10
+25 May 2014	06:54:53	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:54:53	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:54:53	Retrying connection attempt ... 7 of 10
+25 May 2014	06:55:05	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:55:05	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:55:05	Retrying connection attempt ... 8 of 10
+25 May 2014	06:55:16	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:55:16	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:55:16	Retrying connection attempt ... 9 of 10
+25 May 2014	06:55:27	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+25 May 2014	06:55:27	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+25 May 2014	06:55:27	Retrying connection attempt ... 10 of 10

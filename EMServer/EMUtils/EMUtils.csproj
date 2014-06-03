@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfusionMatrix.cs" />
+    <Compile Include="Experiment_Gates2.cs" />
     <Compile Include="emSequenceVisualiser.cs">
       <SubType>Form</SubType>
     </Compile>

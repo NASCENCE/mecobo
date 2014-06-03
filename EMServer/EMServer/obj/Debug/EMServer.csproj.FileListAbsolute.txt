@@ -26,6 +26,5 @@ C:\Users\simonh\Dropbox\API\EMServer\bin\EMServer.pdb
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMServer.exe.config
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMServer.exe
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMServer.pdb
-C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMServer\obj\Debug\EMServer.csprojResolveAssemblyReference.cache
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMServer\obj\Debug\EMServer.exe
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMServer\obj\Debug\EMServer.pdb
