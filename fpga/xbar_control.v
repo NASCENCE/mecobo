@@ -17,6 +17,9 @@ output sin);
 parameter POSITION = 0;
 wire cs;
 assign cs = (enable & (addr[18:8] == POSITION));
+wire busy_fast;
+assign busy_fast = (command != 0);
+
 
 //wire high_addr = (addr[4:0]<<4)+15;
 //wire low_addr = (addr[4:0]<<4);
@@ -43,22 +46,28 @@ begin
     end
 
   end else begin
-    if (cs & wr)
-      if (addr[7:5] == 3'b001) 
+    if (cs & wr) begin
+      if (addr[7:5] == 3'b001) begin
         command <= data;
-      else begin
+      end else begin
         //for (i = 0; i < 32; i = i + 1) begin
         ebi_captured_data[addr[4:0]] <= data; //offset into ebi big register since we only tx 2 bytes at a time.
         //end
       end
+    end
 
     if (cs & re) begin
       if(addr[7:0] == BUSY) 
-        data_out <= {14'b0,  busy};
+        data_out <= {14'b0, busy_fast, busy};
       if(addr[7:0] == ID_REG)
         data_out <= 16'h7ba2; //kinda looks like 'XbaR'... no?
-    end else
+    end else begin
       data_out <= 0;
+    end
+
+    if (busy) begin
+      command <= 0;
+    end
   end
 end
 

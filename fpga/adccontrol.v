@@ -36,6 +36,8 @@ parameter POSITION = 0;
 wire controller_enable;
 assign controller_enable = (enable & (addr[18:8] == POSITION));
 
+wire busy = (state != get_values);
+
 localparam [3:0] 
   PROGRAM  = 4'h4,
   OVERFLOW = 4'h1,
@@ -43,25 +45,25 @@ localparam [3:0]
   SAMPLE   = 4'h7,
   SEQUENCE = 4'h8,
   ID_REG   = 4'h9,
-  BUSY     = 4'hA;
+  BUSY     = 4'hA,
+  LAST     = 4'hB;
 
 //Data capture from EBI
 //--------------------------------------------------------------------
-reg[15:0] ebi_capture_reg;
+reg[15:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
   if (reset) 
     data_out <= 0;
-  else
+  else begin
 
-    if (reset_ebi_capture_reg)
-      ebi_capture_reg <= 0;
-    if (controller_enable && wr) begin
+//    if (reset_ebi_capture_reg) begin
+ //     ebi_capture_reg <= 0;
+  //  end
+
+    if (controller_enable & wr) begin
       //Decode the command field.
       if (addr[3:0] == PROGRAM) begin
-        //if not shifting out data we are free to capture new.
-        if (!shift_out) begin
-          ebi_capture_reg <= data_in;
-        end 
+        ebi_capture_reg <= data_in;
       end
       //Data driving
       if (addr[3:0] == OVERFLOW) begin
@@ -92,13 +94,18 @@ always @ (posedge clk) begin
 
       //Check if busy.
       if (addr[3:0] == BUSY) begin
-        data_out <= {13'h0, shift_out,shift_in, ebi_capture_reg[15]};
+          data_out <= {15'h0, busy};
       end
 
-    end else
-      data_out <= 0;
-end
-//---------------------------------------------------------------------
+      if (addr[3:0] == LAST) begin
+          data_out <= last_executed_command;
+      end
+
+      end else
+        data_out <= 0;
+    end
+  end
+  //---------------------------------------------------------------------
 
 
 reg [15:0] clock_divide_register = 0;
@@ -120,13 +127,33 @@ reg shift_out; //shift out to ADC
 reg shift_in; //shift into FPGA
 reg copy_to_tmp;
 reg load_shift_out_reg;
-reg reset_ebi_capture_reg;
+
+reg load_current_command;
+reg reset_current_command;
+
+reg load_last_executed_command;
+ 
 
 
 //----------------------------- SLOW DATA PATH -----------------------------------------------
 //This describes the process that shifts out data in our out of the ADC.
+//
+
+reg [15:0] current_command = 0;
+reg [15:0] last_executed_command = 0;
+
 always @ (posedge sclk)  begin
   if (!reset) begin
+
+    if (load_last_executed_command) begin
+      last_executed_command <= current_command;
+    end
+
+    if (reset_current_command) begin
+      current_command <= 0;
+    end else if (load_current_command) begin
+      current_command <= ebi_capture_reg;
+    end
 
     //Clock counter logic
     if (res_clkcounter) 
@@ -141,7 +168,7 @@ always @ (posedge sclk)  begin
     //the fast clock loads the ebi capture reg, the slow clock loads the real shift register in sync
     //with the control state machine.
     if (load_shift_out_reg) 
-      shift_out_register <= ebi_capture_reg;
+      shift_out_register <= current_command;
     else if (shift_out)
       shift_out_register <= {shift_out_register[14:0], 1'b0};
     else
@@ -165,11 +192,13 @@ end
 //Take top-most bit of shift_out_register and hook it directly to ADC input.
 assign adc_din = shift_out_register[15];
 //----------------------------------------------------------------------------
-parameter NUM_STATES    = 4;
-parameter init          = 4'b0001;
-parameter program_adc   = 4'b0010;
-parameter get_values    = 4'b0100;
-parameter copy          = 4'b1000;
+parameter NUM_STATES    = 5;
+parameter init          = 5'b00001;
+parameter program_adc   = 5'b00010;
+parameter get_values    = 5'b00100;
+parameter copy          = 5'b01000;
+parameter writeback     = 5'b10000;
+//parameter reset_ebi     = 5'b10000;
 
 reg [NUM_STATES - 1:0] state;
 
@@ -183,6 +212,7 @@ reg [NUM_STATES - 1:0] state;
 //The first process describes the next-state equation,
 //and the second process describes the outputs for each state (it's combinatorial).
 
+/*
 always @ (posedge sclk) 
 begin
   if (reset) begin
@@ -193,16 +223,16 @@ begin
 
       init: begin
         //If write bit is high, there's a new command in town.
-        if (ebi_capture_reg[15] == 1'b1) begin
+        if (current_command[15] == 1'b1) begin
           //$display("Going to programming state, shifting out %d", shift_out_register);
           state <= program_adc;
         end else begin
           state <= get_values;  //ebi_capture 0, go get values by default.
         end
       end
-
+      
       copy: begin
-        state <= init;
+        state <= init; //via init state after copy to check for new commands.
       end
 
       get_values: begin
@@ -217,82 +247,162 @@ begin
       program_adc: begin
         state <= program_adc;
         if (clkcounter == 15) begin
-          state <= init;
+          state <= writeback;
         end
       end
 
-      default: 
+      writeback: begin
+        state <= init;
+      end
+
+      default:
         state <= init;
 
     endcase
   end
 end
-
+*/
 //output equations and stunff.
-always @ (*) begin
-  case (state)
-    init: begin
-      cs <= 1'b1;
-      if (ebi_capture_reg[15] == 1'b1)
-        load_shift_out_reg <= 1'b1;
-      else
+always @ (posedge sclk) begin
+  if (reset) begin
+    cs <= 1'b1;
+    shift_in <= 1'b0;  //shifts data into ADC
+    shift_out <= 1'b0; //shifts data out from ADC
+    load_shift_out_reg <= 1'b0;
+    inc_clkcounter <= 1'b0;
+    res_clkcounter <= 1'b0;
+    copy_to_tmp <= 1'b0;
+
+    load_current_command <= 1'b0;
+    reset_current_command <= 1'b0;
+
+    load_last_executed_command <= 1'b0;
+    state <= init;
+
+  end 
+  else begin
+    case (state)
+      init: begin
+        cs <= 1'b1;
         load_shift_out_reg <= 1'b0;
+        shift_out <= 1'b0;
+        shift_in <= 1'b0;
+        inc_clkcounter <= 1'b0;
+        res_clkcounter <= 1'b1;
+        copy_to_tmp <= 1'b0;
 
-      reset_ebi_capture_reg <= 1'b0;
-      shift_out <= 1'b0;
-      shift_in <= 1'b0;
-      inc_clkcounter <= 1'b0;
-      res_clkcounter <= 1'b1;
-      copy_to_tmp <= 1'b0;
-    end
+        load_current_command <= 1'b1;
+        reset_current_command <= 1'b0;
 
+        load_last_executed_command <= 1'b0;
+
+        if (current_command != last_executed_command) begin
+          load_shift_out_reg <= 1'b1;
+          state <= program_adc;
+        end
+        else begin
+          state <= get_values;
+        end
+
+
+      end
 
     //This state shall copy to tmp registers.
     copy: begin
-      cs <= 1'b0;  
-      shift_in <= 1'b0;  //shifts data into ADC
-      shift_out <= 1'b0; //shifts data out from ADC
+      cs <= 1'b1;   
+      shift_in <= 1'b0;  //shifts data in from ADC
+      shift_out <= 1'b0; //shifts data out to ADC
       load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
-      reset_ebi_capture_reg <= 1'b0;
       inc_clkcounter <= 1'b0;
       res_clkcounter <= 1'b1;
-      copy_to_tmp <= 1'b1;
+      copy_to_tmp <= 1'b0;
+
+      load_current_command <= 1'b1;
+      reset_current_command <= 1'b0;
+
+      load_last_executed_command <= 1'b0;
+      state <= init;
     end
 
 
     get_values: begin
       cs <= 1'b0;  //pull low to select ADC.
-      shift_in <= 1'b1;  //shifts data into ADC
-      shift_out <= 1'b0; //shifts data out from ADC
+      shift_in <= 1'b1;  //shifts data from ADC
+      shift_out <= 1'b0; 
       load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
-      reset_ebi_capture_reg <= 1'b0;
       inc_clkcounter <= 1'b1;  //note : increase on next posedge.
       res_clkcounter <= 1'b0;
       copy_to_tmp <= 1'b0;
+
+      load_current_command <= 1'b0;
+      reset_current_command <= 1'b0;
+
+      load_last_executed_command <= 1'b0;
+
+      state <= get_values;
+      if(clkcounter == 15) begin
+        state <= copy;
+        cs <= 1'b1;
+        copy_to_tmp <= 1'b1;
+        shift_in <= 1'b0;
+      end
+
+    end
+
+    writeback: begin
+      cs <= 1'b1;  //pull low to select ADC.
+      shift_in <= 1'b0;  //shifts data from ADC
+      shift_out <= 1'b0; 
+      load_shift_out_reg <= 1'b0;  //Shift out has to be 0 during fetching.
+      inc_clkcounter <= 1'b0; 
+      res_clkcounter <= 1'b1;
+      copy_to_tmp <= 1'b0;
+
+      load_current_command <= 1'b0;
+      reset_current_command <= 1'b1;   //should be safe, loaded it last cycle.
+
+      load_last_executed_command <= 1'b0;
+      state <= init;
+
     end
 
     program_adc: begin
       cs <= 1'b0;
-      shift_in <= 1'b0;  //shifts data into ADC
-      shift_out <= 1'b1; //shifts data out from ADC
+      shift_in <= 1'b0;  //shifts data in to ADC
+      shift_out <= 1'b1; //shifts data out to ADC
       load_shift_out_reg <= 1'b0;
-      reset_ebi_capture_reg <= 1'b1;
       inc_clkcounter <= 1'b1;
       res_clkcounter <= 1'b0;
       copy_to_tmp <= 1'b0;
+
+      load_current_command <= 1'b0;
+      reset_current_command <= 1'b0;
+      load_last_executed_command <= 1'b0; 
+      state <= program_adc;
+
+      if(clkcounter == 15) begin
+        load_last_executed_command <= 1'b1; //synchronize here
+        state <= writeback;
+      end     
     end
-    
+
     default: begin
       cs <= 1'b1;
       shift_in <= 1'b0;  //shifts data into ADC
-      shift_out <= 1'b1; //shifts data out from ADC
+      shift_out <= 1'b0; //shifts data out from ADC
       load_shift_out_reg <= 1'b0;
-      reset_ebi_capture_reg <= 1'b1;
-      inc_clkcounter <= 1'b1;
+      inc_clkcounter <= 1'b0;
       res_clkcounter <= 1'b0;
       copy_to_tmp <= 1'b0;
+
+      load_current_command <= 1'b0;
+      reset_current_command <= 1'b0;
+
+      load_last_executed_command <= 1'b0;
+      state <= init;
     end
   endcase
+end
 end
 
 
