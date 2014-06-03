@@ -51,6 +51,7 @@ public:
   void scheduleConstantVoltageFromRegister(std::vector<int> pins, int start, int end, int reg);
   
 
+  mecoboStatus status();
   void runSchedule();
   void clearSchedule();
 
@@ -58,6 +59,7 @@ public:
   std::vector<int32_t> getSampleBuffer(int pin);
 
   void reset();
+  void discharge();
   void setLed(int a, int b);
   void updateRegister(int index, int value);
 

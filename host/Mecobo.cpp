@@ -8,6 +8,8 @@
 #include "Mecobo.h"
 #include <stdexcept>
 #include <cmath>
+#include <chrono>
+#include <thread>
 
 
 Mecobo::Mecobo ()
@@ -199,7 +201,6 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   if(nSamples == 0) {
     return pinRecordings[materialPin];
   } else {
-    std::cout << "sizeof(sampeValue): " << sizeof(sampleValue) << std::endl;
     if(nSamples >= 64000/sizeof(sampleValue)) {
       nSamples = 64000/sizeof(sampleValue);
       std::cout << "WARNING: Receiving less (" << nSamples << ") than what we could because of USB." << std::endl;
@@ -250,6 +251,15 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   return pinRecordings[materialPin];
 }
 
+void Mecobo::discharge()
+{
+  xbar.reset();
+  std::vector<int> pins;
+  for(int i = 0; i < 15; i++) {pins.push_back(i);}
+  scheduleDigitalOutput(pins, 0, 500, 0, 0);
+  runSchedule();
+}
+
 void Mecobo::reset()
 {
   xbar.reset();
@@ -257,6 +267,10 @@ void Mecobo::reset()
   struct mecoPack p;
   createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
   sendPacket(&p);
+  //Wait a while between polling the status to be nice.
+  while(this->status().state == MECOBO_STATUS_BUSY) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 }
 
 bool
@@ -265,6 +279,17 @@ Mecobo::isFpgaConfigured ()
   return true;
 }
 
+mecoboStatus
+Mecobo::status()
+{
+  struct mecoPack p;
+  createMecoPack(&p, 0, 0, USB_CMD_STATUS);
+  sendPacket(&p);
+  mecoboStatus status;
+  usb.getBytesDefaultEndpoint((uint8_t*)&status, sizeof(mecoboStatus));
+
+  return status;
+}
 
 void
 Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int frequency)
@@ -372,6 +397,9 @@ Mecobo::runSchedule ()
   std::cout << "Setting up XBAR" << std::endl;
   std::vector<uint8_t> test = xbar.getXbarConfigBytes();
   this->setXbar(test);
+  while(status().state == MECOBO_STATUS_BUSY) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
 
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);

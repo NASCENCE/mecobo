@@ -54,6 +54,7 @@ int _write_r(void *reent, int fd, char *ptr, size_t len)
   return len;
 }
 
+static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
 /*** Typedef's and defines. ***/
 static int timeMs = 0;
@@ -98,9 +99,9 @@ static int runItems = 0;
 #define SRAM2_BYTES 256*1024 
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
-#define NUM_DAC_REGS 8
-int32_t DACreg[NUM_DAC_REGS];
-int registersUpdated = 0;
+#define NUM_DAC_REGS 4
+uint16_t DACreg[NUM_DAC_REGS];
+uint8_t registersUpdated[NUM_DAC_REGS];
 
 //Circular buffer in SRAM1, modulo MAX_SAMPLES
 static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
@@ -282,7 +283,7 @@ int main(void)
   printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
   //Default all regs to output 0V
-  for(int i = 0; i < 8; i++) {
+  for(int i = 0; i < NUM_DAC_REGS; i++) {
     DACreg[i] = 128;
   }
 
@@ -348,10 +349,9 @@ int main(void)
             itemsInFlight[iifPos++] = currentItem;
             //Do not decrease counter if this is a run-forever
             //style item.
-            numItems--;
             numItemsInFlight++;
           }
-          //Items To Apply queue increase.
+          //Items To Apply queue increase because we started an item.
           itaPos++;
         }
 
@@ -359,18 +359,16 @@ int main(void)
         if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
           nextKillTime = currentItem->endTime;
         }
-      }
-
-
+      } 
       //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
         for(int flight = 0; flight < numItemsInFlight; flight++) {
-          if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
+          //if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
+            //execute(itemsInFlight[flight]);
+          //}
+          if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
             execute(itemsInFlight[flight]);
-          }
-          if(registersUpdated && (itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER)) {
-            execute(itemsInFlight[flight]);
-            registersUpdated--;
+            registersUpdated[itemsInFlight[flight]->constantValue] = 0;
           }
         }
         //update counters.
@@ -500,7 +498,7 @@ int UsbDataSent(USB_Status_TypeDef status,
     }
   }
   sendInProgress = 0;
-  printf("USB DATA SENT HURRA\n");
+  //printf("USB DATA SENT HURRA\n");
 
   return USB_STATUS_OK;
 }
@@ -545,12 +543,12 @@ inline void execute(struct pinItem * item)
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD:
-      printf("  RECORD DIGITAL: %d at rate %d\n", item->pin, item->sampleRate);
+      printf("  %d RECORD DIGITAL: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       startInput(item->pin, item->sampleRate);
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-      printf("  RECORD ANAL: %d at rate %d\n", item->pin, item->sampleRate);
+      printf("  %d RECORD ANAL: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       startInput(item->pin, item->sampleRate);
       break;
 
@@ -577,7 +575,7 @@ inline void execute(struct pinItem * item)
 
     case PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER:
       //Note: Index is coded in constantValue
-      //printf("  CONST REGISTER DAC VOLTAGE,channel %d, %d\n", item->pin, DACreg[item->constantValue]);
+      printf("  %d CONST REGISTER DAC VOLTAGE,channel %d, %u\n", timeMs, item->pin, (unsigned int)DACreg[item->constantValue]);
       setVoltage(item->pin, DACreg[item->constantValue]);
       break;
 
@@ -615,6 +613,7 @@ void killItem(struct pinItem * item)
     default:
       break;
   }
+  numItems--;
 }
 
 //inline void startInput(struct pinItem * item)
@@ -633,36 +632,36 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 
       //Range register 1
       addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+      while(addr[0x0B] != 0xAAA0);
       //1101 0101 0100 0000 = D reg 1, +/- 2.5 : 
       //addr[0x04] = 0xD540; //range register written to +-2.5V on all channels for chans 0 to 4
-      for(int i = 0; i < 100000; i++);
-      while(addr[0x0A]);
 
       //Range register 2
       addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+      while(addr[0xB] != 0xCAA0);
       //1011 0101 0100 0000
+      //while(addr[0x0A]);
       //addr[0x04] = 0xB540; //range register written to +-2.5V on all channels for chans 0 to 4
-      for(int i = 0; i < 100000; i++);
-      while(addr[0x0A]);
 
       //power bits.
-      addr[0x04] = 0x8014;
+      //addr[0x04] = 0x8014;
 
       //setup FPGA AD controller
       addr[0x01] = sampleRate; //overflow
       addr[0x02] = 1; //divide
       //Sequence register write.
 
+      //while(addr[0x0A]);
+      //while(addr[0x0A]);
       addr[0x04] = adcSequence[0];
-      for(int i = 0; i < 100000; i++);
-      while(addr[0x0A]);
+      while(addr[0x0B] != adcSequence[0]);
 
       //Program the ADC to use this channel as well now. Result in two comp, internal ref.
       //sequencer on.
       //Control register
+      //while(addr[0x0A]);
       addr[0x04] = 0x8014;
-      for(int i = 0; i < 100000; i++);
-      while(addr[0x0A]);
+      while(addr[0x0B] != 0x8014);
 
       printf("ADC programmed to new sequences\n");
     }
@@ -692,12 +691,12 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
 
   //Copy to sample buffer.
   if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
-    lastCollected[channel] = val.sampleNum; 
-    //NOTE: This wraps around the per-channel buffer, so we'll drop samples for sure.
-    sampleBuffer[numSamples++] = val;
+    lastCollected[channel] = val.sampleNum;
+    if(numSamples < MAX_SAMPLES) {
+      sampleBuffer[numSamples++] = val;
+    } 
   }
 
-  //printf("G: n:%u ch:%u hex:0x%x twodec:%d unsigned:%u\n", sample->sampleNum, sample->channel, got, got&0x1FFF, got&0x1FFF);
 }
 
 //TODO: MAKE LOOKUPTABLE
@@ -729,7 +728,12 @@ void execCurrentPack()
 {
   executeInProgress = 1;
   if(currentPack.command == USB_CMD_STATUS) {
-    //sendPacket(STATUS_BYTES, USB_CMD_STATUS, (uint8_t*)dat);
+    struct mecoboStatus s;
+    s.state = (uint8_t)mecoboStatus;
+    s.samplesInBuffer = (uint16_t)numSamples;
+    s.itemsInQueue = (uint16_t)numItems;
+
+    sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
   }
 
   if(currentPack.command == USB_CMD_CONFIG_PIN) {
@@ -773,6 +777,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
   {
+    mecoboStatus = MECOBO_STATUS_BUSY;
     printf("Configuring XBAR\n");
     uint16_t * d = (uint16_t*)(currentPack.data);
     for(int i = 0; i < 32; i++) {
@@ -780,10 +785,11 @@ void execCurrentPack()
       printf("XBAR: Word %d: %x\n", i, d[i]); 
     }
     xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+    USBTIMER_DelayMs(3);
     while(xbar[0x0A]) { printf("."); }
-    xbar[0x20] = 0x0; //whatever written to this register will be interpreted as a cmd.
 
     printf("\nXBAR configured\n");
+    mecoboStatus = MECOBO_STATUS_READY;
   }
 
 
@@ -793,15 +799,9 @@ void execCurrentPack()
     int * d = (int*)(currentPack.data);
     printf("REG %d: %d\n", d[0], d[1]); 
     DACreg[d[0]] = d[1];
-    registersUpdated++;
+    registersUpdated[d[0]] = 1;
   }
 
-
-  if(currentPack.command == USB_CMD_CONST) {
-    /* Start output from pin controllers */
-    //uint32_t * d = (uint32_t *)(currentPack.data);
-    //startConstOutput((d[PINCONFIG_DATA_FPGA_PIN]));
-  }
 
   if(currentPack.command == USB_CMD_LED) {
     /* Start output from pin controllers */
@@ -809,9 +809,10 @@ void execCurrentPack()
     led(d[LED_SELECT], d[LED_MODE]);
   }
 
-
   if(currentPack.command == USB_CMD_RESET_ALL) {
+    mecoboStatus = MECOBO_STATUS_BUSY;
 
+    printf("Reset called! Who answers?\n");
     //Reset state
     itaPos = 0;
     numItems = 0;
@@ -822,28 +823,39 @@ void execCurrentPack()
     numInputChannels = 0;
     nextKillTime = 0;
     adcSequence[0] = 0;
-    registersUpdated = 0;
-
-    for(int r = 0; r < 4; r++) {
-      adcSequence[r] = 0xE000;
-    }
-    for(int i = 0; i < NUM_DAC_REGS; i++ ) {
-      DACreg[i] = 0;
-    }
 
     timeTick = 0;
     lastTimeTick = 0;
     timeMs = 0;
 
-    //Reset all DAC outputs to known values.
+
+    for(int r = 0; r < 4; r++) {
+      adcSequence[r] = 0xE000;
+    }
+    
+    for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
+      DACreg[i] = 128;
+      registersUpdated[i] = 0;
+    }
 
     for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
       setVoltage(i, 128);
     }
 
-    printf("RESET. NumSamples: %u\n", numSamples);
+    for(int i = 0; i < 32; i++) {
+      xbar[i] = 0;
+    }
+
+    xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+    USBTIMER_DelayMs(3);
+    while(xbar[0x0A]) { 
+      printf("Waiting for XBAR\n"); 
+    }; //hang around until command completes.
 
     resetAllPins();
+    
+    printf("\n\n---------------- MECOBO RESET ------------------\n\n");
+    mecoboStatus = MECOBO_STATUS_READY;
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
@@ -930,7 +942,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
   pack.data = data;
 
   packToSend = pack; //This copies the pack structure.
-  printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
+  //printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
   sendInProgress = 1;
   USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
 }
@@ -982,6 +994,3 @@ void led(int l, int mode)
   }
 }
 
-//void programFPGA() {
-//
-//}
