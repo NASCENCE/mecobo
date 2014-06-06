@@ -1,5 +1,4 @@
-Version: 3.0
-Last update: 28th of March 2014 (wow, has it been that long?)
+Mecobo user manual
 
 - At a glance - 
 The system consists of three units; the thrift server, the thrift client and
