@@ -1,0 +1,10 @@
+26 May 2014	15:33:29		Logging to file ./clientlog//EMClient__000000188.txt
+26 May 2014	15:33:29		SETTING	LogServer	True
+26 May 2014	15:33:29		SETTING	LogServerPath	./serverlog
+26 May 2014	15:33:29		SETTING	LogClient	True
+26 May 2014	15:33:29		SETTING	LogClientPath	./clientlog
+26 May 2014	15:33:29		SETTING	Server	129.241.102.247
+26 May 2014	15:33:29		SETTING	ServerPort	9090
+26 May 2014	15:33:29		SETTING	DataAPIServerPort	9091
+26 May 2014	15:33:29		SETTING	DataAPIServer	localhost
+26 May 2014	15:33:29	Microsoft CLR? YES

@@ -1,0 +1,2 @@
+all:
+	g++ -std=c++11 -ggdb -L/usr/local/lib -I /usr/include/libusb-1.0/ emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01c_types.cpp NascenseAPI_v01c_constants.cpp emMotherboard.cpp  ga.cpp usb.c -lthrift -lusb-1.0 -lgomp -lws2_32 -DHAVE_NETINET_IN_H -o evo

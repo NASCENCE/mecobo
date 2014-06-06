@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="style.css" rel="stylesheet" type="text/css"/>
+<title>Thrift module: NascenseAPI_v01b</title></head><body>
+<div class="container-fluid">
+<h1>Thrift module: NascenseAPI_v01b</h1>
+<table class="table-bordered table-striped table-condensed"><thead><th>Module</th><th>Services</th><th>Data types</th><th>Constants</th></thead>
+<tr>
+<td>NascenseAPI_v01b</td><td><a href="NascenseAPI_v01b.html#Svc_emEvolvableMotherboard">emEvolvableMotherboard</a><br/>
+<ul>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_appendSequenceAction">appendSequenceAction</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_clearRecording">clearRecording</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_clearSequences">clearSequences</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getLastError">getLastError</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getMotherboardID">getMotherboardID</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getMotherboardState">getMotherboardState</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getRecording">getRecording</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getTemperate">getTemperate</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getTime">getTime</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_getVoltage">getVoltage</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_joinSequence">joinSequence</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_ping">ping</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_reset">reset</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_runSequences">runSequences</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_setBaseRate">setBaseRate</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_stopSequences">stopSequences</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emEvolvableMotherboard_waitUntilReady">waitUntilReady</a></li>
+</ul>
+<a href="NascenseAPI_v01b.html#Svc_emDataApi">emDataApi</a><br/>
+<ul>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_absDifference">absDifference</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_add">add</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_cloneBuffer">cloneBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_createBuffer">createBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_destroyBuffer">destroyBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_getBuffer">getBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_loadBuffer">loadBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_medianFilter">medianFilter</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_normalize">normalize</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_quantize">quantize</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_renameBuffer">renameBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_resample">resample</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_saveBuffer">saveBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_setBuffer">setBuffer</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_setValues">setValues</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_subtract">subtract</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_sum">sum</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_sumSquaredDifference">sumSquaredDifference</a></li>
+<li><a href="NascenseAPI_v01b.html#Fn_emDataApi_threshold">threshold</a></li>
+</ul>
+</td>
+<td><a href="NascenseAPI_v01b.html#Struct_emException">emException</a><br/>
+<a href="NascenseAPI_v01b.html#Enum_emExceptionType">emExceptionType</a><br/>
+<a href="NascenseAPI_v01b.html#Struct_emSequenceItem">emSequenceItem</a><br/>
+<a href="NascenseAPI_v01b.html#Enum_emSequenceOperationType">emSequenceOperationType</a><br/>
+<a href="NascenseAPI_v01b.html#Struct_emWaveForm">emWaveForm</a><br/>
+<a href="NascenseAPI_v01b.html#Enum_emWaveFormType">emWaveFormType</a><br/>
+</td>
+<td></code></td>
+</tr></table>
+<hr/><h2 id="Enumerations">Enumerations</h2>
+<div class="definition"><h3 id="Enum_emExceptionType">Enumeration: emExceptionType</h3>
+<br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>CRITICAL</code></td><td><code>0</code></td></tr>
+<tr><td><code>NONFATAL</code></td><td><code>1</code></td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_emSequenceOperationType">Enumeration: emSequenceOperationType</h3>
+The EM controller plays back a set of operations. Think of it as a multitrack audio editing software. Logcally, each PIN has its own queue of operations. Each of these operations has a start and end time, and a set of parameters to define what each pin will be doing during that time. Operations are one of a few basic types:
+<br/><br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>NULL</code></td><td><code>0</code></td></tr>
+<tr><td><code>PWM</code></td><td><code>1</code></td></tr>
+<tr><td><code>RECORD</code></td><td><code>2</code></td></tr>
+<tr><td><code>WAIT</code></td><td><code>3</code></td></tr>
+<tr><td><code>ARBITRARY</code></td><td><code>4</code></td></tr>
+<tr><td><code>PREDEFINED</code></td><td><code>5</code></td></tr>
+</table></div>
+<div class="definition"><h3 id="Enum_emWaveFormType">Enumeration: emWaveFormType</h3>
+Standard types of waveform that the signal generator can produce
+<br/><br/><table class="table-bordered table-striped table-condensed">
+<tr><td><code>NULL</code></td><td><code>0</code></td></tr>
+<tr><td><code>ARBITRARY</code></td><td><code>1</code></td></tr>
+<tr><td><code>SQUARE</code></td><td><code>2</code></td></tr>
+<tr><td><code>SAW</code></td><td><code>3</code></td></tr>
+<tr><td><code>SINE</code></td><td><code>4</code></td></tr>
+</table></div>
+<hr/><h2 id="Structs">Data structures</h2>
+<div class="definition"><h3 id="Struct_emException">Exception: emException</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>errorCode</td><td><code>i32</code></td><td>Error codes, to be defined in documentation
+</td><td>default</td><td></td></tr>
+<tr><td>2</td><td>Reason</td><td><code>string</code></td><td>Why the error was thrown
+</td><td>default</td><td></td></tr>
+<tr><td>3</td><td>Source</td><td><code>string</code></td><td>Where (e.g. module, line number) the error came from
+</td><td>default</td><td></td></tr>
+<tr><td>4</td><td>exceptionType</td><td><code><a href="NascenseAPI_v01b.html#Enum_emExceptionType">emExceptionType</a></code></td><td>What type of error this is
+</td><td>default</td><td></td></tr>
+</table><br/>The device directly controlling the EM should make sure sensible things are happening, and if not throw an exception.  All methods should return problems via exceptions.  Exceptions should contain as much information as possible.  Exceptions can be fatal or non fatal. On a fatal exception, the controlling program should probably abandon what it is doing and reset.
+<br/></div><div class="definition"><h3 id="Struct_emWaveForm">Struct: emWaveForm</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>Samples</td><td><code>list&lt;<code>i32</code>&gt;</code></td><td>Buffer holding the values
+</td><td>default</td><td></td></tr>
+<tr><td>2</td><td>Rate</td><td><code>i32</code></td><td>Playback rate
+</td><td>default</td><td></td></tr>
+<tr><td>3</td><td>SampleCount</td><td><code>i32</code></td><td>Length of the buffer
+</td><td>default</td><td></td></tr>
+</table><br/>Structure for an arbitrary wave form.
+<br/></div><div class="definition"><h3 id="Struct_emSequenceItem">Struct: emSequenceItem</h3>
+<table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
+<tr><td>1</td><td>operationType</td><td><code><a href="NascenseAPI_v01b.html#Enum_emSequenceOperationType">emSequenceOperationType</a></code></td><td>What the action is
+</td><td>default</td><td></td></tr>
+<tr><td>2</td><td>pin</td><td><code>i32</code></td><td>Where the action is applied to (FPGA pin)
+</td><td>default</td><td></td></tr>
+<tr><td>3</td><td>startTime</td><td><code>i64</code></td><td>Ticks it should start at
+</td><td>default</td><td></td></tr>
+<tr><td>4</td><td>endTime</td><td><code>i64</code></td><td>Ticks it should end at
+</td><td>default</td><td></td></tr>
+<tr><td>5</td><td>frequency</td><td><code>i32</code></td><td>Definition of signal, if appropriate
+</td><td>default</td><td>0</td></tr>
+<tr><td>6</td><td>phase</td><td><code>i32</code></td><td></td><td>default</td><td>0</td></tr>
+<tr><td>7</td><td>amplitude</td><td><code>i32</code></td><td></td><td>default</td><td>0</td></tr>
+<tr><td>8</td><td>cycleTime</td><td><code>i32</code></td><td></td><td>default</td><td>0</td></tr>
+<tr><td>9</td><td>waveFormType</td><td><code><a href="NascenseAPI_v01b.html#Enum_emWaveFormType">emWaveFormType</a></code></td><td>Predefined wave form, eg. square, sawtooth, sine
+</td><td>default</td><td></td></tr>
+<tr><td>10</td><td>waveForm</td><td><code><a href="NascenseAPI_v01b.html#Struct_emWaveForm">emWaveForm</a></code></td><td>If playing back an arbitrary signal, buffer is attached here
+</td><td>default</td><td></td></tr>
+<tr><td>11</td><td>waitForTrigger</td><td><code>i32</code></td><td>If >=0 wait for a trigger on certain pin before running
+</td><td>default</td><td>-1</td></tr>
+</table><br/>Definition of an operation to be performed. Not all parameters may be used. It will depend on the operationType. If something can't be performed by the EM, exceptions should be thrown when adding to the buffers. Timings are defined by FPGA ticks, which will need to be converted to Hz.
+<br/></div><hr/><h2 id="Services">Services</h2>
+<h3 id="Svc_emEvolvableMotherboard">Service: emEvolvableMotherboard</h3>
+<div class="extends"><em>extends</em> <code><a href="shared.html#Svc_SharedService">shared.SharedService</a></code></div>
+This is the definition of the API. These methods are what external programs will see when they connect.
+<p/>
+All operations return error info by throwing exceptions. Exceptions therefore should be processed, and not ignored.
+<br/><div class="definition"><h4 id="Fn_emEvolvableMotherboard_ping">Function: emEvolvableMotherboard.ping</h4>
+<pre><code>i32</code> ping()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Test for the existence of the service
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getMotherboardID">Function: emEvolvableMotherboard.getMotherboardID</h4>
+<pre><code>string</code> getMotherboardID()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Each motherboard should have an ID for logging, versioning etc
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_waitUntilReady">Function: emEvolvableMotherboard.waitUntilReady</h4>
+<pre><code>void</code> waitUntilReady()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Hold until the EM device says it is ready to receive commands
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getMotherboardState">Function: emEvolvableMotherboard.getMotherboardState</h4>
+<pre><code>string</code> getMotherboardState()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Description of what the EM is currently doing
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getLastError">Function: emEvolvableMotherboard.getLastError</h4>
+<pre><code>string</code> getLastError()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>See if there is any error message
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_reset">Function: emEvolvableMotherboard.reset</h4>
+<pre><code>bool</code> reset()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Resets the motherboard to initial, default config. Returns true if OK
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_clearSequences">Function: emEvolvableMotherboard.clearSequences</h4>
+<pre><code>void</code> clearSequences()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Clears the sequence queue
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_runSequences">Function: emEvolvableMotherboard.runSequences</h4>
+<pre><code>void</code> runSequences()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Runs the queued seqeunces
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_stopSequences">Function: emEvolvableMotherboard.stopSequences</h4>
+<pre><code>void</code> stopSequences()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Pauses the running of queued sequences
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_joinSequence">Function: emEvolvableMotherboard.joinSequence</h4>
+<pre><code>void</code> joinSequence()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Waits until the sequences have all completed
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_appendSequenceAction">Function: emEvolvableMotherboard.appendSequenceAction</h4>
+<pre><code>void</code> appendSequenceAction(<code><a href="NascenseAPI_v01b.html#Struct_emSequenceItem">emSequenceItem</a></code> Item)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Queues something for the EM to do
+<br/><br/><h4 id="Parameters_emEvolvableMotherboard_appendSequenceAction">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>Item</td><td>Item to be queued
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getRecording">Function: emEvolvableMotherboard.getRecording</h4>
+<pre><code><a href="NascenseAPI_v01b.html#Struct_emWaveForm">emWaveForm</a></code> getRecording(<code>i32</code> srcPin)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Retrieves a sample buffer
+<br/><br/><h4 id="Parameters_emEvolvableMotherboard_getRecording">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>srcPin</td><td>Gets the buffer that was recorded by srcPin
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_clearRecording">Function: emEvolvableMotherboard.clearRecording</h4>
+<pre><code>void</code> clearRecording(<code>i32</code> srcPin)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Clears a sample buffer assoicated with a pin
+<br/><br/><h4 id="Parameters_emEvolvableMotherboard_clearRecording">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>srcPin</td><td>Recording pin
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_setBaseRate">Function: emEvolvableMotherboard.setBaseRate</h4>
+<pre><code>void</code> setBaseRate(<code>i32</code> rate)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Sets the base operating frequence of the EM
+<br/><br/><h4 id="Parameters_emEvolvableMotherboard_setBaseRate">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>rate</td><td>in ticks per second
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getTime">Function: emEvolvableMotherboard.getTime</h4>
+<pre><code>i64</code> getTime()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Gets the current clock tick
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getTemperate">Function: emEvolvableMotherboard.getTemperate</h4>
+<pre><code>i32</code> getTemperate()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Gets the current FPGA core temperature
+<br/></div><div class="definition"><h4 id="Fn_emEvolvableMotherboard_getVoltage">Function: emEvolvableMotherboard.getVoltage</h4>
+<pre><code>i32</code> getVoltage()
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Gets the current FPGA core voltage
+<br/></div><h3 id="Svc_emDataApi">Service: emDataApi</h3>
+<div class="extends"><em>extends</em> <code><a href="shared.html#Svc_SharedService">shared.SharedService</a></code></div>
+For efficiency, wave data is stored in a central repository. This means programs do not have to transfer the whole dataset around when working in a distributed fashion.
+<p/>
+Wavebuffers are stored in a hashtable, as a {string,emWaveForm} pair.
+<p/>
+Client applications need to tidy up the hashtable by deleting waveforms that are no longer used.
+<p/>
+<br/><div class="definition"><h4 id="Fn_emDataApi_createBuffer">Function: emDataApi.createBuffer</h4>
+<pre><code>string</code> createBuffer(<code>i64</code> length)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Make a buffer of a certain length, returns its name
+<br/><br/><h4 id="Parameters_emDataApi_createBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>length</td><td>The length
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_destroyBuffer">Function: emDataApi.destroyBuffer</h4>
+<pre><code>void</code> destroyBuffer(<code>string</code> bufferName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Frees the named buffer
+<br/><br/><h4 id="Parameters_emDataApi_destroyBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>The name of the buffer
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_getBuffer">Function: emDataApi.getBuffer</h4>
+<pre><code><a href="NascenseAPI_v01b.html#Struct_emWaveForm">emWaveForm</a></code> getBuffer(<code>string</code> bufferName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Get the actual raw data
+<br/><br/><h4 id="Parameters_emDataApi_getBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>The name of the buffer
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_setBuffer">Function: emDataApi.setBuffer</h4>
+<pre><code>void</code> setBuffer(<code><a href="NascenseAPI_v01b.html#Struct_emWaveForm">emWaveForm</a></code> samples)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Creates a buffer from an existing sample
+<br/><br/><h4 id="Parameters_emDataApi_setBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>samples</td><td>Existing source
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_cloneBuffer">Function: emDataApi.cloneBuffer</h4>
+<pre><code>string</code> cloneBuffer(<code>string</code> bufferName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Copies a buffer, returns the copies name
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_renameBuffer">Function: emDataApi.renameBuffer</h4>
+<pre><code>void</code> renameBuffer(<code>string</code> oldBufferName,
+                  <code>string</code> newBufferName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Rename a buffer, can be used to make code human readable
+<br/><br/><h4 id="Parameters_emDataApi_renameBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>oldBufferName</td><td>The buffer to rename
+</td></tr>
+<tr><td>newBufferName</td><td>The new name
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_saveBuffer">Function: emDataApi.saveBuffer</h4>
+<pre><code>void</code> saveBuffer(<code>string</code> bufferName,
+                <code>string</code> fileName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Rename a buffer
+<br/><br/><h4 id="Parameters_emDataApi_saveBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>The buffer name
+</td></tr>
+<tr><td>fileName</td><td>Where to save it to
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_loadBuffer">Function: emDataApi.loadBuffer</h4>
+<pre><code>string</code> loadBuffer(<code>string</code> fileName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Load a buffer from disc. Returns the name of the new buffer
+<br/><br/><h4 id="Parameters_emDataApi_loadBuffer">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>fileName</td><td>File containing the buffer
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_absDifference">Function: emDataApi.absDifference</h4>
+<pre><code>string</code> absDifference(<code>string</code> bufferA,
+                     <code>string</code> bufferB)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Element wise, compute difference of two buffers. Returns name of the output buffer.
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_sum">Function: emDataApi.sum</h4>
+<pre><code>double</code> sum(<code>string</code> bufferName)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Find the sum of the buffer
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_sumSquaredDifference">Function: emDataApi.sumSquaredDifference</h4>
+<pre><code>double</code> sumSquaredDifference(<code>string</code> bufferA,
+                            <code>string</code> bufferB)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Computes the sum squared difference of two buffers
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_subtract">Function: emDataApi.subtract</h4>
+<pre><code>string</code> subtract(<code>string</code> bufferA,
+                <code>string</code> bufferB)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Element wise subtraction, e.g. bufferA[n] - bufferB[n]. Returns name of the output buffer.
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_add">Function: emDataApi.add</h4>
+<pre><code>string</code> add(<code>string</code> bufferA,
+           <code>string</code> bufferB)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Element wise addition, e.g. bufferA[n] +  bufferB[n]. Returns name of the output buffer.
+<br/></div><div class="definition"><h4 id="Fn_emDataApi_setValues">Function: emDataApi.setValues</h4>
+<pre><code>void</code> setValues(<code>string</code> bufferName,
+               <code>i32</code> value)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Set all the values in the buffer to value
+<br/><br/><h4 id="Parameters_emDataApi_setValues">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>value</td><td>New value
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_threshold">Function: emDataApi.threshold</h4>
+<pre><code>string</code> threshold(<code>string</code> bufferName,
+                 <code>i32</code> thresholdValue,
+                 <code>i32</code> maxValue,
+                 <code>bool</code> invert)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>if value<threshold, 0 else maxValue. invert does the opposite. Returns name of new buffer
+<br/><br/><h4 id="Parameters_emDataApi_threshold">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>thresholdValue</td><td>Value to test against
+</td></tr>
+<tr><td>maxValue</td><td>Value to set if condition is met
+</td></tr>
+<tr><td>invert</td><td>Invert response
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_normalize">Function: emDataApi.normalize</h4>
+<pre><code>string</code> normalize(<code>string</code> bufferName,
+                 <code>i32</code> minValue,
+                 <code>i32</code> maxValue)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Normalize the data. Returns name of new buffer
+<br/><br/><h4 id="Parameters_emDataApi_normalize">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>minValue</td><td>Normalize from
+</td></tr>
+<tr><td>maxValue</td><td>Normalize to
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_quantize">Function: emDataApi.quantize</h4>
+<pre><code>string</code> quantize(<code>string</code> bufferName,
+                <code>i32</code> minValue,
+                <code>i32</code> maxValue,
+                <code>i32</code> levels)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Quantize the data to discrete levels. Returns name of new buffer
+<br/><br/><h4 id="Parameters_emDataApi_quantize">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>minValue</td><td>Normalize from
+</td></tr>
+<tr><td>maxValue</td><td>Normalize to
+</td></tr>
+<tr><td>levels</td><td>How many discrete levels to quantize to
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_resample">Function: emDataApi.resample</h4>
+<pre><code>string</code> resample(<code>string</code> bufferName,
+                <code>i32</code> newLength)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Resize the data buffer. Returns name of new buffer.
+<br/><br/><h4 id="Parameters_emDataApi_resample">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>newLength</td><td>Number of samples in returned buffer
+</td></tr>
+</table></div><div class="definition"><h4 id="Fn_emDataApi_medianFilter">Function: emDataApi.medianFilter</h4>
+<pre><code>string</code> medianFilter(<code>string</code> bufferName,
+                    <code>i32</code> fitlerSize)
+    throws <code><a href="NascenseAPI_v01b.html#Struct_emException">emException</a></code>
+</pre>Applies the median filter for noise supression.  Returns name of new buffer.
+<br/><br/><h4 id="Parameters_emDataApi_medianFilter">Parameters</h4>
+<table class="table-bordered table-striped table-condensed"><thead><th>Name</th><th>Description</th></thead><tr><td>bufferName</td><td>Buffer name
+</td></tr>
+<tr><td>fitlerSize</td><td>Strength of the filter. Larger number is stronger. Must be >=1
+</td></tr>
+</table></div></div></body></html>

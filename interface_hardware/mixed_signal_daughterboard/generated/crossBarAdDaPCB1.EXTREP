@@ -1,0 +1,22 @@
+------------------------------------------------------------------------------------------
+Gerber File Extension Report For: crossBarAdDaPCB1.GBR   04.03.2014  11:53:44
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+Layer Extension     Layer Description                      
+------------------------------------------------------------------------------------------
+.GTL                Top Layer                               
+.G1                 Mid-Layer 1                             
+.GP1                Internal Plane 1                        
+.GP2                Internal Plane 2                        
+.G2                 Mid-Layer 2                             
+.GBL                Bottom Layer                            
+.GTO                Top Overlay                             
+.GTP                Top Paste                               
+.GTS                Top Solder                              
+.GBS                Bottom Solder                           
+.GBP                Bottom Paste                            
+.GM1                Mechanical 1                            
+.GKO                Keep-Out Layer                          
+------------------------------------------------------------------------------------------

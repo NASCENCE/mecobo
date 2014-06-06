@@ -1,0 +1,68 @@
+graph cgp {
+rankdir=LR;
+output [shape = doublecircle, fontname="junkyard"];
+node001 [shape = box, label="XOR", fontname="junkyard"];
+node002 [shape = box, label="OR", fontname="junkyard"];
+node003 [shape = box, label="NOT", fontname="junkyard"];
+node004 [shape = box, label="NOT", fontname="junkyard"];
+node008 [shape = box, label="NOT", fontname="junkyard"];
+node009 [shape = box, label="XOR", fontname="junkyard"];
+node010 [shape = box, label="NOT", fontname="junkyard"];
+node011 [shape = box, label="XOR", fontname="junkyard"];
+node013 [shape = box, label="MUX", fontname="junkyard"];
+node014 [shape = box, label="MUX", fontname="junkyard"];
+node015 [shape = box, label="XOR", fontname="junkyard"];
+node016 [shape = box, label="OR", fontname="junkyard"];
+node017 [shape = box, label="NOT", fontname="junkyard"];
+node018 [shape = box, label="MUX", fontname="junkyard"];
+node019 [shape = box, label="NAND", fontname="junkyard"];
+node020 [shape = box, label="XOR", fontname="junkyard"];
+node021 [shape = box, label="AND", fontname="junkyard"];
+node023 [shape = box, label="ENOR", fontname="junkyard"];
+node026 [shape = box, label="NOT", fontname="junkyard"];
+node027 [shape = box, label="ENOR", fontname="junkyard"];
+node029 [shape = box, label="OR", fontname="junkyard"];
+node034 [shape = box, label="AND", fontname="junkyard"];
+node036 [shape = box, label="XOR", fontname="junkyard"];
+node038 [shape = box, label="OR", fontname="junkyard"];
+node039 [shape = box, label="AND", fontname="junkyard"];
+node040 [shape = box, label="NAND", fontname="junkyard"];
+node041 [shape = box, label="NOT", fontname="junkyard"];
+node042 [shape = box, label="OR", fontname="junkyard"];
+node043 [shape = box, label="XOR", fontname="junkyard"];
+node049 [shape = box, label="OR", fontname="junkyard"];
+output -- node049
+node001 -- {input001, input001}
+node002 -- {input002, node001}
+node003 -- {node001}
+node004 -- {node001}
+node008 -- {input001}
+node009 -- {input000, node004}
+node010 -- {node008}
+node011 -- {node008, input000}
+node013 -- {node010, node002, node010}
+node014 -- {node003, node008, node011}
+node015 -- {node013, node011}
+node016 -- {node009, node008}
+node017 -- {node003}
+node018 -- {node015, node015, input001}
+node019 -- {node016, node014}
+node020 -- {node010, node019}
+node021 -- {node019, node011}
+node023 -- {node017, node020}
+node026 -- {node023}
+node027 -- {node018, node021}
+node029 -- {node027, node027}
+node034 -- {node029, node027}
+node036 -- {node029, node018}
+node038 -- {node023, node036}
+node039 -- {node026, node038}
+node040 -- {node034, node027}
+node041 -- {node039}
+node042 -- {node040, node041}
+node043 -- {node041, node042}
+node049 -- {node040, node043}
+input001 [shape = doublecircle, fontname="junkyard"];
+input002 [shape = doublecircle, fontname="junkyard"];
+input000 [shape = doublecircle, fontname="junkyard"];
+}
