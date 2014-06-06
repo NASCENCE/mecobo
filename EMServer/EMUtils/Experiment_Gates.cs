@@ -367,7 +367,7 @@ namespace EMUtils
 
                     //Copy the config to the EM
                     #region CONFIGURE EM SEQUENCE
-                    
+                    this.Motherboard.clearSequences();
                     Index++;
                     Ind.OutputedSequences = new List<emSequenceItem>();
                     List<int> PinsUsed = new List<int>();
@@ -421,7 +421,7 @@ namespace EMUtils
                     RecordItem.OperationType = emSequenceOperationType.RECORD;
 
 
-                    if (PinsUsed.Contains(Ind.ListenPin)) throw new Exception("Pin used multiple times!");
+                  //  if (PinsUsed.Contains(Ind.ListenPin)) throw new Exception("Pin used multiple times!");
                     foreach(int p in RecordItem.Pin) PinsUsed.Add(p);
 
 
@@ -429,13 +429,17 @@ namespace EMUtils
                     for (int i = 0; i < Ind.Genotype.Count; i++)
                     {
 
+                        bool Allow = true;
                         foreach (int p in RecordItem.Pin)
                         {
-                            if (PinsUsed.Contains(p)) throw new Exception("Pin used multiple times!");
+                            if (PinsUsed.Contains(p)) Allow = false;// throw new Exception("Pin used multiple times!");
                             PinsUsed.Add(p);
                         }
-                        this.Motherboard.appendSequenceAction(Ind.Genotype[i]);
-                        Ind.OutputedSequences.Add(Ind.Genotype[i]);
+                        if (Allow)
+                        {
+                            this.Motherboard.appendSequenceAction(Ind.Genotype[i]);
+                            Ind.OutputedSequences.Add(Ind.Genotype[i]);
+                        }
 
                     }
 
@@ -445,7 +449,7 @@ namespace EMUtils
                     //Run the test, wait for the mobo to let us know it has finished
                     this.Motherboard.runSequences();
 
-
+                    this.Motherboard.joinSequences();
                     //Analyse the data
                     emWaveForm RecordedSignal = this.Motherboard.getRecording(RecordItem.Pin[0]);
                     if (RecordedSignal == null) throw new Exception("Failed to get recorded signal");
@@ -483,7 +487,7 @@ namespace EMUtils
 
 
                 if (double.IsNaN(Ind.Fitness)) Ind.Fitness = -1;
-                Ind.Fitness = Math.Abs(CM.Accuracy);
+                Ind.Fitness = Math.Abs(CM.MCC);
                 Ind.Report.Add("FITNESS\t" + Ind.Fitness + "\t" + Ind.EvaluationIndex);
             }
             /**
@@ -647,9 +651,9 @@ namespace EMUtils
         public class IndividualAndPopulationFactory
         {
             public static int PopulationSize = 5;  //Number of individuas in our population
-            public static int ItemsInGenotype = 8; //Number of evovlable elements in our genotype
-            public static int[] AvailablePins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };  //List of the FPGA pins to work with
-            public static int MaxTime = 128; //Max time for evaluating an individual
+            public static int ItemsInGenotype = 5; //Number of evovlable elements in our genotype
+            public static int[] AvailablePins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15 };  //List of the FPGA pins to work with
+            public static int MaxTime = 64; //Max time for evaluating an individual
             public static int MaxAmplitude = 2;
             public static int MaxFrequency = 10000;
             public static int MaxPhase = 10;
@@ -737,6 +741,7 @@ namespace EMUtils
                 Reporting.Say(string.Format("STATUS\t{0,-10}\t{1:0.0000}\t{2,-10}\t{3,-10}", Epoch, BestInd.Fitness, BestInd.EvaluationIndex, Timer.ElapsedMilliseconds));
                 foreach (string S in BestInd.Report)
                     Reporting.Say("\t" + S);
+                /*
                 if (BestInd.Output != null)
                 {
                     wfv.Clear();
@@ -756,6 +761,7 @@ namespace EMUtils
                 {
                     Reporting.Say(e.ToString());
                 }
+                 * */
                 Application.DoEvents();
 
                 if (BestInd.Fitness < 0.751)

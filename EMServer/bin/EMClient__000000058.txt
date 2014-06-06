@@ -1,0 +1,22 @@
+Friday, May 30, 2014	11:15:53 AM		Logging to file ./clientlog//EMClient__000000058.txt
+Friday, May 30, 2014	11:15:53 AM		SETTING	LogServer	True
+Friday, May 30, 2014	11:15:53 AM		SETTING	LogServerPath	./serverlog
+Friday, May 30, 2014	11:15:53 AM		SETTING	LogClient	True
+Friday, May 30, 2014	11:15:53 AM		SETTING	LogClientPath	./clientlog
+Friday, May 30, 2014	11:15:53 AM		SETTING	Server	129.241.102.247
+Friday, May 30, 2014	11:15:53 AM		SETTING	ServerPort	9090
+Friday, May 30, 2014	11:15:53 AM		SETTING	DataAPIServerPort	9091
+Friday, May 30, 2014	11:15:53 AM		SETTING	DataAPIServer	localhost
+Friday, May 30, 2014	11:15:53 AM	Microsoft CLR? NO
+Friday, May 30, 2014	11:15:53 AM	Ping response = 0
+Friday, May 30, 2014	11:15:53 AM	Ping response took 4ms or 47847 ticks
+Friday, May 30, 2014	11:15:57 AM	0	0
+Friday, May 30, 2014	11:16:00 AM	1	0
+Friday, May 30, 2014	11:16:04 AM	2	0
+Friday, May 30, 2014	11:16:07 AM	3	0
+Friday, May 30, 2014	11:16:11 AM	4	0.444444444444444
+Friday, May 30, 2014	11:16:14 AM	5	0.32
+Friday, May 30, 2014	11:16:18 AM	6	0.32
+Friday, May 30, 2014	11:16:21 AM	7	0.64
+Friday, May 30, 2014	11:16:25 AM	8	0
+Friday, May 30, 2014	11:16:28 AM	9	0

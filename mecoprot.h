@@ -6,6 +6,9 @@
 #include <stdint.h>
 #define USB_BUFFER_SIZE 32
 
+#define MECOBO_STATUS_READY 0
+#define MECOBO_STATUS_BUSY 1
+#define MECOBO_STATUS_RUNNING 2
 
 #define USB_CMD_CONFIG_PIN    0x1
 #define USB_CMD_CONFIG_REG    0x3
@@ -129,5 +132,11 @@ struct sampleValue {
   int16_t value;
 };
 
+struct mecoboStatus {
+  uint8_t state;
+  uint8_t foo;
+  uint16_t itemsInQueue;
+  uint16_t samplesInBuffer;
+};
 
 #endif //__MECOPROT_H__

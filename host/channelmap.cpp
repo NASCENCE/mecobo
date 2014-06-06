@@ -77,7 +77,6 @@ void channelMap::reset()
   for(int i = 0; i < 16*numCards; i++) {
     pinToChannel[i].push_back(FPGA_IO_Pins_TypeDef::INVALID);
   }
-
 }
 
 bool channelMap::isADChannel(FPGA_IO_Pins_TypeDef chan) 
