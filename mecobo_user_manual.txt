@@ -1,0 +1,217 @@
+Version: 3.0
+Last update: 28th of March 2014 (wow, has it been that long?)
+
+- At a glance - 
+The system consists of three units; the thrift server, the thrift client and
+the board. The server runs on a host computer that has the board connected to
+it, and the client communicates with the server via an internet socket.
+
+Usage is as simple as:
+1 - Plug in the board. Any recent linux kernel has a ACM driver compiled in. As
+such you can simply plug in a powered-on (and preconfigured) board. On Windows
+you will have to use the provided .ini file and install that as a driver to
+enable communication.
+2 - Start the Thrift server binary.
+3 - Connect to the Thrift server with a Thrift client and send commands to it
+using the Thrift interface.
+
+There is a section below on setting up the thrift server; and you can of course
+recompile and modify it as you see fit-- however the current implementation should
+suffice for simple stuff.
+
+- User Guide -
+To start the server, place yourself in the directory of the server binary
+(usually called winHost), and run it from the command line with:
+
+~> winHost.exe -f
+
+The -f causes the server to look for mecobo.bin, which is the FPGA bitfile,
+and program itself with it. 
+
+>> NOTE! This is also how you restart the server <<
+
+Now that the server is running on a computer that has the board connected to
+it, talking to the board consists of calling the functions described in the
+thrift interface description file, NascenseAPI_v01d.thrift. You also need to
+generate the code that talks to the server. This is done with the thrift tool.
+
+As an example, here is how you create a client in python:
+
+oddrune @ crabcatcher:~$ thrift --gen py NascenseAPI_v01d.thrift
+
+This gives me a directory called gen-py, that again contains a subdirectory NascenseAPI_v01d.
+My python client looks like this:
+
+oddrune @ crabcatcher:~$ cat client.py
+
+import sys
+sys.path.append('gen-py/NascenseAPI_v01d/')
+import emEvolvableMotherboard
+from ttypes import *
+
+try:
+  transport = TSocket.TSocket('dmlab02.idi.ntnu.no', 9090)
+  transport = TTransport.TBufferedTransport(transport)
+
+  prot = TBinaryProtocol.TBinaryProtocol(transport)
+  cli = emEvolvableMotherboard.Client(prot);
+  transport.open();
+
+  cli.ping();
+
+  transport.close();
+
+except Thrift.TException, tx:
+  print tx
+
+
+That's all there is to it. It's similar in most languages and the apache thrift
+wiki has more examples. 
+
+- Using the Nascence interface -
+Note that all of the examples here are done using python; but it's analogous to
+other languages such as C#, C++, perl, ... 
+
+The idea behind the interface is that of a sequencer. Using the function
+appendSequenceAction(emSequenceItem) you append an item that performs a certain action.
+The emSequenceItem is defined in the interface as well.
+
+Example:
+----------------------------------------------------------
+it = emSequenceItem()
+it.pin = 12;
+it.startTime = 42;
+it.endTime = 100;
+it.amplitude = 1;
+it.operationType = emSequenceOperationType().CONSTANT;
+client.appendSequenceAction(it)
+----------------------------------------------------------
+
+This example creates a sequnce item and appends it to the sequence queue. Calling client.runSequences() initiates
+this sequence, and starts the clock at time = 0. All times referred to in the emSequenceItems are relative
+to this t, and time is measured in ms. 
+
+Another frequenctly used operationType is RECORD:
+
+----------------------------------------------------------
+rec = emSequenceItem();
+rec.pin = 10;
+rec.starttime = 0;
+rec.endTime = 1000;
+rec.frequency = 5000;
+rec.operationType = emSequenceOperationType().RECORD;
+client.appendSequenceAction(rec)
+----------------------------------------------------------
+
+This will set up pin 10 as a recording pin, which will start recording at t=0, and end at t=1000 at a 
+sample frequency of 5Khz.  Doing:
+
+----------------------------------------------------------
+recording = cli.getRecording(recordPin);
+----------------------------------------------------------
+
+will get you a buffer of the sampled data of about 5000 elements.
+
+As of writing, the only other supported emSequenceOperationType is PREDEFINED,
+with a emWaveFormType set to PWM:
+
+----------------------------------------------------------
+it = emSequenceItem();
+it.pin = 0;
+it.startTime = 1;
+it.endTime = 1000;
+it.frequency = 500;
+it.cycleTime = 25;  #PERCENTAGE HIGH
+it.operationType = emSequenceOperationType::type::PREDEFINED;
+it.waveFormType = emWaveFormType::PWM;
+----------------------------------------------------------
+
+This will set up pin 0 to play a square wave with a cycle time of (1/500)s, of
+wich 25% of the cycle will have the pin set to logical 1, for 1 second starting
+at t=1.
+
+- Without the daughterboards connected -
+There are 45 digital channels that can be programmed individually on header WEST.
+
+- With the analogue daughterboard connected -
+If you have the daughterboard plugged in, it's good to let the server know this by adding a -d <number of daughterboards in the stack> to the server startup command. This will enable the DAC and ADC channels, and also redefine the pinouts somewhat. 
+
+Each daughterboard has 16 pins. The daughterboards are stackable, and the name/number (used in the sequence item) is counted from the pin designated as 1 on the board towards pin 47, from 0 to 15. For board two this is pin 16 to 31, and so on.
+
+For each group of 16 daugherboard pins the following restrictions apply (mecobo will let you know when you break them, but it's healthier for your code if you don't)
+ - Max 8 analogue inputs.
+ - Max 8 analogue outputs.
+
+In addition, you can mix in 16 digital channels throughout the stack.
+
+For one daughterboard this is a valid config 
+
+0    1.2V
+1    RA(record analogue)
+2    4.5V
+3    RA
+4    3.3V
+5   ...
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+	
+
+- Getting the Thrift server running -
+The thrift server implements a high-level interface, described in
+NascenseAPI_v01d.thrift which you can find in the API folder of our shared
+Dropbox (same directory as this file). The thrift tool (which you get when you
+install the thrift-package in linux or Windows) reads this interface
+description and generates a skeleton server file that we have implemented. This
+particular implementation of the server talks to the "Mecobo" motherboard. You
+simply run this server, and it will start a service that listens for incoming
+socket connections on port 9090.
+
+
+- Upgrading the platform (i.e. when Odd Rune gives you a new mecobo_uc_vXX.bin) -
+There are unfortunately still a few prerequisites when it comes to upgrading the platform.
+
+Instructions for windows:
+You’ll need to download Simplicity Studio:
+ 
+	http://www.silabs.com/Support%20Documents/Software/simplicity-studio.exe
+
+Once downloaded, run it (I believe this might require Administrator privileges, which may 
+or may not be a problem for computers administrated by a certain IT dept.). You’ll only need to
+install the ‘Energy Aware Commander’, or eAcommander as it is also called. 
+Sometimes eCommander does not install properly. Press update button of simplicity studio for latest update.
+
+Download and install device driver from website.
+
+After you’ve installed the application, it’s time to open up the black box and connect a mini-USB cable
+from your PC to the smaller of the two boards inside of the box. Note that there are two possible connection 
+points. Use the one on the short side of the board, marked with DEBUG.
+
+Power on the box.
+
+Launch eAcommander from within simplicity studio. Make sure «J-Link device» is set to S/N <some number>. 
+
+Hit ‘Connect’ in the top left corner. 
+
+Select Debug Mode: «out».
+
+On the leftmost column, select «Flash».
+
+Once there, select «Browse» and navigate to the mecobo_uc_vXX.bin file you with to apply. Make sure «Reset EFM32 after flashing» is checked, and then hit «Flash EFM32».
+
+Then disconnect recently connecte cables and connect back old one.
+
+Turn off the board, restart the server (make sure the FPGA gets programmed) and start running experiments again!
+
+
+- Technical description -
+Mecobo consists of one EFM32GG990 microcontroller which acts as a ACM USB slave
+device, and one Spartan6 FPGA that controls the digital outputs on the pin
+headers. 
