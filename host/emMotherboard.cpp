@@ -72,7 +72,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setLED(const int32_t index, const bool state) {
-    state ? mecobo->setLed(index, 0) : mecobo->setLed(index, 1);
+    state ? mecobo->setLed(index, 1) : mecobo->setLed(index, 0);
     std::cout << "Led " << index << "is " << state << std::endl;
   }
 
