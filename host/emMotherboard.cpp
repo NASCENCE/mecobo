@@ -142,7 +142,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
     mecobo->runSchedule();
     sequenceRunStart = steady_clock::now();
-
   } 
 
 

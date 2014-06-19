@@ -256,6 +256,7 @@ int main(void)
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
+  //TODO: This is just silly, don't need to malloc here.
   lastCollected = malloc(sizeof(int)*nPins);
   for(int i = 0; i < nPins; i++) {
     lastCollected[i] = -1;
@@ -602,10 +603,10 @@ void killItem(struct pinItem * item)
       for(int i = 0; i < numInputChannels; i++) {
         if (inputChannels[i] == item->pin) {
           printf("Rec stop: %d\n", item->pin);
-          numInputChannels--;
           for(int j = i; j < numInputChannels; j++){
-            inputChannels[i] = inputChannels[i+1];
+            inputChannels[j] = inputChannels[j+1];
           }
+          numInputChannels--;
           break;
         }
       }
@@ -689,7 +690,6 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
   val.channel = (uint8_t)channel;
   val.value = addr[PINCONFIG_SAMPLE_REG];
 
-  //Copy to sample buffer.
   if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
     lastCollected[channel] = val.sampleNum;
     if(numSamples < MAX_SAMPLES) {

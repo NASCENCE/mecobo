@@ -190,8 +190,6 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
 
-  //Don't know.
-  pinRecordings.clear();
   //Retrieve bytes.
   uint32_t nSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
@@ -244,7 +242,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
       //Cast from 13 bit to 32 bit two's complement int.
       int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
-      pinRecordings[p].push_back(v);
+      pinRecordings[(int)p].push_back(v);
     }
   }
 
