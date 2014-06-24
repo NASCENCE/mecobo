@@ -10,6 +10,7 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 
 
 Mecobo::Mecobo ()
@@ -331,10 +332,10 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
 
   int period = 0;
   if(frequency != 0) {
-    period = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+    period = std::min(65500, (int)(75000000/frequency)); //(int)pow(2, 17-(frequency/1000.0));
   }
   
-  int duty = period * ((double)dutyCycle/100.0);
+  int duty = std::min(65500, int(period * ((double)dutyCycle/100.0)));
 
   std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];
