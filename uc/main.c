@@ -694,7 +694,6 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
     lastCollected[channel] = val.sampleNum;
     if(numSamples < MAX_SAMPLES) {
       sampleBuffer[numSamples++] = val;
-      printf("%u\n", val.value);
     } 
   }
 
