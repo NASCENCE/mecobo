@@ -1,7 +1,0 @@
-Exception: STATUS_PRIVILEGED_INSTRUCTION at eip=004606A3
-eax=0000000A ebx=0028AC5C ecx=80000038 edx=00000001 esi=00000000 edi=0028CD85
-ebp=0042D26E esp=0028AB80 program=C:\Documents and Settings\simonh\Dropbox\API\mecobo\host\evo.exe, pid 6244, thread main
-cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
-Stack trace:
-Frame     Function  Args
-0042D26E  004606A3 (20A0A118, 44C70049, 00010424, 04890000)

@@ -1,3 +1,0 @@
-verilog work "../adccontrol.v"
-verilog work "../adccontrol_tb.v"
-verilog work "../adc_dummy.v"

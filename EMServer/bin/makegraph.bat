@@ -1,1 +1,0 @@
-"c:\Program Files (x86)\Graphviz2.38\bin\dot" -Tpng %1 > %2
