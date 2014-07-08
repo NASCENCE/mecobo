@@ -10,6 +10,7 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 
 
 Mecobo::Mecobo ()
@@ -190,8 +191,6 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
 
-  //Don't know.
-  pinRecordings.clear();
   //Retrieve bytes.
   uint32_t nSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
@@ -244,7 +243,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
       //Cast from 13 bit to 32 bit two's complement int.
       int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
-      pinRecordings[p].push_back(v);
+      pinRecordings[(int)p].push_back(v);
     }
   }
 
@@ -333,10 +332,10 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
 
   int period = 0;
   if(frequency != 0) {
-    period = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+    period = std::min(65500, (int)(75000000/frequency)); //(int)pow(2, 17-(frequency/1000.0));
   }
   
-  int duty = period * ((double)dutyCycle/100.0);
+  int duty = std::min(65500, int(period * ((double)dutyCycle/100.0)));
 
   std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];

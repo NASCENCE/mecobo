@@ -14,7 +14,7 @@ all: evo_srv
 	$(CXX) -std=c++11 -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H $(INC) -c $< -o $@
 
 evo_srv: $(GEN_OBJ)
-	$(CXX) -std=c++11 $(INC) -L/usr/local/lib/ $^ -o $@ -lthrift -lusb-1.0 
+	$(CXX) -std=c++11 $(INC) -L/usr/local/lib/ $^ -o $@ -lthrift -lusb-1.0 -L/usr/local/lib/
 
 clean:
 	$(RM) *.o evo_srv evo_cli evoGates
