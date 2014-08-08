@@ -157,8 +157,8 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     int items = 0;
     while((items = mecobo->status().itemsInQueue) > 0) {
       //Ask again in 10ms.
-      std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
-      totalWaitMs += 100;
+      std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+      totalWaitMs += 50;
       if (totalWaitMs > (lastSequenceItemEnd*2)) {
         std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
         break;

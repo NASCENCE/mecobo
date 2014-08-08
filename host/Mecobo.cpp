@@ -268,7 +268,7 @@ void Mecobo::reset()
   sendPacket(&p);
   //Wait a while between polling the status to be nice.
   while(this->status().state == MECOBO_STATUS_BUSY) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 }
 
