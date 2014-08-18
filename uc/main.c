@@ -175,38 +175,50 @@ int main(void)
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
   int skip_boot_tests= 0;
-  int fpga_alive = 1;
+  int has_daughterboard = 0;
   /*
      for(int j = 0; j < 100000; j++) {
      printf("%x: %x\n", ((uint8_t*)(EBI_ADDR_BASE + j)), *((uint8_t*)(EBI_ADDR_BASE + j)));
      }
      */
-  if(!skip_boot_tests) {
-    int i = 0;
-    printf("Check if FPGA is alive.\n");
-    uint16_t * a = getPinAddress(2) + PINCONFIG_STATUS_REG;
-    uint16_t foo = *a;
-    if (foo != 2) {
-      fpga_alive = 0;
-      printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
-    } else {
-      fpga_alive = 1;
-      printf("FPGA responding as expected\n");
-    }
 
-    if(fpga_alive) {
+
+
+  if(!skip_boot_tests) {
+
+    //Verify presence of daughterboard bitfile
+    uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
+    if (dac[PINCONFIG_STATUS_REG] == 0xdac) {
+        has_daughterboard = 1;
+        printf("Detected daughterboard bitfile (has DAC controller)\n");
+    } 
+
+    if (has_daughterboard) {
+	  //Check DAC controllers.
+	  printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
+	  uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
+	  printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
+	  printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
       printf("Setting up DAC and ADCs\n");
       setupDAC();
       setupADC();
+    } 
+
+    int i = 0;
+    printf("Response from digital controllers at 0 to 57:\n");
+    for(int i = 0; i < 57; i++) {
+      uint16_t * a = getPinAddress(i) + PINCONFIG_STATUS_REG;
+      uint16_t foo = *a;
+      printf("Controller %d says it's position is %d\n", i, foo);
     }
 
-
-    //Check DAC controllers.
-    uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
-    printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
-    uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
-    printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
-    printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
+    uint16_t * a = getPinAddress(2) + PINCONFIG_STATUS_REG;
+    uint16_t foo = *a;
+    if (foo != 2) {
+      printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
+    } else {
+      printf("FPGA responding as expected\n");
+    }
 
     printf("FPGA check complete\n");
     printf("SRAM 1 TEST\n");
