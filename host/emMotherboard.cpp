@@ -55,13 +55,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
   public:
   //constructor for this class
-  emEvolvableMotherboardHandler(int force) {
+  emEvolvableMotherboardHandler(int force, std::string bitfilename, bool daughterboard) {
     // Your initialization goes here
     time = 0;
     std::cout << "Starting USB subsystem." << std::endl;
-    mecobo = new Mecobo();
+    mecobo = new Mecobo(daughterboard);
     if (force)  {
-      mecobo->programFPGA("mecobo.bin");
+      mecobo->programFPGA(bitfilename.c_str());
     }  
   }
 
@@ -341,16 +341,29 @@ int main(int argc, char **argv) {
 
 
   uint32_t forceProgFpga = 1;  //default program fpga.
+  bool daughterboard = true;
+  std::string bitfilename = std::string("mecobo.bin");
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
         forceProgFpga = 0;
       }
+      if(strcmp(argv[i], "-b") == 0) {
+        forceProgFpga = 1;
+        std::string bitfilename = std::string(argv[++i]);
+        printf("Programming FPGA with bitfile %s\n", bitfilename.c_str());
+      }
+
+      if(strcmp(argv[i], "-n") == 0) {
+        std::cout << "Option -n passed, host assumes no daughterboard" << std::endl;
+        daughterboard = false;
+      
+      }
     }
   }
 
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga));
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga, bitfilename, daughterboard));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
   shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
