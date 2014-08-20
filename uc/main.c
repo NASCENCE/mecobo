@@ -60,6 +60,8 @@ static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 static int timeMs = 0;
 static int timeTick = 0; //10,000 per second.
 static int lastTimeTick = 0;
+ 
+static int has_daughterboard = 0;
 
 //USB Variables
 int packNum = 0;
@@ -83,10 +85,10 @@ int fpgaConfigured = 0;
 //Data stuff for items
 static struct pinItem * itemsToApply;
 int itaPos  = 0;
-int numItems = 0;
+unsigned int numItems = 0;
 static struct pinItem ** itemsInFlight;
 int iifPos  = 0;
-int numItemsInFlight = 0;
+unsigned int numItemsInFlight = 0;
 
 static int * lastCollected;
 static int runItems = 0;
@@ -175,7 +177,6 @@ int main(void)
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
   int skip_boot_tests= 0;
-  int has_daughterboard = 0;
   /*
      for(int j = 0; j < 100000; j++) {
      printf("%x: %x\n", ((uint8_t*)(EBI_ADDR_BASE + j)), *((uint8_t*)(EBI_ADDR_BASE + j)));
@@ -375,7 +376,7 @@ int main(void)
       } 
       //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
-        for(int flight = 0; flight < numItemsInFlight; flight++) {
+        for(unsigned int flight = 0; flight < numItemsInFlight; flight++) {
           //if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
             //execute(itemsInFlight[flight]);
           //}
@@ -701,12 +702,13 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
   val.sampleNum = addr[PINCONFIG_SAMPLE_CNT];
   val.channel = (uint8_t)channel;
   val.value = addr[PINCONFIG_SAMPLE_REG];
+  //printf("S: %u %u %u\n", val.sampleNum, val.channel, val.value);
 
   if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
     lastCollected[channel] = val.sampleNum;
     if(numSamples < MAX_SAMPLES) {
       sampleBuffer[numSamples++] = val;
-    } 
+    }
   }
 
 }
@@ -715,6 +717,9 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
 inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
 {
 
+  if(!has_daughterboard) {
+    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
+  }
   //Digital channels.
   if (channel < IO_CHANNELS_END) {
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
@@ -841,28 +846,30 @@ void execCurrentPack()
     timeMs = 0;
 
 
-    for(int r = 0; r < 4; r++) {
-      adcSequence[r] = 0xE000;
-    }
-    
-    for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
-      DACreg[i] = 128;
-      registersUpdated[i] = 0;
-    }
+    if(has_daughterboard) {
+      for(int r = 0; r < 4; r++) {
+        adcSequence[r] = 0xE000;
+      }
+      
+      for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
+        DACreg[i] = 128;
+        registersUpdated[i] = 0;
+      }
 
-    for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
-      setVoltage(i, 128);
-    }
+      for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
+        setVoltage(i, 128);
+      }
 
-    for(int i = 0; i < 32; i++) {
-      xbar[i] = 0;
-    }
+      for(int i = 0; i < 32; i++) {
+        xbar[i] = 0;
+      }
 
-    xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-    USBTIMER_DelayMs(3);
-    while(xbar[0x0A]) { 
-      printf("Waiting for XBAR\n"); 
-    }; //hang around until command completes.
+      xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+      USBTIMER_DelayMs(3);
+      while(xbar[0x0A]) { 
+        printf("Waiting for XBAR\n"); 
+      }; //hang around until command completes.
+    }
 
     resetAllPins();
     

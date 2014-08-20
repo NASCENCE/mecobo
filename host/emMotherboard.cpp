@@ -241,7 +241,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::CONSTANT:
         for(auto p : item.pin) {
           std::cout << "CONSTANT. Amplitude:" << item.amplitude << " Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
         mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
@@ -249,44 +249,51 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
         for(auto p : item.pin) {
           std::cout << "CONSTANT FROM REG. Amplitude:" << item.amplitude << " Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
-          mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
+        mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
         break;
 
 
       case emSequenceOperationType::type::RECORD:
 
-        for(auto p : item.pin) {
-          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
-        }
+        if (item.waveFormType == emWaveFormType::PWM) {
+          for(auto p : item.pin) {
+            std::cout << "RECORDING [digital] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          }
+          mecobo->scheduleDigitalRecording(item.pin, item.startTime, item.endTime, item.frequency);
+
+        } else {
+          for(auto p : item.pin) {
+            std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          }
           mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
+        }
         //Error checking.
         //
         /*
-        if(sampleDiv <= 1) {
-          err.Reason = "samplerate too high";
-          err.Source = "emMotherboard";
-          throw err;
-          break;
-        } else if (sampleDiv > 65535) {
-          err.Reason = "samplerate too low";
-          err.Source = "emMotherboard";
-          throw err;
-          break;
-        }*/
-        
-        //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+           if(sampleDiv <= 1) {
+           err.Reason = "samplerate too high";
+           err.Source = "emMotherboard";
+           throw err;
+           break;
+           } else if (sampleDiv > 65535) {
+           err.Reason = "samplerate too low";
+           err.Source = "emMotherboard";
+           throw err;
+           break;
+           }*/
 
         break;
 
       case emSequenceOperationType::type::DIGITAL:
         for(auto p : item.pin) {
-            std::cout << "DIGITAL. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+          std::cout << "DIGITAL OUT. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
-          mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
+        mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
         break;
+
 
 
       //YAY DOUBLE CASE SWITCH CASE.
