@@ -1,0 +1,33 @@
+03 June 2014	17:22:51		Logging to file ./clientlog//EMClient__000000349.txt
+03 June 2014	17:22:51		SETTING	LogServer	True
+03 June 2014	17:22:51		SETTING	LogServerPath	./serverlog
+03 June 2014	17:22:51		SETTING	LogClient	True
+03 June 2014	17:22:51		SETTING	LogClientPath	./clientlog
+03 June 2014	17:22:51		SETTING	Server	129.241.111.46
+03 June 2014	17:22:51		SETTING	ServerPort	9090
+03 June 2014	17:22:51		SETTING	DataAPIServerPort	9091
+03 June 2014	17:22:51		SETTING	DataAPIServer	localhost
+03 June 2014	17:22:51	Microsoft CLR? YES
+03 June 2014	17:22:51	Ping response = 0
+03 June 2014	17:22:51	Ping response took 68ms or 166793 ticks
+03 June 2014	17:22:51	<EVALUATION>
+03 June 2014	17:22:51	<EVALUATIONINDEX>0</EVALUATIONINDEX>
+03 June 2014	17:22:52	<SEQUENCE>
+03 June 2014	17:22:52		Pin=07 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=03 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=07 Op=   emNULL Type= emNULL 
+03 June 2014	17:22:52		Pin=14 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=06 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=09 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=12 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=02 Op= CONSTANT Type=    PWM 
+03 June 2014	17:22:52		Pin=05 Op=   RECORD Type= emNULL 
+03 June 2014	17:22:52	</SEQUENCE>
+03 June 2014	17:22:52	<OUTPUT>
+03 June 2014	17:22:52			Test=True ,True ,True  Predicted=False Expected=True  %High=00.0
+03 June 2014	17:22:54			Test=False,True ,False Predicted=False Expected=True  %High=00.0
+03 June 2014	17:22:55			Test=True ,False,False Predicted=True  Expected=False %High=100.0
+03 June 2014	17:22:56			Test=True ,True ,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:22:57			Test=True ,False,True  Predicted=True  Expected=True  %High=100.0
+03 June 2014	17:22:59			Test=False,False,True  Predicted=True  Expected=False %High=100.0
+03 June 2014	17:23:00			Test=False,True ,True  Predicted=False Expected=True  %High=00.0

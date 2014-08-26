@@ -1,0 +1,152 @@
+03 June 2014	16:43:29		Logging to file ./clientlog//EMClient__000000337.txt
+03 June 2014	16:43:29		SETTING	LogServer	True
+03 June 2014	16:43:29		SETTING	LogServerPath	./serverlog
+03 June 2014	16:43:29		SETTING	LogClient	True
+03 June 2014	16:43:29		SETTING	LogClientPath	./clientlog
+03 June 2014	16:43:29		SETTING	Server	129.241.102.247
+03 June 2014	16:43:29		SETTING	ServerPort	9090
+03 June 2014	16:43:29		SETTING	DataAPIServerPort	9091
+03 June 2014	16:43:29		SETTING	DataAPIServer	localhost
+03 June 2014	16:43:29	Microsoft CLR? YES
+03 June 2014	16:43:29	Ping response = 0
+03 June 2014	16:43:29	Ping response took 81ms or 199669 ticks
+03 June 2014	16:44:21	STATUS	0         	0.0000	4         	51734     
+03 June 2014	16:44:21		 TESTCASE 0  False,False=>False True  FAIL
+03 June 2014	16:44:21		 TESTCASE 1  True ,False=>False True  FAIL
+03 June 2014	16:44:21		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:44:21		 TESTCASE 3  True ,False=>True  True  PASS
+03 June 2014	16:44:21		 TESTCASE 4  True ,True =>True  True  PASS
+03 June 2014	16:44:21		 TESTCASE 5  False,True =>True  True  PASS
+03 June 2014	16:44:21		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:44:21		 TESTCASE 7  True ,True =>False True  FAIL
+03 June 2014	16:44:21		FITNESS	0	4
+03 June 2014	16:45:13	STATUS	1         	0.0000	9         	103793    
+03 June 2014	16:45:13		 TESTCASE 0  False,True =>True  True  PASS
+03 June 2014	16:45:13		 TESTCASE 1  False,False=>False True  FAIL
+03 June 2014	16:45:13		 TESTCASE 2  True ,False=>False True  FAIL
+03 June 2014	16:45:13		 TESTCASE 3  True ,True =>True  True  PASS
+03 June 2014	16:45:13		 TESTCASE 4  True ,False=>True  True  PASS
+03 June 2014	16:45:13		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	16:45:13		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:45:13		 TESTCASE 7  True ,True =>False True  FAIL
+03 June 2014	16:45:13		FITNESS	0	9
+03 June 2014	16:46:05	STATUS	2         	0.0000	14        	155542    
+03 June 2014	16:46:05		 TESTCASE 0  False,True =>True  True  PASS
+03 June 2014	16:46:05		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:46:05		 TESTCASE 2  True ,True =>False True  FAIL
+03 June 2014	16:46:05		 TESTCASE 3  True ,False=>False True  FAIL
+03 June 2014	16:46:05		 TESTCASE 4  False,False=>False True  FAIL
+03 June 2014	16:46:05		 TESTCASE 5  True ,False=>True  True  PASS
+03 June 2014	16:46:05		 TESTCASE 6  True ,True =>True  True  PASS
+03 June 2014	16:46:05		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:46:05		FITNESS	0	14
+03 June 2014	16:46:57	STATUS	3         	0.0000	19        	207687    
+03 June 2014	16:46:57		 TESTCASE 0  True ,True =>False True  FAIL
+03 June 2014	16:46:57		 TESTCASE 1  False,False=>False True  FAIL
+03 June 2014	16:46:57		 TESTCASE 2  False,True =>True  True  PASS
+03 June 2014	16:46:57		 TESTCASE 3  True ,False=>True  True  PASS
+03 June 2014	16:46:57		 TESTCASE 4  True ,True =>True  True  PASS
+03 June 2014	16:46:57		 TESTCASE 5  True ,False=>False True  FAIL
+03 June 2014	16:46:57		 TESTCASE 6  False,False=>False True  FAIL
+03 June 2014	16:46:57		 TESTCASE 7  False,True =>True  True  PASS
+03 June 2014	16:46:57		FITNESS	0	19
+03 June 2014	16:47:48	STATUS	4         	0.0000	24        	259189    
+03 June 2014	16:47:48		 TESTCASE 0  True ,False=>False True  FAIL
+03 June 2014	16:47:48		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:47:48		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:47:48		 TESTCASE 3  False,False=>False True  FAIL
+03 June 2014	16:47:48		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	16:47:48		 TESTCASE 5  True ,True =>False True  FAIL
+03 June 2014	16:47:48		 TESTCASE 6  True ,False=>True  True  PASS
+03 June 2014	16:47:48		 TESTCASE 7  True ,True =>True  True  PASS
+03 June 2014	16:47:48		FITNESS	0	24
+03 June 2014	16:48:40	STATUS	5         	0.0000	29        	311006    
+03 June 2014	16:48:40		 TESTCASE 0  True ,True =>False True  FAIL
+03 June 2014	16:48:40		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:48:40		 TESTCASE 2  True ,True =>True  True  PASS
+03 June 2014	16:48:40		 TESTCASE 3  False,True =>True  True  PASS
+03 June 2014	16:48:40		 TESTCASE 4  False,False=>False True  FAIL
+03 June 2014	16:48:40		 TESTCASE 5  True ,False=>False True  FAIL
+03 June 2014	16:48:40		 TESTCASE 6  True ,False=>True  True  PASS
+03 June 2014	16:48:40		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:48:40		FITNESS	0	29
+03 June 2014	16:49:32	STATUS	6         	0.0000	34        	363301    
+03 June 2014	16:49:32		 TESTCASE 0  True ,True =>True  True  PASS
+03 June 2014	16:49:32		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:49:32		 TESTCASE 2  True ,False=>False True  FAIL
+03 June 2014	16:49:32		 TESTCASE 3  False,False=>False True  FAIL
+03 June 2014	16:49:32		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	16:49:32		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	16:49:32		 TESTCASE 6  True ,False=>True  True  PASS
+03 June 2014	16:49:32		 TESTCASE 7  True ,True =>False True  FAIL
+03 June 2014	16:49:32		FITNESS	0	34
+03 June 2014	16:50:24	STATUS	7         	0.0000	39        	415036    
+03 June 2014	16:50:24		 TESTCASE 0  False,True =>True  True  PASS
+03 June 2014	16:50:24		 TESTCASE 1  True ,False=>True  True  PASS
+03 June 2014	16:50:24		 TESTCASE 2  False,True =>True  True  PASS
+03 June 2014	16:50:24		 TESTCASE 3  True ,True =>True  True  PASS
+03 June 2014	16:50:24		 TESTCASE 4  True ,False=>False True  FAIL
+03 June 2014	16:50:24		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	16:50:24		 TESTCASE 6  False,False=>False True  FAIL
+03 June 2014	16:50:24		 TESTCASE 7  True ,True =>False True  FAIL
+03 June 2014	16:50:24		FITNESS	0	39
+03 June 2014	16:51:16	STATUS	8         	0.0000	44        	466981    
+03 June 2014	16:51:16		 TESTCASE 0  False,False=>False True  FAIL
+03 June 2014	16:51:16		 TESTCASE 1  True ,True =>True  True  PASS
+03 June 2014	16:51:16		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:51:16		 TESTCASE 3  True ,True =>False True  FAIL
+03 June 2014	16:51:16		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	16:51:16		 TESTCASE 5  True ,False=>False True  FAIL
+03 June 2014	16:51:16		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:51:16		 TESTCASE 7  True ,False=>True  True  PASS
+03 June 2014	16:51:16		FITNESS	0	44
+03 June 2014	16:52:08	STATUS	9         	0.0000	49        	518884    
+03 June 2014	16:52:08		 TESTCASE 0  False,True =>True  True  PASS
+03 June 2014	16:52:08		 TESTCASE 1  True ,False=>True  True  PASS
+03 June 2014	16:52:08		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:52:08		 TESTCASE 3  False,False=>False True  FAIL
+03 June 2014	16:52:08		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	16:52:08		 TESTCASE 5  True ,True =>False True  FAIL
+03 June 2014	16:52:08		 TESTCASE 6  True ,False=>False True  FAIL
+03 June 2014	16:52:08		 TESTCASE 7  True ,True =>True  True  PASS
+03 June 2014	16:52:08		FITNESS	0	49
+03 June 2014	16:53:00	STATUS	10        	0.0000	54        	570508    
+03 June 2014	16:53:00		 TESTCASE 0  False,False=>False True  FAIL
+03 June 2014	16:53:00		 TESTCASE 1  True ,True =>False True  FAIL
+03 June 2014	16:53:00		 TESTCASE 2  True ,False=>False True  FAIL
+03 June 2014	16:53:00		 TESTCASE 3  False,True =>True  True  PASS
+03 June 2014	16:53:00		 TESTCASE 4  True ,False=>True  True  PASS
+03 June 2014	16:53:00		 TESTCASE 5  False,True =>True  True  PASS
+03 June 2014	16:53:00		 TESTCASE 6  True ,True =>True  True  PASS
+03 June 2014	16:53:00		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:53:00		FITNESS	0	54
+03 June 2014	16:53:51	STATUS	11        	0.0000	59        	622000    
+03 June 2014	16:53:51		 TESTCASE 0  True ,False=>True  True  PASS
+03 June 2014	16:53:51		 TESTCASE 1  True ,False=>False True  FAIL
+03 June 2014	16:53:51		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:53:51		 TESTCASE 3  False,False=>False True  FAIL
+03 June 2014	16:53:51		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	16:53:51		 TESTCASE 5  True ,True =>True  True  PASS
+03 June 2014	16:53:51		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:53:51		 TESTCASE 7  True ,True =>False True  FAIL
+03 June 2014	16:53:51		FITNESS	0	59
+03 June 2014	16:54:43	STATUS	12        	0.0000	64        	674100    
+03 June 2014	16:54:43		 TESTCASE 0  True ,True =>False True  FAIL
+03 June 2014	16:54:43		 TESTCASE 1  True ,False=>True  True  PASS
+03 June 2014	16:54:43		 TESTCASE 2  True ,False=>False True  FAIL
+03 June 2014	16:54:43		 TESTCASE 3  False,True =>True  True  PASS
+03 June 2014	16:54:43		 TESTCASE 4  False,False=>False True  FAIL
+03 June 2014	16:54:43		 TESTCASE 5  True ,True =>True  True  PASS
+03 June 2014	16:54:43		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:54:43		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:54:43		FITNESS	0	64
+03 June 2014	16:55:35	STATUS	13        	0.0000	69        	725639    
+03 June 2014	16:55:35		 TESTCASE 0  False,False=>False True  FAIL
+03 June 2014	16:55:35		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:55:35		 TESTCASE 2  True ,True =>False True  FAIL
+03 June 2014	16:55:35		 TESTCASE 3  False,False=>False True  FAIL
+03 June 2014	16:55:35		 TESTCASE 4  True ,False=>False True  FAIL
+03 June 2014	16:55:35		 TESTCASE 5  True ,True =>True  True  PASS
+03 June 2014	16:55:35		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:55:35		 TESTCASE 7  True ,False=>True  True  PASS
+03 June 2014	16:55:35		FITNESS	0	69

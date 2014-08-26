@@ -7,13 +7,17 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 
-#include "mecohost.h"
+#include "channelmap.h"
 #include "../mecoprot.h"
 #include <map>
 #include <queue>
 #include <thread>
+#include <chrono>
+#include <thread>
 
-#include "emMotherboard.h"
+
+#include "Mecobo.h"
+#include "USB.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -30,23 +34,35 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
-  shared_ptr<emMotherboard> mobo;
+  Mecobo * mecobo;
+  int port;
+  int boardAddr;
 
   std::thread runThread;
 
+  steady_clock::time_point sequenceRunStart;
+  int lastSequenceItemEnd;
+
   int64_t time;
   std::vector<emSequenceItem> seqItems;
+  
+  channelMap xbar;
 
-  std::map<int, std::queue<emSequenceItem>> pinSeq;
+  //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
   //std::vector<int> recPins;
   std::vector<emSequenceItem> itemsInFlight;
 
   public:
-  emEvolvableMotherboardHandler(shared_ptr<emMotherboard> mobo) {
+  //constructor for this class
+  emEvolvableMotherboardHandler(int force) {
     // Your initialization goes here
     time = 0;
-    this->mobo = mobo;
+    std::cout << "Starting USB subsystem." << std::endl;
+    mecobo = new Mecobo();
+    if (force)  {
+      mecobo->programFPGA("mecobo.bin");
+    }  
   }
 
   int32_t ping() {
@@ -56,7 +72,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setLED(const int32_t index, const bool state) {
-    state ? moboSetLed(index, 0) : moboSetLed(index, 1);
+    state ? mecobo->setLed(index, 0) : mecobo->setLed(index, 1);
     std::cout << "Led " << index << "is " << state << std::endl;
   }
 
@@ -76,114 +92,101 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   bool reset() {
-    // Your implementation goes here
-    resetAllPins();
-    printf("reset\n");
+    //mecobo->discharge();
+    mecobo->reset();
+    clearSequences();
+    std::cout << "Board reset and sequences cleared" << std::endl;
     return true;
   }
 
   bool reprogramme(const std::string& bin, const int32_t length) {
-    // Your implementation goes here
-    printf("reprogramme\n");
+    std::cout << "Reprogrammed called. Not implemented yet." << std::endl;
     return true;
   }
 
   void getDebugState(emDebugInfo& _return) {
-    // Your implementation goes here
-    printf("getDebugState\n");
+    _return.stateBlob = std::string("Not implemented yet\n");
   }
 
   void clearSequences() {
-    // Your implementation goes here
-    
     printf("Clearing sequence queue.\n");
-    pinSeq.clear();
     seqItems.clear();
   }
 
   void runSequences() {
     
+    emException err;
     //Reset board?
-    reset();
+    mecobo->reset();
     //Sort the sequence before we submit the items to the board.
-    std::cout << "Submitting sequence to board." << std::endl;
+    std::cout << "Scheduling sequences on board." << std::endl;
+    if (seqItems.size() > 50) {
+      err.Reason = "No more than 50 items please!";
+      err.Source = "runSequences()";
+      throw err;
+    }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
-    int lastEnd = -1;
+
+    //Find the last item as well.
+    lastSequenceItemEnd = -1;
     for (auto item : seqItems) {
       setupItem(item);
-      if(item.endTime > lastEnd) {
-        lastEnd = item.endTime;
-        std::cout << "Last item ends at" << lastEnd << std::endl;
+
+      if(item.endTime > lastSequenceItemEnd) {
+        lastSequenceItemEnd = item.endTime;
       }
     }
-    
-    std::cout << "Running sequences." << std::endl;
-    steady_clock::time_point start = steady_clock::now();
-    steady_clock::time_point end = steady_clock::now();
-    evoMoboRunSeq();
 
-    //If it took a little time to schedule that last item, add a little slack.
-    lastEnd += 10;
-    while(duration_cast<milliseconds>(end - start).count() < lastEnd) {
-      end = steady_clock::now();
-    }
-    std::cout << "-- Sequence done --" << std::endl;
-    std::vector<sampleValue> samples;
-    getSampleBuffer(samples);
-    for(auto s : samples) {
-      //std::cout << "Samples for pin " << s.pin << ":" << s.sampleNum << std::endl;
-      rec[s.pin].push_back(s.value);
-    }
+    std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
+    mecobo->runSchedule();
+    sequenceRunStart = steady_clock::now();
 
-    std::cout << "Sequence done, all qeueues empty." << std::endl;
-    std::cout << "Clearing sequences for you." << std::endl;
-    clearSequences();
   } 
 
 
   void stopSequences() {
-    // Your implementation goes here
-    printf("stopSequences\n");
+    std::cout << "stopSequences does nothing yet." << std::endl;
   }
 
   void joinSequences() {
-    // Your implementation goes here
-    printf("joinSequences\n");
+    //Hang around until things are done.
+    std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
+    std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
+    int totalWaitMs = 0;
+    int items = 0;
+    while((items = mecobo->status().itemsInQueue) > 0) {
+      //Ask again in 10ms.
+      std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+      totalWaitMs += 100;
+      if (totalWaitMs > (lastSequenceItemEnd*2)) {
+        std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
+        break;
+      }
+    }
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {
-    //TODO: Lots of error checking and all that jazzy.
-    std::cout << "Appending action" << std::endl;
-    
+    std::cout << "Appending action " << Item.operationType << std::endl;
     //append to vector that we will sort when doing runSequences (where we will do most work)
     seqItems.push_back(Item);
     return;
   }
 
   void getRecording(emWaveForm& _return, const int32_t srcPin) {
-    // Your implementation goes here
-    std::vector<int32_t> v;
-    std::vector<sampleValue> samples;
 
-    std::cout << "There are " << rec[srcPin].size() << "samples for pin " << srcPin << std::endl;
-    for(auto s : rec[srcPin]) {
-      //std::cout << s.sampleNum << std::endl;
-      v.push_back(s);
-    }
+    std::vector<int32_t> r = mecobo->getSampleBuffer(srcPin);
+    std::cout << "Pin " << srcPin << " has " << r.size() << " samples" << std::endl;
 
-    emWaveForm r;
-    r.SampleCount = v.size();
-    r.Samples = v;
-    _return = r;
-
-    rec[srcPin].clear();
+    _return.SampleCount = r.size();
+    _return.Samples = r;
   }
 
 
   void clearRecording(const int32_t srcPin) {
     // Your implementation goes here
+    rec[srcPin].clear();
     printf("clearRecording\n");
   }
 
@@ -196,6 +199,18 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void setLogServer(const emLogServerSettings& logServer) {
     // Your implementation goes here
     printf("setLogServer\n");
+  }
+
+  void setConfigRegister(const int32_t index, const int32_t value) {
+    if((value < 0) || (value > 255)) {
+
+      emException err;
+      err.Reason = "Value in config registers must be between 0 and 255";
+      err.Source = "setConfigRegister(register index, value)";
+      throw err;
+    }
+    std::cout << "Setting config register " << index << " to " << value << std::endl;
+    mecobo->updateRegister(index, value);
   }
 
   private:
@@ -219,38 +234,37 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     double period; //= 1.0f/(double)s.frequency;
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
-    uint32_t sampleDiv = ((50*1000000)/(8.0*(double)item.frequency));
+    uint32_t sampleDiv = ((50*1000000)/(double)item.frequency);
     emException err;
+
 
     switch(item.operationType) {
       case emSequenceOperationType::type::CONSTANT:
-        std::cout << "CONSTANT added: " << item.amplitude << " on pin " << item.pin << std::endl;
-        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, item.amplitude, 0, 0x1, 0x0, PINCONFIG_DATA_TYPE_DIRECT_CONST, item.amplitude);
-        break;
-      case emSequenceOperationType::type::PREDEFINED:
-        //Since it's predefined, we have a waveFormType
-        if(item.waveFormType == emWaveFormType::PWM) {
-          period = 1.0/(double)item.frequency;
-
-          duty =  (item.cycleTime/100.0)*(period * (50*1000000));
-          aduty = ((100.0f - item.cycleTime)/100.0) * period * (50*1000000);
-
-
-          if(item.frequency < 382) {
-            std::cout << "Frequency is too low:" << item.frequency << std::endl;
-            std::cout << "Please set frequency to over 400Hz.";
-            
-            err.Reason = "Frequency too low; under 400Hz"; //reason;
-            err.Source = "emMotherboard sequencer";
-            throw err;
-            break;
-          }
-          std::cout << "PREDEFINED PWM added: Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
-          submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
+        for(auto p : item.pin) {
+          std::cout << "CONSTANT. Amplitude:" << item.amplitude << " Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
+        mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
+
+      case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
+        for(auto p : item.pin) {
+          std::cout << "CONSTANT FROM REG. Amplitude:" << item.amplitude << " Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+        }
+          mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
+        break;
+
+
       case emSequenceOperationType::type::RECORD:
-        std::cout << "RECORDING added on pin " << item.pin << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+
+        for(auto p : item.pin) {
+          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+        }
+          mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
+        //Error checking.
+        //
+        /*
         if(sampleDiv <= 1) {
           err.Reason = "samplerate too high";
           err.Source = "emMotherboard";
@@ -261,8 +275,57 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
           err.Source = "emMotherboard";
           throw err;
           break;
+        }*/
+        
+        //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+
+        break;
+
+      case emSequenceOperationType::type::DIGITAL:
+        for(auto p : item.pin) {
+            std::cout << "DIGITAL. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
+           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
-        submitItem((FPGA_IO_Pins_TypeDef)item.pin, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+          mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
+        break;
+
+
+      //YAY DOUBLE CASE SWITCH CASE.
+      case emSequenceOperationType::type::PREDEFINED:
+        switch (item.waveFormType) {
+          case emWaveFormType::SINE:
+          for(auto p : item.pin) {
+        	  std::cout << "PREDEFINED SINE on " << p << std::endl;
+          }
+                mecobo->scheduleSine(item.pin, item.startTime, item.endTime, item.frequency, item.amplitude, item.phase);
+            break;
+
+          case emWaveFormType::PWM:
+            for (auto p: item.pin) {
+              period = 1.0/(double)item.frequency;
+
+              duty =  (item.cycleTime/100.0)*(period * (50*1000000));
+              aduty = ((100.0f - item.cycleTime)/100.0) * period * (50*1000000);
+
+
+              if(item.frequency < 382) {
+        	    std::cout << "Frequency is too low:" << item.frequency << std::endl;
+        	    std::cout << "Please set frequency to over 400Hz.";
+
+        	    err.Reason = "Frequency too low; under 400Hz"; //reason;
+        	    err.Source = "emMotherboard sequencer";
+        	    throw err;
+        	    break;
+        	  }
+
+        	std::cout << "PREDEFINED PWM added on pin " << p << ": Freq:" << item.frequency << ", duty" << duty << " Antiduty: " << aduty << std::endl;
+        	//submitItem(item.pin, item.startTime, item.endTime,  (uint32_t)duty, (uint32_t)aduty, 0x1, 0x0, PINCONFIG_DATA_TYPE_PREDEFINED_PWM, item.amplitude);
+            }
+        	  mecobo->schedulePWMoutput(item.pin, item.startTime, item.endTime, item.amplitude);
+            break;
+          default:
+            break;
+        }
         break;
       default:
         break;
@@ -276,8 +339,8 @@ int main(int argc, char **argv) {
 
   std::cout << "Hi, I'm the evolutionary motherboard." << std::endl;
   std::cout << "I was built on " << __DATE__ << " at " __TIME__ << std::endl;
-  std::cout << "I am version 13" << std::endl;
-  shared_ptr<emMotherboard> em(new emMotherboard());
+
+
   uint32_t forceProgFpga = 1;  //default program fpga.
   //Command line arguments
   if (argc > 1) {
@@ -287,41 +350,19 @@ int main(int argc, char **argv) {
       }
     }
   }
-  
 
-  int port = 9090;
-
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(em));
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+  shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
 
-  std::cout << "Starting USB..." << std::endl;
-  startUsb();
-  std::cout << "Done!" << std::endl;
-
-  if(forceProgFpga) {
-    programFPGA("mecobo.bin");
-  } else {
-    //Check if FPGA is configured
-    /*
-    if(em != NULL) {
-      if(!(em->isFpgaConfigured())) {
-        programFPGA("mecobo.bin");
-      }
-    }
-    */
-  }
-
-  std::cout << "Starting thrift server. (Silence ensues)." << std::endl;
+  //std::cout << "Starting thrift server, listening at port " << port << std::endl;
+  std::cout << "Thrift starting" << std::endl;
   server.serve();
-
-  std::cout << "Stopping USB..." << std::endl;
-  stopUsb();
-  std::cout << "Done!" << std::endl;
+  std::cout << "EvoMaterio exiting. Sayonara." << std::endl;
 
   return 0;
 }

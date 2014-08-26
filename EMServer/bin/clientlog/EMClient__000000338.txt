@@ -1,0 +1,21 @@
+03 June 2014	16:57:14		Logging to file ./clientlog//EMClient__000000338.txt
+03 June 2014	16:57:14		SETTING	LogServer	True
+03 June 2014	16:57:14		SETTING	LogServerPath	./serverlog
+03 June 2014	16:57:14		SETTING	LogClient	True
+03 June 2014	16:57:14		SETTING	LogClientPath	./clientlog
+03 June 2014	16:57:14		SETTING	ServerPort	9090
+03 June 2014	16:57:14		SETTING	DataAPIServerPort	9091
+03 June 2014	16:57:14		SETTING	DataAPIServer	localhost
+03 June 2014	16:57:14	Microsoft CLR? YES
+03 June 2014	16:57:14	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+03 June 2014	16:57:14	System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at EMServer.Settings.GetSetting[T](String Name) in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMServer\Settings.cs:line 16
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 45
+03 June 2014	16:57:14	Retrying connection attempt ... 1 of 10
+03 June 2014	16:57:24	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+03 June 2014	16:57:24	System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at EMServer.Settings.GetSetting[T](String Name) in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMServer\Settings.cs:line 16
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 45
+03 June 2014	16:57:24	Retrying connection attempt ... 2 of 10

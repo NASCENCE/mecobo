@@ -1,34 +1,66 @@
-﻿Build started 14/01/24 3:16:18 PM.
-     1>Project "C:\Users\simonh\Dropbox\API\winhost1\winhost1\winhost1\winhost1.vcxproj" on node 2 (Build target(s)).
+﻿Build started 03/06/2014 13:26:00.
+     1>Project "C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /I"C:\work\nascense\libusbx-1.0.16-win\include\libusbx-1.0" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\emMotherboard.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /IC:\Users\simonh\Documents\GitHub\mecobo\winbuild /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\winhost1.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /IC:\Users\simonh\Documents\GitHub\mecobo\winbuild /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\channelmap.cpp ..\emDataApi.cpp ..\emEvolvableMotherboard.cpp ..\emMotherboard.cpp ..\Mecobo.cpp ..\NascenseAPI_v01e_constants.cpp ..\NascenseAPI_v01e_types.cpp ..\shared_constants.cpp ..\usb.cpp winhost1.cpp
+         winhost1.cpp
+         usb.cpp
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(765): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+         shared_constants.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         NascenseAPI_v01e_types.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         NascenseAPI_v01e_constants.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         Mecobo.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(765): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\mecobo.cpp(338): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
          emMotherboard.cpp
      1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(117): warning C4244: '=' : conversion from 'int64_t' to 'int', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(222): warning C4244: 'initializing' : conversion from 'double' to 'uint32_t', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(228): warning C4244: 'argument' : conversion from 'int64_t' to 'uint32_t', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(235): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(236): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(249): warning C4244: 'argument' : conversion from 'int64_t' to 'uint32_t', possible loss of data
-     1>c:\users\simonh\dropbox\api\winhost1\winhost1\emmotherboard.cpp(265): warning C4244: 'argument' : conversion from 'int64_t' to 'uint32_t', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(765): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(138): warning C4244: '=' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(237): warning C4244: 'initializing' : conversion from 'double' to 'uint32_t', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(264): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(300): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(307): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(308): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
+     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(324): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+         emEvolvableMotherboard.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         emDataApi.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         channelmap.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\simonh\Dropbox\API\winhost1\winhost1\Debug\winhost1.exe" /VERBOSE /INCREMENTAL /NOLOGO /LIBPATH:"C:\local\boost_1_54_0\lib32-msvc-11.0" /LIBPATH:"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /LIBPATH:"C:\work\nascense\libusbx-1.0.16-win\MS32\static" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libthrift.lib "libusb-1.0.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\simonh\Dropbox\API\winhost1\winhost1\Debug\winhost1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\simonh\Dropbox\API\winhost1\winhost1\Debug\winhost1.lib" /MACHINE:X86 Debug\emDataApi.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.exe" /VERBOSE /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /LIBPATH:"C:\local\boost_1_54_0\lib32-msvc-11.0" /LIBPATH:"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /LIBPATH:C:\Users\simonh\Documents\GitHub\mecobo\winbuild kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libthrift.lib "libusb-1.0.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.lib" /MACHINE:X86 Debug\channelmap.obj
+         Debug\emDataApi.obj
          Debug\emEvolvableMotherboard.obj
          Debug\emMotherboard.obj
-         Debug\emMotherboardImp.obj
-         Debug\NascenseAPI_v01d_constants.obj
-         Debug\NascenseAPI_v01d_types.obj
+         Debug\Mecobo.obj
+         Debug\NascenseAPI_v01e_constants.obj
+         Debug\NascenseAPI_v01e_types.obj
          Debug\shared_constants.obj
          Debug\usb.obj
          Debug\stdafx.obj
          Debug\winhost1.obj
-         LINK : library changed; performing full link
-         
-         Invoking LINK.EXE:
-          /ERRORREPORT:PROMPT @C:\Users\simonh\AppData\Local\Temp\tmp742a2150742f46e1b7ce943e005da215.rsp
-          /incremental
-          /nologo
-          /fullbuild
          
          Starting pass 1
          Processed /DEFAULTLIB:msvcprtd
@@ -111,358 +143,483 @@
                Found "int __cdecl gettimeofday(struct timeval *,struct timezone *)" (?gettimeofday@@YAHPAUtimeval@@PAUtimezone@@@Z)
                  Referenced in libthrift.lib(TSocket.obj)
                  Loaded libthrift.lib(GetTimeOfDay.obj)
-             Searching C:\work\nascense\libusbx-1.0.16-win\MS32\static\libusb-1.0.lib:
+             Searching C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll\libusb-1.0.lib:
                Found _libusb_init@4
                  Referenced in usb.obj
-                 Loaded libusb-1.0.lib(core.obj)
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_exit@4
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_set_debug@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_error_name@4
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_get_device_list@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_free_device_list@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_get_device_descriptor@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
                Found _libusb_get_active_config_descriptor@8
                  Referenced in usb.obj
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded libusb-1.0.lib(descriptor.obj)
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_get_port_number@4
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_get_device_address@4
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_open@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_close@4
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_claim_interface@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_release_interface@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_kernel_driver_active@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_detach_kernel_driver@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found _libusb_attach_kernel_driver@8
+                 Referenced in usb.obj
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
                Found _libusb_bulk_transfer@24
                  Referenced in usb.obj
-                 Loaded libusb-1.0.lib(sync.obj)
-               Found _windows_backend
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded libusb-1.0.lib(windows_usb.obj)
-               Found _usbi_mutex_unlock@4
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded libusb-1.0.lib(threads_windows.obj)
-               Found _usbi_write@12
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded libusb-1.0.lib(poll_windows.obj)
-               Found _libusb_unlock_events@4
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded libusb-1.0.lib(io.obj)
-               Found _usbi_hotplug_deregister_all@4
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded libusb-1.0.lib(hotplug.obj)
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found __IMPORT_DESCRIPTOR_libusb-1.0
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
+               Found libusb-1.0_NULL_THUNK_DATA
+                 Referenced in libusb-1.0.lib(libusb-1.0.dll)
+                 Loaded libusb-1.0.lib(libusb-1.0.dll)
              Searching C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\lib\msvcprtd.lib:
                Found "__declspec(dllimport) public: __thiscall std::_Lockit::_Lockit(int)" (__imp_??0_Lockit@std@@QAE@H@Z)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) public: __thiscall std::_Lockit::~_Lockit(void)" (__imp_??1_Lockit@std@@QAE@XZ)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) void __cdecl std::_Debug_message(wchar_t const *,wchar_t const *,unsigned int)" (__imp_?_Debug_message@std@@YAXPB_W0I@Z)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __thiscall std::_Container_base12::_Container_base12(void)" (__imp_??0_Container_base12@std@@QAE@XZ)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __thiscall std::_Container_base12::~_Container_base12(void)" (__imp_??1_Container_base12@std@@QAE@XZ)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: struct std::_Iterator_base12 * * __thiscall std::_Container_base12::_Getpfirst(void)const " (__imp_?_Getpfirst@_Container_base12@std@@QBEPAPAU_Iterator_base12@2@XZ)
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: void __thiscall std::_Container_base12::_Orphan_all(void)" (__imp_?_Orphan_all@_Container_base12@std@@QAEXXZ)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) void __cdecl std::_Xbad_alloc(void)" (__imp_?_Xbad_alloc@std@@YAXXZ)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) void __cdecl std::_Xlength_error(char const *)" (__imp_?_Xlength_error@std@@YAXPBD@Z)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) void __cdecl std::_Xout_of_range(char const *)" (__imp_?_Xout_of_range@std@@YAXPBD@Z)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __thiscall std::locale::id::id(unsigned int)" (__imp_??0id@locale@std@@QAE@I@Z)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) char const * __cdecl std::_Syserror_map(int)" (__imp_?_Syserror_map@std@@YAPBDH@Z)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) char const * __cdecl std::_Winerror_map(int)" (__imp_?_Winerror_map@std@@YAPBDH@Z)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) bool __cdecl std::uncaught_exception(void)" (__imp_?uncaught_exception@std@@YA_NXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
                  Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) void __cdecl std::_Debug_message(wchar_t const *,wchar_t const *,unsigned int)" (__imp_?_Debug_message@std@@YAXPB_W0I@Z)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __thiscall std::_Container_base12::_Container_base12(void)" (__imp_??0_Container_base12@std@@QAE@XZ)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __thiscall std::_Container_base12::~_Container_base12(void)" (__imp_??1_Container_base12@std@@QAE@XZ)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: struct std::_Iterator_base12 * * __thiscall std::_Container_base12::_Getpfirst(void)const " (__imp_?_Getpfirst@_Container_base12@std@@QBEPAPAU_Iterator_base12@2@XZ)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in usb.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: void __thiscall std::_Container_base12::_Orphan_all(void)" (__imp_?_Orphan_all@_Container_base12@std@@QAEXXZ)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: void __thiscall std::_Container_base12::_Swap_all(struct std::_Container_base12 &)" (__imp_?_Swap_all@_Container_base12@std@@QAEXAAU12@@Z)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) void __cdecl std::_Xbad_alloc(void)" (__imp_?_Xbad_alloc@std@@YAXXZ)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) void __cdecl std::_Xlength_error(char const *)" (__imp_?_Xlength_error@std@@YAXPBD@Z)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) void __cdecl std::_Xout_of_range(char const *)" (__imp_?_Xout_of_range@std@@YAXPBD@Z)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __thiscall std::locale::id::id(unsigned int)" (__imp_??0id@locale@std@@QAE@I@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) char const * __cdecl std::_Syserror_map(int)" (__imp_?_Syserror_map@std@@YAPBDH@Z)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) char const * __cdecl std::_Winerror_map(int)" (__imp_?_Winerror_map@std@@YAPBDH@Z)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: bool __thiscall std::ios_base::good(void)const " (__imp_?good@ios_base@std@@QBE_NXZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: int __thiscall std::ios_base::flags(void)const " (__imp_?flags@ios_base@std@@QBEHXZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __int64 __thiscall std::ios_base::width(void)const " (__imp_?width@ios_base@std@@QBE_JXZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __int64 __thiscall std::ios_base::width(__int64)" (__imp_?width@ios_base@std@@QAE_J_J@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: int __thiscall std::basic_streambuf<char,struct std::char_traits<char> >::sputc(char)" (__imp_?sputc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAEHD@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: __int64 __thiscall std::basic_streambuf<char,struct std::char_traits<char> >::sputn(char const *,__int64)" (__imp_?sputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAE_JPBD_J@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: void __thiscall std::basic_ios<char,struct std::char_traits<char> >::setstate(int,bool)" (__imp_?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QAEXH_N@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > * __thiscall std::basic_ios<char,struct std::char_traits<char> >::tie(void)const " (__imp_?tie@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEPAV?$basic_ostream@DU?$char_traits@D@std@@@2@XZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_streambuf<char,struct std::char_traits<char> > * __thiscall std::basic_ios<char,struct std::char_traits<char> >::rdbuf(void)const " (__imp_?rdbuf@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEPAV?$basic_streambuf@DU?$char_traits@D@std@@@2@XZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: char __thiscall std::basic_ios<char,struct std::char_traits<char> >::fill(void)const " (__imp_?fill@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEDXZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: void __thiscall std::basic_ostream<char,struct std::char_traits<char> >::_Osfx(void)" (__imp_?_Osfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEXXZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(class std::basic_ostream<char,struct std::char_traits<char> > & (__cdecl*)(class std::basic_ostream<char,struct std::char_traits<char> > &))" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@P6AAAV01@AAV01@@Z@Z)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(unsigned short)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@G@Z)
+                 Referenced in channelmap.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(int)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@H@Z)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::flush(void)" (__imp_?flush@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV12@XZ)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::endl(class std::basic_ostream<char,struct std::char_traits<char> > &)" (__imp_?endl@std@@YAAAV?$basic_ostream@DU?$char_traits@D@std@@@1@AAV21@@Z)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) class std::basic_ostream<char,struct std::char_traits<char> > std::cout" (__imp_?cout@std@@3V?$basic_ostream@DU?$char_traits@D@std@@@1@A)
+                 Referenced in channelmap.obj
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Referenced in usb.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "void * __cdecl operator new[](unsigned int)" (??_U@YAPAXI@Z)
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Loaded msvcprtd.lib(newaop_s.obj)
-               Found "__declspec(dllimport) public: void __thiscall std::_Container_base12::_Swap_all(struct std::_Container_base12 &)" (__imp_?_Swap_all@_Container_base12@std@@QAEXAAU12@@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: bool __thiscall std::ios_base::good(void)const " (__imp_?good@ios_base@std@@QBE_NXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: int __thiscall std::ios_base::flags(void)const " (__imp_?flags@ios_base@std@@QBEHXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __int64 __thiscall std::ios_base::width(void)const " (__imp_?width@ios_base@std@@QBE_JXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __int64 __thiscall std::ios_base::width(__int64)" (__imp_?width@ios_base@std@@QAE_J_J@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: int __thiscall std::basic_streambuf<char,struct std::char_traits<char> >::sputc(char)" (__imp_?sputc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAEHD@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: __int64 __thiscall std::basic_streambuf<char,struct std::char_traits<char> >::sputn(char const *,__int64)" (__imp_?sputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAE_JPBD_J@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: void __thiscall std::basic_ios<char,struct std::char_traits<char> >::setstate(int,bool)" (__imp_?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QAEXH_N@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > * __thiscall std::basic_ios<char,struct std::char_traits<char> >::tie(void)const " (__imp_?tie@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEPAV?$basic_ostream@DU?$char_traits@D@std@@@2@XZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: class std::basic_streambuf<char,struct std::char_traits<char> > * __thiscall std::basic_ios<char,struct std::char_traits<char> >::rdbuf(void)const " (__imp_?rdbuf@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEPAV?$basic_streambuf@DU?$char_traits@D@std@@@2@XZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: char __thiscall std::basic_ios<char,struct std::char_traits<char> >::fill(void)const " (__imp_?fill@?$basic_ios@DU?$char_traits@D@std@@@std@@QBEDXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: void __thiscall std::basic_ostream<char,struct std::char_traits<char> >::_Osfx(void)" (__imp_?_Osfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEXXZ)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(class std::basic_ostream<char,struct std::char_traits<char> > & (__cdecl*)(class std::basic_ostream<char,struct std::char_traits<char> > &))" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@P6AAAV01@AAV01@@Z@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(bool)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@_N@Z)
                  Referenced in emMotherboard.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(int)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@H@Z)
-                 Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(unsigned int)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@I@Z)
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator<<(__int64)" (__imp_??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV01@_J@Z)
                  Referenced in emMotherboard.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) public: class std::basic_ostream<char,struct std::char_traits<char> > & __thiscall std::basic_ostream<char,struct std::char_traits<char> >::flush(void)" (__imp_?flush@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAEAAV12@XZ)
+               Found __imp__xtime_get
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in Mecobo.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::endl(class std::basic_ostream<char,struct std::char_traits<char> > &)" (__imp_?endl@std@@YAAAV?$basic_ostream@DU?$char_traits@D@std@@@1@AAV21@@Z)
+               Found __imp___Xtime_diff_to_millis2
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found __imp___Xtime_get_ticks
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
-               Found "__declspec(dllimport) class std::basic_ostream<char,struct std::char_traits<char> > std::cout" (__imp_?cout@std@@3V?$basic_ostream@DU?$char_traits@D@std@@@1@A)
+               Found __imp___Thrd_sleep
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) public: class std::basic_istream<char,struct std::char_traits<char> > & __thiscall std::basic_istream<char,struct std::char_traits<char> >::operator>>(int &)" (__imp_??5?$basic_istream@DU?$char_traits@D@std@@@std@@QAEAAV01@AAH@Z)
+                 Referenced in usb.obj
+                 Loaded msvcprtd.lib(MSVCP110D.dll)
+               Found "__declspec(dllimport) class std::basic_istream<char,struct std::char_traits<char> > std::cin" (__imp_?cin@std@@3V?$basic_istream@DU?$char_traits@D@std@@@1@A)
                  Referenced in usb.obj
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) public: __thiscall std::_Locinfo::_Locinfo(char const *)" (__imp_??0_Locinfo@std@@QAE@PBD@Z)
@@ -708,6 +865,12 @@
                  Referenced in msvcprtd.lib(MSVCP110D.dll)
                  Referenced in msvcprtd.lib(MSVCP110D.dll)
                  Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
+                 Referenced in msvcprtd.lib(MSVCP110D.dll)
                  Loaded msvcprtd.lib(MSVCP110D.dll)
                Found "__declspec(dllimport) void * __cdecl operator new(unsigned int,struct std::_DebugHeapTag_t const &,char *,int)" (__imp_??2@YAPAXIABU_DebugHeapTag_t@std@@PADH@Z)
                  Referenced in msvcprtd.lib(locale0_implib.obj)
@@ -721,22 +884,24 @@
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_thread-vc110-mt-gd-1_54.lib:
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_system-vc110-mt-gd-1_54.lib:
                Found "class boost::system::error_category const & __cdecl boost::system::system_category(void)" (?system_category@system@boost@@YAABVerror_category@12@XZ)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(TSocket.obj)
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_constants.obj
                  Loaded libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
              Searching C:\Program Files (x86)\Windows Kits\8.0\lib\win8\um\x86\Ws2_32.lib:
                Found __imp__htonl@4
@@ -880,215 +1045,385 @@
                  Loaded Ws2_32.lib(WS2_32.dll)
              Searching C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\lib\MSVCRTD.lib:
                Found __purecall
+                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(TSocket.obj)
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
                  Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in libthrift.lib(TApplicationException.obj)
                  Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in shared_constants.obj
-                 Referenced in usb.obj
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "void * __cdecl operator new(unsigned int)" (??2@YAPAXI@Z)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(TSocket.obj)
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
                  Referenced in msvcprtd.lib(newaop_s.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in libthrift.lib(TApplicationException.obj)
                  Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in shared_constants.obj
-                 Referenced in usb.obj
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "void __cdecl operator delete(void *)" (??3@YAXPAX@Z)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(TSocket.obj)
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
                  Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in libthrift.lib(TApplicationException.obj)
                  Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in shared_constants.obj
-                 Referenced in usb.obj
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found _atexit
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
                  Referenced in libthrift.lib(TSocket.obj)
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
                  Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in libthrift.lib(TApplicationException.obj)
                  Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in shared_constants.obj
-                 Referenced in usb.obj
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
                  Loaded MSVCRTD.lib(atonexit.obj)
                Found __imp___invalid_parameter
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Referenced in usb.obj
                  Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in channelmap.obj
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__memmove
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found _memcpy
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found _strlen
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "__declspec(dllimport) public: __thiscall std::exception::exception(void)" (__imp_??0exception@std@@QAE@XZ)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "__declspec(dllimport) public: __thiscall std::exception::exception(class std::exception const &)" (__imp_??0exception@std@@QAE@ABV01@@Z)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "__declspec(dllimport) public: virtual __thiscall std::exception::~exception(void)" (__imp_??1exception@std@@UAE@XZ)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp___CrtDbgReportW
+                 Referenced in MSVCRTD.lib(atonexit.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found @_RTC_CheckStackVars@8
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(stack.obj)
+               Found @__security_check_cookie@4
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in msvcprtd.lib(locale0_implib.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(secchk.obj)
+               Found __CxxThrowException@8
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __RTC_InitBase
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in usb.obj
+                 Referenced in winhost1.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(init.obj)
+               Found ___CxxFrameHandler3
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in msvcprtd.lib(locale0_implib.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "const type_info::`vftable'" (??_7type_info@@6B@)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(ti_inst.obj)
+               Found ___security_cookie
+                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
+                 Referenced in MSVCRTD.lib(atonexit.obj)
+                 Referenced in MSVCRTD.lib(secchk.obj)
+                 Referenced in libthrift.lib(SocketPair.obj)
+                 Referenced in libthrift.lib(TSocket.obj)
+                 Referenced in libthrift.lib(GetTimeOfDay.obj)
+                 Referenced in msvcprtd.lib(locale0_implib.obj)
+                 Referenced in libthrift.lib(TServerSocket.obj)
+                 Referenced in libthrift.lib(TBufferTransports.obj)
+                 Referenced in libthrift.lib(TWinsockSingleton.obj)
+                 Referenced in libthrift.lib(WinFcntl.obj)
+                 Referenced in usb.obj
+                 Referenced in libthrift.lib(Thrift.obj)
+                 Referenced in libthrift.lib(TApplicationException.obj)
+                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in Mecobo.obj
+                 Referenced in NascenseAPI_v01e_constants.obj
+                 Referenced in NascenseAPI_v01e_types.obj
+                 Referenced in shared_constants.obj
+                 Referenced in channelmap.obj
+                 Referenced in emDataApi.obj
+                 Referenced in emEvolvableMotherboard.obj
+                 Referenced in emMotherboard.obj
+                 Loaded MSVCRTD.lib(gs_cookie.obj)
                Found _memcmp
                  Referenced in libthrift.lib(Thrift.obj)
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found _memcpy
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libusb-1.0.lib(sync.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found _strlen
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__memmove
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found "__declspec(dllimport) public: __thiscall std::exception::exception(void)" (__imp_??0exception@std@@QAE@XZ)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found "__declspec(dllimport) public: __thiscall std::exception::exception(class std::exception const &)" (__imp_??0exception@std@@QAE@ABV01@@Z)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in libthrift.lib(TSimpleServer.obj)
+                 Referenced in NascenseAPI_v01e_types.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "__declspec(dllimport) public: class std::exception & __thiscall std::exception::operator=(class std::exception const &)" (__imp_??4exception@std@@QAEAAV01@ABV01@@Z)
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found "__declspec(dllimport) public: virtual __thiscall std::exception::~exception(void)" (__imp_??1exception@std@@UAE@XZ)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___CrtDbgReportW
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in MSVCRTD.lib(atonexit.obj)
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "__declspec(dllimport) public: bool __thiscall type_info::operator==(class type_info const &)const " (__imp_??8type_info@@QBE_NABV0@@Z)
                  Referenced in emDataApi.obj
@@ -1102,168 +1437,12 @@
                  Referenced in emDataApi.obj
                  Referenced in emEvolvableMotherboard.obj
                  Referenced in emMotherboard.obj
-                 Referenced in NascenseAPI_v01d_types.obj
+                 Referenced in NascenseAPI_v01e_types.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found @_RTC_CheckStackVars@8
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(stack.obj)
-               Found @__security_check_cookie@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(secchk.obj)
-               Found __CxxThrowException@8
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __RTC_InitBase
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in winhost1.obj
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(init.obj)
-               Found ___CxxFrameHandler3
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found "const type_info::`vftable'" (??_7type_info@@6B@)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(ti_inst.obj)
-               Found ___security_cookie
-                 Referenced in MSVCRTD.lib(secchk.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
-                 Referenced in MSVCRTD.lib(atonexit.obj)
-                 Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libthrift.lib(WinFcntl.obj)
-                 Referenced in libthrift.lib(SocketPair.obj)
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libthrift.lib(TApplicationException.obj)
-                 Referenced in libthrift.lib(TSimpleServer.obj)
-                 Referenced in libthrift.lib(TServerSocket.obj)
-                 Referenced in NascenseAPI_v01d_constants.obj
-                 Referenced in NascenseAPI_v01d_types.obj
-                 Referenced in shared_constants.obj
-                 Referenced in usb.obj
-                 Referenced in emDataApi.obj
-                 Referenced in emEvolvableMotherboard.obj
-                 Referenced in emMotherboard.obj
-                 Referenced in emMotherboardImp.obj
-                 Loaded MSVCRTD.lib(gs_cookie.obj)
                Found __fltused
                  Referenced in emDataApi.obj
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
                  Loaded MSVCRTD.lib(dllsupp.obj)
                Found "void __stdcall `eh vector destructor iterator'(void *,unsigned int,int,void (__thiscall*)(void *))" (??_M@YGXPAXIHP6EX0@Z@Z)
                  Referenced in emMotherboard.obj
@@ -1272,30 +1451,21 @@
                  Loaded MSVCRTD.lib(ehvecdtr.obj)
                Found __imp__printf
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
                  Referenced in usb.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __byteswap_uint64
                  Referenced in emMotherboard.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__free
-                 Referenced in libusb-1.0.lib(io.obj)
-                 Referenced in libusb-1.0.lib(hotplug.obj)
-                 Referenced in msvcprtd.lib(locale0_implib.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
+                 Referenced in msvcprtd.lib(locale0_implib.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__realloc
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Referenced in emMotherboard.obj
                  Referenced in libthrift.lib(TBufferTransports.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found _strcmp
                  Referenced in emMotherboard.obj
@@ -1305,6 +1475,7 @@
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "__declspec(dllimport) public: __thiscall std::exception::exception(char const * const &)" (__imp_??0exception@std@@QAE@ABQBD@Z)
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
                  Referenced in libthrift.lib(TSimpleServer.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
@@ -1319,45 +1490,53 @@
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found "void __cdecl operator delete[](void *)" (??_V@YAXPAX@Z)
                  Referenced in emMotherboard.obj
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Referenced in libthrift.lib(TSimpleServer.obj)
                  Referenced in libthrift.lib(TBufferTransports.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "__declspec(dllimport) void __cdecl Concurrency::wait(unsigned int)" (__imp_?wait@Concurrency@@YAXI@Z)
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found "__declspec(dllimport) public: static unsigned int __cdecl Concurrency::details::_CurrentScheduler::_Id(void)" (__imp_?_Id@_CurrentScheduler@details@Concurrency@@SAIXZ)
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __alldiv
                  Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
                  Loaded MSVCRTD.lib(lldiv.obj)
-               Found __imp__fclose
-                 Referenced in usb.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__fopen_s
-                 Referenced in usb.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__fread
-                 Referenced in usb.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__fseek
-                 Referenced in usb.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__ftell
-                 Referenced in usb.obj
+               Found __allmul
+                 Referenced in emMotherboard.obj
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(llmul.obj)
+               Found __imp__malloc
+                 Referenced in Mecobo.obj
+                 Referenced in libthrift.lib(Thrift.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__perror
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__fclose
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__fopen_s
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__fread
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__fseek
+                 Referenced in Mecobo.obj
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp__ftell
+                 Referenced in Mecobo.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__rewind
-                 Referenced in usb.obj
+                 Referenced in Mecobo.obj
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__exit
                  Referenced in usb.obj
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__malloc
-                 Referenced in libusb-1.0.lib(sync.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(io.obj)
-                 Referenced in usb.obj
-                 Referenced in libthrift.lib(Thrift.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found _mainCRTStartup
                  Loaded MSVCRTD.lib(crtexe.obj)
@@ -1403,12 +1582,8 @@
                Found __imp__sprintf
                  Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found _memset
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
                  Referenced in libthrift.lib(SocketPair.obj)
@@ -1416,7 +1591,6 @@
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__atoi
                  Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp___get_daylight
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
@@ -1432,81 +1606,14 @@
                  Loaded MSVCRTD.lib(llshl.obj)
                Found __aulldiv
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Loaded MSVCRTD.lib(ulldiv.obj)
                Found __aullrem
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
                  Loaded MSVCRTD.lib(ullrem.obj)
-               Found __imp__fputs
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___iob
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___vsnprintf
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in MSVCRTD.lib(vsnprintf.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___snprintf
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__calloc
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Referenced in libusb-1.0.lib(io.obj)
-                 Referenced in libusb-1.0.lib(hotplug.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(descriptor.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__getenv
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__toupper
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___stricmp
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__strtok
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp__sscanf
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __aulldvrm
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded MSVCRTD.lib(ulldvrm.obj)
-               Found __imp__strncmp
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___beginthreadex
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
-               Found __imp___errno
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Referenced in libusb-1.0.lib(io.obj)
-                 Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __imp__strerror
                  Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found __IMPORT_DESCRIPTOR_MSVCR110D
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
-                 Referenced in MSVCRTD.lib(MSVCR110D.dll)
                  Referenced in MSVCRTD.lib(MSVCR110D.dll)
                  Referenced in MSVCRTD.lib(MSVCR110D.dll)
                  Referenced in MSVCRTD.lib(MSVCR110D.dll)
@@ -1692,6 +1799,9 @@
                Found ___crtTerminateProcess
                  Referenced in MSVCRTD.lib(gs_report.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
+               Found __imp___vsnprintf
+                 Referenced in MSVCRTD.lib(vsnprintf.obj)
+                 Loaded MSVCRTD.lib(MSVCR110D.dll)
                Found ___clean_type_info_names_internal
                  Referenced in MSVCRTD.lib(tncleanup.obj)
                  Loaded MSVCRTD.lib(MSVCR110D.dll)
@@ -1734,7 +1844,6 @@
                Found __imp__FormatMessageA@28
                  Referenced in libthrift.lib(TServerSocket.obj)
                  Referenced in libthrift.lib(TSocket.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__OpenEventA@12
@@ -1742,137 +1851,16 @@
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__WaitForSingleObject@8
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__GetCurrentProcessId@0
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__ResetEvent@4
                  Referenced in libthrift.lib(TWinsockSingleton.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__GetSystemTimeAsFileTime@4
                  Referenced in libthrift.lib(GetTimeOfDay.obj)
-                 Referenced in libusb-1.0.lib(core.obj)
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
                  Referenced in MSVCRTD.lib(gs_support.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetLastError@0
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Referenced in MSVCRTD.lib(error.obj)
-                 Referenced in MSVCRTD.lib(pdblkup.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetProcAddress@8
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Referenced in MSVCRTD.lib(error.obj)
-                 Referenced in MSVCRTD.lib(pdblkup.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__LoadLibraryA@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetModuleHandleA@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__DeviceIoControl@32
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__CreateFileA@28
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__ReleaseSemaphore@12
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__TerminateThread@8
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__CreateSemaphoreA@16
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetOverlappedResult@16
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__ReleaseMutex@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__InterlockedIncrement@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__WriteFile@20
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__ReadFile@20
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__CancelIo@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__InterlockedExchange@8
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__QueryPerformanceCounter@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in MSVCRTD.lib(gs_support.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__WaitForMultipleObjects@16
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__QueryPerformanceFrequency@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__SetThreadAffinityMask@8
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__CreateMutexA@12
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetVersionExA@4
-                 Referenced in libusb-1.0.lib(windows_usb.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__SleepEx@8
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetCurrentThreadId@0
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Referenced in MSVCRTD.lib(gs_support.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__SystemTimeToFileTime@8
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetSystemTime@4
-                 Referenced in libusb-1.0.lib(threads_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__InitializeCriticalSection@4
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__LeaveCriticalSection@4
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__EnterCriticalSection@4
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__DeleteCriticalSection@4
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__DuplicateHandle@28
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
-                 Loaded kernel32.lib(KERNEL32.dll)
-               Found __imp__GetCurrentProcess@0
-                 Referenced in libusb-1.0.lib(poll_windows.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__LocalFree@4
                  Referenced in libboost_system-vc110-mt-gd-1_54.lib(error_code.obj)
@@ -1894,6 +1882,14 @@
                Found __imp__RaiseException@16
                  Referenced in MSVCRTD.lib(error.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
+               Found __imp__GetLastError@0
+                 Referenced in MSVCRTD.lib(error.obj)
+                 Referenced in MSVCRTD.lib(pdblkup.obj)
+                 Loaded kernel32.lib(KERNEL32.dll)
+               Found __imp__GetProcAddress@8
+                 Referenced in MSVCRTD.lib(error.obj)
+                 Referenced in MSVCRTD.lib(pdblkup.obj)
+                 Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__LoadLibraryExW@12
                  Referenced in MSVCRTD.lib(error.obj)
                  Referenced in MSVCRTD.lib(pdblkup.obj)
@@ -1910,6 +1906,12 @@
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__WideCharToMultiByte@32
                  Referenced in MSVCRTD.lib(error.obj)
+                 Loaded kernel32.lib(KERNEL32.dll)
+               Found __imp__QueryPerformanceCounter@4
+                 Referenced in MSVCRTD.lib(gs_support.obj)
+                 Loaded kernel32.lib(KERNEL32.dll)
+               Found __imp__GetCurrentThreadId@0
+                 Referenced in MSVCRTD.lib(gs_support.obj)
                  Loaded kernel32.lib(KERNEL32.dll)
                Found __imp__GetTickCount64@0
                  Referenced in MSVCRTD.lib(gs_support.obj)
@@ -1947,7 +1949,7 @@
              Searching C:\Program Files (x86)\Windows Kits\8.0\lib\win8\um\x86\odbc32.lib:
              Searching C:\Program Files (x86)\Windows Kits\8.0\lib\win8\um\x86\odbccp32.lib:
              Searching C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug\libthrift.lib:
-             Searching C:\work\nascense\libusbx-1.0.16-win\MS32\static\libusb-1.0.lib:
+             Searching C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll\libusb-1.0.lib:
              Searching C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\lib\msvcprtd.lib:
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_thread-vc110-mt-gd-1_54.lib:
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_system-vc110-mt-gd-1_54.lib:
@@ -1973,7 +1975,7 @@
              Searching C:\Program Files (x86)\Windows Kits\8.0\lib\win8\um\x86\odbc32.lib:
              Searching C:\Program Files (x86)\Windows Kits\8.0\lib\win8\um\x86\odbccp32.lib:
              Searching C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug\libthrift.lib:
-             Searching C:\work\nascense\libusbx-1.0.16-win\MS32\static\libusb-1.0.lib:
+             Searching C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll\libusb-1.0.lib:
              Searching C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\lib\msvcprtd.lib:
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_thread-vc110-mt-gd-1_54.lib:
              Searching C:\local\boost_1_54_0\lib32-msvc-11.0\libboost_system-vc110-mt-gd-1_54.lib:
@@ -1992,26 +1994,26 @@
           /v
           /x
           /fo
-          "C:\Users\simonh\AppData\Local\Temp\lnk{134C8998-91F3-4D54-923E-EEB750A48674}.tmp"
-          "C:\Users\simonh\AppData\Local\Temp\lnk{55F095A2-153B-424D-AFA7-0E024E062B6C}.tmp"
-         Microsoft (R) Windows (R) Resource Compiler Version 6.2.9200.16384
+          "C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp"
+          "C:\Users\simonh\AppData\Local\Temp\lnk{A24CEE50-4792-4C34-9139-8FEDC015492D}.tmp"
+         Microsoft (R) Windows (R) Resource Compiler Version 6.2.9200.20789
          
          Copyright (C) Microsoft Corporation.  All rights reserved.
          
          
-         Creating C:\Users\simonh\AppData\Local\Temp\lnk{134C8998-91F3-4D54-923E-EEB750A48674}.tmp
+         Creating C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp
          
          Using codepage 1252 as default
          
-         C:\Users\simonh\AppData\Local\Temp\lnk{55F095A2-153B-424D-AFA7-0E024E062B6C}.tmp.
+         C:\Users\simonh\AppData\Local\Temp\lnk{A24CEE50-4792-4C34-9139-8FEDC015492D}.tmp.
          Writing 24:1,	lang:0x409,	size 381
          
          Invoking cvtres.exe:
           /machine:x86
           /verbose
-          /out:"C:\Users\simonh\AppData\Local\Temp\lnk{74600D23-1400-41DE-8CB9-EAC17F9BDBE1}.tmp"
+          /out:"C:\Users\simonh\AppData\Local\Temp\lnk{88F1D4A8-2A59-4386-9205-0498EA3310DE}.tmp"
           /readonly
-          "C:\Users\simonh\AppData\Local\Temp\lnk{134C8998-91F3-4D54-923E-EEB750A48674}.tmp"
+          "C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp"
          Microsoft (R) Windows Resource To Object Converter Version 11.00.50727.1
          Copyright (C) Microsoft Corporation.  All rights reserved.
          
@@ -2041,40 +2043,13 @@
               stdafx.obj
               usb.obj
               shared_constants.obj
-              NascenseAPI_v01d_types.obj
-              NascenseAPI_v01d_constants.obj
-              emMotherboardImp.obj
+              NascenseAPI_v01e_types.obj
+              NascenseAPI_v01e_constants.obj
+              Mecobo.obj
               emMotherboard.obj
               emEvolvableMotherboard.obj
               emDataApi.obj
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
-              kernel32.lib(KERNEL32.dll)
+              channelmap.obj
               kernel32.lib(KERNEL32.dll)
               kernel32.lib(KERNEL32.dll)
               kernel32.lib(KERNEL32.dll)
@@ -2121,16 +2096,34 @@
               libthrift.lib(SocketPair.obj)
               libthrift.lib(TWinsockSingleton.obj)
               libthrift.lib(WinFcntl.obj)
-              libusb-1.0.lib(core.obj)
-              libusb-1.0.lib(descriptor.obj)
-              libusb-1.0.lib(io.obj)
-              libusb-1.0.lib(sync.obj)
-              libusb-1.0.lib(hotplug.obj)
-              libusb-1.0.lib(threads_windows.obj)
-              libusb-1.0.lib(poll_windows.obj)
-              libusb-1.0.lib(windows_usb.obj)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
+              libusb-1.0.lib(libusb-1.0.dll)
               msvcprtd.lib(locale0_implib.obj)
               msvcprtd.lib(newaop_s.obj)
+              msvcprtd.lib(MSVCP110D.dll)
+              msvcprtd.lib(MSVCP110D.dll)
+              msvcprtd.lib(MSVCP110D.dll)
+              msvcprtd.lib(MSVCP110D.dll)
+              msvcprtd.lib(MSVCP110D.dll)
+              msvcprtd.lib(MSVCP110D.dll)
               msvcprtd.lib(MSVCP110D.dll)
               msvcprtd.lib(MSVCP110D.dll)
               msvcprtd.lib(MSVCP110D.dll)
@@ -2269,9 +2262,9 @@
               MSVCRTD.lib(wildcard.obj)
               MSVCRTD.lib(dllsupp.obj)
               MSVCRTD.lib(lldiv.obj)
+              MSVCRTD.lib(llmul.obj)
               MSVCRTD.lib(llshl.obj)
               MSVCRTD.lib(ulldiv.obj)
-              MSVCRTD.lib(ulldvrm.obj)
               MSVCRTD.lib(ullrem.obj)
               MSVCRTD.lib(chandler4gs.obj)
               MSVCRTD.lib(fp8.obj)
@@ -2378,20 +2371,10 @@
               MSVCRTD.lib(MSVCR110D.dll)
               MSVCRTD.lib(MSVCR110D.dll)
               MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
-              MSVCRTD.lib(MSVCR110D.dll)
          Finished pass 2
-         winhost1.vcxproj -> C:\Users\simonh\Dropbox\API\winhost1\winhost1\Debug\winhost1.exe
-     1>Done Building Project "C:\Users\simonh\Dropbox\API\winhost1\winhost1\winhost1\winhost1.vcxproj" (Build target(s)).
+         winhost1.vcxproj -> C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.exe
+     1>Done Building Project "C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:12.46
+Time Elapsed 00:00:27.61
