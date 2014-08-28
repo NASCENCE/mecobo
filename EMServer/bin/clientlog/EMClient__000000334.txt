@@ -1,0 +1,52 @@
+03 June 2014	16:36:19		Logging to file ./clientlog//EMClient__000000334.txt
+03 June 2014	16:36:19		SETTING	LogServer	True
+03 June 2014	16:36:19		SETTING	LogServerPath	./serverlog
+03 June 2014	16:36:19		SETTING	LogClient	True
+03 June 2014	16:36:19		SETTING	LogClientPath	./clientlog
+03 June 2014	16:36:19		SETTING	Server	129.241.102.247
+03 June 2014	16:36:19		SETTING	ServerPort	9090
+03 June 2014	16:36:19		SETTING	DataAPIServerPort	9091
+03 June 2014	16:36:19		SETTING	DataAPIServer	localhost
+03 June 2014	16:36:19	Microsoft CLR? YES
+03 June 2014	16:36:19	Ping response = 0
+03 June 2014	16:36:19	Ping response took 67ms or 164783 ticks
+03 June 2014	16:37:10	STATUS	0         	0.0000	4         	50758     
+03 June 2014	16:37:10		 TESTCASE 0  True ,True =>False True  FAIL
+03 June 2014	16:37:10		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:37:10		 TESTCASE 2  False,True =>True  True  PASS
+03 June 2014	16:37:10		 TESTCASE 3  True ,False=>False True  FAIL
+03 June 2014	16:37:10		 TESTCASE 4  True ,False=>True  True  PASS
+03 June 2014	16:37:10		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	16:37:10		 TESTCASE 6  True ,True =>True  True  PASS
+03 June 2014	16:37:10		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:37:10		FITNESS	0	4
+03 June 2014	16:38:01	STATUS	1         	0.0000	9         	102101    
+03 June 2014	16:38:01		 TESTCASE 0  False,True =>True  True  PASS
+03 June 2014	16:38:01		 TESTCASE 1  True ,False=>False True  FAIL
+03 June 2014	16:38:01		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:38:01		 TESTCASE 3  True ,True =>False True  FAIL
+03 June 2014	16:38:01		 TESTCASE 4  True ,False=>True  True  PASS
+03 June 2014	16:38:01		 TESTCASE 5  True ,True =>True  True  PASS
+03 June 2014	16:38:01		 TESTCASE 6  False,True =>True  True  PASS
+03 June 2014	16:38:01		 TESTCASE 7  False,False=>False True  FAIL
+03 June 2014	16:38:01		FITNESS	0	9
+03 June 2014	16:39:16	STATUS	2         	0.0000	14        	176517    
+03 June 2014	16:39:16		 TESTCASE 0  True ,False=>True  True  PASS
+03 June 2014	16:39:16		 TESTCASE 1  True ,True =>True  True  PASS
+03 June 2014	16:39:16		 TESTCASE 2  False,True =>True  True  PASS
+03 June 2014	16:39:16		 TESTCASE 3  True ,True =>False True  FAIL
+03 June 2014	16:39:16		 TESTCASE 4  False,False=>False True  FAIL
+03 June 2014	16:39:16		 TESTCASE 5  True ,False=>False True  FAIL
+03 June 2014	16:39:16		 TESTCASE 6  False,False=>False True  FAIL
+03 June 2014	16:39:16		 TESTCASE 7  False,True =>True  True  PASS
+03 June 2014	16:39:16		FITNESS	0	14
+03 June 2014	16:40:07	STATUS	3         	0.0000	19        	227754    
+03 June 2014	16:40:07		 TESTCASE 0  True ,False=>True  True  PASS
+03 June 2014	16:40:07		 TESTCASE 1  False,True =>True  True  PASS
+03 June 2014	16:40:07		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	16:40:07		 TESTCASE 3  True ,True =>True  True  PASS
+03 June 2014	16:40:07		 TESTCASE 4  True ,False=>False True  FAIL
+03 June 2014	16:40:07		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	16:40:07		 TESTCASE 6  True ,True =>False True  FAIL
+03 June 2014	16:40:07		 TESTCASE 7  False,True =>True  True  PASS
+03 June 2014	16:40:07		FITNESS	0	19
