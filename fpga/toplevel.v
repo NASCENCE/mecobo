@@ -30,6 +30,8 @@ inout [57:1] HN;
 
 
 assign led[1] =  read_enable;
+//assign led[3] = chip_select;
+
 //Invert control signals
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
@@ -109,13 +111,12 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
-
 // CONTROL MODULES
 // -------------------------------------
 //Standard pin controllers
 genvar i;
 generate
-  for (i = 1; i < 50; i = i + 1) begin: pinControl 
+  for (i = 1; i < 16; i = i + 1) begin: pinControl 
     if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20) && (i != 49)) 
     begin
       pincontrol #(.POSITION(i-1))
@@ -132,8 +133,6 @@ generate
       );
     end
   end
-endgenerate
-
 adc_control #(.POSITION(100))
     adc0 (
       .clk(sys_clk),
@@ -179,5 +178,6 @@ xbar_control #(.POSITION(200))
       .xbar_clock(HN[6]), //clock from xbar and out to device 
       .pclk(HN[1]),
       .sin(HN[9]));
-
+    endgenerate
 endmodule
+
