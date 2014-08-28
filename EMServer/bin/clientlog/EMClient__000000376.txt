@@ -1,0 +1,170 @@
+05 June 2014	17:04:07		Logging to file ./clientlog//EMClient__000000376.txt
+05 June 2014	17:04:07		SETTING	LogServer	True
+05 June 2014	17:04:07		SETTING	LogServerPath	./serverlog
+05 June 2014	17:04:07		SETTING	LogClient	True
+05 June 2014	17:04:07		SETTING	LogClientPath	./clientlog
+05 June 2014	17:04:07		SETTING	Server	192.168.0.10
+05 June 2014	17:04:07		SETTING	ServerPort	9090
+05 June 2014	17:04:07		SETTING	DataAPIServerPort	9091
+05 June 2014	17:04:07		SETTING	DataAPIServer	localhost
+05 June 2014	17:04:07	Microsoft CLR? YES
+05 June 2014	17:04:07	Ping response = 0
+05 June 2014	17:04:07	Ping response took 8ms or 20797 ticks
+05 June 2014	17:04:07	<EVALUATION>
+05 June 2014	17:04:07	<EVALUATIONINDEX>0</EVALUATIONINDEX>
+05 June 2014	17:04:07	<SEQUENCE>
+05 June 2014	17:04:07		Pin=5  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:07		Pin=3  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:07		Pin=5  Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:07		Pin=14 Op=CONSTANT  Type=PWM     Amp=77   Fre=9766 Ph=3   
+05 June 2014	17:04:07		Pin=2  Op=CONSTANT  Type=PWM     Amp=245  Fre=4255 Ph=4   
+05 June 2014	17:04:07		Pin=6  Op=CONSTANT  Type=PWM     Amp=72   Fre=3960 Ph=5   
+05 June 2014	17:04:07		Pin=4  Op=CONSTANT  Type=PWM     Amp=30   Fre=7155 Ph=9   
+05 June 2014	17:04:07		Pin=8  Op=CONSTANT  Type=PWM     Amp=86   Fre=4042 Ph=9   
+05 June 2014	17:04:07		Pin=10 Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:07	</SEQUENCE>
+05 June 2014	17:04:07	<OUTPUT>
+05 June 2014	17:04:07			Test=True ,True ,False Predicted=True  Expected=False %High=100.0 Avg=0.98v
+05 June 2014	17:04:08			Test=True ,False,True  Predicted=True  Expected=True  %High=100.0 Avg=0.02v
+05 June 2014	17:04:08			Test=False,True ,False Predicted=True  Expected=True  %High=100.0 Avg=0.37v
+05 June 2014	17:04:09			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=-0.63v
+05 June 2014	17:04:09			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=-0.63v
+05 June 2014	17:04:10			Test=True ,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=0.98v
+05 June 2014	17:04:10			Test=True ,False,False Predicted=True  Expected=False %High=100.0 Avg=0.02v
+05 June 2014	17:04:11			Test=False,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=0.37v
+05 June 2014	17:04:11	</OUTPUT>
+05 June 2014	17:04:11	<FITNESS>0.615384615384615</FITNESS>
+05 June 2014	17:04:11	</TEST>
+05 June 2014	17:04:11	</EVALUATION>
+05 June 2014	17:04:11	<EVALUATION>
+05 June 2014	17:04:11	<EVALUATIONINDEX>1</EVALUATIONINDEX>
+05 June 2014	17:04:11	<SEQUENCE>
+05 June 2014	17:04:11		Pin=12 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:11		Pin=0  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:11		Pin=12 Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:11		Pin=8  Op=CONSTANT  Type=PWM     Amp=81   Fre=8360 Ph=2   
+05 June 2014	17:04:11		Pin=7  Op=CONSTANT  Type=PWM     Amp=91   Fre=462  Ph=7   
+05 June 2014	17:04:11		Pin=6  Op=CONSTANT  Type=PWM     Amp=123  Fre=1175 Ph=9   
+05 June 2014	17:04:11		Pin=3  Op=CONSTANT  Type=PWM     Amp=52   Fre=1517 Ph=1   
+05 June 2014	17:04:11		Pin=13 Op=CONSTANT  Type=PWM     Amp=117  Fre=3658 Ph=6   
+05 June 2014	17:04:11		Pin=11 Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:11	</SEQUENCE>
+05 June 2014	17:04:11	<OUTPUT>
+05 June 2014	17:04:11			Test=True ,True ,False Predicted=True  Expected=False %High=100.0 Avg=1.99v
+05 June 2014	17:04:12			Test=True ,False,True  Predicted=True  Expected=True  %High=100.0 Avg=1.99v
+05 June 2014	17:04:12			Test=False,True ,False Predicted=False Expected=True  %High=00.0 Avg=-3.04v
+05 June 2014	17:04:13			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=-3.04v
+05 June 2014	17:04:13			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=-3.04v
+05 June 2014	17:04:14			Test=True ,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=2.00v
+05 June 2014	17:04:14			Test=True ,False,False Predicted=True  Expected=False %High=100.0 Avg=1.99v
+05 June 2014	17:04:15			Test=False,True ,True  Predicted=False Expected=True  %High=00.0 Avg=-3.04v
+05 June 2014	17:04:15	</OUTPUT>
+05 June 2014	17:04:15	<FITNESS>0</FITNESS>
+05 June 2014	17:04:15	</TEST>
+05 June 2014	17:04:15	</EVALUATION>
+05 June 2014	17:04:15	<EVALUATION>
+05 June 2014	17:04:15	<EVALUATIONINDEX>2</EVALUATIONINDEX>
+05 June 2014	17:04:15	<SEQUENCE>
+05 June 2014	17:04:15		Pin=12 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:15		Pin=11 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:15		Pin=12 Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:15		Pin=1  Op=CONSTANT  Type=PWM     Amp=54   Fre=9939 Ph=9   
+05 June 2014	17:04:15		Pin=3  Op=CONSTANT  Type=PWM     Amp=25   Fre=6011 Ph=5   
+05 June 2014	17:04:15		Pin=0  Op=CONSTANT  Type=PWM     Amp=178  Fre=7527 Ph=8   
+05 June 2014	17:04:15		Pin=4  Op=CONSTANT  Type=PWM     Amp=68   Fre=8984 Ph=1   
+05 June 2014	17:04:15		Pin=6  Op=CONSTANT  Type=PWM     Amp=163  Fre=306  Ph=8   
+05 June 2014	17:04:15		Pin=15 Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:15	</SEQUENCE>
+05 June 2014	17:04:15	<OUTPUT>
+05 June 2014	17:04:15			Test=True ,True ,False Predicted=True  Expected=False %High=100.0 Avg=0.75v
+05 June 2014	17:04:16			Test=True ,False,True  Predicted=True  Expected=True  %High=100.0 Avg=0.75v
+05 June 2014	17:04:16			Test=False,True ,False Predicted=True  Expected=True  %High=100.0 Avg=0.75v
+05 June 2014	17:04:17			Test=False,False,False Predicted=True  Expected=False %High=100.0 Avg=0.75v
+05 June 2014	17:04:17			Test=False,False,True  Predicted=True  Expected=False %High=100.0 Avg=0.75v
+05 June 2014	17:04:18			Test=True ,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=0.75v
+05 June 2014	17:04:19			Test=True ,False,False Predicted=True  Expected=False %High=100.0 Avg=0.75v
+05 June 2014	17:04:19			Test=False,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=0.75v
+05 June 2014	17:04:19	</OUTPUT>
+05 June 2014	17:04:19	<FITNESS>0</FITNESS>
+05 June 2014	17:04:19	</TEST>
+05 June 2014	17:04:19	</EVALUATION>
+05 June 2014	17:04:19	<EVALUATION>
+05 June 2014	17:04:19	<EVALUATIONINDEX>3</EVALUATIONINDEX>
+05 June 2014	17:04:19	<SEQUENCE>
+05 June 2014	17:04:19		Pin=4  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:19		Pin=15 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:19		Pin=4  Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:19		Pin=3  Op=CONSTANT  Type=PWM     Amp=88   Fre=1397 Ph=2   
+05 June 2014	17:04:19		Pin=0  Op=CONSTANT  Type=PWM     Amp=185  Fre=6169 Ph=7   
+05 June 2014	17:04:19		Pin=5  Op=CONSTANT  Type=PWM     Amp=241  Fre=465  Ph=3   
+05 June 2014	17:04:19		Pin=7  Op=CONSTANT  Type=PWM     Amp=33   Fre=5747 Ph=4   
+05 June 2014	17:04:19		Pin=14 Op=CONSTANT  Type=PWM     Amp=148  Fre=9204 Ph=6   
+05 June 2014	17:04:19		Pin=8  Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:19	</SEQUENCE>
+05 June 2014	17:04:19	<OUTPUT>
+05 June 2014	17:04:20			Test=True ,True ,False Predicted=False Expected=False %High=00.0 Avg=-1.09v
+05 June 2014	17:04:20			Test=True ,False,True  Predicted=False Expected=True  %High=00.0 Avg=-1.09v
+05 June 2014	17:04:21			Test=False,True ,False Predicted=False Expected=True  %High=00.0 Avg=-1.72v
+05 June 2014	17:04:22			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=-1.72v
+05 June 2014	17:04:23			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=-1.72v
+05 June 2014	17:04:23			Test=True ,True ,True  Predicted=False Expected=True  %High=00.0 Avg=-1.09v
+05 June 2014	17:04:24			Test=True ,False,False Predicted=False Expected=False %High=00.0 Avg=-1.09v
+05 June 2014	17:04:24			Test=False,True ,True  Predicted=False Expected=True  %High=00.0 Avg=-1.71v
+05 June 2014	17:04:24	</OUTPUT>
+05 June 2014	17:04:24	<FITNESS>0</FITNESS>
+05 June 2014	17:04:24	</TEST>
+05 June 2014	17:04:24	</EVALUATION>
+05 June 2014	17:04:24	<EVALUATION>
+05 June 2014	17:04:24	<EVALUATIONINDEX>4</EVALUATIONINDEX>
+05 June 2014	17:04:24	<SEQUENCE>
+05 June 2014	17:04:24		Pin=10 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:24		Pin=12 Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:24		Pin=10 Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:24		Pin=9  Op=CONSTANT  Type=PWM     Amp=84   Fre=3180 Ph=1   
+05 June 2014	17:04:24		Pin=11 Op=CONSTANT  Type=PWM     Amp=71   Fre=8848 Ph=3   
+05 June 2014	17:04:24		Pin=6  Op=CONSTANT  Type=PWM     Amp=190  Fre=7280 Ph=8   
+05 June 2014	17:04:24		Pin=15 Op=CONSTANT  Type=PWM     Amp=111  Fre=5284 Ph=3   
+05 June 2014	17:04:24		Pin=1  Op=CONSTANT  Type=PWM     Amp=249  Fre=6573 Ph=2   
+05 June 2014	17:04:24		Pin=3  Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:24	</SEQUENCE>
+05 June 2014	17:04:24	<OUTPUT>
+05 June 2014	17:04:25			Test=True ,True ,False Predicted=True  Expected=False %High=100.0 Avg=2.99v
+05 June 2014	17:04:25			Test=True ,False,True  Predicted=False Expected=True  %High=00.0 Avg=-0.74v
+05 June 2014	17:04:26			Test=False,True ,False Predicted=True  Expected=True  %High=100.0 Avg=2.33v
+05 June 2014	17:04:26			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=-1.29v
+05 June 2014	17:04:27			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=-1.29v
+05 June 2014	17:04:27			Test=True ,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=3.00v
+05 June 2014	17:04:28			Test=True ,False,False Predicted=False Expected=False %High=00.0 Avg=-0.73v
+05 June 2014	17:04:28			Test=False,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=2.33v
+05 June 2014	17:04:28	</OUTPUT>
+05 June 2014	17:04:28	<FITNESS>0.5</FITNESS>
+05 June 2014	17:04:28	</TEST>
+05 June 2014	17:04:28	</EVALUATION>
+05 June 2014	17:04:28	STATUS	0         	0.6154	0         	21535     
+05 June 2014	17:04:28		 TESTCASE 0  True ,True =>False True  FAIL
+05 June 2014	17:04:28		 TESTCASE 1  True ,False=>True  True  PASS
+05 June 2014	17:04:28		 TESTCASE 2  False,True =>True  True  PASS
+05 June 2014	17:04:28		 TESTCASE 3  False,False=>False False PASS
+05 June 2014	17:04:28		 TESTCASE 4  False,False=>False False PASS
+05 June 2014	17:04:28		 TESTCASE 5  True ,True =>True  True  PASS
+05 June 2014	17:04:28		 TESTCASE 6  True ,False=>False True  FAIL
+05 June 2014	17:04:28		 TESTCASE 7  False,True =>True  True  PASS
+05 June 2014	17:04:28		FITNESS	0.615384615384615	0
+05 June 2014	17:04:28	<EVALUATION>
+05 June 2014	17:04:28	<EVALUATIONINDEX>5</EVALUATIONINDEX>
+05 June 2014	17:04:29	<SEQUENCE>
+05 June 2014	17:04:29		Pin=5  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:29		Pin=3  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	17:04:29		Pin=5  Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	17:04:29		Pin=14 Op=CONSTANT  Type=PWM     Amp=77   Fre=9766 Ph=3   
+05 June 2014	17:04:29		Pin=2  Op=CONSTANT  Type=PWM     Amp=245  Fre=4255 Ph=4   
+05 June 2014	17:04:29		Pin=6  Op=CONSTANT  Type=PWM     Amp=72   Fre=3960 Ph=5   
+05 June 2014	17:04:29		Pin=4  Op=CONSTANT  Type=PWM     Amp=30   Fre=7155 Ph=9   
+05 June 2014	17:04:29		Pin=8  Op=CONSTANT  Type=PWM     Amp=86   Fre=4042 Ph=9   
+05 June 2014	17:04:29		Pin=10 Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	17:04:29	</SEQUENCE>
+05 June 2014	17:04:29	<OUTPUT>
+05 June 2014	17:04:29			Test=True ,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=1.00v
+05 June 2014	17:04:29			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=-0.64v
+05 June 2014	17:04:30			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=-0.63v
+05 June 2014	17:04:30			Test=False,True ,True  Predicted=True  Expected=True  %High=100.0 Avg=0.38v

@@ -71,10 +71,12 @@ namespace EMUtils
                         {
                             case (0):
                                 int k = RandomSource.RNG.Next(0, Item.Pin.Count);
-                                UnusedPins.Add(Item.Pin[k]);
-                                Item.Pin.Remove(k);
-                                Item.Pin.Add(UnusedPins[RandomSource.RNG.Next(0, UnusedPins.Count)]);
-                                UnusedPins.Remove(Item.Pin[k]);
+                                int PinValue = Item.Pin[k];
+                                UnusedPins.Add(PinValue);
+                                while(Item.Pin.Contains(PinValue)) Item.Pin.Remove(PinValue);
+                                PinValue = UnusedPins[RandomSource.RNG.Next(0, UnusedPins.Count)];
+                                Item.Pin.Add(PinValue);
+                                UnusedPins.Remove(PinValue);
                                 break;
                             case (1):
                                 Item.Amplitude = RandomSource.RNG.Next(1, IndividualAndPopulationFactory.MaxAmplitude);
@@ -138,7 +140,8 @@ namespace EMUtils
                     NewItem.Frequency = this.Genotype[i].Frequency;
                     NewItem.OperationType = this.Genotype[i].OperationType;
                     NewItem.WaveFormType = this.Genotype[i].WaveFormType;
-                    NewItem.Pin = this.Genotype[i].Pin;
+                    NewItem.Pin = new List<int>();
+                    NewItem.Pin.AddRange(this.Genotype[i].Pin);
                     NewItem.Phase = this.Genotype[i].Phase;
 
                     NewInd.Genotype.Add(NewItem);
@@ -232,6 +235,9 @@ namespace EMUtils
 
         public class FitnessFunction
         {
+            public string OutputFolder = "./GatesTrace/";
+
+
             public ulong EvaluationCounter = 0;//How many evaluations we have done
             public emEvolvableMotherboard.Client Motherboard = null;  //Connection to the EM
 
@@ -325,6 +331,22 @@ namespace EMUtils
                             throw new NotImplementedException();
                     }
                 }
+
+                if (!Directory.Exists(OutputFolder))
+                {
+                    Directory.CreateDirectory(OutputFolder);
+                }
+                else
+                {
+                    string[] Files = Directory.GetFiles(OutputFolder);
+                    foreach (string F in Files)
+                    {
+                        Console.WriteLine("Deleting " + F);
+                        File.Delete(F);
+                    }
+                }
+
+
                 //Shufflle
                 this.ShuffleTestCases();
             }
@@ -342,8 +364,14 @@ namespace EMUtils
             /// </summary>
             public void TestPopulationThread()
             {
+                
                 foreach (Individual Ind in PopToTest.Individuals)
+                {
+                    this.Motherboard.setLED(2, true);
                     TestIndividual(Ind);
+                    this.Motherboard.setLED(2, false);
+                }
+                
             }
 
             /// <summary>
@@ -357,14 +385,15 @@ namespace EMUtils
                 _TestPopulationThread.Start();
                 _TestPopulationThread.Join();
             }
-            public string OutputFolder = "./GatesTrace/";
+            
             public void TestIndividual(Individual Ind)
             {
                 //Reset the fitness
                 Ind.Fitness = 0;
                 //Remember the evaluation index for this individual
+                Reporting.Say("<EVALUATION>");
                 Ind.EvaluationIndex = this.EvaluationCounter++;
-
+                Reporting.Say("<EVALUATIONINDEX>"+Ind.EvaluationIndex+"</EVALUATIONINDEX>");
                 //Reset the EM and clear everything
                 this.Motherboard.reset();
                 this.Motherboard.clearSequences();
@@ -377,13 +406,12 @@ namespace EMUtils
 
                 //Store for the fitness results
                 CGPIP2.ConfusionMatrix CM = new CGPIP2.ConfusionMatrix();
-                if (!Directory.Exists(OutputFolder))
-                    Directory.CreateDirectory(OutputFolder);
 
+                
                 int Index = 0;
 
                 StringBuilder TraceBuilder = new StringBuilder();
-
+                bool First = true;
                 foreach (BoolTestCase testCase in TestCases)
                 {
 
@@ -487,10 +515,33 @@ namespace EMUtils
                     this.Motherboard.appendSequenceAction(RecordItem);
                     Ind.OutputedSequences.Add(RecordItem);
 
+
+                    if (First)
+                    {
+                        Reporting.Say("<SEQUENCE>");
+                        foreach (emSequenceItem SI in Ind.OutputedSequences)
+                        {
+                            Reporting.Say(String.Format("\tPin={0,-2} Op={1,-9} Type={2,-7} Amp={3,-4} Fre={4,-4} Ph={5,-4}",
+                                SI.Pin[0].ToString(),
+                                SI.OperationType.ToString(),
+                                SI.WaveFormType.ToString(),
+                                SI.Amplitude.ToString(),
+                                SI.Frequency.ToString(),
+                                SI.Phase.ToString()
+                                ));
+                        }
+                        Reporting.Say("</SEQUENCE>");
+                        Reporting.Say("<OUTPUT>");
+                    }
+
+
                     //Run the test, wait for the mobo to let us know it has finished
+                    this.Motherboard.setLED(3, true);
                     this.Motherboard.runSequences();
 
+
                     this.Motherboard.joinSequences();
+                    this.Motherboard.setLED(3, false);
                     //Analyse the data
                     emWaveForm RecordedSignal = this.Motherboard.getRecording(RecordItem.Pin[0]);
                     if (RecordedSignal == null) throw new Exception("Failed to get recorded signal");
@@ -506,11 +557,16 @@ namespace EMUtils
 
                     ulong CountOne = 0;
                     for (int i = 0; i < RecordedSignal.SampleCount; i++)
-                        if (RecordedSignal.Samples[i] <= 0) CountOne++;
-                    Console.WriteLine("\t\t\t\tCount1 = " + CountOne + "/" + RecordedSignal.SampleCount);
+                        if (RecordedSignal.Samples[i] >= 0) CountOne++;
+
+                    
+                    
                     bool Predicted = CountOne > (ulong)RecordedSignal.SampleCount / 2;
                     bool Expected = testCase.Expected;
-
+                    double AvgVoltage = RecordedSignal.Samples.Count>1? ((5 * RecordedSignal.Samples.Average())/4096) : 0;
+                    Reporting.Say(String.Format("\t\tTest={3,-5},{4,-5},{5,-5} Predicted={0,-5} Expected={1,-5} %High={2:000} Avg={6:00.00}v",
+                        Predicted, Expected, (100d * CountOne) / RecordedSignal.SampleCount, testCase.InputA, testCase.InputB, testCase.InputC, AvgVoltage));
+                    
                     TraceBuilder.AppendLine(Expected + "," + Predicted);
 
                     if (Predicted && Expected)
@@ -527,18 +583,23 @@ namespace EMUtils
                     Ind.Report.Add(String.Format(" TESTCASE {0,-2} {1,-5},{2,-5}=>{3,-5} {4,-5} {5}",
                           Index - 1, testCase.InputA, testCase.InputB, testCase.Expected, Predicted, (testCase.Expected == Predicted ? "PASS" : "FAIL")));
                     Ind.Output = RecordedSignal;
-                }
 
+
+                    First = false;
+                }
+                Reporting.Say("</OUTPUT>");
 
                 if (double.IsNaN(Ind.Fitness)) Ind.Fitness = -1;
                 Ind.Fitness = Math.Abs(CM.MCC);
 
                 TraceBuilder.AppendLine("#fitness," + CM.MCC);
                 TraceBuilder.AppendLine("#evaluationindex," + Ind.EvaluationIndex);
-
+                Reporting.Say("<FITNESS>" + CM.MCC + "</FITNESS>");
+                Reporting.Say("</TEST>");
 
                 File.WriteAllText(OutputFolder + "/" + Ind.EvaluationIndex, TraceBuilder.ToString());
                 Ind.Report.Add("FITNESS\t" + Ind.Fitness + "\t" + Ind.EvaluationIndex);
+                Reporting.Say("</EVALUATION>");
             }
             /**
             public void TestIndividual2(Individual Ind)
@@ -781,7 +842,7 @@ namespace EMUtils
             Population Pop = IndividualAndPopulationFactory.RandomPopulation(IndividualAndPopulationFactory.PopulationSize);
 
             // wfv.Show();
-            //sequenceVisualiser.Show();
+            sequenceVisualiser.Show();
             Stopwatch Timer = new Stopwatch();
             Timer.Start();
 
@@ -794,7 +855,7 @@ namespace EMUtils
                 Reporting.Say(string.Format("STATUS\t{0,-10}\t{1:0.0000}\t{2,-10}\t{3,-10}", Epoch, BestInd.Fitness, BestInd.EvaluationIndex, Timer.ElapsedMilliseconds));
                 foreach (string S in BestInd.Report)
                     Reporting.Say("\t" + S);
-                /*
+            /*
                 if (BestInd.Output != null)
                 {
                     wfv.Clear();
@@ -804,23 +865,24 @@ namespace EMUtils
                 else
                     Reporting.Say("BestInd.Output is null");
 
-
-                try
-                {
-                    if (BestInd.OutputedSequences != null)
-                        sequenceVisualiser.UpdateViz(BestInd.OutputedSequences);
-                }
-                catch (Exception e)
-                {
-                    Reporting.Say(e.ToString());
-                }
-                 * */
+                */
+            /*try
+            {
+                if (BestInd.OutputedSequences != null)
+                    sequenceVisualiser.UpdateViz(BestInd.OutputedSequences);
+            }
+            catch (Exception e)
+            {
+                Reporting.Say(e.ToString());
+            }
+            */
                 Application.DoEvents();
-
+                FitFunc.Motherboard.setLED(2, true);
                 if (BestInd.Fitness < 0.751)
                     Pop.Simple1PlusNEvoStrat(100);
                 else
                     Pop.Simple1PlusNEvoStrat(0.1);
+                FitFunc.Motherboard.setLED(2, false);
             }
         }
     }
