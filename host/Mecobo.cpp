@@ -13,10 +13,15 @@
 #include <algorithm>
 
 
-Mecobo::Mecobo ()
+Mecobo::Mecobo (bool daughterboard)
 {
-  hasDaughterboard = true;
-  std::cout << "Mecobo initialized" << std::endl;
+  hasDaughterboard = daughterboard;
+  if (hasDaughterboard) {
+    std::cout << "Mecobo initialized" << std::endl;
+  } else {
+    std::cout << "Mecobo initialized without daughterboard" << std::endl;
+  }
+
 }
 
 Mecobo::~Mecobo ()
@@ -238,12 +243,16 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   //expected out.
   for(auto s : samples) {
     //Since one channel can be on many pins we'll collect them all.
+    if(hasDaughterboard) {
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
       //Cast from 13 bit to 32 bit two's complement int.
       int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
       //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
       pinRecordings[(int)p].push_back(v);
+    }
+    } else {
+      pinRecordings[s.channel].push_back(s.value);
     }
   }
 
@@ -252,24 +261,32 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 
 void Mecobo::discharge()
 {
-  xbar.reset();
-  std::vector<int> pins;
-  for(int i = 0; i < 15; i++) {pins.push_back(i);}
-  scheduleDigitalOutput(pins, 0, 500, 0, 0);
-  runSchedule();
+  if(hasDaughterboard) {
+    xbar.reset();
+    std::vector<int> pins;
+    for(int i = 0; i < 15; i++) {pins.push_back(i);}
+    scheduleDigitalOutput(pins, 0, 500, 0, 0);
+    runSchedule();
+  }
 }
 
 void Mecobo::reset()
 {
-  xbar.reset();
+  if (hasDaughterboard) {
+    std::cout << "Reseting XBAR" << std::endl;
+    xbar.reset();
+  }
+
   pinRecordings.clear();
   struct mecoPack p;
   createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
   sendPacket(&p);
   //Wait a while between polling the status to be nice.
+  std::cout << "Waiting for uC to complete reset" << std::endl;
   while(this->status().state == MECOBO_STATUS_BUSY) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+  std::cout << "Reset complete!" << std::endl;
 }
 
 bool
@@ -299,16 +316,18 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin[0];
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];  //Note that pin is a list, but always pick the first. 
   }
 
+
+  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)divisor;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
@@ -393,11 +412,13 @@ void
 Mecobo::runSchedule ()
 {
   //Set up the crossbar for this sequence.
-  std::cout << "Setting up XBAR" << std::endl;
-  std::vector<uint8_t> test = xbar.getXbarConfigBytes();
-  this->setXbar(test);
-  while(status().state == MECOBO_STATUS_BUSY) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  if(hasDaughterboard){
+    std::cout << "Setting up XBAR" << std::endl;
+    std::vector<uint8_t> test = xbar.getXbarConfigBytes();
+    this->setXbar(test);
+    while(status().state == MECOBO_STATUS_BUSY) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
   }
 
   struct mecoPack p;
@@ -408,9 +429,13 @@ Mecobo::runSchedule ()
 void
 Mecobo::setXbar(std::vector<uint8_t> & bytes)
 {
-  struct mecoPack p;
-  createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
-  sendPacket(&p);
+  if(hasDaughterboard) {
+    struct mecoPack p;
+    createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
+    sendPacket(&p);
+  } else {
+    std::cout << "Tried to set XBAR without daughterboard" << std::endl;
+  }
 }
 
 void

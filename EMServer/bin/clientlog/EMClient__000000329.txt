@@ -1,0 +1,16 @@
+03 June 2014	09:57:26		Logging to file ./clientlog//EMClient__000000329.txt
+03 June 2014	09:57:26		SETTING	LogServer	True
+03 June 2014	09:57:26		SETTING	LogServerPath	./serverlog
+03 June 2014	09:57:26		SETTING	LogClient	True
+03 June 2014	09:57:26		SETTING	LogClientPath	./clientlog
+03 June 2014	09:57:26		SETTING	Server	129.241.102.247
+03 June 2014	09:57:26		SETTING	ServerPort	9090
+03 June 2014	09:57:26		SETTING	DataAPIServerPort	9091
+03 June 2014	09:57:26		SETTING	DataAPIServer	localhost
+03 June 2014	09:57:26	Microsoft CLR? YES
+03 June 2014	09:57:28	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+03 June 2014	09:57:28	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+03 June 2014	09:57:28	Retrying connection attempt ... 1 of 10

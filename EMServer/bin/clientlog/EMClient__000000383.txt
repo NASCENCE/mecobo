@@ -1,0 +1,16 @@
+06 June 2014	09:08:24		Logging to file ./clientlog//EMClient__000000383.txt
+06 June 2014	09:08:24		SETTING	LogServer	True
+06 June 2014	09:08:24		SETTING	LogServerPath	./serverlog
+06 June 2014	09:08:24		SETTING	LogClient	True
+06 June 2014	09:08:24		SETTING	LogClientPath	./clientlog
+06 June 2014	09:08:24		SETTING	Server	129.241.111.46
+06 June 2014	09:08:24		SETTING	ServerPort	9090
+06 June 2014	09:08:24		SETTING	DataAPIServerPort	9091
+06 June 2014	09:08:24		SETTING	DataAPIServer	localhost
+06 June 2014	09:08:24	Microsoft CLR? YES
+06 June 2014	09:08:45	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+06 June 2014	09:08:45	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 129.241.111.46:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+06 June 2014	09:08:45	Retrying connection attempt ... 1 of 10

@@ -1,0 +1,28 @@
+03 June 2014	10:02:42		Logging to file ./clientlog//EMClient__000000330.txt
+03 June 2014	10:02:42		SETTING	LogServer	True
+03 June 2014	10:02:42		SETTING	LogServerPath	./serverlog
+03 June 2014	10:02:42		SETTING	LogClient	True
+03 June 2014	10:02:42		SETTING	LogClientPath	./clientlog
+03 June 2014	10:02:42		SETTING	Server	129.241.102.247
+03 June 2014	10:02:42		SETTING	ServerPort	9090
+03 June 2014	10:02:42		SETTING	DataAPIServerPort	9091
+03 June 2014	10:02:42		SETTING	DataAPIServer	localhost
+03 June 2014	10:02:42	Microsoft CLR? YES
+03 June 2014	10:02:44	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+03 June 2014	10:02:44	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+03 June 2014	10:02:44	Retrying connection attempt ... 1 of 10
+03 June 2014	10:02:54	Ping response = 0
+03 June 2014	10:02:54	Ping response took 99ms or 242345 ticks
+03 June 2014	10:03:48	STATUS	0         	0.0000	4         	53654     
+03 June 2014	10:03:48		 TESTCASE 0  True ,False=>False True  FAIL
+03 June 2014	10:03:48		 TESTCASE 1  True ,True =>False True  FAIL
+03 June 2014	10:03:48		 TESTCASE 2  False,False=>False True  FAIL
+03 June 2014	10:03:48		 TESTCASE 3  False,True =>True  True  PASS
+03 June 2014	10:03:48		 TESTCASE 4  False,True =>True  True  PASS
+03 June 2014	10:03:48		 TESTCASE 5  False,False=>False True  FAIL
+03 June 2014	10:03:48		 TESTCASE 6  True ,True =>True  True  PASS
+03 June 2014	10:03:48		 TESTCASE 7  True ,False=>True  True  PASS
+03 June 2014	10:03:48		FITNESS	0	4

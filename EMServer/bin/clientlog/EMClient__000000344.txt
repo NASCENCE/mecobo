@@ -1,0 +1,103 @@
+03 June 2014	17:17:21		Logging to file ./clientlog//EMClient__000000344.txt
+03 June 2014	17:17:21		SETTING	LogServer	True
+03 June 2014	17:17:21		SETTING	LogServerPath	./serverlog
+03 June 2014	17:17:21		SETTING	LogClient	True
+03 June 2014	17:17:21		SETTING	LogClientPath	./clientlog
+03 June 2014	17:17:21		SETTING	Server	129.241.111.46
+03 June 2014	17:17:21		SETTING	ServerPort	9090
+03 June 2014	17:17:21		SETTING	DataAPIServerPort	9091
+03 June 2014	17:17:21		SETTING	DataAPIServer	localhost
+03 June 2014	17:17:21	Microsoft CLR? YES
+03 June 2014	17:17:21	Ping response = 0
+03 June 2014	17:17:21	Ping response took 65ms or 159311 ticks
+03 June 2014	17:17:23			Test=True,False,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:23	vvvvvvvvvvvvvvvvvvvvvvv
+03 June 2014	17:17:23		Pin=10 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=14 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=10 Op=   emNULL Type= emNULL 
+03 June 2014	17:17:23		Pin=02 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=00 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=01 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=13 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=12 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:23		Pin=07 Op=   RECORD Type= emNULL 
+03 June 2014	17:17:23	^^^^^^^^^^^^^^^^^^^^^^^
+03 June 2014	17:17:24			Test=False,False,False Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:25			Test=True,True,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:26			Test=True,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:27			Test=False,True,True Predicted=True Expected=True %High=100.0
+03 June 2014	17:17:29			Test=False,True,False Predicted=True Expected=True %High=100.0
+03 June 2014	17:17:30			Test=True,False,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:31			Test=False,False,True Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:33			Test=True,False,True Predicted=True Expected=True %High=100.0
+03 June 2014	17:17:33	vvvvvvvvvvvvvvvvvvvvvvv
+03 June 2014	17:17:33		Pin=06 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=13 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=06 Op=   emNULL Type= emNULL 
+03 June 2014	17:17:33		Pin=09 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=07 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=04 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=02 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=08 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:33		Pin=12 Op=   RECORD Type= emNULL 
+03 June 2014	17:17:33	^^^^^^^^^^^^^^^^^^^^^^^
+03 June 2014	17:17:34			Test=False,False,False Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:35			Test=True,True,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:36			Test=True,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:37			Test=False,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:38			Test=False,True,False Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:40			Test=True,False,False Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:41			Test=False,False,True Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:42			Test=True,False,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:42	vvvvvvvvvvvvvvvvvvvvvvv
+03 June 2014	17:17:42		Pin=03 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=04 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=03 Op=   emNULL Type= emNULL 
+03 June 2014	17:17:42		Pin=14 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=08 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=10 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=09 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=11 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:42		Pin=05 Op=   RECORD Type= emNULL 
+03 June 2014	17:17:42	^^^^^^^^^^^^^^^^^^^^^^^
+03 June 2014	17:17:43			Test=False,False,False Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:45			Test=True,True,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:46			Test=True,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:47			Test=False,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:48			Test=False,True,False Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:49			Test=True,False,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:51			Test=False,False,True Predicted=True Expected=False %High=100.0
+03 June 2014	17:17:52			Test=True,False,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:52	vvvvvvvvvvvvvvvvvvvvvvv
+03 June 2014	17:17:52		Pin=03 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=08 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=03 Op=   emNULL Type= emNULL 
+03 June 2014	17:17:52		Pin=10 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=00 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=13 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=04 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=05 Op= CONSTANT Type=    PWM 
+03 June 2014	17:17:52		Pin=15 Op=   RECORD Type= emNULL 
+03 June 2014	17:17:52	^^^^^^^^^^^^^^^^^^^^^^^
+03 June 2014	17:17:53			Test=False,False,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:54			Test=True,True,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:17:56			Test=True,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:57			Test=False,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:58			Test=False,True,False Predicted=False Expected=True %High=00.0
+03 June 2014	17:17:59			Test=True,False,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:18:00			Test=False,False,True Predicted=False Expected=False %High=00.0
+03 June 2014	17:18:02			Test=True,False,True Predicted=True Expected=True %High=100.0
+03 June 2014	17:18:02	vvvvvvvvvvvvvvvvvvvvvvv
+03 June 2014	17:18:02		Pin=05 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=12 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=05 Op=   emNULL Type= emNULL 
+03 June 2014	17:18:02		Pin=13 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=10 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=08 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=14 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=06 Op= CONSTANT Type=    PWM 
+03 June 2014	17:18:02		Pin=02 Op=   RECORD Type= emNULL 
+03 June 2014	17:18:02	^^^^^^^^^^^^^^^^^^^^^^^
+03 June 2014	17:18:03			Test=False,False,False Predicted=True Expected=False %High=100.0
+03 June 2014	17:18:04			Test=True,True,False Predicted=False Expected=False %High=00.0
+03 June 2014	17:18:05			Test=True,True,True Predicted=False Expected=True %High=00.0

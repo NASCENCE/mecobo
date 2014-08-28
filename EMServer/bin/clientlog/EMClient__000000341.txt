@@ -1,0 +1,14 @@
+03 June 2014	17:16:02		Logging to file ./clientlog//EMClient__000000341.txt
+03 June 2014	17:16:02		SETTING	LogServer	True
+03 June 2014	17:16:02		SETTING	LogServerPath	./serverlog
+03 June 2014	17:16:02		SETTING	LogClient	True
+03 June 2014	17:16:02		SETTING	LogClientPath	./clientlog
+03 June 2014	17:16:02		SETTING	Server	129.241.111.46
+03 June 2014	17:16:02		SETTING	ServerPort	9090
+03 June 2014	17:16:02		SETTING	DataAPIServerPort	9091
+03 June 2014	17:16:02		SETTING	DataAPIServer	localhost
+03 June 2014	17:16:02	Microsoft CLR? YES
+03 June 2014	17:16:02	Ping response = 0
+03 June 2014	17:16:02	Ping response took 71ms or 173904 ticks
+03 June 2014	17:16:04			Test=True,True,True Predicted=False Expected=True %High=00.0
+03 June 2014	17:16:04	vvvvvvvvvvvvvvvvvvvvvvv

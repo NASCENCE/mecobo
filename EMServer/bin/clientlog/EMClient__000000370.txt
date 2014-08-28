@@ -1,0 +1,31 @@
+05 June 2014	16:37:05		Logging to file ./clientlog//EMClient__000000370.txt
+05 June 2014	16:37:05		SETTING	LogServer	True
+05 June 2014	16:37:05		SETTING	LogServerPath	./serverlog
+05 June 2014	16:37:05		SETTING	LogClient	True
+05 June 2014	16:37:05		SETTING	LogClientPath	./clientlog
+05 June 2014	16:37:05		SETTING	Server	192.168.0.10
+05 June 2014	16:37:05		SETTING	ServerPort	9090
+05 June 2014	16:37:05		SETTING	DataAPIServerPort	9091
+05 June 2014	16:37:05		SETTING	DataAPIServer	localhost
+05 June 2014	16:37:05	Microsoft CLR? YES
+05 June 2014	16:37:05	Ping response = 0
+05 June 2014	16:37:05	Ping response took 8ms or 20621 ticks
+05 June 2014	16:37:05	<EVALUATION>
+05 June 2014	16:37:05	<EVALUATIONINDEX>0</EVALUATIONINDEX>
+05 June 2014	16:37:05	<SEQUENCE>
+05 June 2014	16:37:05		Pin=6  Op=CONSTANT  Type=PWM     Amp=1    Fre=0    Ph=0   
+05 June 2014	16:37:05		Pin=0  Op=CONSTANT  Type=PWM     Amp=255  Fre=0    Ph=0   
+05 June 2014	16:37:05		Pin=6  Op=emNULL    Type=emNULL  Amp=0    Fre=0    Ph=0   
+05 June 2014	16:37:05		Pin=2  Op=CONSTANT  Type=PWM     Amp=225  Fre=1610 Ph=9   
+05 June 2014	16:37:05		Pin=12 Op=CONSTANT  Type=PWM     Amp=220  Fre=5793 Ph=5   
+05 June 2014	16:37:05		Pin=8  Op=CONSTANT  Type=PWM     Amp=169  Fre=7324 Ph=1   
+05 June 2014	16:37:05		Pin=5  Op=CONSTANT  Type=PWM     Amp=247  Fre=1467 Ph=8   
+05 June 2014	16:37:05		Pin=9  Op=CONSTANT  Type=PWM     Amp=180  Fre=7821 Ph=9   
+05 June 2014	16:37:05		Pin=1  Op=RECORD    Type=emNULL  Amp=0    Fre=5000 Ph=0   
+05 June 2014	16:37:05	</SEQUENCE>
+05 June 2014	16:37:05	<OUTPUT>
+05 June 2014	16:37:05			Test=False,True ,True  Predicted=False Expected=True  %High=00.0 Avg=0.03
+05 June 2014	16:37:06			Test=False,False,True  Predicted=False Expected=False %High=00.0 Avg=0.03
+05 June 2014	16:37:06			Test=True ,False,True  Predicted=False Expected=True  %High=00.0 Avg=0.03
+05 June 2014	16:37:07			Test=True ,False,False Predicted=False Expected=False %High=00.0 Avg=0.03
+05 June 2014	16:37:07			Test=False,False,False Predicted=False Expected=False %High=00.0 Avg=0.03
