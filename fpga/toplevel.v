@@ -116,7 +116,7 @@ ODDR2 clkout_oddr_da
 //Standard pin controllers
 genvar i;
 generate
-  for (i = 1; i < 16; i = i + 1) begin: pinControl 
+  for (i = 1; i < 17; i = i + 1) begin: pinControl 
     if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20) && (i != 49)) 
     begin
       pincontrol #(.POSITION(i-1))
