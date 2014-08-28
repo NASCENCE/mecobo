@@ -273,6 +273,7 @@ void Mecobo::discharge()
 void Mecobo::reset()
 {
   if (hasDaughterboard) {
+    std::cout << "Reseting XBAR" << std::endl;
     xbar.reset();
   }
 
