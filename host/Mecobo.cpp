@@ -149,7 +149,7 @@ void Mecobo::programFPGA(const char * filename)
   bitfile = fopen(filename, "rb");
 #endif
 
-  printf("Programming FPGA\n");
+  printf("Programming FPGA with bitfile %s\n", filename);
   fseek(bitfile, 0L, SEEK_END);
   long nBytes = ftell(bitfile);
   rewind(bitfile);
@@ -157,7 +157,7 @@ void Mecobo::programFPGA(const char * filename)
   int packsize = 32*1024;
   int nPackets = nBytes / packsize;
   int rest = nBytes % (packsize);
-  printf("supposed to have ballpark 6,440,432 bits. have %ld\n", nBytes * 8);
+  printf("supposed to have ballpark 6,440,432 bits. have %ld\n", 8*nBytes * 8);
   printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
         nBytes, nPackets, packsize, rest);
   uint8_t * bytes;
@@ -273,8 +273,9 @@ void Mecobo::discharge()
 void Mecobo::reset()
 {
   if (hasDaughterboard) {
-    std::cout << "Reseting XBAR" << std::endl;
+    std::cout << "Reseting XBAR..."; 
     xbar.reset();
+    std::cout << "DONE." << std::endl;
   }
 
   pinRecordings.clear();

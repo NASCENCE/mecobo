@@ -25,8 +25,8 @@ cli.clearSequences()
 it = emSequenceItem()
 it.pin = [15]
 it.startTime = 0
-it.amplitude = 128
 it.endTime = 1200
+it.amplitude = 180
 it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
 cli.appendSequenceAction(it)
 
@@ -43,7 +43,6 @@ cli.joinSequences()
 
 res = []
 for i in cli.getRecording(0).Samples:
-  print i
   res.append(i * (5.0/4096.0));
 
 plt.ylim(-6,6)

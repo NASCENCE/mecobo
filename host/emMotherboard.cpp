@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
       }
       if(strcmp(argv[i], "-b") == 0) {
         forceProgFpga = 1;
-        std::string bitfilename = std::string(argv[++i]);
+        bitfilename = std::string(argv[++i]);
         printf("Programming FPGA with bitfile %s\n", bitfilename.c_str());
       }
 
