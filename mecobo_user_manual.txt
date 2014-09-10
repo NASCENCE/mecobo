@@ -113,6 +113,14 @@ recording = cli.getRecording(recordPin);
 
 will get you a buffer of the sampled data of about 5000 elements.
 
+If you in addition the above specify 
+
+rec.waveformType = emWaveFormType::PWM 
+
+you will get a digital recording pin,
+which only returns a buffer consisting of 1 or 0, depending on if the sampled
+signal crossed the threshold for the FPGA input buffer, usually around 2.5V. 
+
 - Other operationTypes - 
 
 DIGITAL
@@ -143,7 +151,6 @@ it.operationType = emSequenceOperationType::type::CONSTANT_FROM_REGISTER;
 This sets up a sequence item that will not until the board is reset (endtime
 -1), and whose output depends on the value one writes with the command
 client.setRegister(register, value). 
-
 
 
 - Without the daughterboards connected -
