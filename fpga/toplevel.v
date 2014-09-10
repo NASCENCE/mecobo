@@ -9,6 +9,7 @@
 //[currentTick] -- read only
 //[lastValue]
 
+`define WITH_DB
 
 module mecobo (osc, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, HN, HW);
 
@@ -114,6 +115,7 @@ ODDR2 clkout_oddr_da
 
 // Stupid mistake. These fixes need to be
 // applied to the physical daughterboard as well.
+`ifdef WITH_DB
 wire [15:0] pin_rerouting;
 assign HW[1] = pin_rerouting[0];
 assign HW[3] = pin_rerouting[1];  
@@ -131,15 +133,14 @@ assign HW[25] = pin_rerouting[12];
 assign HW[27] = pin_rerouting[13];
 assign HW[18] = pin_rerouting[14]; //same
 assign HW[31] = pin_rerouting[15];
-
+`endif
 // CONTROL MODULES
 // -------------------------------------
 //Standard pin controllers
 genvar i;
 generate
+  `ifdef WITH_DB
   for (i = 0; i < 16; i = i + 1) begin: pinControl 
-    //if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20) && (i != 49)) 
-    //begin
       pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
@@ -199,6 +200,24 @@ xbar_control #(.POSITION(200))
       .xbar_clock(HN[6]), //clock from xbar and out to device 
       .pclk(HN[1]),
       .sin(HN[9]));
+  `else
+    for (i = 0; i < 50; i = i + 1) begin: pinControl 
+      pincontrol #(.POSITION(i))
+      pc (
+        .clk(sys_clk),
+        .reset(reset),
+        .enable(chip_select),
+        .addr(ebi_addr),
+        .data_wr(write_enable),
+        .data_in(data_in),
+        .data_rd(read_enable),
+        .data_out(data_out),
+        .pin(HN[i+1])
+      );
+      //end
+    end //for end
+  `endif
+
     endgenerate
 endmodule
 
