@@ -111,15 +111,36 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
+
+// Stupid mistake. These fixes need to be
+// applied to the physical daughterboard as well.
+wire [15:0] pin_rerouting;
+assign HW[1] = pin_rerouting[0];
+assign HW[3] = pin_rerouting[1];  
+assign HW[2] = pin_rerouting[2];   //needs patchcable
+assign HW[4] = pin_rerouting[3];   //same
+assign HW[9] = pin_rerouting[4];
+assign HW[11] = pin_rerouting[5];
+assign HW[6] = pin_rerouting[6];   //same
+assign HW[8] = pin_rerouting[7]; //same
+assign HW[10] = pin_rerouting[8];
+assign HW[14] = pin_rerouting[9];  //same
+assign HW[21] = pin_rerouting[10];
+assign HW[16] = pin_rerouting[11];
+assign HW[25] = pin_rerouting[12];
+assign HW[27] = pin_rerouting[13];
+assign HW[18] = pin_rerouting[14]; //same
+assign HW[31] = pin_rerouting[15];
+
 // CONTROL MODULES
 // -------------------------------------
 //Standard pin controllers
 genvar i;
 generate
-  for (i = 1; i < 17; i = i + 1) begin: pinControl 
-    if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20) && (i != 49)) 
-    begin
-      pincontrol #(.POSITION(i-1))
+  for (i = 0; i < 16; i = i + 1) begin: pinControl 
+    //if ((i != 29) && (i != 9) && (i != 11) && (i != 17) && (i != 19) && (i != 21) && (i != 23) && (i!=12) && (i!=20) && (i != 49)) 
+    //begin
+      pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
         .reset(reset),
@@ -129,10 +150,10 @@ generate
         .data_in(data_in),
         .data_rd(read_enable),
         .data_out(data_out),
-        .pin(HW[i])
+        .pin(pin_rerouting[i])
       );
-    end
-  end
+    //end
+  end //for end
 adc_control #(.POSITION(100))
     adc0 (
       .clk(sys_clk),
