@@ -85,10 +85,10 @@ int fpgaConfigured = 0;
 //Data stuff for items
 static struct pinItem * itemsToApply;
 int itaPos  = 0;
-unsigned int numItems = 0;
+uint16_t numItems = 0;
 static struct pinItem ** itemsInFlight;
-int iifPos  = 0;
-unsigned int numItemsInFlight = 0;
+uint16_t iifPos  = 0;
+uint16_t numItemsInFlight = 0;
 
 static int * lastCollected;
 static int runItems = 0;
@@ -357,14 +357,17 @@ int main(void)
       //that should stay in-flight forever.
       if(numItems > 0) {
         struct pinItem * currentItem = &(itemsToApply[itaPos]);
+
+        //Is it time to start the item at the head of the queue?
         if (currentItem->startTime <= timeMs) {
           execute(currentItem);
-          if (currentItem->endTime != (-1)) {
+
+          //if (currentItem->endTime != (-1)) {
             itemsInFlight[iifPos++] = currentItem;
             //Do not decrease counter if this is a run-forever
             //style item.
             numItemsInFlight++;
-          }
+         // }
           //Items To Apply queue increase because we started an item.
           itaPos++;
         }
@@ -373,6 +376,7 @@ int main(void)
         if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
           nextKillTime = currentItem->endTime;
         }
+        numItems--;
       } 
       //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
@@ -400,7 +404,8 @@ int main(void)
             struct pinItem * it = itemsInFlight[i];
             if(it != NULL) {
               //-1 is special case: run until reset.
-              if((it->endTime != -1) && it->endTime <= timeMs) {
+              if((it->endTime != -1) && (it->endTime <= timeMs)) {
+                printf("numItemsinFlight: %u\n", numItemsInFlight);
                 killItem(it);
                 itemsInFlight[i] = NULL;
                 numItemsInFlight--;
@@ -620,14 +625,20 @@ void killItem(struct pinItem * item)
             inputChannels[j] = inputChannels[j+1];
           }
           numInputChannels--;
-          break;
+          //break;
         }
       }
       break;
     default:
       break;
   }
-  numItems--;
+  /*
+  if(numItems == 0) {
+    printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
+  } else {
+    numItems--;
+  }
+  */
 }
 
 //inline void startInput(struct pinItem * item)
@@ -722,6 +733,7 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
   }
   //Digital channels.
   if (channel < IO_CHANNELS_END) {
+    //printf("ch: %d, %p\n", channel, (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100));
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
   }
 
@@ -748,7 +760,8 @@ void execCurrentPack()
     struct mecoboStatus s;
     s.state = (uint8_t)mecoboStatus;
     s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)numItems;
+    s.itemsInQueue = (uint16_t)numItemsInFlight;
+    //printf("QI: %u\n", numItemsInFlight);
 
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
   }
@@ -789,6 +802,8 @@ void execCurrentPack()
     printf("Starting sequence run\n");
     runItems = 1;
     timeTick = 0;
+    lastTimeTick = 0;
+    timeMs = 0;
     itaPos = 0;
   }
 
@@ -829,13 +844,13 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_RESET_ALL) {
     mecoboStatus = MECOBO_STATUS_BUSY;
 
+    runItems = 0;
     printf("Reset called! Who answers?\n");
     //Reset state
     itaPos = 0;
     numItems = 0;
     iifPos = 0;
     numItemsInFlight = 0;
-    runItems = 0;
     numSamples = 0;
     numInputChannels = 0;
     nextKillTime = 0;
@@ -873,7 +888,7 @@ void execCurrentPack()
 
     resetAllPins();
     
-    printf("\n\n---------------- MECOBO RESET ------------------\n\n");
+    printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
   }
 

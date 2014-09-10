@@ -153,12 +153,16 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //Hang around until things are done.
     std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
     std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
-    int totalWaitMs = 0;
-    int items = 0;
+    int totalWaitMs = lastSequenceItemEnd;
+    unsigned int items = 0;
+  
+    //Wait for at least the lastSeq endtime.
+    std::this_thread::sleep_for(std::chrono::milliseconds(lastSequenceItemEnd)); 
+
     while((items = mecobo->status().itemsInQueue) > 0) {
-      //Ask again in 10ms.
-      std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
-      totalWaitMs += 50;
+      //Ask again in 10ms -- should ve very close to done. 
+      std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
+      totalWaitMs += 10;
       if (totalWaitMs > (lastSequenceItemEnd*2)) {
         std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
         break;

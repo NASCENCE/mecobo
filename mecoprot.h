@@ -66,27 +66,28 @@
 //TODO: Fill in the rest.
 //
 //FPGA port enum
-//This MUST MUST correspond to the generate in toplevel.v; because that gives them their real
+//These are the offsets for the pin controllers in the FPGA. 
 //address. 
-//This is ... actually offsets. Isn't it. YES INDEED.
+
+
 typedef enum {
   INVALID = -1,
   FPGA_DIGI_0 = 0,
-  FPGA_DIGI_1 = 2,
-  FPGA_DIGI_2 = 4,
-  FPGA_DIGI_3 = 6,
-  FPGA_DIGI_4 = 1,   //note : this is due to the missing fpga pins, reroute on daughterboard.
-  FPGA_DIGI_5 = 3,   //same.
-  FPGA_DIGI_6 = 12,
-  FPGA_DIGI_7 = 14,
-  FPGA_DIGI_8 = 5,
-  FPGA_DIGI_9 = 7,
-  FPGA_DIGI_10 = 9,
-  FPGA_DIGI_11 = 13,
-  FPGA_DIGI_12 = 24,
-  FPGA_DIGI_13 = 26,
-  FPGA_DIGI_14 = 15,
-  FPGA_DIGI_15 = 30,
+  FPGA_DIGI_1 = 1,
+  FPGA_DIGI_2 = 2,
+  FPGA_DIGI_3 = 3,
+  FPGA_DIGI_4 = 4,   
+  FPGA_DIGI_5 = 5,
+  FPGA_DIGI_6 = 6,
+  FPGA_DIGI_7 = 7,
+  FPGA_DIGI_8 = 8,
+  FPGA_DIGI_9 = 9,
+  FPGA_DIGI_10 = 10,
+  FPGA_DIGI_11 = 11,
+  FPGA_DIGI_12 = 12,
+  FPGA_DIGI_13 = 13,
+  FPGA_DIGI_14 = 14,
+  FPGA_DIGI_15 = 15,
   //DAC channels
   FPGA_DAC_0_A = 50,
   FPGA_DAC_0_B = 51,
