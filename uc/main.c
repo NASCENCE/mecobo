@@ -85,7 +85,7 @@ int fpgaConfigured = 0;
 //Data stuff for items
 static struct pinItem * itemsToApply;
 int itaPos  = 0;
-uint16_t numItems = 0;
+uint16_t numItemsLeftToExecute = 0;
 static struct pinItem ** itemsInFlight;
 uint16_t iifPos  = 0;
 uint16_t numItemsInFlight = 0;
@@ -355,7 +355,7 @@ int main(void)
       //This is the execution stage.
       //Special cases are required for items
       //that should stay in-flight forever.
-      if(numItems > 0) {
+      if(numItemsLeftToExecute > 0) {
         struct pinItem * currentItem = &(itemsToApply[itaPos]);
 
         //Is it time to start the item at the head of the queue?
@@ -385,6 +385,12 @@ int main(void)
           //}
           if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
             execute(itemsInFlight[flight]);
+            if(numItemsLeftToExecute == 0) {
+                printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
+              } else {
+                numItemsLeftToExecute--;
+              }
+
             registersUpdated[itemsInFlight[flight]->constantValue] = 0;
           }
         }
@@ -615,6 +621,10 @@ void killItem(struct pinItem * item)
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       break;
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+      setVoltage(item->pin, 128);
+      break;
+
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       for(int i = 0; i < numInputChannels; i++) {
@@ -631,12 +641,7 @@ void killItem(struct pinItem * item)
     default:
       break;
   }
-  if(numItems == 0) {
-    printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
-  } else {
-    numItems--;
   }
-}
 
 //inline void startInput(struct pinItem * item)
 inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
@@ -757,7 +762,7 @@ void execCurrentPack()
     struct mecoboStatus s;
     s.state = (uint8_t)mecoboStatus;
     s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)numItemsInFlight;
+    s.itemsInQueue = (uint16_t)numItemsLeftToExecute;
     //printf("QI: %u\n", numItemsInFlight);
 
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
@@ -780,15 +785,15 @@ void execCurrentPack()
       //find lowest first killtime, but ignore -1 endtimes,
       //they should run forever.
       if(item.endTime != -1) {
-        if(numItems == 0) {
+        if(numItemsLeftToExecute == 0) {
           nextKillTime = item.endTime;
         } else if (item.endTime < nextKillTime) {
           nextKillTime = item.endTime;
         }
       }
 
-      numItems++;
-      printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItems, item.pin, item.startTime, item.endTime, item.sampleRate);
+      numItemsLeftToExecute++;
+      printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       printf("Curr data NULL\n");
     }
@@ -845,7 +850,7 @@ void execCurrentPack()
     printf("Reset called! Who answers?\n");
     //Reset state
     itaPos = 0;
-    numItems = 0;
+    numItemsLeftToExecute = 0;
     iifPos = 0;
     numItemsInFlight = 0;
     numSamples = 0;

@@ -119,19 +119,19 @@ ODDR2 clkout_oddr_da
 wire [15:0] pin_rerouting;
 assign HW[1] = pin_rerouting[0];
 assign HW[3] = pin_rerouting[1];  
-assign HW[2] = pin_rerouting[2];   //needs patchcable
-assign HW[4] = pin_rerouting[3];   //same
-assign HW[9] = pin_rerouting[4];
-assign HW[11] = pin_rerouting[5];
-assign HW[6] = pin_rerouting[6];   //same
-assign HW[8] = pin_rerouting[7]; //same
-assign HW[10] = pin_rerouting[8];
-assign HW[14] = pin_rerouting[9];  //same
-assign HW[21] = pin_rerouting[10];
-assign HW[16] = pin_rerouting[11];
+assign HW[5] = pin_rerouting[2];
+assign HW[7] = pin_rerouting[3];   
+assign HW[2] = pin_rerouting[4];
+assign HW[3] = pin_rerouting[5];
+assign HW[13] = pin_rerouting[6]; 
+assign HW[15] = pin_rerouting[7]; 
+assign HW[4] = pin_rerouting[8];
+assign HW[8] = pin_rerouting[9];  
+assign HW[10] = pin_rerouting[10];
+assign HW[14] = pin_rerouting[11];
 assign HW[25] = pin_rerouting[12];
 assign HW[27] = pin_rerouting[13];
-assign HW[18] = pin_rerouting[14]; //same
+assign HW[16] = pin_rerouting[14]; 
 assign HW[31] = pin_rerouting[15];
 `endif
 // CONTROL MODULES
