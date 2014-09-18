@@ -376,7 +376,6 @@ int main(void)
         if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
           nextKillTime = currentItem->endTime;
         }
-        numItems--;
       } 
       //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
@@ -632,13 +631,11 @@ void killItem(struct pinItem * item)
     default:
       break;
   }
-  /*
   if(numItems == 0) {
     printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
   } else {
     numItems--;
   }
-  */
 }
 
 //inline void startInput(struct pinItem * item)
@@ -791,7 +788,7 @@ void execCurrentPack()
       }
 
       numItems++;
-      printf("Item added to pin %d, starting at %d, ending at %d, samplerate %d\n", item.pin, item.startTime, item.endTime, item.sampleRate);
+      printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItems, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       printf("Curr data NULL\n");
     }
