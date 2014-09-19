@@ -66,3 +66,9 @@ C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.c
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMUtils.exe
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\bin\EMUtils.pdb
 C:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.PongForm.resources
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMUtils.exe.config
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMUtils\obj\x86\Debug\Interop.AcroPDFLib.dll
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMUtils\obj\x86\Debug\AxInterop.AcroPDFLib.dll
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.csproj.ResolveComReference.cache
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.exe
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMUtils\obj\x86\Debug\EMUtils.pdb

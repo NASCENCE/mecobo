@@ -1,10 +1,7 @@
-﻿Build started 03/06/2014 13:26:00.
-     1>Project "C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" on node 2 (Build target(s)).
+﻿Build started 19/09/2014 14:15:29.
+     1>Project "C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /IC:\Users\simonh\Documents\GitHub\mecobo\winbuild /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\winhost1.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
-         stdafx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /IC:\Users\simonh\Documents\GitHub\mecobo\winbuild /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\channelmap.cpp ..\emDataApi.cpp ..\emEvolvableMotherboard.cpp ..\emMotherboard.cpp ..\Mecobo.cpp ..\NascenseAPI_v01e_constants.cpp ..\NascenseAPI_v01e_types.cpp ..\shared_constants.cpp ..\usb.cpp winhost1.cpp
-         winhost1.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift" /I"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\\" /IC:\Users\simonh\Documents\GitHub\mecobo\winbuild /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /D _CRT_SECURE_NO_DEPRECATE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\Mecobo.cpp ..\NascenseAPI_v01e_constants.cpp ..\NascenseAPI_v01e_types.cpp ..\channelmap.cpp ..\emDataApi.cpp ..\emEvolvableMotherboard.cpp ..\emMotherboard.cpp ..\shared_constants.cpp ..\usb.cpp
          usb.cpp
      1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
@@ -13,6 +10,28 @@
      1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
          shared_constants.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         emMotherboard.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(765): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(138): warning C4244: '=' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(240): warning C4244: 'initializing' : conversion from 'double' to 'uint32_t', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(268): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(274): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(310): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(317): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(318): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
+     1>c:\users\simonh\documents\github\nascenese\mecobo\winbuild\winhost1\emmotherboard.cpp(334): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
+         emEvolvableMotherboard.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         emDataApi.cpp
+     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
+         channelmap.cpp
      1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
          NascenseAPI_v01e_types.cpp
      1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
@@ -26,31 +45,9 @@
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
      1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\mecobo.cpp(338): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-         emMotherboard.cpp
-     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
-     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(734): warning C4200: nonstandard extension used : zero-sized array in struct/union
-                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(765): warning C4200: nonstandard extension used : zero-sized array in struct/union
-                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>c:\users\simonh\documents\github\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0\libusb.h(1259): warning C4200: nonstandard extension used : zero-sized array in struct/union
-                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(138): warning C4244: '=' : conversion from 'int64_t' to 'int', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(237): warning C4244: 'initializing' : conversion from 'double' to 'uint32_t', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(264): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(300): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(307): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(308): warning C4244: '=' : conversion from 'double' to 'int32_t', possible loss of data
-     1>c:\users\simonh\documents\github\mecobo\winbuild\winhost1\emmotherboard.cpp(324): warning C4244: 'argument' : conversion from 'int64_t' to 'int', possible loss of data
-         emEvolvableMotherboard.cpp
-     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
-         emDataApi.cpp
-     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
-         channelmap.cpp
-     1>c:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift\windows\twinsocksingleton.h(51): warning C4396: 'boost::call_once' : the inline specifier cannot be used when a friend declaration refers to a specialization of a function template
          Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.exe" /VERBOSE /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /LIBPATH:"C:\local\boost_1_54_0\lib32-msvc-11.0" /LIBPATH:"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /LIBPATH:C:\Users\simonh\Documents\GitHub\mecobo\winbuild kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libthrift.lib "libusb-1.0.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.lib" /MACHINE:X86 Debug\channelmap.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\Debug\winhost1.exe" /VERBOSE /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll" /LIBPATH:"C:\local\boost_1_54_0\lib32-msvc-11.0" /LIBPATH:"C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug" /LIBPATH:C:\Users\simonh\Documents\GitHub\mecobo\winbuild kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libthrift.lib "libusb-1.0.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\Debug\winhost1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\Debug\winhost1.lib" /MACHINE:X86 Debug\channelmap.obj
          Debug\emDataApi.obj
          Debug\emEvolvableMotherboard.obj
          Debug\emMotherboard.obj
@@ -61,6 +58,7 @@
          Debug\usb.obj
          Debug\stdafx.obj
          Debug\winhost1.obj
+         LINK : C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\Debug\winhost1.exe not found or not built by the last incremental link; performing full link
          
          Starting pass 1
          Processed /DEFAULTLIB:msvcprtd
@@ -1994,26 +1992,26 @@
           /v
           /x
           /fo
-          "C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp"
-          "C:\Users\simonh\AppData\Local\Temp\lnk{A24CEE50-4792-4C34-9139-8FEDC015492D}.tmp"
+          "C:\Users\simonh\AppData\Local\Temp\lnk{3817F2A7-BBC9-45AD-9E2A-F613244A7BA1}.tmp"
+          "C:\Users\simonh\AppData\Local\Temp\lnk{C3D084D8-8604-464A-B513-A108725E6D74}.tmp"
          Microsoft (R) Windows (R) Resource Compiler Version 6.2.9200.20789
          
          Copyright (C) Microsoft Corporation.  All rights reserved.
          
          
-         Creating C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp
+         Creating C:\Users\simonh\AppData\Local\Temp\lnk{3817F2A7-BBC9-45AD-9E2A-F613244A7BA1}.tmp
          
          Using codepage 1252 as default
          
-         C:\Users\simonh\AppData\Local\Temp\lnk{A24CEE50-4792-4C34-9139-8FEDC015492D}.tmp.
+         C:\Users\simonh\AppData\Local\Temp\lnk{C3D084D8-8604-464A-B513-A108725E6D74}.tmp.
          Writing 24:1,	lang:0x409,	size 381
          
          Invoking cvtres.exe:
           /machine:x86
           /verbose
-          /out:"C:\Users\simonh\AppData\Local\Temp\lnk{88F1D4A8-2A59-4386-9205-0498EA3310DE}.tmp"
+          /out:"C:\Users\simonh\AppData\Local\Temp\lnk{54D61FEC-E020-4C9F-B16A-BD4A448548C1}.tmp"
           /readonly
-          "C:\Users\simonh\AppData\Local\Temp\lnk{9311CC11-C0AE-42E8-AE43-FFB01F95671B}.tmp"
+          "C:\Users\simonh\AppData\Local\Temp\lnk{3817F2A7-BBC9-45AD-9E2A-F613244A7BA1}.tmp"
          Microsoft (R) Windows Resource To Object Converter Version 11.00.50727.1
          Copyright (C) Microsoft Corporation.  All rights reserved.
          
@@ -2372,9 +2370,9 @@
               MSVCRTD.lib(MSVCR110D.dll)
               MSVCRTD.lib(MSVCR110D.dll)
          Finished pass 2
-         winhost1.vcxproj -> C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\Debug\winhost1.exe
-     1>Done Building Project "C:\Users\simonh\Documents\GitHub\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" (Build target(s)).
+         winhost1.vcxproj -> C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\Debug\winhost1.exe
+     1>Done Building Project "C:\Users\simonh\Documents\GitHub\nascenese\mecobo\winbuild\winhost1\winhost1\winhost1.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:27.61
+Time Elapsed 00:00:35.23

@@ -16,7 +16,6 @@
 #include <vector>
 #include <iostream>
 
-#include "mecohost.h"
 #include "../mecoprot.h"
 
 class USB {
@@ -30,7 +29,7 @@ private:
 	std::vector<libusb_device *> mecoboBoards;
 	struct libusb_context * usbContext;
 
-	int numMecobos;
+	int numMecobo;
 	int usbAddress;
 
 	void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, int interfaceNumber);

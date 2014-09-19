@@ -29,7 +29,7 @@ private:
   std::map<int, std::vector<int32_t>> pinRecordings;
 
 public:
-  Mecobo ();
+  Mecobo (bool daughterboard);
   virtual
   ~Mecobo ();
 
@@ -62,6 +62,9 @@ public:
   void discharge();
   void setLed(int a, int b);
   void updateRegister(int index, int value);
+
+
+  int getPort();
 
 };
 

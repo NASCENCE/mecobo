@@ -32,12 +32,12 @@ channelMap::channelMap()
   
   channelToXbar[FPGA_ADC_0_A] = 8;
   channelToXbar[FPGA_ADC_0_B] = 9;
-  channelToXbar[FPGA_ADC_0_C] = 10;
-  channelToXbar[FPGA_ADC_0_D] = 11;
-  channelToXbar[FPGA_ADC_0_E] = 12;
-  channelToXbar[FPGA_ADC_0_F] = 13;
-  channelToXbar[FPGA_ADC_0_G] = 14;
-  channelToXbar[FPGA_ADC_0_H] = 15;
+  channelToXbar[FPGA_ADC_0_C] = 15;   
+  channelToXbar[FPGA_ADC_0_D] = 14;
+  channelToXbar[FPGA_ADC_0_E] = 10;
+  channelToXbar[FPGA_ADC_0_F] = 11;
+  channelToXbar[FPGA_ADC_0_G] = 13;
+  channelToXbar[FPGA_ADC_0_H] = 12;
 
   //Second crossbar.
   channelToXbar[FPGA_DIGI_0] = 0;
@@ -162,7 +162,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
     //By default we give a Digital channel -- these can be both recording and analogue,
     //depending on the command given.
     default:
-      if (numIOchannels < maxADchannels) {
+      if (numIOchannels < maxIOchannels) {
         channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
         for(auto p: pin) {
           mapPin(p, channel);

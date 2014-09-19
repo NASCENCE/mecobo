@@ -34,7 +34,6 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
-  Mecobo * mecobo;
   int port;
   int boardAddr;
 
@@ -54,14 +53,15 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::vector<emSequenceItem> itemsInFlight;
 
   public:
+  Mecobo * mecobo;
   //constructor for this class
-  emEvolvableMotherboardHandler(int force) {
+  emEvolvableMotherboardHandler(int force, std::string bitfilename, bool daughterboard) {
     // Your initialization goes here
     time = 0;
     std::cout << "Starting USB subsystem." << std::endl;
-    mecobo = new Mecobo();
+    mecobo = new Mecobo(daughterboard);
     if (force)  {
-      mecobo->programFPGA("mecobo.bin");
+      mecobo->programFPGA(bitfilename.c_str());
     }  
   }
 
@@ -72,7 +72,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   }
 
   void setLED(const int32_t index, const bool state) {
-    state ? mecobo->setLed(index, 0) : mecobo->setLed(index, 1);
+    state ? mecobo->setLed(index, 1) : mecobo->setLed(index, 0);
     std::cout << "Led " << index << "is " << state << std::endl;
   }
 
@@ -142,7 +142,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
     mecobo->runSchedule();
     sequenceRunStart = steady_clock::now();
-
   } 
 
 
@@ -154,12 +153,16 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //Hang around until things are done.
     std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
     std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
-    int totalWaitMs = 0;
-    int items = 0;
+    int totalWaitMs = lastSequenceItemEnd;
+    unsigned int items = 0;
+  
+    //Wait for at least the lastSeq endtime.
+    std::this_thread::sleep_for(std::chrono::milliseconds(lastSequenceItemEnd)); 
+
     while((items = mecobo->status().itemsInQueue) > 0) {
-      //Ask again in 10ms.
-      std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
-      totalWaitMs += 100;
+      //Ask again in 10ms -- should ve very close to done. 
+      std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
+      totalWaitMs += 10;
       if (totalWaitMs > (lastSequenceItemEnd*2)) {
         std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
         break;
@@ -242,7 +245,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::CONSTANT:
         for(auto p : item.pin) {
           std::cout << "CONSTANT. Amplitude:" << item.amplitude << " Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
         mecobo->scheduleConstantVoltage(item.pin, (int)item.startTime, (int)item.endTime, (int)item.amplitude);
         break;
@@ -250,44 +253,51 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       case emSequenceOperationType::type::CONSTANT_FROM_REGISTER:
         for(auto p : item.pin) {
           std::cout << "CONSTANT FROM REG. Amplitude:" << item.amplitude << " Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
-          mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
+        mecobo->scheduleConstantVoltageFromRegister(item.pin, (int)item.startTime, (int)item.endTime, (int)item.ValueSourceRegister);
         break;
 
 
       case emSequenceOperationType::type::RECORD:
 
-        for(auto p : item.pin) {
-          std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
-        }
+        if (item.waveFormType == emWaveFormType::PWM) {
+          for(auto p : item.pin) {
+            std::cout << "RECORDING [digital] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          }
+          mecobo->scheduleDigitalRecording(item.pin, item.startTime, item.endTime, item.frequency);
+
+        } else {
+          for(auto p : item.pin) {
+            std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
+          }
           mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
+        }
         //Error checking.
         //
         /*
-        if(sampleDiv <= 1) {
-          err.Reason = "samplerate too high";
-          err.Source = "emMotherboard";
-          throw err;
-          break;
-        } else if (sampleDiv > 65535) {
-          err.Reason = "samplerate too low";
-          err.Source = "emMotherboard";
-          throw err;
-          break;
-        }*/
-        
-        //submitItem(channel, item.startTime, item.endTime, 1, 1, 1, sampleDiv, PINCONFIG_DATA_TYPE_RECORD, item.amplitude);
+           if(sampleDiv <= 1) {
+           err.Reason = "samplerate too high";
+           err.Source = "emMotherboard";
+           throw err;
+           break;
+           } else if (sampleDiv > 65535) {
+           err.Reason = "samplerate too low";
+           err.Source = "emMotherboard";
+           throw err;
+           break;
+           }*/
 
         break;
 
       case emSequenceOperationType::type::DIGITAL:
         for(auto p : item.pin) {
-            std::cout << "DIGITAL. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
-           "Start:" << item.startTime << "End: " << item.endTime << std::endl;
+          std::cout << "DIGITAL OUT. Freq:" << item.frequency << "Cycle: " << item.cycleTime << "Pin: " << p << \
+            "Start:" << item.startTime << "End: " << item.endTime << std::endl;
         }
-          mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
+        mecobo->scheduleDigitalOutput(item.pin, (int)item.startTime, (int)item.endTime, (int)item.frequency, (int)item.cycleTime);
         break;
+
 
 
       //YAY DOUBLE CASE SWITCH CASE.
@@ -342,18 +352,31 @@ int main(int argc, char **argv) {
 
 
   uint32_t forceProgFpga = 1;  //default program fpga.
+  bool daughterboard = true;
+  std::string bitfilename = std::string("mecobo.bin");
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
         forceProgFpga = 0;
       }
+      if(strcmp(argv[i], "-b") == 0) {
+        forceProgFpga = 1;
+        bitfilename = std::string(argv[++i]);
+        printf("Programming FPGA with bitfile %s\n", bitfilename.c_str());
+      }
+
+      if(strcmp(argv[i], "-n") == 0) {
+        std::cout << "Option -n passed, host assumes no daughterboard" << std::endl;
+        daughterboard = false;
+      
+      }
     }
   }
 
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga));
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga, bitfilename, daughterboard));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
+  shared_ptr<TServerTransport> serverTransport(new TServerSocket(handler->mecobo->getPort()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
