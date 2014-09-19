@@ -64,7 +64,7 @@ public:
   void updateRegister(int index, int value);
 
 
-  void getPort();
+  int getPort();
 
 };
 

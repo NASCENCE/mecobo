@@ -464,8 +464,8 @@ void Mecobo::updateRegister(int index, int value)
   sendPacket(&p);
 }
 
-void
+int
 Mecobo::getPort()
 {
-  return 9090 + usb->getUsbAddress();
+  return 9090 + this->usb.getUsbAddress();
 }

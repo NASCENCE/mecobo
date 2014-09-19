@@ -34,7 +34,6 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
-  Mecobo * mecobo;
   int port;
   int boardAddr;
 
@@ -54,6 +53,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::vector<emSequenceItem> itemsInFlight;
 
   public:
+  Mecobo * mecobo;
   //constructor for this class
   emEvolvableMotherboardHandler(int force, std::string bitfilename, bool daughterboard) {
     // Your initialization goes here
