@@ -12,6 +12,9 @@
 #include <thread>
 #include <algorithm>
 
+//For windows :(
+#undef min
+#undef max
 
 Mecobo::Mecobo (bool daughterboard)
 {
