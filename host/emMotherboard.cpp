@@ -376,7 +376,7 @@ int main(int argc, char **argv) {
 
   shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga, bitfilename, daughterboard));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
+  shared_ptr<TServerTransport> serverTransport(new TServerSocket(handler->mecobo->getPort()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 

@@ -63,6 +63,9 @@ public:
   void setLed(int a, int b);
   void updateRegister(int index, int value);
 
+
+  void getPort();
+
 };
 
 template <typename T, unsigned B>

@@ -463,3 +463,9 @@ void Mecobo::updateRegister(int index, int value)
   createMecoPack(&p, (uint8_t*)data, 8, USB_CMD_UPDATE_REGISTER);
   sendPacket(&p);
 }
+
+void
+Mecobo::getPort()
+{
+  return 9090 + usb->getUsbAddress();
+}
