@@ -229,7 +229,8 @@ namespace EMUtils
         {
             public ulong EvaluationCounter = 0;//How many evaluations we have done
             public emEvolvableMotherboard.Client Motherboard = null;  //Connection to the EM
-            public emLogServer.Client LogServerClient = null;
+            public emLogServer.Client LogServerClient
+                = null;
             public emLogServerSettings LogServerSettings = null;
             public List<BoolTestCase> TestCases = new List<BoolTestCase>(); //A list of test cases
             public BooleanFunctionType FunctionType; //What function we are trying to solve

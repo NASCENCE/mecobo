@@ -44,3 +44,9 @@ C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMClient.pdb
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMClient\obj\Debug\EMClient.csprojResolveAssemblyReference.cache
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMClient\obj\Debug\EMClient.exe
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMClient\obj\Debug\EMClient.pdb
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMClient.exe.config
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMClient.exe
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMClient.pdb
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMClient\obj\Debug\EMClient.csprojResolveAssemblyReference.cache
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMClient\obj\Debug\EMClient.exe
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMClient\obj\Debug\EMClient.pdb

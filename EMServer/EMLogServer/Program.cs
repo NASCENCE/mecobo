@@ -17,10 +17,10 @@ namespace EMLogServer
 
             emLogServerImplementation handler = new emLogServerImplementation();
             emLogServer.Processor processor = new emLogServer.Processor(handler);
-            TServerTransport serverTransport = new TServerSocket(Settings.GetSetting<int>("ServerPort"));
+            TServerTransport serverTransport = new TServerSocket(Settings.GetSetting<int>("LogServerPort"));
             TServer server = new TSimpleServer(processor, serverTransport);
 
-            Reporting.Say("Starting log server on port " + Settings.GetSetting<int>("ServerPort"));
+            Reporting.Say("Starting log server on port " + Settings.GetSetting<int>("LogServerPort"));
             server.Serve();
         }
     }

@@ -4,3 +4,9 @@ C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMLogServer.exe
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMLogServer.pdb
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.exe
 C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.pdb
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMLogServer.exe.config
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMLogServer.exe
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin\EMLogServer.pdb
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.csprojResolveAssemblyReference.cache
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.exe
+C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.pdb
