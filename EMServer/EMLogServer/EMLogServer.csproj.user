@@ -2,6 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartWorkingDirectory>C:\Users\simonh\Documents\GitHub\nascenese\mecobo\EMServer\bin</StartWorkingDirectory>
-    <StartArguments>test</StartArguments>
+    <StartArguments>ss</StartArguments>
   </PropertyGroup>
 </Project>

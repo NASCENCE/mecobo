@@ -31,7 +31,7 @@ namespace EMLogServer
 
         public static void DefaultSettings()
         {            
-           SetSetting<int>("ServerPort", 9099);            
+           SetSetting<int>("ServerPort", 9095);            
         }
 
         public static void SaveSettings(string FileName)
@@ -57,6 +57,7 @@ namespace EMLogServer
             if (!File.Exists(Filename))
             {
                 DefaultSettings();
+                Console.WriteLine("Unable to find " + Filename + " using defaults...");
                 return;
             }
 
