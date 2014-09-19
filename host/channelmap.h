@@ -1,7 +1,6 @@
 #ifndef __CHANNELMAP_H__
 #define __CHANNELMAP_H__
 
-#include <inttypes.h>
 #include <map>
 #include <vector>
 
