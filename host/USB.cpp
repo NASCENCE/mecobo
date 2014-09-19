@@ -8,6 +8,8 @@
 #include "USB.h"
 
 USB::USB() {
+    numMecobo = 0;
+    usbAddress = -1;
 	  int r;
 	  r = libusb_init(&usbContext);
 
