@@ -1,48 +1,11 @@
-02 June 2014	17:46:42		Logging to file ./clientlog//EMClient__000000294.txt
-02 June 2014	17:46:42		SETTING	LogServer	True
-02 June 2014	17:46:42		SETTING	LogServerPath	./serverlog
-02 June 2014	17:46:42		SETTING	LogClient	True
-02 June 2014	17:46:42		SETTING	LogClientPath	./clientlog
-02 June 2014	17:46:42		SETTING	Server	129.241.102.247
-02 June 2014	17:46:42		SETTING	ServerPort	9090
-02 June 2014	17:46:42		SETTING	DataAPIServerPort	9091
-02 June 2014	17:46:42		SETTING	DataAPIServer	localhost
-02 June 2014	17:46:42	Microsoft CLR? YES
-02 June 2014	17:46:43	Ping response = 0
-02 June 2014	17:46:43	Ping response took 68ms or 166147 ticks
-02 June 2014	17:47:40	STATUS	0         	0.0000	4         	57319     
-02 June 2014	17:47:40		 TESTCASE 0  False,True =>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 1  False,True =>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 2  True ,True =>False False PASS
-02 June 2014	17:47:40		 TESTCASE 3  True ,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 4  True ,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 5  True ,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 6  True ,True =>False False PASS
-02 June 2014	17:47:40		 TESTCASE 7  False,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 8  False,True =>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 9  False,True =>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 10 True ,True =>False False PASS
-02 June 2014	17:47:40		 TESTCASE 11 True ,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 12 False,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 13 True ,True =>False False PASS
-02 June 2014	17:47:40		 TESTCASE 14 False,False=>True  False FAIL
-02 June 2014	17:47:40		 TESTCASE 15 False,False=>True  False FAIL
-02 June 2014	17:47:40		FITNESS	0	4
-02 June 2014	17:48:34	STATUS	1         	0.0000	9         	111113    
-02 June 2014	17:48:34		 TESTCASE 0  False,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 1  False,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 2  False,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 3  True ,True =>False False PASS
-02 June 2014	17:48:34		 TESTCASE 4  True ,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 5  True ,True =>False False PASS
-02 June 2014	17:48:34		 TESTCASE 6  False,True =>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 7  True ,True =>False False PASS
-02 June 2014	17:48:34		 TESTCASE 8  True ,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 9  False,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 10 False,True =>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 11 False,True =>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 12 True ,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 13 False,True =>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 14 True ,False=>True  False FAIL
-02 June 2014	17:48:34		 TESTCASE 15 True ,True =>False False PASS
-02 June 2014	17:48:34		FITNESS	0	9
+02 August 2014	11:40:31		Logging to file ./clientlog//EMClient__000000294.txt
+02 August 2014	11:40:31		SETTING	LogServer	True
+02 August 2014	11:40:31		SETTING	LogServerPath	./serverlog
+02 August 2014	11:40:31		SETTING	LogClient	True
+02 August 2014	11:40:31		SETTING	LogClientPath	./clientlog
+02 August 2014	11:40:31		SETTING	Server	127.0.0.1
+02 August 2014	11:40:31		SETTING	ServerPort	9090
+02 August 2014	11:40:31		SETTING	LogServerPort	9099
+02 August 2014	11:40:31		SETTING	DataAPIServerPort	9091
+02 August 2014	11:40:31		SETTING	DataAPIServer	localhost
+02 August 2014	11:40:31	Microsoft CLR? YES

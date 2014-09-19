@@ -1,0 +1,60 @@
+{
+  "Sequence": {
+    "SequenceItem0": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem1": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem2": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem3": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem4": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem5": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem6": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem7": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem8": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem9": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem10": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    },
+    "SequenceItem11": {
+      "Pin": "System.Collections.Generic.List`1[System.Int32]"
+    }
+  },
+  "Results": {
+    "Case 0": " TESTCASE 0  True ,True =>False False PASS",
+    "Case 1": " TESTCASE 1  False,True =>True  False FAIL",
+    "Case 2": " TESTCASE 2  True ,True =>False False PASS",
+    "Case 3": " TESTCASE 3  True ,False=>True  False FAIL",
+    "Case 4": " TESTCASE 4  False,False=>True  False FAIL",
+    "Case 5": " TESTCASE 5  True ,False=>True  False FAIL",
+    "Case 6": " TESTCASE 6  True ,False=>True  False FAIL",
+    "Case 7": " TESTCASE 7  True ,True =>False False PASS",
+    "Case 8": " TESTCASE 8  False,True =>True  False FAIL",
+    "Case 9": " TESTCASE 9  False,False=>True  False FAIL",
+    "Case 10": " TESTCASE 10 False,False=>True  False FAIL",
+    "Case 11": " TESTCASE 11 True ,False=>True  False FAIL",
+    "Case 12": " TESTCASE 12 False,False=>True  False FAIL",
+    "Case 13": " TESTCASE 13 False,True =>True  False FAIL",
+    "Case 14": " TESTCASE 14 True ,True =>False False PASS",
+    "Case 15": " TESTCASE 15 False,True =>True  False FAIL"
+  },
+  "Fitness": "0.25",
+  "Evaluation index": "4"
+}

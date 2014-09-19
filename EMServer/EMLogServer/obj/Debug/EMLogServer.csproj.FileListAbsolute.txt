@@ -1,0 +1,6 @@
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMLogServer.exe.config
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.csprojResolveAssemblyReference.cache
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMLogServer.exe
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\bin\EMLogServer.pdb
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.exe
+C:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMLogServer\obj\Debug\EMLogServer.pdb

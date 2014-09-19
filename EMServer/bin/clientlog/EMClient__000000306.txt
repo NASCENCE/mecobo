@@ -1,22 +1,15 @@
-02 June 2014	18:30:44		Logging to file ./clientlog//EMClient__000000306.txt
-02 June 2014	18:30:44		SETTING	LogServer	True
-02 June 2014	18:30:44		SETTING	LogServerPath	./serverlog
-02 June 2014	18:30:44		SETTING	LogClient	True
-02 June 2014	18:30:44		SETTING	LogClientPath	./clientlog
-02 June 2014	18:30:44		SETTING	Server	129.241.102.247
-02 June 2014	18:30:44		SETTING	ServerPort	9090
-02 June 2014	18:30:44		SETTING	DataAPIServerPort	9091
-02 June 2014	18:30:44		SETTING	DataAPIServer	localhost
-02 June 2014	18:30:44	Microsoft CLR? YES
-02 June 2014	18:30:44	Ping response = 0
-02 June 2014	18:30:44	Ping response took 73ms or 180023 ticks
-02 June 2014	18:31:11	STATUS	0         	0.0000	4         	27257     
-02 June 2014	18:31:11		 TESTCASE 0  False,False=>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 1  False,True =>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 2  True ,True =>False False PASS
-02 June 2014	18:31:11		 TESTCASE 3  False,True =>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 4  True ,False=>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 5  False,False=>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 6  True ,False=>True  False FAIL
-02 June 2014	18:31:11		 TESTCASE 7  True ,True =>False False PASS
-02 June 2014	18:31:11		FITNESS	0	4
+02 August 2014	12:19:39		Logging to file ./clientlog//EMClient__000000306.txt
+02 August 2014	12:19:39		SETTING	LogServer	True
+02 August 2014	12:19:39		SETTING	LogServerPath	./serverlog
+02 August 2014	12:19:39		SETTING	LogClient	True
+02 August 2014	12:19:39		SETTING	LogClientPath	./clientlog
+02 August 2014	12:19:39		SETTING	Server	127.0.0.1
+02 August 2014	12:19:39		SETTING	ServerPort	9090
+02 August 2014	12:19:39		SETTING	LogServerPort	9099
+02 August 2014	12:19:39		SETTING	DataAPIServerPort	9091
+02 August 2014	12:19:39		SETTING	DataAPIServer	localhost
+02 August 2014	12:19:39	Microsoft CLR? YES
+02 August 2014	12:19:40	Ping response = 0
+02 August 2014	12:19:40	Ping response took 8ms or 20065 ticks
+02 August 2014	12:19:40	Ping response = 0
+02 August 2014	12:19:40	Ping response took 2ms or 6811 ticks

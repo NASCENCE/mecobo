@@ -1,52 +1,71 @@
-03 June 2014	16:36:19		Logging to file ./clientlog//EMClient__000000334.txt
-03 June 2014	16:36:19		SETTING	LogServer	True
-03 June 2014	16:36:19		SETTING	LogServerPath	./serverlog
-03 June 2014	16:36:19		SETTING	LogClient	True
-03 June 2014	16:36:19		SETTING	LogClientPath	./clientlog
-03 June 2014	16:36:19		SETTING	Server	129.241.102.247
-03 June 2014	16:36:19		SETTING	ServerPort	9090
-03 June 2014	16:36:19		SETTING	DataAPIServerPort	9091
-03 June 2014	16:36:19		SETTING	DataAPIServer	localhost
-03 June 2014	16:36:19	Microsoft CLR? YES
-03 June 2014	16:36:19	Ping response = 0
-03 June 2014	16:36:19	Ping response took 67ms or 164783 ticks
-03 June 2014	16:37:10	STATUS	0         	0.0000	4         	50758     
-03 June 2014	16:37:10		 TESTCASE 0  True ,True =>False True  FAIL
-03 June 2014	16:37:10		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	16:37:10		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	16:37:10		 TESTCASE 3  True ,False=>False True  FAIL
-03 June 2014	16:37:10		 TESTCASE 4  True ,False=>True  True  PASS
-03 June 2014	16:37:10		 TESTCASE 5  False,False=>False True  FAIL
-03 June 2014	16:37:10		 TESTCASE 6  True ,True =>True  True  PASS
-03 June 2014	16:37:10		 TESTCASE 7  False,False=>False True  FAIL
-03 June 2014	16:37:10		FITNESS	0	4
-03 June 2014	16:38:01	STATUS	1         	0.0000	9         	102101    
-03 June 2014	16:38:01		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	16:38:01		 TESTCASE 1  True ,False=>False True  FAIL
-03 June 2014	16:38:01		 TESTCASE 2  False,False=>False True  FAIL
-03 June 2014	16:38:01		 TESTCASE 3  True ,True =>False True  FAIL
-03 June 2014	16:38:01		 TESTCASE 4  True ,False=>True  True  PASS
-03 June 2014	16:38:01		 TESTCASE 5  True ,True =>True  True  PASS
-03 June 2014	16:38:01		 TESTCASE 6  False,True =>True  True  PASS
-03 June 2014	16:38:01		 TESTCASE 7  False,False=>False True  FAIL
-03 June 2014	16:38:01		FITNESS	0	9
-03 June 2014	16:39:16	STATUS	2         	0.0000	14        	176517    
-03 June 2014	16:39:16		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	16:39:16		 TESTCASE 1  True ,True =>True  True  PASS
-03 June 2014	16:39:16		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	16:39:16		 TESTCASE 3  True ,True =>False True  FAIL
-03 June 2014	16:39:16		 TESTCASE 4  False,False=>False True  FAIL
-03 June 2014	16:39:16		 TESTCASE 5  True ,False=>False True  FAIL
-03 June 2014	16:39:16		 TESTCASE 6  False,False=>False True  FAIL
-03 June 2014	16:39:16		 TESTCASE 7  False,True =>True  True  PASS
-03 June 2014	16:39:16		FITNESS	0	14
-03 June 2014	16:40:07	STATUS	3         	0.0000	19        	227754    
-03 June 2014	16:40:07		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	16:40:07		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	16:40:07		 TESTCASE 2  False,False=>False True  FAIL
-03 June 2014	16:40:07		 TESTCASE 3  True ,True =>True  True  PASS
-03 June 2014	16:40:07		 TESTCASE 4  True ,False=>False True  FAIL
-03 June 2014	16:40:07		 TESTCASE 5  False,False=>False True  FAIL
-03 June 2014	16:40:07		 TESTCASE 6  True ,True =>False True  FAIL
-03 June 2014	16:40:07		 TESTCASE 7  False,True =>True  True  PASS
-03 June 2014	16:40:07		FITNESS	0	19
+28 August 2014	13:39:50		Logging to file ./clientlog//EMClient__000000334.txt
+28 August 2014	13:39:50		SETTING	LogServer	True
+28 August 2014	13:39:50		SETTING	LogServerPath	./serverlog
+28 August 2014	13:39:50		SETTING	LogClient	True
+28 August 2014	13:39:50		SETTING	LogClientPath	./clientlog
+28 August 2014	13:39:50		SETTING	Server	10.245.8.47
+28 August 2014	13:39:50		SETTING	ServerPort	9090
+28 August 2014	13:39:50		SETTING	LogServerPort	9099
+28 August 2014	13:39:50		SETTING	DataAPIServerPort	9091
+28 August 2014	13:39:50		SETTING	DataAPIServer	localhost
+28 August 2014	13:39:50	Microsoft CLR? YES
+28 August 2014	13:40:11	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:40:11	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:40:11	Retrying connection attempt ... 1 of 10
+28 August 2014	13:40:42	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:40:42	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:40:42	Retrying connection attempt ... 2 of 10
+28 August 2014	13:41:13	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:41:13	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:41:13	Retrying connection attempt ... 3 of 10
+28 August 2014	13:41:44	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:41:44	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:41:44	Retrying connection attempt ... 4 of 10
+28 August 2014	13:42:15	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:42:15	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:42:15	Retrying connection attempt ... 5 of 10
+28 August 2014	13:42:46	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:42:46	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:42:46	Retrying connection attempt ... 6 of 10
+28 August 2014	13:43:17	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:43:17	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:43:17	Retrying connection attempt ... 7 of 10
+28 August 2014	13:43:48	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:43:48	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:43:48	Retrying connection attempt ... 8 of 10
+28 August 2014	13:44:19	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:44:19	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:44:19	Retrying connection attempt ... 9 of 10
+28 August 2014	13:44:50	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:44:50	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:44:50	Retrying connection attempt ... 10 of 10

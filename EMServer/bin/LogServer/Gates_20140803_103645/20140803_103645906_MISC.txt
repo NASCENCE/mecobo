@@ -1,0 +1,27 @@
+{
+  "Experiment": {
+    "Name": "Gates_20140803_103645",
+    "Host": "win8laptop-slh",
+    "Time": "10:36:45",
+    "Date": "03 August 2014",
+    "Comments": "Add your comments here",
+    "Experiment group ID": "431",
+    "Experiment batch ID": "2"
+  },
+  "User": {
+    "User": "Simon",
+    "Group": "UoY"
+  },
+  "Hardware": {
+    "Mecebo ID": "",
+    "Concentration": "0.1",
+    "Slide ID": "ABC-001",
+    "Material ID": "CNT-004"
+  },
+  "Fitness function": {
+    "Fitness function type": "Gates",
+    "Minimizing": "False",
+    "Fitness function target function": "NAND",
+    "Fitness function repeats": "4"
+  }
+}

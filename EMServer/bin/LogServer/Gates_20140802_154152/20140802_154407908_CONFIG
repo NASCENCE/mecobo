@@ -1,0 +1,22 @@
+{
+  "Results": {
+    "Case 0": " TESTCASE 0  True ,False=>True  False FAIL",
+    "Case 1": " TESTCASE 1  False,True =>True  False FAIL",
+    "Case 2": " TESTCASE 2  False,False=>True  False FAIL",
+    "Case 3": " TESTCASE 3  False,True =>True  False FAIL",
+    "Case 4": " TESTCASE 4  True ,True =>False False PASS",
+    "Case 5": " TESTCASE 5  True ,False=>True  False FAIL",
+    "Case 6": " TESTCASE 6  True ,True =>False False PASS",
+    "Case 7": " TESTCASE 7  True ,True =>False False PASS",
+    "Case 8": " TESTCASE 8  False,True =>True  False FAIL",
+    "Case 9": " TESTCASE 9  False,False=>True  False FAIL",
+    "Case 10": " TESTCASE 10 False,False=>True  False FAIL",
+    "Case 11": " TESTCASE 11 True ,False=>True  False FAIL",
+    "Case 12": " TESTCASE 12 False,False=>True  False FAIL",
+    "Case 13": " TESTCASE 13 True ,True =>False False PASS",
+    "Case 14": " TESTCASE 14 True ,False=>True  False FAIL",
+    "Case 15": " TESTCASE 15 False,True =>True  False FAIL"
+  },
+  "Fitness": "0.25",
+  "Evaluation index": "38"
+}

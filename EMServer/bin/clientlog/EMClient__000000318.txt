@@ -1,48 +1,25 @@
-03 June 2014	07:26:30		Logging to file ./clientlog//EMClient__000000318.txt
-03 June 2014	07:26:30		SETTING	LogServer	True
-03 June 2014	07:26:30		SETTING	LogServerPath	./serverlog
-03 June 2014	07:26:30		SETTING	LogClient	True
-03 June 2014	07:26:30		SETTING	LogClientPath	./clientlog
-03 June 2014	07:26:30		SETTING	Server	129.241.102.247
-03 June 2014	07:26:30		SETTING	ServerPort	9090
-03 June 2014	07:26:30		SETTING	DataAPIServerPort	9091
-03 June 2014	07:26:30		SETTING	DataAPIServer	localhost
-03 June 2014	07:26:30	Microsoft CLR? YES
-03 June 2014	07:26:30	Ping response = 0
-03 June 2014	07:26:30	Ping response took 73ms or 178021 ticks
-03 June 2014	07:26:56	STATUS	0         	0.0000	4         	25874     
-03 June 2014	07:26:56		 TESTCASE 0  True ,False=>True  False FAIL
-03 June 2014	07:26:56		 TESTCASE 1  False,True =>True  False FAIL
-03 June 2014	07:26:56		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:26:56		 TESTCASE 3  False,False=>True  False FAIL
-03 June 2014	07:26:56		FITNESS	0	4
-03 June 2014	07:27:18	STATUS	1         	0.0000	9         	47579     
-03 June 2014	07:27:18		 TESTCASE 0  False,False=>True  False FAIL
-03 June 2014	07:27:18		 TESTCASE 1  True ,False=>True  False FAIL
-03 June 2014	07:27:18		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:27:18		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:27:18		FITNESS	0	9
-03 June 2014	07:27:40	STATUS	2         	0.0000	14        	69388     
-03 June 2014	07:27:40		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:27:40		 TESTCASE 1  False,True =>True  False FAIL
-03 June 2014	07:27:40		 TESTCASE 2  True ,False=>True  False FAIL
-03 June 2014	07:27:40		 TESTCASE 3  False,False=>True  False FAIL
-03 June 2014	07:27:40		FITNESS	0	14
-03 June 2014	07:28:01	STATUS	3         	0.0000	19        	91102     
-03 June 2014	07:28:01		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:28:01		 TESTCASE 1  False,False=>True  False FAIL
-03 June 2014	07:28:01		 TESTCASE 2  True ,False=>True  False FAIL
-03 June 2014	07:28:01		 TESTCASE 3  False,True =>True  False FAIL
-03 June 2014	07:28:01		FITNESS	0	19
-03 June 2014	07:28:23	STATUS	4         	0.0000	24        	113013    
-03 June 2014	07:28:23		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:28:23		 TESTCASE 1  True ,False=>True  False FAIL
-03 June 2014	07:28:23		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:28:23		 TESTCASE 3  False,False=>True  False FAIL
-03 June 2014	07:28:23		FITNESS	0	24
-03 June 2014	07:28:46	STATUS	5         	0.0000	29        	135504    
-03 June 2014	07:28:46		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:28:46		 TESTCASE 1  False,False=>True  False FAIL
-03 June 2014	07:28:46		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:28:46		 TESTCASE 3  True ,False=>True  False FAIL
-03 June 2014	07:28:46		FITNESS	0	29
+02 August 2014	15:35:21		Logging to file ./clientlog//EMClient__000000318.txt
+02 August 2014	15:35:21		SETTING	LogServer	True
+02 August 2014	15:35:21		SETTING	LogServerPath	./serverlog
+02 August 2014	15:35:21		SETTING	LogClient	True
+02 August 2014	15:35:21		SETTING	LogClientPath	./clientlog
+02 August 2014	15:35:21		SETTING	Server	127.0.0.1
+02 August 2014	15:35:21		SETTING	ServerPort	9090
+02 August 2014	15:35:21		SETTING	LogServerPort	9099
+02 August 2014	15:35:21		SETTING	DataAPIServerPort	9091
+02 August 2014	15:35:21		SETTING	DataAPIServer	localhost
+02 August 2014	15:35:21	Microsoft CLR? YES
+02 August 2014	15:35:21	Ping response = 0
+02 August 2014	15:35:21	Ping response took 7ms or 19357 ticks
+02 August 2014	15:35:22	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:35:22	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:35:22	Retrying connection attempt ... 1 of 10
+02 August 2014	15:35:33	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:35:33	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:35:33	Retrying connection attempt ... 2 of 10

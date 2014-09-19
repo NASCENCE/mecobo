@@ -1,0 +1,11 @@
+{
+  "Experiment name": "Gates_20140802_155137",
+  "Host": "win8laptop-slh",
+  "Time": "15:51:37",
+  "Date": "02 August 2014",
+  "Fitness function": {
+    "Fitness function type": "Gates",
+    "Fitness function target function": "NAND",
+    "Fitness function repeats": "4"
+  }
+}

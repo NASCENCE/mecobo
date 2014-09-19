@@ -1,12 +1,350 @@
-03 June 2014	08:01:42		Logging to file ./clientlog//EMClient__000000324.txt
-03 June 2014	08:01:42		SETTING	LogServer	True
-03 June 2014	08:01:42		SETTING	LogServerPath	./serverlog
-03 June 2014	08:01:42		SETTING	LogClient	True
-03 June 2014	08:01:42		SETTING	LogClientPath	./clientlog
-03 June 2014	08:01:42		SETTING	Server	129.241.102.247
-03 June 2014	08:01:42		SETTING	ServerPort	9090
-03 June 2014	08:01:42		SETTING	DataAPIServerPort	9091
-03 June 2014	08:01:42		SETTING	DataAPIServer	localhost
-03 June 2014	08:01:42	Microsoft CLR? YES
-03 June 2014	08:01:42	Ping response = 0
-03 June 2014	08:01:42	Ping response took 75ms or 183173 ticks
+02 August 2014	15:39:58		Logging to file ./clientlog//EMClient__000000324.txt
+02 August 2014	15:39:58		SETTING	LogServer	True
+02 August 2014	15:39:58		SETTING	LogServerPath	./serverlog
+02 August 2014	15:39:58		SETTING	LogClient	True
+02 August 2014	15:39:58		SETTING	LogClientPath	./clientlog
+02 August 2014	15:39:58		SETTING	Server	127.0.0.1
+02 August 2014	15:39:58		SETTING	ServerPort	9090
+02 August 2014	15:39:58		SETTING	LogServerPort	9099
+02 August 2014	15:39:58		SETTING	DataAPIServerPort	9091
+02 August 2014	15:39:58		SETTING	DataAPIServer	localhost
+02 August 2014	15:39:58	Microsoft CLR? YES
+02 August 2014	15:39:59	Ping response = 0
+02 August 2014	15:39:59	Ping response took 8ms or 19695 ticks
+02 August 2014	15:40:00	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:40:00	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:40:00	Retrying connection attempt ... 1 of 10
+02 August 2014	15:40:11	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:40:11	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:40:11	Retrying connection attempt ... 2 of 10
+02 August 2014	15:40:22	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:40:22	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:40:22	Retrying connection attempt ... 3 of 10
+02 August 2014	15:40:32	Ping response = 0
+02 August 2014	15:40:32	Ping response took 0ms or 2376 ticks
+02 August 2014	15:40:32	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:32	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:37	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:37	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:37	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:37	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:38	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:38	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:38	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:38	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:38	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:39	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:39	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:39	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:39	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:39	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:40	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:40	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:40	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:40	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:40	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:41	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:41	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:41	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:41	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:42	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:42	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:42	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:42	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:42	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:43	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:43	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:43	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:43	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:44	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:44	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:44	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:44	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:44	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:45	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:45	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:45	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:45	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:45	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:46	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:46	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:46	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:46	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:46	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:47	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:47	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:47	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:47	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:48	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:48	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:48	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:48	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:48	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:49	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:49	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:49	STATUS	0         	0.2500	4         	16937     
+02 August 2014	15:40:49		 TESTCASE 0  True ,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 1  True ,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 2  False,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 3  False,True =>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 4  True ,True =>False False PASS
+02 August 2014	15:40:49		 TESTCASE 5  False,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 6  True ,True =>False False PASS
+02 August 2014	15:40:49		 TESTCASE 7  False,True =>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 8  True ,True =>False False PASS
+02 August 2014	15:40:49		 TESTCASE 9  False,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 10 True ,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 11 False,True =>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 12 False,True =>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 13 True ,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 14 False,False=>True  False FAIL
+02 August 2014	15:40:49		 TESTCASE 15 True ,True =>False False PASS
+02 August 2014	15:40:49		FITNESS	0.25	4
+02 August 2014	15:40:50	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:50	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:50	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:51	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:51	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:51	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:51	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:51	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:52	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:52	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:52	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:52	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:53	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:53	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:53	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:53	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:54	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:54	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:54	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:54	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:55	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:55	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:55	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:55	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:55	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:56	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:56	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:56	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:56	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:56	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:57	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:57	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:57	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:57	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:57	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:58	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:58	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:58	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:58	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:58	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:59	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:59	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:59	WARNING!	Buffer size = 0 0
+02 August 2014	15:40:59	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:00	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:00	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:00	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:00	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:00	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:01	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:01	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:01	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:01	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:01	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:02	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:02	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:02	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:02	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:02	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:03	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:03	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:03	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:03	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:04	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:04	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:04	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:04	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:04	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:05	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:05	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:05	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:05	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:05	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:06	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:06	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:06	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:06	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:06	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:07	STATUS	1         	0.2500	9         	35019     
+02 August 2014	15:41:07		 TESTCASE 0  False,True =>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 1  True ,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 2  False,True =>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 3  False,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 4  False,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 5  True ,True =>False False PASS
+02 August 2014	15:41:07		 TESTCASE 6  True ,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 7  False,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 8  False,True =>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 9  False,True =>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 10 True ,True =>False False PASS
+02 August 2014	15:41:07		 TESTCASE 11 True ,True =>False False PASS
+02 August 2014	15:41:07		 TESTCASE 12 True ,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 13 True ,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 14 False,False=>True  False FAIL
+02 August 2014	15:41:07		 TESTCASE 15 True ,True =>False False PASS
+02 August 2014	15:41:07		FITNESS	0.25	9
+02 August 2014	15:41:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:25	STATUS	2         	0.2500	14        	52820     
+02 August 2014	15:41:25		 TESTCASE 0  False,True =>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 1  True ,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 2  True ,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 3  True ,True =>False False PASS
+02 August 2014	15:41:25		 TESTCASE 4  False,True =>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 5  False,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 6  False,True =>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 7  True ,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 8  True ,True =>False False PASS
+02 August 2014	15:41:25		 TESTCASE 9  True ,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 10 True ,True =>False False PASS
+02 August 2014	15:41:25		 TESTCASE 11 False,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 12 False,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 13 False,True =>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 14 False,False=>True  False FAIL
+02 August 2014	15:41:25		 TESTCASE 15 True ,True =>False False PASS
+02 August 2014	15:41:25		FITNESS	0.25	14
+02 August 2014	15:41:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:30	WARNING!	Buffer size = 0 0
+02 August 2014	15:41:30	WARNING!	Buffer size = 0 0

@@ -1,54 +1,129 @@
-03 June 2014	07:33:28		Logging to file ./clientlog//EMClient__000000321.txt
-03 June 2014	07:33:28		SETTING	LogServer	True
-03 June 2014	07:33:28		SETTING	LogServerPath	./serverlog
-03 June 2014	07:33:28		SETTING	LogClient	True
-03 June 2014	07:33:28		SETTING	LogClientPath	./clientlog
-03 June 2014	07:33:28		SETTING	Server	129.241.102.247
-03 June 2014	07:33:28		SETTING	ServerPort	9090
-03 June 2014	07:33:28		SETTING	DataAPIServerPort	9091
-03 June 2014	07:33:28		SETTING	DataAPIServer	localhost
-03 June 2014	07:33:28	Microsoft CLR? YES
-03 June 2014	07:33:29	Ping response = 0
-03 June 2014	07:33:29	Ping response took 70ms or 171000 ticks
-03 June 2014	07:33:50	STATUS	0         	1.0000	4         	21787     
-03 June 2014	07:33:50		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:33:51		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:33:51		 TESTCASE 2  False,False=>True  True  PASS
-03 June 2014	07:33:51		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	07:33:51		FITNESS	1	4
-03 June 2014	07:34:12	STATUS	1         	1.0000	9         	43562     
-03 June 2014	07:34:12		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	07:34:12		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:34:12		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:34:12		 TESTCASE 3  True ,False=>True  True  PASS
-03 June 2014	07:34:12		FITNESS	1	9
-03 June 2014	07:34:34	STATUS	2         	1.0000	13        	65204     
-03 June 2014	07:34:34		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	07:34:34		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:34:34		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	07:34:34		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:34:34		FITNESS	1	13
-03 June 2014	07:34:56	STATUS	3         	1.0000	19        	87561     
-03 June 2014	07:34:56		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	07:34:56		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:34:56		 TESTCASE 2  False,False=>True  True  PASS
-03 June 2014	07:34:56		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:34:56		FITNESS	1	19
-03 June 2014	07:35:18	STATUS	4         	1.0000	24        	109305    
-03 June 2014	07:35:18		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:35:18		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:35:18		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:35:18		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	07:35:18		FITNESS	1	24
-03 June 2014	07:35:40	STATUS	5         	1.0000	27        	131108    
-03 June 2014	07:35:40		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	07:35:40		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:35:40		 TESTCASE 2  True ,False=>True  True  PASS
-03 June 2014	07:35:40		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:35:40		FITNESS	1	27
-03 June 2014	07:36:02	STATUS	6         	1.0000	33        	153310    
-03 June 2014	07:36:02		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:36:02		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:36:02		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	07:36:02		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:36:02		FITNESS	1	33
+02 August 2014	15:37:06		Logging to file ./clientlog//EMClient__000000321.txt
+02 August 2014	15:37:06		SETTING	LogServer	True
+02 August 2014	15:37:06		SETTING	LogServerPath	./serverlog
+02 August 2014	15:37:06		SETTING	LogClient	True
+02 August 2014	15:37:06		SETTING	LogClientPath	./clientlog
+02 August 2014	15:37:06		SETTING	Server	127.0.0.1
+02 August 2014	15:37:06		SETTING	ServerPort	9090
+02 August 2014	15:37:06		SETTING	LogServerPort	9099
+02 August 2014	15:37:06		SETTING	DataAPIServerPort	9091
+02 August 2014	15:37:06		SETTING	DataAPIServer	localhost
+02 August 2014	15:37:06	Microsoft CLR? YES
+02 August 2014	15:37:07	Ping response = 0
+02 August 2014	15:37:07	Ping response took 7ms or 18014 ticks
+02 August 2014	15:37:07	Ping response = 0
+02 August 2014	15:37:07	Ping response took 2ms or 5430 ticks
+02 August 2014	15:37:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:07	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:08	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:09	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:10	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:11	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:12	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:13	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:14	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:15	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:16	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:17	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:18	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:24	STATUS	0         	0.2500	4         	17449     
+02 August 2014	15:37:24		 TESTCASE 0  True ,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 1  True ,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 2  False,True =>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 3  True ,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 4  False,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 5  False,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 6  True ,True =>False False PASS
+02 August 2014	15:37:24		 TESTCASE 7  True ,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 8  False,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 9  False,False=>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 10 False,True =>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 11 True ,True =>False False PASS
+02 August 2014	15:37:24		 TESTCASE 12 True ,True =>False False PASS
+02 August 2014	15:37:24		 TESTCASE 13 True ,True =>False False PASS
+02 August 2014	15:37:24		 TESTCASE 14 False,True =>True  False FAIL
+02 August 2014	15:37:24		 TESTCASE 15 False,True =>True  False FAIL
+02 August 2014	15:37:24		FITNESS	0.25	4
+02 August 2014	15:37:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:37:29	WARNING!	Buffer size = 0 0

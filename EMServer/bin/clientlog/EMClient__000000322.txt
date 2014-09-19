@@ -1,30 +1,85 @@
-03 June 2014	07:44:31		Logging to file ./clientlog//EMClient__000000322.txt
-03 June 2014	07:44:31		SETTING	LogServer	True
-03 June 2014	07:44:31		SETTING	LogServerPath	./serverlog
-03 June 2014	07:44:31		SETTING	LogClient	True
-03 June 2014	07:44:31		SETTING	LogClientPath	./clientlog
-03 June 2014	07:44:31		SETTING	Server	129.241.102.247
-03 June 2014	07:44:31		SETTING	ServerPort	9090
-03 June 2014	07:44:31		SETTING	DataAPIServerPort	9091
-03 June 2014	07:44:31		SETTING	DataAPIServer	localhost
-03 June 2014	07:44:31	Microsoft CLR? YES
-03 June 2014	07:44:31	Ping response = 0
-03 June 2014	07:44:31	Ping response took 69ms or 169943 ticks
-03 June 2014	07:44:54	STATUS	0         	0.0000	4         	22065     
-03 June 2014	07:44:54		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:44:54		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	07:44:54		 TESTCASE 2  True ,False=>True  True  PASS
-03 June 2014	07:44:54		 TESTCASE 3  True ,True =>False True  FAIL
-03 June 2014	07:44:54		FITNESS	0	4
-03 June 2014	07:45:15	STATUS	1         	0.3333	6         	43869     
-03 June 2014	07:45:15		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	07:45:15		 TESTCASE 1  False,False=>True  False FAIL
-03 June 2014	07:45:15		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:45:15		 TESTCASE 3  True ,False=>True  False FAIL
-03 June 2014	07:45:15		FITNESS	0.333333333333333	6
-03 June 2014	07:45:37	STATUS	2         	0.6667	13        	65966     
-03 June 2014	07:45:37		 TESTCASE 0  True ,False=>True  False FAIL
-03 June 2014	07:45:37		 TESTCASE 1  False,True =>True  False FAIL
-03 June 2014	07:45:37		 TESTCASE 2  True ,True =>False True  FAIL
-03 June 2014	07:45:37		 TESTCASE 3  False,False=>True  True  PASS
-03 June 2014	07:45:37		FITNESS	0.666666666666667	13
+02 August 2014	15:38:08		Logging to file ./clientlog//EMClient__000000322.txt
+02 August 2014	15:38:08		SETTING	LogServer	True
+02 August 2014	15:38:08		SETTING	LogServerPath	./serverlog
+02 August 2014	15:38:08		SETTING	LogClient	True
+02 August 2014	15:38:08		SETTING	LogClientPath	./clientlog
+02 August 2014	15:38:08		SETTING	Server	127.0.0.1
+02 August 2014	15:38:08		SETTING	ServerPort	9090
+02 August 2014	15:38:08		SETTING	LogServerPort	9099
+02 August 2014	15:38:08		SETTING	DataAPIServerPort	9091
+02 August 2014	15:38:08		SETTING	DataAPIServer	localhost
+02 August 2014	15:38:08	Microsoft CLR? YES
+02 August 2014	15:38:08	Ping response = 0
+02 August 2014	15:38:08	Ping response took 6ms or 17040 ticks
+02 August 2014	15:38:09	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:38:09	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:38:09	Retrying connection attempt ... 1 of 10
+02 August 2014	15:38:19	Ping response = 0
+02 August 2014	15:38:19	Ping response took 1ms or 2466 ticks
+02 August 2014	15:38:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:19	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:20	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:21	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:22	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:23	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:24	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:25	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:26	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:27	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:28	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:29	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:33	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:34	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:35	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:36	WARNING!	Buffer size = 0 0
+02 August 2014	15:38:36	WARNING!	Buffer size = 0 0

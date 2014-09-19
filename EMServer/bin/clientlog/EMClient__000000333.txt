@@ -1,22 +1,23 @@
-03 June 2014	16:33:20		Logging to file ./clientlog//EMClient__000000333.txt
-03 June 2014	16:33:20		SETTING	LogServer	True
-03 June 2014	16:33:20		SETTING	LogServerPath	./serverlog
-03 June 2014	16:33:20		SETTING	LogClient	True
-03 June 2014	16:33:20		SETTING	LogClientPath	./clientlog
-03 June 2014	16:33:20		SETTING	Server	129.241.102.247
-03 June 2014	16:33:20		SETTING	ServerPort	9090
-03 June 2014	16:33:20		SETTING	DataAPIServerPort	9091
-03 June 2014	16:33:20		SETTING	DataAPIServer	localhost
-03 June 2014	16:33:20	Microsoft CLR? YES
-03 June 2014	16:33:20	Ping response = 0
-03 June 2014	16:33:20	Ping response took 67ms or 165224 ticks
-03 June 2014	16:34:12	STATUS	0         	0.0000	4         	51634     
-03 June 2014	16:34:12		 TESTCASE 0  False,False=>False True  FAIL
-03 June 2014	16:34:12		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	16:34:12		 TESTCASE 2  True ,True =>False True  FAIL
-03 June 2014	16:34:12		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	16:34:12		 TESTCASE 4  True ,False=>False True  FAIL
-03 June 2014	16:34:12		 TESTCASE 5  False,False=>False True  FAIL
-03 June 2014	16:34:12		 TESTCASE 6  True ,False=>True  True  PASS
-03 June 2014	16:34:12		 TESTCASE 7  True ,True =>True  True  PASS
-03 June 2014	16:34:12		FITNESS	0	4
+28 August 2014	13:38:43		Logging to file ./clientlog//EMClient__000000333.txt
+28 August 2014	13:38:43		SETTING	LogServer	True
+28 August 2014	13:38:43		SETTING	LogServerPath	./serverlog
+28 August 2014	13:38:43		SETTING	LogClient	True
+28 August 2014	13:38:43		SETTING	LogClientPath	./clientlog
+28 August 2014	13:38:43		SETTING	Server	127.0.0.1
+28 August 2014	13:38:43		SETTING	ServerPort	9090
+28 August 2014	13:38:43		SETTING	LogServerPort	9099
+28 August 2014	13:38:43		SETTING	DataAPIServerPort	9091
+28 August 2014	13:38:43		SETTING	DataAPIServer	localhost
+28 August 2014	13:38:43	Microsoft CLR? YES
+28 August 2014	13:38:46	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:38:46	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:38:46	Retrying connection attempt ... 1 of 10
+28 August 2014	13:38:57	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:38:57	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:38:57	Retrying connection attempt ... 2 of 10

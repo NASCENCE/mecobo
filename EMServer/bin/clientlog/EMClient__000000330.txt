@@ -1,28 +1,81 @@
-03 June 2014	10:02:42		Logging to file ./clientlog//EMClient__000000330.txt
-03 June 2014	10:02:42		SETTING	LogServer	True
-03 June 2014	10:02:42		SETTING	LogServerPath	./serverlog
-03 June 2014	10:02:42		SETTING	LogClient	True
-03 June 2014	10:02:42		SETTING	LogClientPath	./clientlog
-03 June 2014	10:02:42		SETTING	Server	129.241.102.247
-03 June 2014	10:02:42		SETTING	ServerPort	9090
-03 June 2014	10:02:42		SETTING	DataAPIServerPort	9091
-03 June 2014	10:02:42		SETTING	DataAPIServer	localhost
-03 June 2014	10:02:42	Microsoft CLR? YES
-03 June 2014	10:02:44	Failed to connect to the motherboard. Check the server is running, and then check your conf file
-03 June 2014	10:02:44	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 129.241.102.247:9090
-   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
-   at Thrift.Transport.TSocket.Open()
-   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Documents\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
-03 June 2014	10:02:44	Retrying connection attempt ... 1 of 10
-03 June 2014	10:02:54	Ping response = 0
-03 June 2014	10:02:54	Ping response took 99ms or 242345 ticks
-03 June 2014	10:03:48	STATUS	0         	0.0000	4         	53654     
-03 June 2014	10:03:48		 TESTCASE 0  True ,False=>False True  FAIL
-03 June 2014	10:03:48		 TESTCASE 1  True ,True =>False True  FAIL
-03 June 2014	10:03:48		 TESTCASE 2  False,False=>False True  FAIL
-03 June 2014	10:03:48		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	10:03:48		 TESTCASE 4  False,True =>True  True  PASS
-03 June 2014	10:03:48		 TESTCASE 5  False,False=>False True  FAIL
-03 June 2014	10:03:48		 TESTCASE 6  True ,True =>True  True  PASS
-03 June 2014	10:03:48		 TESTCASE 7  True ,False=>True  True  PASS
-03 June 2014	10:03:48		FITNESS	0	4
+03 August 2014	10:36:45		Logging to file ./clientlog//EMClient__000000330.txt
+03 August 2014	10:36:45		SETTING	LogServer	True
+03 August 2014	10:36:45		SETTING	LogServerPath	./serverlog
+03 August 2014	10:36:45		SETTING	LogClient	True
+03 August 2014	10:36:45		SETTING	LogClientPath	./clientlog
+03 August 2014	10:36:45		SETTING	Server	127.0.0.1
+03 August 2014	10:36:45		SETTING	ServerPort	9090
+03 August 2014	10:36:45		SETTING	LogServerPort	9099
+03 August 2014	10:36:45		SETTING	DataAPIServerPort	9091
+03 August 2014	10:36:45		SETTING	DataAPIServer	localhost
+03 August 2014	10:36:45	Microsoft CLR? YES
+03 August 2014	10:36:45	Ping response = 0
+03 August 2014	10:36:45	Ping response took 7ms or 17434 ticks
+03 August 2014	10:36:45	Ping response = 0
+03 August 2014	10:36:45	Ping response took 0ms or 2336 ticks
+03 August 2014	10:36:46	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:46	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:46	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:46	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:47	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:47	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:47	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:47	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:47	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:48	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:48	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:48	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:48	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:48	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:49	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:49	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:52	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:53	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:53	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:53	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:53	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:54	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:54	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:54	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:54	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:54	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:55	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:55	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:55	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:55	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:55	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:56	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:56	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:56	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:56	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:56	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:57	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:57	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:57	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:57	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:58	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:58	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:58	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:58	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:58	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:59	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:59	WARNING!	Buffer size = 0 0
+03 August 2014	10:36:59	WARNING!	Buffer size = 0 0
+03 August 2014	10:37:02	STATUS	0         	0.2500	4         	16972     
+03 August 2014	10:37:02		 TESTCASE 0  True ,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 1  False,True =>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 2  False,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 3  False,True =>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 4  True ,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 5  True ,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 6  True ,True =>False False PASS
+03 August 2014	10:37:02		 TESTCASE 7  False,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 8  False,True =>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 9  True ,True =>False False PASS
+03 August 2014	10:37:02		 TESTCASE 10 True ,True =>False False PASS
+03 August 2014	10:37:02		 TESTCASE 11 True ,True =>False False PASS
+03 August 2014	10:37:02		 TESTCASE 12 False,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 13 False,True =>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 14 False,False=>True  False FAIL
+03 August 2014	10:37:02		 TESTCASE 15 True ,False=>True  False FAIL
+03 August 2014	10:37:02		FITNESS	0.25	4

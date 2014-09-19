@@ -60,6 +60,52 @@ namespace EMUtils
             return Motherboard;
         }
 
+        private static emLogServer.Client LogServer = null;
+
+        public static void DisconnectLogServer()
+        {
+            emUtilities.LogServer = null;
+        }
+
+        public static emLogServer.Client ConnectLogServer()
+        {
+            int MaxRetry = 10;
+            for (int i = 0; i < MaxRetry; i++)
+            {
+                LogServer = _ConnectLogServer();
+                if (LogServer != null) return LogServer;
+                Reporting.Say("Retrying connection attempt ... " + (i + 1) + " of " + MaxRetry);
+                Thread.Sleep(10000);
+            }
+
+            return LogServer;
+        }
+
+        public static emLogServer.Client _ConnectLogServer()
+        {
+            if (LogServer != null)
+                return emUtilities.LogServer;
+
+            try
+            {
+                TSocket transport = new TSocket(Settings.GetSetting<string>("Server"), Settings.GetSetting<int>("LogServerPort"));
+                transport.Open();
+                TBinaryProtocol protocol = new TBinaryProtocol(transport);
+                LogServer = new emLogServer.Client(protocol);
+                Stopwatch PingTimer = new Stopwatch(); PingTimer.Start();
+                Reporting.Say("Ping response = " + Motherboard.ping());
+                PingTimer.Stop();
+                Reporting.Say("Ping response took " + PingTimer.ElapsedMilliseconds + "ms or " + PingTimer.ElapsedTicks + " ticks");
+            }
+            catch (Exception err)
+            {
+                Reporting.Say("Failed to connect to the log server. Check the server is running, and then check your conf file");
+                Reporting.Say(err.ToString());
+                return null;
+            }
+            return LogServer;
+        }
+        
         private static emDataApi.Client DataApi = null;
 
         public static emDataApi.Client ConnectToDataApi()

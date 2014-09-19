@@ -71,6 +71,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\EMServer\bin\Debug\BigNumber.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Json60r3\Bin\Portable40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PdfFileWriter, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\EMServer\bin\Debug\PdfFileWriter.dll</HintPath>
@@ -92,7 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfusionMatrix.cs" />
-    <Compile Include="Experiment_Gates2.cs" />
+    <Compile Include="emLogEventType.cs" />
+    <Compile Include="emLogServer.cs" />
+    <Compile Include="emLogServerSettings.cs" />
     <Compile Include="emSequenceVisualiser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +115,7 @@
     <Compile Include="ExhaustiveSearch.cs" />
     <Compile Include="Experiment_Gates.cs" />
     <Compile Include="Experiment_ToneDiscrimination.cs" />
+    <Compile Include="JSONHelper.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

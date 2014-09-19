@@ -1,107 +1,19 @@
-03 June 2014	07:45:53		Logging to file ./clientlog//EMClient__000000323.txt
-03 June 2014	07:45:53		SETTING	LogServer	True
-03 June 2014	07:45:53		SETTING	LogServerPath	./serverlog
-03 June 2014	07:45:53		SETTING	LogClient	True
-03 June 2014	07:45:53		SETTING	LogClientPath	./clientlog
-03 June 2014	07:45:53		SETTING	Server	129.241.102.247
-03 June 2014	07:45:53		SETTING	ServerPort	9090
-03 June 2014	07:45:53		SETTING	DataAPIServerPort	9091
-03 June 2014	07:45:53		SETTING	DataAPIServer	localhost
-03 June 2014	07:45:53	Microsoft CLR? YES
-03 June 2014	07:45:53	Ping response = 0
-03 June 2014	07:45:53	Ping response took 68ms or 166590 ticks
-03 June 2014	07:46:15	STATUS	0         	0.0000	4         	21245     
-03 June 2014	07:46:15		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:46:15		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:46:15		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	07:46:15		 TESTCASE 3  True ,True =>False True  FAIL
-03 June 2014	07:46:15		FITNESS	0	4
-03 June 2014	07:46:36	STATUS	1         	0.0000	9         	42928     
-03 June 2014	07:46:36		 TESTCASE 0  True ,False=>True  False FAIL
-03 June 2014	07:46:36		 TESTCASE 1  True ,True =>False False PASS
-03 June 2014	07:46:36		 TESTCASE 2  False,False=>True  False FAIL
-03 June 2014	07:46:36		 TESTCASE 3  False,True =>True  False FAIL
-03 June 2014	07:46:36		FITNESS	0	9
-03 June 2014	07:46:57	STATUS	2         	0.0000	14        	64137     
-03 June 2014	07:46:57		 TESTCASE 0  True ,True =>False True  FAIL
-03 June 2014	07:46:57		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:46:57		 TESTCASE 2  False,True =>True  True  PASS
-03 June 2014	07:46:57		 TESTCASE 3  False,False=>True  True  PASS
-03 June 2014	07:46:57		FITNESS	0	14
-03 June 2014	07:47:19	STATUS	3         	0.3333	16        	85399     
-03 June 2014	07:47:19		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	07:47:19		 TESTCASE 1  True ,True =>False False PASS
-03 June 2014	07:47:19		 TESTCASE 2  False,False=>True  False FAIL
-03 June 2014	07:47:19		 TESTCASE 3  False,True =>True  False FAIL
-03 June 2014	07:47:19		FITNESS	0.333333333333333	16
-03 June 2014	07:47:40	STATUS	4         	0.3333	22        	106612    
-03 June 2014	07:47:40		 TESTCASE 0  True ,False=>True  False FAIL
-03 June 2014	07:47:40		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:47:40		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:47:40		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:47:40		FITNESS	0.333333333333333	22
-03 June 2014	07:48:01	STATUS	5         	1.0000	29        	127772    
-03 June 2014	07:48:01		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:48:01		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	07:48:01		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:48:01		 TESTCASE 3  True ,False=>True  True  PASS
-03 June 2014	07:48:01		FITNESS	1	29
-03 June 2014	07:48:22	STATUS	6         	1.0000	34        	148983    
-03 June 2014	07:48:22		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:48:22		 TESTCASE 1  False,True =>True  True  PASS
-03 June 2014	07:48:22		 TESTCASE 2  True ,False=>True  True  PASS
-03 June 2014	07:48:22		 TESTCASE 3  True ,True =>False False PASS
-03 June 2014	07:48:22		FITNESS	1	34
-03 June 2014	07:48:44	STATUS	7         	1.0000	39        	170385    
-03 June 2014	07:48:44		 TESTCASE 0  False,True =>True  True  PASS
-03 June 2014	07:48:44		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:48:44		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:48:44		 TESTCASE 3  True ,False=>True  True  PASS
-03 June 2014	07:48:44		FITNESS	1	39
-03 June 2014	07:49:05	STATUS	8         	1.0000	44        	191692    
-03 June 2014	07:49:05		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:49:05		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:49:05		 TESTCASE 2  False,False=>True  True  PASS
-03 June 2014	07:49:05		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	07:49:05		FITNESS	1	44
-03 June 2014	07:49:26	STATUS	9         	1.0000	49        	213045    
-03 June 2014	07:49:26		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:49:26		 TESTCASE 1  True ,True =>False False PASS
-03 June 2014	07:49:26		 TESTCASE 2  True ,False=>True  True  PASS
-03 June 2014	07:49:26		 TESTCASE 3  False,True =>True  True  PASS
-03 June 2014	07:49:26		FITNESS	1	49
-03 June 2014	07:49:48	STATUS	10        	0.6667	54        	234458    
-03 June 2014	07:49:48		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	07:49:48		 TESTCASE 1  False,True =>True  False FAIL
-03 June 2014	07:49:48		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:49:48		 TESTCASE 3  False,False=>True  True  PASS
-03 June 2014	07:49:48		FITNESS	0.666666666666667	54
-03 June 2014	07:50:09	STATUS	11        	0.6667	55        	256008    
-03 June 2014	07:50:09		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	07:50:09		 TESTCASE 1  False,True =>True  False FAIL
-03 June 2014	07:50:09		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:50:09		 TESTCASE 3  False,False=>True  True  PASS
-03 June 2014	07:50:09		FITNESS	0.666666666666667	54
-03 June 2014	07:50:09		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:50:09		 TESTCASE 1  False,False=>True  True  PASS
-03 June 2014	07:50:09		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:50:09		 TESTCASE 3  True ,False=>True  True  PASS
-03 June 2014	07:50:09		FITNESS	0.666666666666667	55
-03 June 2014	07:50:31	STATUS	12        	0.6667	64        	277451    
-03 June 2014	07:50:31		 TESTCASE 0  True ,True =>False False PASS
-03 June 2014	07:50:31		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:50:31		 TESTCASE 2  False,True =>True  False FAIL
-03 June 2014	07:50:31		 TESTCASE 3  False,False=>True  True  PASS
-03 June 2014	07:50:31		FITNESS	0.666666666666667	64
-03 June 2014	07:50:53	STATUS	13        	0.6667	69        	299468    
-03 June 2014	07:50:53		 TESTCASE 0  True ,False=>True  True  PASS
-03 June 2014	07:50:53		 TESTCASE 1  True ,True =>False False PASS
-03 June 2014	07:50:53		 TESTCASE 2  False,False=>True  True  PASS
-03 June 2014	07:50:53		 TESTCASE 3  False,True =>True  False FAIL
-03 June 2014	07:50:53		FITNESS	0.666666666666667	69
-03 June 2014	07:51:14	STATUS	14        	0.6667	72        	320992    
-03 June 2014	07:51:14		 TESTCASE 0  False,False=>True  True  PASS
-03 June 2014	07:51:14		 TESTCASE 1  True ,False=>True  True  PASS
-03 June 2014	07:51:14		 TESTCASE 2  True ,True =>False False PASS
-03 June 2014	07:51:14		 TESTCASE 3  False,True =>True  False FAIL
-03 June 2014	07:51:14		FITNESS	0.666666666666667	72
+02 August 2014	15:39:29		Logging to file ./clientlog//EMClient__000000323.txt
+02 August 2014	15:39:29		SETTING	LogServer	True
+02 August 2014	15:39:29		SETTING	LogServerPath	./serverlog
+02 August 2014	15:39:29		SETTING	LogClient	True
+02 August 2014	15:39:29		SETTING	LogClientPath	./clientlog
+02 August 2014	15:39:29		SETTING	Server	127.0.0.1
+02 August 2014	15:39:29		SETTING	ServerPort	9090
+02 August 2014	15:39:29		SETTING	LogServerPort	9099
+02 August 2014	15:39:29		SETTING	DataAPIServerPort	9091
+02 August 2014	15:39:29		SETTING	DataAPIServer	localhost
+02 August 2014	15:39:29	Microsoft CLR? YES
+02 August 2014	15:39:29	Ping response = 0
+02 August 2014	15:39:29	Ping response took 7ms or 18808 ticks
+02 August 2014	15:39:30	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	15:39:30	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	15:39:30	Retrying connection attempt ... 1 of 10

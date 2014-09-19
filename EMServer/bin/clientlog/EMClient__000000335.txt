@@ -1,12 +1,17 @@
-03 June 2014	16:43:13		Logging to file ./clientlog//EMClient__000000335.txt
-03 June 2014	16:43:13		SETTING	LogServer	True
-03 June 2014	16:43:13		SETTING	LogServerPath	./serverlog
-03 June 2014	16:43:13		SETTING	LogClient	True
-03 June 2014	16:43:13		SETTING	LogClientPath	./clientlog
-03 June 2014	16:43:13		SETTING	Server	129.241.102.247
-03 June 2014	16:43:13		SETTING	ServerPort	9090
-03 June 2014	16:43:13		SETTING	DataAPIServerPort	9091
-03 June 2014	16:43:13		SETTING	DataAPIServer	localhost
-03 June 2014	16:43:13	Microsoft CLR? YES
-03 June 2014	16:43:13	Ping response = 0
-03 June 2014	16:43:13	Ping response took 70ms or 170580 ticks
+28 August 2014	13:45:58		Logging to file ./clientlog//EMClient__000000335.txt
+28 August 2014	13:45:58		SETTING	LogServer	True
+28 August 2014	13:45:58		SETTING	LogServerPath	./serverlog
+28 August 2014	13:45:58		SETTING	LogClient	True
+28 August 2014	13:45:58		SETTING	LogClientPath	./clientlog
+28 August 2014	13:45:58		SETTING	Server	10.245.8.47
+28 August 2014	13:45:58		SETTING	ServerPort	9090
+28 August 2014	13:45:58		SETTING	LogServerPort	9099
+28 August 2014	13:45:58		SETTING	DataAPIServerPort	9091
+28 August 2014	13:45:58		SETTING	DataAPIServer	localhost
+28 August 2014	13:45:58	Microsoft CLR? YES
+28 August 2014	13:46:19	Failed to connect to the motherboard. Check the server is running, and then check your conf file
+28 August 2014	13:46:19	System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 10.245.8.47:9090
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._Connect() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 46
+28 August 2014	13:46:19	Retrying connection attempt ... 1 of 10

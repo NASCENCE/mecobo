@@ -1,12 +1,19 @@
-02 June 2014	17:00:55		Logging to file ./clientlog//EMClient__000000284.txt
-02 June 2014	17:00:55		SETTING	LogServer	True
-02 June 2014	17:00:55		SETTING	LogServerPath	./serverlog
-02 June 2014	17:00:55		SETTING	LogClient	True
-02 June 2014	17:00:55		SETTING	LogClientPath	./clientlog
-02 June 2014	17:00:55		SETTING	Server	129.241.102.247
-02 June 2014	17:00:55		SETTING	ServerPort	9090
-02 June 2014	17:00:55		SETTING	DataAPIServerPort	9091
-02 June 2014	17:00:55		SETTING	DataAPIServer	localhost
-02 June 2014	17:00:55	Microsoft CLR? YES
-02 June 2014	17:00:55	Ping response = 0
-02 June 2014	17:00:55	Ping response took 68ms or 166162 ticks
+02 August 2014	10:57:48		Logging to file ./clientlog//EMClient__000000284.txt
+02 August 2014	10:57:48		SETTING	LogServer	True
+02 August 2014	10:57:48		SETTING	LogServerPath	./serverlog
+02 August 2014	10:57:48		SETTING	LogClient	True
+02 August 2014	10:57:48		SETTING	LogClientPath	./clientlog
+02 August 2014	10:57:48		SETTING	Server	127.0.0.1
+02 August 2014	10:57:48		SETTING	ServerPort	9090
+02 August 2014	10:57:48		SETTING	LogServerPort	9099
+02 August 2014	10:57:48		SETTING	DataAPIServerPort	9091
+02 August 2014	10:57:48		SETTING	DataAPIServer	localhost
+02 August 2014	10:57:48	Microsoft CLR? YES
+02 August 2014	10:57:48	Ping response = 0
+02 August 2014	10:57:48	Ping response took 9ms or 23031 ticks
+02 August 2014	10:57:49	Failed to connect to the log server. Check the server is running, and then check your conf file
+02 August 2014	10:57:49	System.Net.Sockets.SocketException (0x80004005): No connection could be made because the target machine actively refused it 127.0.0.1:9099
+   at System.Net.Sockets.TcpClient.Connect(String hostname, Int32 port)
+   at Thrift.Transport.TSocket.Open()
+   at EMUtils.emUtilities._ConnectLogServer() in c:\Users\simonh\Google Drive\GitHub\mecobo\EMServer\EMUtils\emUtilities.cs:line 92
+02 August 2014	10:57:49	Retrying connection attempt ... 1 of 10

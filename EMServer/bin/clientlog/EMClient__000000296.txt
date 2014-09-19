@@ -1,30 +1,15 @@
-02 June 2014	18:01:13		Logging to file ./clientlog//EMClient__000000296.txt
-02 June 2014	18:01:13		SETTING	LogServer	True
-02 June 2014	18:01:13		SETTING	LogServerPath	./serverlog
-02 June 2014	18:01:13		SETTING	LogClient	True
-02 June 2014	18:01:13		SETTING	LogClientPath	./clientlog
-02 June 2014	18:01:13		SETTING	Server	129.241.102.247
-02 June 2014	18:01:13		SETTING	ServerPort	9090
-02 June 2014	18:01:13		SETTING	DataAPIServerPort	9091
-02 June 2014	18:01:13		SETTING	DataAPIServer	localhost
-02 June 2014	18:01:13	Microsoft CLR? YES
-02 June 2014	18:01:13	Ping response = 0
-02 June 2014	18:01:13	Ping response took 71ms or 174873 ticks
-02 June 2014	18:02:13	STATUS	0         	0.0000	4         	59482     
-02 June 2014	18:02:13		 TESTCASE 0  False,True =>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 1  True ,True =>False False PASS
-02 June 2014	18:02:13		 TESTCASE 2  True ,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 3  True ,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 4  False,True =>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 5  True ,True =>False False PASS
-02 June 2014	18:02:13		 TESTCASE 6  False,True =>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 7  False,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 8  False,True =>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 9  False,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 10 True ,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 11 True ,True =>False False PASS
-02 June 2014	18:02:13		 TESTCASE 12 False,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 13 True ,False=>True  False FAIL
-02 June 2014	18:02:13		 TESTCASE 14 True ,True =>False False PASS
-02 June 2014	18:02:13		 TESTCASE 15 False,False=>True  False FAIL
-02 June 2014	18:02:13		FITNESS	0	4
+02 August 2014	11:48:00		Logging to file ./clientlog//EMClient__000000296.txt
+02 August 2014	11:48:00		SETTING	LogServer	True
+02 August 2014	11:48:00		SETTING	LogServerPath	./serverlog
+02 August 2014	11:48:00		SETTING	LogClient	True
+02 August 2014	11:48:00		SETTING	LogClientPath	./clientlog
+02 August 2014	11:48:00		SETTING	Server	127.0.0.1
+02 August 2014	11:48:00		SETTING	ServerPort	9090
+02 August 2014	11:48:00		SETTING	LogServerPort	9099
+02 August 2014	11:48:00		SETTING	DataAPIServerPort	9091
+02 August 2014	11:48:00		SETTING	DataAPIServer	localhost
+02 August 2014	11:48:00	Microsoft CLR? YES
+02 August 2014	11:48:00	Ping response = 0
+02 August 2014	11:48:00	Ping response took 7ms or 17888 ticks
+02 August 2014	11:48:00	Ping response = 0
+02 August 2014	11:48:00	Ping response took 2ms or 5385 ticks

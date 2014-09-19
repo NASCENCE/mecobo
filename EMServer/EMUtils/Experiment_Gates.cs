@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using CGPIP2;
 using System.Threading;
+using System.Net;
 
 namespace EMUtils
 {
@@ -228,7 +229,8 @@ namespace EMUtils
         {
             public ulong EvaluationCounter = 0;//How many evaluations we have done
             public emEvolvableMotherboard.Client Motherboard = null;  //Connection to the EM
-
+            public emLogServer.Client LogServerClient = null;
+            public emLogServerSettings LogServerSettings = null;
             public List<BoolTestCase> TestCases = new List<BoolTestCase>(); //A list of test cases
             public BooleanFunctionType FunctionType; //What function we are trying to solve
 
@@ -250,7 +252,44 @@ namespace EMUtils
                 this.FunctionType = TargetFunction;
                 this.Motherboard = emUtilities.Connect();  //Connect to th em
                 this.Motherboard.ping(); //Check it's responding ok
+                
+                this.LogServerClient = emUtilities.ConnectLogServer();
 
+                string LogServerExperimentName = this.LogServerClient.createUniqueExperimentName("Gates");
+                this.LogServerSettings = this.LogServerClient.getLogServerSettings(LogServerExperimentName);
+                
+JSONHelper JSONMessage = new JSONHelper();
+
+JSONMessage.StartSubObject("Experiment");
+    JSONMessage.WriteKeyValuePair("Name", LogServerExperimentName);
+    JSONMessage.WriteKeyValuePair("Host", Dns.GetHostName());
+    JSONMessage.WriteKeyValuePair("Time", DateTime.Now.ToLongTimeString());
+    JSONMessage.WriteKeyValuePair("Date", DateTime.Now.ToLongDateString());
+    JSONMessage.WriteKeyValuePair("Comments", "Add your comments here");
+    JSONMessage.WriteKeyValuePair("Experiment group ID", "431");
+    JSONMessage.WriteKeyValuePair("Experiment batch ID", "2");
+JSONMessage.EndSubObject();
+
+JSONMessage.StartSubObject("User");
+    JSONMessage.WriteKeyValuePair("User", "Simon");
+    JSONMessage.WriteKeyValuePair("Group", "UoY");
+JSONMessage.EndSubObject();
+
+JSONMessage.StartSubObject("Hardware");
+    JSONMessage.WriteKeyValuePair("Mecebo ID", this.Motherboard.getMotherboardID());
+    JSONMessage.WriteKeyValuePair("Concentration", "0.1");
+    JSONMessage.WriteKeyValuePair("Slide ID", "ABC-001");
+    JSONMessage.WriteKeyValuePair("Material ID", "CNT-004");
+JSONMessage.EndSubObject();
+
+JSONMessage.StartSubObject("Fitness function");
+    JSONMessage.WriteKeyValuePair("Fitness function type", "Gates");
+    JSONMessage.WriteKeyValuePair("Minimizing", "False");
+    JSONMessage.WriteKeyValuePair("Fitness function target function", TargetFunction.ToString());
+    JSONMessage.WriteKeyValuePair("Fitness function repeats", Repeats.ToString());
+JSONMessage.EndSubObject();
+
+this.LogServerClient.log(this.LogServerSettings, JSONMessage.FinishAndGetString(), emLogEventType.MISC);
 
                 //Build our truth tables
                 for (int r = 0; r < Repeats; r++)
@@ -361,13 +400,15 @@ namespace EMUtils
                 ConfusionMatrix CM = new ConfusionMatrix();
                 
                 int Index = 0;
-                
+                JSONHelper FitnessJSONMessage = new JSONHelper();
+                bool First = true;
+
                 foreach (BoolTestCase testCase in TestCases)
                 {
 
                     //Copy the config to the EM
                     #region CONFIGURE EM SEQUENCE
-                    this.Motherboard.clearSequences();
+                    
                     Index++;
                     Ind.OutputedSequences = new List<emSequenceItem>();
                     List<int> PinsUsed = new List<int>();
@@ -421,7 +462,7 @@ namespace EMUtils
                     RecordItem.OperationType = emSequenceOperationType.RECORD;
 
 
-                  //  if (PinsUsed.Contains(Ind.ListenPin)) throw new Exception("Pin used multiple times!");
+//                    if (PinsUsed.Contains(Ind.ListenPin)) throw new Exception("Pin used multiple times!");
                     foreach(int p in RecordItem.Pin) PinsUsed.Add(p);
 
 
@@ -429,27 +470,31 @@ namespace EMUtils
                     for (int i = 0; i < Ind.Genotype.Count; i++)
                     {
 
-                        bool Allow = true;
                         foreach (int p in RecordItem.Pin)
                         {
-                            if (PinsUsed.Contains(p)) Allow = false;// throw new Exception("Pin used multiple times!");
+                          //  if (PinsUsed.Contains(p)) throw new Exception("Pin used multiple times!");
                             PinsUsed.Add(p);
                         }
-                        if (Allow)
-                        {
-                            this.Motherboard.appendSequenceAction(Ind.Genotype[i]);
-                            Ind.OutputedSequences.Add(Ind.Genotype[i]);
-                        }
+                        this.Motherboard.appendSequenceAction(Ind.Genotype[i]);
+                        Ind.OutputedSequences.Add(Ind.Genotype[i]);
 
                     }
 
                     this.Motherboard.appendSequenceAction(RecordItem);
                     Ind.OutputedSequences.Add(RecordItem);
 
+                    if (First)
+                    {
+                        FitnessJSONMessage.Write(Ind.OutputedSequences);
+                        //M.WriteStartArray("Results");
+                        FitnessJSONMessage.StartSubObject("Results");
+                    }
+                    //
+
                     //Run the test, wait for the mobo to let us know it has finished
                     this.Motherboard.runSequences();
 
-                    this.Motherboard.joinSequences();
+
                     //Analyse the data
                     emWaveForm RecordedSignal = this.Motherboard.getRecording(RecordItem.Pin[0]);
                     if (RecordedSignal == null) throw new Exception("Failed to get recorded signal");
@@ -480,15 +525,26 @@ namespace EMUtils
 
                     if (Predicted == Expected)
                         Ind.Fitness++;
-                    Ind.Report.Add(String.Format(" TESTCASE {0,-2} {1,-5},{2,-5}=>{3,-5} {4,-5} {5}",
-                          Index - 1, testCase.InputA, testCase.InputB, testCase.Expected, Predicted, (testCase.Expected == Predicted ? "PASS" : "FAIL")));
+                    string ReportString = String.Format(" TESTCASE {0,-2} {1,-5},{2,-5}=>{3,-5} {4,-5} {5}",
+                          Index - 1, testCase.InputA, testCase.InputB, testCase.Expected, Predicted, (testCase.Expected == Predicted ? "PASS" : "FAIL"));
+                    Ind.Report.Add(ReportString);
+                    FitnessJSONMessage.WriteKeyValuePair("Case "+(Index-1),ReportString);
                     Ind.Output = RecordedSignal;
+
+                    First = false;
                 }
 
-
+                FitnessJSONMessage.EndSubObject();
+                //M.WriteEndArray();
                 if (double.IsNaN(Ind.Fitness)) Ind.Fitness = -1;
-                Ind.Fitness = Math.Abs(CM.MCC);
+                Ind.Fitness = Math.Abs(CM.Accuracy);
+                FitnessJSONMessage.StartSubObject("Fitness");
+                FitnessJSONMessage.WriteKeyValuePair("Score", Ind.Fitness.ToString());
+                FitnessJSONMessage.WriteKeyValuePair("Evaluation index",Ind.EvaluationIndex.ToString());
+                FitnessJSONMessage.EndSubObject();
+                this.LogServerClient.log(this.LogServerSettings, FitnessJSONMessage.FinishAndGetString(), emLogEventType.CONFIG);
                 Ind.Report.Add("FITNESS\t" + Ind.Fitness + "\t" + Ind.EvaluationIndex);
+                First = false;
             }
             /**
             public void TestIndividual2(Individual Ind)
@@ -651,9 +707,9 @@ namespace EMUtils
         public class IndividualAndPopulationFactory
         {
             public static int PopulationSize = 5;  //Number of individuas in our population
-            public static int ItemsInGenotype = 5; //Number of evovlable elements in our genotype
-            public static int[] AvailablePins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15 };  //List of the FPGA pins to work with
-            public static int MaxTime = 64; //Max time for evaluating an individual
+            public static int ItemsInGenotype = 8; //Number of evovlable elements in our genotype
+            public static int[] AvailablePins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };  //List of the FPGA pins to work with
+            public static int MaxTime = 128; //Max time for evaluating an individual
             public static int MaxAmplitude = 2;
             public static int MaxFrequency = 10000;
             public static int MaxPhase = 10;
@@ -741,7 +797,6 @@ namespace EMUtils
                 Reporting.Say(string.Format("STATUS\t{0,-10}\t{1:0.0000}\t{2,-10}\t{3,-10}", Epoch, BestInd.Fitness, BestInd.EvaluationIndex, Timer.ElapsedMilliseconds));
                 foreach (string S in BestInd.Report)
                     Reporting.Say("\t" + S);
-                /*
                 if (BestInd.Output != null)
                 {
                     wfv.Clear();
@@ -761,7 +816,6 @@ namespace EMUtils
                 {
                     Reporting.Say(e.ToString());
                 }
-                 * */
                 Application.DoEvents();
 
                 if (BestInd.Fitness < 0.751)
