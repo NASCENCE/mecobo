@@ -1,0 +1,7 @@
+verilog work "../xbar_control.v"
+verilog work "../xbar_clock.v"
+verilog work "../pincontrol.v"
+verilog work "../main_clocks.v"
+verilog work "../dac_control.v"
+verilog work "../adccontrol.v"
+verilog work "../toplevel.v"
