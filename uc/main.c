@@ -361,6 +361,12 @@ int main(void)
         //Is it time to start the item at the head of the queue?
         if (currentItem->startTime <= timeMs) {
           execute(currentItem);
+          if(numItemsLeftToExecute == 0) {
+                printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
+          } else {
+                numItemsLeftToExecute--;
+          }
+
 
           //if (currentItem->endTime != (-1)) {
             itemsInFlight[iifPos++] = currentItem;
@@ -385,13 +391,7 @@ int main(void)
           //}
           if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
             execute(itemsInFlight[flight]);
-            if(numItemsLeftToExecute == 0) {
-                printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
-              } else {
-                numItemsLeftToExecute--;
-              }
-
-            registersUpdated[itemsInFlight[flight]->constantValue] = 0;
+                  registersUpdated[itemsInFlight[flight]->constantValue] = 0;
           }
         }
         //update counters.
@@ -560,7 +560,7 @@ inline void execute(struct pinItem * item)
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       addr = getPinAddress(item->pin);
-      printf("  DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", item->pin, item->duty, item->antiDuty, addr);
+      printf("  %d DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
       addr[PINCONFIG_DUTY_CYCLE] = item->duty;
       addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
       addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
@@ -613,6 +613,7 @@ void killItem(struct pinItem * item)
   uint16_t * addr = getPinAddress(item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+      printf("  KILL %d : DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
       addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_ANTIDUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
@@ -627,6 +628,7 @@ void killItem(struct pinItem * item)
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
+      printf("  %d RECORD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       for(int i = 0; i < numInputChannels; i++) {
         if (inputChannels[i] == item->pin) {
           printf("Rec stop: %d\n", item->pin);
@@ -696,6 +698,8 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
 
   //Digital channel.
   else {
+    uint16_t * a = addr + PINCONFIG_STATUS_REG;
+    printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
     addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)sampleRate;
     addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
@@ -715,7 +719,9 @@ inline void getInput(FPGA_IO_Pins_TypeDef channel)
   val.sampleNum = addr[PINCONFIG_SAMPLE_CNT];
   val.channel = (uint8_t)channel;
   val.value = addr[PINCONFIG_SAMPLE_REG];
-  //printf("S: %u %u %u\n", val.sampleNum, val.channel, val.value);
+
+  uint16_t * a = addr + PINCONFIG_STATUS_REG;
+  printf("S@%p: %u %u %u cntr: %d\n", addr, val.sampleNum, val.channel, val.value, *a);
 
   if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
     lastCollected[channel] = val.sampleNum;
@@ -762,7 +768,7 @@ void execCurrentPack()
     struct mecoboStatus s;
     s.state = (uint8_t)mecoboStatus;
     s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)numItemsLeftToExecute;
+    s.itemsInQueue = (uint16_t)numItemsLeftToExecute + numItemsInFlight;
     //printf("QI: %u\n", numItemsInFlight);
 
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
