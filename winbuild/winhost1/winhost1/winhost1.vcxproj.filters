@@ -14,82 +14,78 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="winhost1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\emDataApi.cpp">
+    <ClCompile Include="..\..\..\host\channelmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\emEvolvableMotherboard.cpp">
+    <ClCompile Include="..\..\..\host\emDataApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\emMotherboard.cpp">
+    <ClCompile Include="..\..\..\host\emEvolvableMotherboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared_constants.cpp">
+    <ClCompile Include="..\..\..\host\emMotherboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\usb.cpp">
+    <ClCompile Include="..\..\..\host\Mecobo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Mecobo.cpp">
+    <ClCompile Include="..\..\..\host\NascenseAPI_v01e_constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\NascenseAPI_v01e_constants.cpp">
+    <ClCompile Include="..\..\..\host\NascenseAPI_v01e_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\NascenseAPI_v01e_types.cpp">
+    <ClCompile Include="..\..\..\host\shared_constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\channelmap.cpp">
+    <ClCompile Include="..\..\..\host\USB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\channelmap.h">
+    <ClInclude Include="..\..\..\host\channelmap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\emDataApi.h">
+    <ClInclude Include="..\..\..\host\emDataApi.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\emEvolvableMotherboard.h">
+    <ClInclude Include="..\..\..\host\emEvolvableMotherboard.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\emLogServer.h">
+    <ClInclude Include="..\..\..\host\emMotherboard.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\emMotherboard.h">
+    <ClInclude Include="..\..\..\host\Mecobo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ga.h">
+    <ClInclude Include="..\..\..\host\NascenseAPI_v01e_constants.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\inttypes.h">
+    <ClInclude Include="..\..\..\host\NascenseAPI_v01e_types.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Mecobo.h">
+    <ClInclude Include="..\..\..\host\shared_constants.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\NascenseAPI_v01e_constants.h">
+    <ClInclude Include="..\..\..\host\shared_types.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\NascenseAPI_v01e_types.h">
+    <ClInclude Include="..\..\..\host\USB.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared_constants.h">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\host\Makefile">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared_types.h">
+    </None>
+    <None Include="..\..\..\host\mecobo_with_db.bin">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\USB.h">
+    </None>
+    <None Include="..\..\..\host\README.md">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\mecoprot.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
+    </None>
   </ItemGroup>
 </Project>
