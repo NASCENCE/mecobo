@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -41,9 +41,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);C:\work\nascense\boost_1_54_0\boost_1_54_0\libs;C:\work\nascense\boost_1_54_0\boost_1_54_0\;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug;C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\include\libusbx-1.0</IncludePath>
+    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);M:\build_third_party\boost_1_56_0;M:\build_third_party\thrift-master\lib\cpp\src;M:\build_third_party\libusbx-1.0.18-win\include\libusbx-1.0</IncludePath>
     <ReferencePath>C:\work\nascense\boost_1_54_0\boost_1_54_0\libs;C:\work\nascense\boost_1_54_0\boost_1_54_0\;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug;$(ReferencePath)</ReferencePath>
-    <LibraryPath>C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll;C:\work\nascense\boost_1_54_0\boost_1_54_0\libs;C:\work\nascense\boost_1_54_0\boost_1_54_0\;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>M:\build_third_party\libusbx-1.0.18-win\MS32\dll;M:\build_third_party\thrift-master\lib\cpp\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -86,36 +86,33 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\channelmap.cpp" />
-    <ClCompile Include="..\emDataApi.cpp" />
-    <ClCompile Include="..\emEvolvableMotherboard.cpp" />
-    <ClCompile Include="..\emMotherboard.cpp" />
-    <ClCompile Include="..\Mecobo.cpp" />
-    <ClCompile Include="..\NascenseAPI_v01e_constants.cpp" />
-    <ClCompile Include="..\NascenseAPI_v01e_types.cpp" />
-    <ClCompile Include="..\shared_constants.cpp" />
-    <ClCompile Include="..\usb.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\..\..\host\channelmap.cpp" />
+    <ClCompile Include="..\..\..\host\emDataApi.cpp" />
+    <ClCompile Include="..\..\..\host\emEvolvableMotherboard.cpp" />
+    <ClCompile Include="..\..\..\host\emMotherboard.cpp" />
+    <ClCompile Include="..\..\..\host\Mecobo.cpp" />
+    <ClCompile Include="..\..\..\host\NascenseAPI_v01e_constants.cpp" />
+    <ClCompile Include="..\..\..\host\NascenseAPI_v01e_types.cpp" />
+    <ClCompile Include="..\..\..\host\shared_constants.cpp" />
+    <ClCompile Include="..\..\..\host\USB.cpp" />
     <ClCompile Include="winhost1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\mecoprot.h" />
-    <ClInclude Include="..\channelmap.h" />
-    <ClInclude Include="..\emDataApi.h" />
-    <ClInclude Include="..\emEvolvableMotherboard.h" />
-    <ClInclude Include="..\emLogServer.h" />
-    <ClInclude Include="..\emMotherboard.h" />
-    <ClInclude Include="..\ga.h" />
-    <ClInclude Include="..\inttypes.h" />
-    <ClInclude Include="..\Mecobo.h" />
-    <ClInclude Include="..\NascenseAPI_v01e_constants.h" />
-    <ClInclude Include="..\NascenseAPI_v01e_types.h" />
-    <ClInclude Include="..\shared_constants.h" />
-    <ClInclude Include="..\shared_types.h" />
-    <ClInclude Include="..\USB.h" />
+    <ClInclude Include="..\..\..\host\channelmap.h" />
+    <ClInclude Include="..\..\..\host\emDataApi.h" />
+    <ClInclude Include="..\..\..\host\emEvolvableMotherboard.h" />
+    <ClInclude Include="..\..\..\host\emMotherboard.h" />
+    <ClInclude Include="..\..\..\host\Mecobo.h" />
+    <ClInclude Include="..\..\..\host\NascenseAPI_v01e_constants.h" />
+    <ClInclude Include="..\..\..\host\NascenseAPI_v01e_types.h" />
+    <ClInclude Include="..\..\..\host\shared_constants.h" />
+    <ClInclude Include="..\..\..\host\shared_types.h" />
+    <ClInclude Include="..\..\..\host\USB.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\host\Makefile" />
+    <None Include="..\..\..\host\mecobo_with_db.bin" />
+    <None Include="..\..\..\host\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
