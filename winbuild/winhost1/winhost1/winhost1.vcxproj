@@ -21,6 +21,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -41,8 +42,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);M:\build_third_party\boost_1_56_0;M:\build_third_party\thrift-master\lib\cpp\src;M:\build_third_party\libusbx-1.0.18-win\include\libusbx-1.0</IncludePath>
-    <ReferencePath>C:\work\nascense\boost_1_54_0\boost_1_54_0\libs;C:\work\nascense\boost_1_54_0\boost_1_54_0\;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug;$(ReferencePath)</ReferencePath>
+    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);M:\build_third_party\thrift-master\lib\cpp\src;M:\build_third_party\libusbx-1.0.18-win\include\libusbx-1.0;M:\build_third_party\boost_1_56_0</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>M:\build_third_party\libusbx-1.0.18-win\MS32\dll;M:\build_third_party\thrift-master\lib\cpp\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -56,6 +57,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE </PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\simonh\Documents\GitHub\mecobo\winbuild\libusbx-1.0.18-win\MS32\dll;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\Debug;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\thrift;C:\work\nascense\thrift-0.9.0_vs\lib\cpp\src\;C:\Users\simonh\Documents\GitHub\mecobo\winbuild</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
