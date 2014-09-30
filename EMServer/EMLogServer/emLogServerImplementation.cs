@@ -34,7 +34,8 @@ namespace EMLogServer
 
         void emLogServer.Iface.log(emLogServerSettings logServer, string message, emLogEventType messageType)
         {
-            string OutputFolder = "./LogServer/" + logServer.ExperimentName;
+            
+            string OutputFolder = Settings.GetSetting<string>("OutputFolder")+"/" + logServer.ExperimentName;
             if (!Directory.Exists(OutputFolder))
                 Directory.CreateDirectory(OutputFolder);
             string OutputFile = String.Format("{1:0000}{2:00}{3:00}_{4:00}{5:00}{6:00}{7}_{8}.txt",
