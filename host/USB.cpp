@@ -47,7 +47,10 @@ USB::USB() {
 	    std::cout << "---------------------------------" << std::endl;
 	    std::cout << "The server will start at port " << port << std::endl;
 	    std::cout << "---------------------------------" << std::endl;
-	  }
+	  } else if (mecoboBoards.size() == 0) {
+          std::cout << "No mecobo board connected." << std::endl;
+//          exit(-1);
+      }
 
 	  int err = libusb_open(mecoboBoards[chosen], &mecoboHandle);
 
