@@ -1,4 +1,10 @@
-module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin);
+//`define WITH_OPTOWALL
+
+`ifdef WITH_OPTOWALL
+  module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin_in, pins_out);
+`else
+  module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin);
+`endif
 
 input clk;
 input reset;
@@ -7,7 +13,12 @@ input [18:0] addr;
 input   [15:0] data_in;
 //(* tristate2logic = "yes" *)
 output reg [15:0] data_out;
-inout pin;
+`ifdef WITH_OPTOWALL
+  input pin_in;
+  output[1:0] pins_out;
+`else
+  inout pin;
+`endif
 
 input data_wr;
 input data_rd;
@@ -35,10 +46,16 @@ always @ (posedge clk) begin
     data_out <= 16'b0;
 end
 
-//Drive output pin from pin_output statemachine if output
-assign pin = (enable_pin_output) ? pin_output : 1'bZ; //Z or 0
-//else we have input from pin.
-assign pin_input = pin;
+`ifdef WITH_OPTOWALL
+  //Drive output pins to 01 (high), 10 (low) or 00 (Z)
+  assign pins_out  = (enable_pin_output)? ((pin_output)?  2'b01 : 2'b10): 2'b00;
+  assign pin_input = ~pin_in;
+`else
+  //Drive output pin from pin_output statemachine if output
+  assign pin = (enable_pin_output) ? pin_output : 1'bZ; //Z or 0
+  //else we have input from pin.
+  assign pin_input = pin;
+`endif
 
 
 //Position is the offset in the address map to this pin controller.
