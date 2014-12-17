@@ -14,12 +14,21 @@ module adc_control (
   input sclk,  //clocks the serial interface.
   input reset,
 
+  output reg new_sample,
   input [18:0] addr,
   input [15:0] data_in,
   input enable,
   input re,
   input wr,
   output reg [15:0] data_out,
+
+  //Sample storage memory interface-- accessible only through ADC?
+  output reg s_re,
+  output reg s_we,
+  output reg s_cs1,
+  output reg s_cs2,
+  inout  reg s_data,
+  output reg s_addr,
 
   // interfacing the chip.
   output reg cs,
@@ -108,6 +117,7 @@ always @ (posedge clk) begin
   //---------------------------------------------------------------------
 
 
+//Assumes 8 ADC channels.
 reg [15:0] clock_divide_register = 0;
 reg [15:0] overflow_register [0:7];
 reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine

@@ -14,8 +14,9 @@ input data_rd;
 
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
+reg [31:0] nco_counter = 32'h00000000;
+reg [31:0] nco_pa = 0;
 
-reg pin_output;
 wire pin_input;
 //Input, output: PWM, SGEN, CONST
 
@@ -35,8 +36,16 @@ always @ (posedge clk) begin
     data_out <= 16'b0;
 end
 
-//Drive output pin from pin_output statemachine if output
-assign pin = (enable_pin_output) ? pin_output : 1'bZ; //Z or 0
+
+
+// ------------------------- NCO ----------------------------------
+// Output frequency will be roughly freq(clk) * (nco_counter/2^32)
+always @ (posedge clk) begin
+  nco_pa <= nco_pa + nco_counter;
+end
+
+//Drive output pin from MSB of nco_pa statemachine if output is enabled.
+assign pin = (enable_pin_output) ? nco_pa[31] : 1'bZ; //Z or 0
 //else we have input from pin.
 assign pin_input = pin;
 
@@ -47,8 +56,8 @@ parameter POSITION = 0;
 //These are byte addresses.
 localparam [7:0] 
   ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
-  ADDR_DUTY_CYCLE =  1,
-  ADDR_ANTI_DUTY_CYCLE =  2,
+  ADDR_NCO_COUNTER_LOW = 2,
+  ADDR_NCO_COUNTER_HIGH = 3,
   ADDR_LOCAL_CMD =  5,
   ADDR_SAMPLE_RATE =  6,
   ADDR_SAMPLE_REG =  7,
@@ -61,13 +70,12 @@ always @ (posedge clk) begin
   else if (enable_in & data_wr) begin
     if (addr[7:0] == ADDR_LOCAL_CMD)
       command <= data_in;
-    else if (addr[7:0] == ADDR_DUTY_CYCLE)
-      duty_cycle <= data_in;
-    else if (addr[7:0] == ADDR_ANTI_DUTY_CYCLE)
-      anti_duty_cycle <= data_in;
     else if (addr[7:0] == ADDR_SAMPLE_RATE)
       sample_rate <= data_in;
-
+    else if (addr[7:0] == ADDR_NCO_COUNTER_LOW)
+      nco_counter[15:0] <= data_in;
+    else if (addr[7:0] == ADDR_NCO_COUNTER_HIGH)
+      nco_counter[31:16] <= data_in;
   end 
 end
 
@@ -80,26 +88,12 @@ localparam
 reg [15:0] command = 0;
 //reg [15:0] command = 0;
 
-reg [15:0] duty_cycle = 0; //length of duty in cyle, measured in 20ns ticks.
-reg [15:0] anti_duty_cycle = 0; //length of anti-duty in 20ns ticks. 
 reg [15:0] sample_rate = 0;
 
 //Counters for the cycles.
-reg [15:0] cnt_duty_cycle = 0;
-reg [15:0] cnt_anti_duty_cycle = 0;
 reg [15:0] cnt_sample_rate = 0;
 
 always @ (posedge clk) begin
-
-  if (res_duty_counter == 1'b1)
-    cnt_duty_cycle <= duty_cycle;
-  else if (dec_duty_counter == 1'b1) 
-    cnt_duty_cycle <= (cnt_duty_cycle - 16'h0001);
-
-  if (res_anti_duty_counter == 1'b1)
-    cnt_anti_duty_cycle <= anti_duty_cycle;
-  else if (dec_anti_duty_counter == 1'b1) 
-    cnt_anti_duty_cycle <= (cnt_anti_duty_cycle - 16'h0001);
 
   if (res_sample_counter == 1'b1) 
     cnt_sample_rate <= sample_rate;
@@ -112,20 +106,13 @@ always @ (posedge clk) begin
   end
 
 end
+
 //outputs from state machine
-reg dec_duty_counter;
-reg dec_anti_duty_counter;
-reg res_duty_counter;
-reg res_anti_duty_counter;
-
 reg res_cmd_reg = 1'b0;
-
 reg res_sample_counter = 0;
 reg dec_sample_counter = 0;
 reg update_data_out    = 0;
-
 reg update_sample_cnt = 0;
-
 reg enable_pin_output = 0;
 
 reg [3:0] state = idle;
@@ -144,12 +131,6 @@ always @ (posedge clk) begin
     idle: begin
       enable_pin_output <= 1'b0;
 
-      dec_duty_counter <= 1'b0;
-      dec_anti_duty_counter <= 1'b0;
-
-      res_duty_counter <= 1'b1;
-      res_anti_duty_counter <= 1'b1;
-
       dec_sample_counter <= 1'b0;
       res_sample_counter <= 1'b1;
 
@@ -163,98 +144,34 @@ always @ (posedge clk) begin
       end
       //Output command.
       else if ( (command == CMD_START_OUTPUT) ) begin
-        
-        if(duty_cycle > 0)
-          state <= high;
-        else 
-          state <= low;
-
+        state <= enable_out;
         res_cmd_reg <= 1'b1; //reset command since this is a single command
-      
       //No command..
       end else
         state <= idle;
-
-      //keep it low
-      pin_output <= 1'b0;
     end
 
-  high: begin
-    dec_duty_counter <= 1'b1;
-    res_duty_counter <= 1'b0; 
-
-    dec_anti_duty_counter <= 1'b0;
-    res_anti_duty_counter <= 1'b0;
-
+  enable_out: begin
     dec_sample_counter <= 1'b0;
     res_sample_counter <= 1'b0;
 
     update_data_out <= 1'b0;
     enable_pin_output <= 1'b1;
-    pin_output <= 1'b1;
     res_cmd_reg <= 1'b0;
 
     if (command == CMD_RESET) 
       state <= idle;
-    else if (cnt_duty_cycle <= 1) begin
-      //check if we should just hang around here.
-      if(anti_duty_cycle == 0)
-        state <= high;
-      else 
-        state <= low;
-      //Reset duty counter so that it's
-      //ready for the next time we're in this state.
-      res_duty_counter <= 1'b1; 
     end else
-      state <= high;
+      state <= enable_out;
   end
 
-  low: begin
-    dec_duty_counter <= 1'b0;
-    res_duty_counter <= 1'b0;
-    
-    dec_anti_duty_counter <= 1'b1;
-    res_anti_duty_counter <= 1'b0;
-    
-
-    dec_sample_counter <= 1'b0;
-    res_sample_counter <= 1'b0;
-
-    update_data_out <= 1'b0;
-    res_cmd_reg <= 1'b0;
-    
-    enable_pin_output <= 1'b1;
-    pin_output <= 1'b0;
-
-    if (command == CMD_RESET) 
-      state <= idle;
-    else if (cnt_anti_duty_cycle <= 1) begin
-      //If we don't have any high cycles, go here.
-      if(cnt_duty_cycle == 0) 
-        state <= low;
-      else begin
-        //last low-cycle, reset the anti duty counter
-        //so that it's ready for next time.
-        res_anti_duty_counter <= 1'b1;
-      
-        state <= high;
-      end
-    end else 
-      state <= low;
-  end
-
+  //Stream back data.
   input_stream: begin
     res_cmd_reg <= 1'b0;
-    dec_duty_counter <= 1'b0;
-    dec_anti_duty_counter <= 1'b0;
-
-    res_duty_counter <= 1'b1;
-    res_anti_duty_counter <= 1'b1;
 
     res_sample_counter <= 1'b0;
     update_data_out <= 1'b0;
     enable_pin_output <= 1'b0;
-    pin_output <= 1'b0;
     dec_sample_counter <= 1'b0;
 
     //If we have counted down to 1, it's time to update sample reg.
@@ -277,21 +194,12 @@ always @ (posedge clk) begin
 
   default: begin
     res_cmd_reg <= 1'b0;
-    dec_duty_counter <= 1'b0;
-    dec_anti_duty_counter <= 1'b0;
-
-    res_duty_counter <= 1'b1;
-        res_anti_duty_counter <= 1'b1;
-
-        dec_sample_counter <= 1'b0;
-        res_sample_counter <= 1'b0;
-
-        update_data_out <= 1'b0;
-
-        enable_pin_output <= 1'b0;
-        pin_output <= 1'b0;
-      end
-    endcase
+    dec_sample_counter <= 1'b0;
+    res_sample_counter <= 1'b0;
+    update_data_out <= 1'b0;
+    enable_pin_output <= 1'b0;
+  end
+  endcase
 end
 
 endmodule

@@ -11,7 +11,22 @@
 
 `define WITH_DB
 
-module mecobo (osc, reset, led, ebi_data, ebi_addr, ebi_wr, ebi_rd, ebi_cs, fpga_ready, HN, HW);
+module mecobo   (osc, 
+                reset, 
+                led, 
+                ebi_data, 
+                ebi_addr, 
+                ebi_wr, 
+                ebi_rd, 
+                ebi_cs, 
+                fpga_ready, 
+                sram_addr,
+                sram_data,
+                sram_rd,
+                sram_wr,
+                sram_cs,
+                HN, 
+                HW);
 
 input osc;
 input reset;
@@ -21,6 +36,13 @@ input [18:0] ebi_addr;
 input ebi_wr;
 input ebi_rd;
 input ebi_cs;
+
+//SRAM INTERFACE
+output  sram_addr;
+inout   sram_data;
+output  sram_rd;
+output  sram_wr;
+output  sram_cs[2:0];
 
 //output [15:0] debug;
 
@@ -219,5 +241,13 @@ xbar_control #(.POSITION(200))
   `endif
 
     endgenerate
+
+    // ------------------------- SAMPLING ---------------------
+    // Sampling module will access the ADC register at a given sampling rate.
+    // ADC runs at 16MHz, giving 1MHz max sample rate. We have 64Mbit of
+    // sample space, 12 bit samples, so at 1MHz we have about 4 seconds of samples,
+    // with some wasted space.
+    // The ADC will raise an interrupt when it has a new sample available, and 
+    // the sampling module will fetch this and put it into memory.
 endmodule
 
