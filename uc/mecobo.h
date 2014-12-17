@@ -42,8 +42,8 @@
 
 //Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
-#define PINCONFIG_DUTY_CYCLE 1
-#define PINCONFIG_ANTIDUTY_CYCLE 2
+#define PINCONFIG_NCO_COUNTER_LOW 2
+#define PINCONFIG_NCO_COUNTER_HIGH 3
 #define PINCONFIG_CYCLES 3
 #define PINCONFIG_RUN_INF 4
 #define PINCONFIG_LOCAL_CMD 5
@@ -70,6 +70,7 @@ struct pinConfig {
   uint32_t phase;
   uint32_t antiduty;
   uint32_t duty;
+  uint16_t noc;
   uint32_t cycles;
   uint32_t runInf;
   uint32_t sampleRate;

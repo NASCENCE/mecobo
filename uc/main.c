@@ -561,9 +561,12 @@ inline void execute(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       addr = getPinAddress(item->pin);
       printf("  %d DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
-      addr[PINCONFIG_DUTY_CYCLE] = item->duty;
-      addr[PINCONFIG_ANTIDUTY_CYCLE] = item->antiDuty;
-      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+      uint16_t nocLow = (uint16_t)item->nocCounter;
+      uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
+
+      addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
+      addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
+      addr[PINCONFIG_LOCAL_CMD]         = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD:
@@ -786,6 +789,7 @@ void execCurrentPack()
       item.constantValue = d[PINCONFIG_DATA_CONST];
       item.type = d[PINCONFIG_DATA_TYPE];
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
+      item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
       itemsToApply[itaPos++] = item;
 
       //find lowest first killtime, but ignore -1 endtimes,
