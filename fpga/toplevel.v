@@ -9,6 +9,8 @@
 //[currentTick] -- read only
 //[lastValue]
 
+
+
 `define WITH_DB
 
 module mecobo   (osc, 
@@ -32,7 +34,7 @@ input osc;
 input reset;
 
 inout [15:0] ebi_data;
-input [18:0] ebi_addr;
+input [20:0] ebi_addr;
 input ebi_wr;
 input ebi_rd;
 input ebi_cs;
@@ -59,7 +61,6 @@ assign led[1] =  read_enable;
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
-
 
 //(* tristate2logic = "yes" *)
 wor [15:0] data_out;
@@ -249,5 +250,6 @@ xbar_control #(.POSITION(200))
     // with some wasted space.
     // The ADC will raise an interrupt when it has a new sample available, and 
     // the sampling module will fetch this and put it into memory.
+    //
 endmodule
 

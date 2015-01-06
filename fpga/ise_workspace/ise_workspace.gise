@@ -53,6 +53,7 @@
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_BITGEN_REPORT" xil_pn:name="mecobo.ut" xil_pn:subbranch="FPGAConfiguration"/>
     <file xil_pn:fileType="FILE_XPI" xil_pn:name="mecobo.xpi"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="mecobo.xst"/>
+    <file xil_pn:fileType="FILE_HTML" xil_pn:name="mecobo_envsettings.html"/>
     <file xil_pn:fileType="FILE_NCD" xil_pn:name="mecobo_guide.ncd" xil_pn:origination="imported"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MAP_REPORT" xil_pn:name="mecobo_map.map" xil_pn:subbranch="Map"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MAP_REPORT" xil_pn:name="mecobo_map.mrp" xil_pn:subbranch="Map"/>
@@ -77,6 +78,7 @@
   <transforms xmlns="http://www.xilinx.com/XMLSchema">
     <transform xil_pn:end_ts="1411389436" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1411389436">
       <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
     </transform>
     <transform xil_pn:end_ts="1411389436" xil_pn:name="TRAN_schematicsToHdl" xil_pn:prop_ck="4948649882224764682" xil_pn:start_ts="1411389436">
       <status xil_pn:value="SuccessfullyRun"/>
@@ -102,7 +104,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1411389482" xil_pn:in_ck="-1098052123190375307" xil_pn:name="TRANEXT_xstsynthesize_spartan6" xil_pn:prop_ck="-6245957801521173366" xil_pn:start_ts="1411389436">
+    <transform xil_pn:end_ts="1411574441" xil_pn:in_ck="-1098052123190375307" xil_pn:name="TRANEXT_xstsynthesize_spartan6" xil_pn:prop_ck="-6245957801521173366" xil_pn:start_ts="1411574394">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
@@ -124,7 +126,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1411389498" xil_pn:in_ck="5040999368406185463" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="1903137100661514044" xil_pn:start_ts="1411389482">
+    <transform xil_pn:end_ts="1411574456" xil_pn:in_ck="5040999368406185463" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="1903137100661514044" xil_pn:start_ts="1411574441">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
@@ -134,11 +136,10 @@
       <outfile xil_pn:name="mecobo.ngd"/>
       <outfile xil_pn:name="mecobo_ngdbuild.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1411389582" xil_pn:in_ck="5040999368406185464" xil_pn:name="TRANEXT_map_spartan6" xil_pn:prop_ck="4245753365082497697" xil_pn:start_ts="1411389498">
+    <transform xil_pn:end_ts="1411574539" xil_pn:in_ck="5040999368406185464" xil_pn:name="TRANEXT_map_spartan6" xil_pn:prop_ck="4245753365082497697" xil_pn:start_ts="1411574456">
       <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="_xmsgs/map.xmsgs"/>
       <outfile xil_pn:name="mecobo.pcf"/>
       <outfile xil_pn:name="mecobo_map.map"/>
@@ -149,7 +150,7 @@
       <outfile xil_pn:name="mecobo_summary.xml"/>
       <outfile xil_pn:name="mecobo_usage.xml"/>
     </transform>
-    <transform xil_pn:end_ts="1411389692" xil_pn:in_ck="6192573927177371921" xil_pn:name="TRANEXT_par_spartan6" xil_pn:prop_ck="-3829590541433901613" xil_pn:start_ts="1411389582">
+    <transform xil_pn:end_ts="1411574628" xil_pn:in_ck="6192573927177371921" xil_pn:name="TRANEXT_par_spartan6" xil_pn:prop_ck="-3829590541433901613" xil_pn:start_ts="1411574539">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
@@ -164,7 +165,7 @@
       <outfile xil_pn:name="mecobo_pad.txt"/>
       <outfile xil_pn:name="mecobo_par.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1411389885" xil_pn:in_ck="5205265617736504" xil_pn:name="TRANEXT_bitFile_spartan6" xil_pn:prop_ck="6587536580693756888" xil_pn:start_ts="1411389852">
+    <transform xil_pn:end_ts="1411574661" xil_pn:in_ck="5205265617736504" xil_pn:name="TRANEXT_bitFile_spartan6" xil_pn:prop_ck="4970201210546912173" xil_pn:start_ts="1411574628">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_xmsgs/bitgen.xmsgs"/>
@@ -177,7 +178,7 @@
       <outfile xil_pn:name="webtalk.log"/>
       <outfile xil_pn:name="webtalk_pn.xml"/>
     </transform>
-    <transform xil_pn:end_ts="1411389692" xil_pn:in_ck="5040999368406185332" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416185" xil_pn:start_ts="1411389673">
+    <transform xil_pn:end_ts="1411574628" xil_pn:in_ck="5040999368406185332" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416185" xil_pn:start_ts="1411574609">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_xmsgs/trce.xmsgs"/>
