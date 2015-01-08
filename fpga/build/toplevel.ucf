@@ -174,12 +174,12 @@ NET "ebi_addr[15]" LOC = M10;
 NET "ebi_addr[16]" LOC = T4;
 NET "ebi_addr[17]" LOC = R3;
 NET "ebi_addr[18]" LOC = T3;
-NET "ebi_addr[19]" LOC = T6;
-NET "ebi_addr[20]" LOC = P7;
+#NET "ebi_addr[19]" LOC = T6;
+#NET "ebi_addr[20]" LOC = P7;
 
 NET "ebi_cs" LOC = V14;
 NET "ebi_wr" LOC = V15;
 NET "ebi_rd" LOC = V16;
 
 #Output from FPGA (0 = FPGA READY)
-NET "ram_select" LOC = T12;
+NET "fpga_ready" LOC = T12;
