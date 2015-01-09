@@ -39,7 +39,7 @@ parameter MIN_CHANNEL = 0;
 parameter MAX_CHANNEL = 1;
 
 wire controller_enable;
-assign controller_enable = (enable & ((addr[18:8] >= MIN_CHANNEL) & (addr[18:8] <= MAX_CHANNEL));
+assign controller_enable = (enable & ((addr[18:8] >= MIN_CHANNEL) & (addr[18:8] <= MAX_CHANNEL)));
 
 wire busy = (state != get_values);
 

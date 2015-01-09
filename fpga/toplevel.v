@@ -183,7 +183,8 @@ generate
       );
     //end
   end //for end
-adc_control #(.MIN_CHANNEL(100), MAX_CHANNEL(107))
+adc_control #(.MIN_CHANNEL(100), 
+              .MAX_CHANNEL(107))
     adc0 (
       .clk(sys_clk),
       .sclk(ad_clk),

@@ -30,9 +30,16 @@
   );
 
   parameter POSITION = 242;
+  parameter MAX_SAMPLES = 65536;
 
   localparam ADDR_NEXT_SAMPLE = 1;
   localparam ADDR_NUM_SAMPLES = 2;
+  localparam ADDR_LOCAL_COMMAND = 5;
+
+  localparam
+  CMD_START_SAMPLING = 1,
+  CMD_RESET = 5;
+
 
   //The collection unit registers hold the position of the unit to enable.
   reg [7:0] collection_channels[0:15];
@@ -42,6 +49,7 @@
   reg [18:0] memory_top_addr = 0;
   reg [18:0] memory_bottom_addr = 0;
 
+  reg [15:0] command;
   //will start out as 0.
   reg rd_d = 0;
   wire rd_transaction_done;
@@ -50,10 +58,20 @@
   assign controller_enable = (cs & (addr[18:8] == POSITION));
 
   always @ (posedge clk) begin
-    if (controller_enable & wr) begin
-      collection_channels[num_units] <= ebi_data_in[7:0];
-      num_units <= num_units + 1;
-    end
+
+    if (res_cmd_reg) 
+      command <= 0;
+    else 
+      if (controller_enable & wr) begin
+        if (addr[7:0] == 0) begin
+          collection_channels[num_units] <= ebi_data_in[7:0];
+          num_units <= num_units + 1;
+        end
+
+        if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
+          command <= ebi_data_in;
+        end
+      end
 
     /*
       Every time we read from this register, there should be a new
@@ -109,6 +127,7 @@
   reg ram_write_enable;
   reg en_read;
   reg en_write;
+  reg res_cmd_reg;
 
   initial begin 
     state = idle;
@@ -127,6 +146,7 @@
       ram_write_enable <= 1'b0;
       en_read <= 1'b0;
       en_write <= 1'b0;
+      res_cmd_reg <= 1'b0;
 
       state <= idle;
     end
@@ -141,8 +161,11 @@
         en_read <= 1'b1;
         en_write <= 1'b0;
 
-
-        state <= fetch;
+        if(command == CMD_START_SAMPLING) begin
+          state <= fetch;
+          res_cmd_reg <= 1'b1;
+        end else 
+          state <= idle;
       end
 
       fetch: begin
@@ -153,8 +176,7 @@
         ram_write_enable <= 1'b0;
         en_read <= 1'b1;
         en_write <= 1'b0;
-
-
+        res_cmd_reg <= 1'b0;
 
         state <= store;
       end
@@ -167,7 +189,7 @@
         ram_write_enable <= 1'b0;
         en_read <= 1'b1;
         en_write <= 1'b1;
-
+        res_cmd_reg <= 1'b0;
 
         if (last_fetched[current_id_idx] != sample_data) begin
           ram_write_enable <= 1'b1;
@@ -184,9 +206,12 @@
         ram_write_enable <= 1'b0;
         en_read <= 1'b1;
         en_write <= 1'b0;
+        res_cmd_reg <= 1'b0;
 
-
-        state <= fetch;
+        if(command == CMD_RESET) 
+          state <= idle;
+        else
+          state <= fetch;
       end
 
       default: begin
@@ -197,6 +222,7 @@
         ram_write_enable <= 1'b0;
         en_read <= 1'b1;
         en_write <= 1'b0;
+        res_cmd_reg <= 1'b0;
         
         state <= idle;
       end
@@ -214,13 +240,16 @@
     end
 
     if (inc_num_samples) begin
-      num_samples <= num_samples + 1;
-      memory_top_addr <= memory_top_addr + 1;
+      if (num_samples < MAX_SAMPLES) begin
+        num_samples <= num_samples + 1;
+        memory_top_addr <= memory_top_addr + 1;
+      end
     end
     
     if (capture_sample_data)
       last_fetched[current_id_idx] <= sample_data;
 
+    
   end
 
 

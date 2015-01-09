@@ -263,12 +263,12 @@ WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 114: Res
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 157: Result of 5-bit expression is truncated to fit in 4-bit target.
 WARNING:HDLCompiler:295 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: case condition never applies
 
-Elaborating module <adc_control(POSITION=100)>.
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 58: Assignment to clock_divide_register ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 172: Result of 5-bit expression is truncated to fit in 4-bit target.
-"/home/lykkebo/mecobo/fpga/adccontrol.v" Line 188. $display Copy from shift 0
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 431: Result of 17-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 433: Result of 17-bit expression is truncated to fit in 16-bit target.
+Elaborating module <adc_control(MIN_CHANNEL=100,MAX_CHANNEL=107)>.
+WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 59: Assignment to clock_divide_register ignored, since the identifier is never used
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 173: Result of 5-bit expression is truncated to fit in 4-bit target.
+"/home/lykkebo/mecobo/fpga/adccontrol.v" Line 189. $display Copy from shift 0
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 432: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 434: Result of 17-bit expression is truncated to fit in 16-bit target.
 
 Elaborating module <dac_control(POSITION=50)>.
 WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/dac_control.v" Line 80: Assignment to reset_ebi_captured_data ignored, since the identifier is never used
@@ -279,13 +279,13 @@ Elaborating module <xbar_control(POSITION=200)>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/xbar_control.v" Line 224: Result of 10-bit expression is truncated to fit in 9-bit target.
 
 Elaborating module <mem>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 55: Result of 5-bit expression is truncated to fit in 4-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 68: Result of 19-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 74: Result of 20-bit expression is truncated to fit in 19-bit target.
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/mem.v" Line 122: Assignment to en_read ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 213: Result of 5-bit expression is truncated to fit in 4-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 217: Result of 20-bit expression is truncated to fit in 19-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 218: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 68: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 86: Result of 19-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 92: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/mem.v" Line 141: Assignment to en_read ignored, since the identifier is never used
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 239: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 244: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 245: Result of 20-bit expression is truncated to fit in 19-bit target.
 
 Elaborating module <dp_ram>.
 
@@ -989,21 +989,23 @@ Unit <pincontrol_16> synthesized.
 
 Synthesizing Unit <adc_control>.
     Related source file is "/home/lykkebo/mecobo/fpga/adccontrol.v".
-        POSITION = 100
+        MIN_CHANNEL = 100
+        MAX_CHANNEL = 107
         NUM_STATES = 5
         init = 5'b00001
         program_adc = 5'b00010
         get_values = 5'b00100
         copy = 5'b01000
         writeback = 5'b10000
+WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
     Found 16-bit register for signal <sample_data>.
     Found 16-bit register for signal <ebi_capture_reg>.
-    Found 128-bit register for signal <n1315[127:0]>.
+    Found 128-bit register for signal <n1319[127:0]>.
     Found 16-bit register for signal <last_executed_command>.
     Found 16-bit register for signal <current_command>.
     Found 4-bit register for signal <clkcounter>.
     Found 16-bit register for signal <shift_out_register>.
-    Found 128-bit register for signal <n1316[127:0]>.
+    Found 128-bit register for signal <n1320[127:0]>.
     Found 16-bit register for signal <shift_in_register>.
     Found 1-bit register for signal <cs>.
     Found 1-bit register for signal <shift_in>.
@@ -1414,40 +1416,42 @@ Synthesizing Unit <adc_control>.
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 4-bit adder for signal <clkcounter[3]_GND_57_o_add_52_OUT> created at line 172.
-    Found 16-bit adder for signal <sequence_number[0][15]_GND_57_o_add_109_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[0][15]_GND_57_o_add_110_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[1][15]_GND_57_o_add_113_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[1][15]_GND_57_o_add_114_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[2][15]_GND_57_o_add_117_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[2][15]_GND_57_o_add_118_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[3][15]_GND_57_o_add_121_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[3][15]_GND_57_o_add_122_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[4][15]_GND_57_o_add_125_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[4][15]_GND_57_o_add_126_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[5][15]_GND_57_o_add_129_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[5][15]_GND_57_o_add_130_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[6][15]_GND_57_o_add_133_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[6][15]_GND_57_o_add_134_OUT> created at line 433.
-    Found 16-bit adder for signal <sequence_number[7][15]_GND_57_o_add_137_OUT> created at line 431.
-    Found 16-bit adder for signal <fast_clk_counter[7][15]_GND_57_o_add_138_OUT> created at line 433.
-    Found 16-bit 8-to-1 multiplexer for signal <GND_57_o_sample_register[7][15]_wide_mux_4_OUT> created at line 65.
-    Found 16-bit 8-to-1 multiplexer for signal <addr[6]_sample_register[7][15]_wide_mux_26_OUT> created at line 89.
-    Found 16-bit 8-to-1 multiplexer for signal <addr[6]_sequence_number[7][15]_wide_mux_29_OUT> created at line 93.
-    Found 4-bit comparator lessequal for signal <n0011> created at line 77
-    Found 16-bit comparator equal for signal <n0087> created at line 308
-    Found 16-bit comparator equal for signal <fast_clk_counter[0][15]_overflow_register[0][15]_equal_109_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[1][15]_overflow_register[1][15]_equal_113_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[2][15]_overflow_register[2][15]_equal_117_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[3][15]_overflow_register[3][15]_equal_121_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[4][15]_overflow_register[4][15]_equal_125_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[6][15]_overflow_register[6][15]_equal_133_o> created at line 428
-    Found 16-bit comparator equal for signal <fast_clk_counter[7][15]_overflow_register[7][15]_equal_137_o> created at line 428
+    Found 4-bit adder for signal <clkcounter[3]_GND_57_o_add_53_OUT> created at line 173.
+    Found 16-bit adder for signal <sequence_number[0][15]_GND_57_o_add_110_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[0][15]_GND_57_o_add_111_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[1][15]_GND_57_o_add_114_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[1][15]_GND_57_o_add_115_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[2][15]_GND_57_o_add_118_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[2][15]_GND_57_o_add_119_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[3][15]_GND_57_o_add_122_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[3][15]_GND_57_o_add_123_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[4][15]_GND_57_o_add_126_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[4][15]_GND_57_o_add_127_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[5][15]_GND_57_o_add_130_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[5][15]_GND_57_o_add_131_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[6][15]_GND_57_o_add_134_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[6][15]_GND_57_o_add_135_OUT> created at line 434.
+    Found 16-bit adder for signal <sequence_number[7][15]_GND_57_o_add_138_OUT> created at line 432.
+    Found 16-bit adder for signal <fast_clk_counter[7][15]_GND_57_o_add_139_OUT> created at line 434.
+    Found 16-bit 8-to-1 multiplexer for signal <GND_57_o_sample_register[7][15]_wide_mux_5_OUT> created at line 66.
+    Found 16-bit 8-to-1 multiplexer for signal <addr[10]_sample_register[7][15]_wide_mux_27_OUT> created at line 90.
+    Found 16-bit 8-to-1 multiplexer for signal <addr[10]_sequence_number[7][15]_wide_mux_30_OUT> created at line 94.
+    Found 11-bit comparator lessequal for signal <n0000> created at line 42
+    Found 11-bit comparator lessequal for signal <n0002> created at line 42
+    Found 4-bit comparator lessequal for signal <n0015> created at line 78
+    Found 16-bit comparator equal for signal <n0091> created at line 309
+    Found 16-bit comparator equal for signal <fast_clk_counter[0][15]_overflow_register[0][15]_equal_110_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[1][15]_overflow_register[1][15]_equal_114_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[2][15]_overflow_register[2][15]_equal_118_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[3][15]_overflow_register[3][15]_equal_122_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[4][15]_overflow_register[4][15]_equal_126_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[5][15]_overflow_register[5][15]_equal_130_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[6][15]_overflow_register[6][15]_equal_134_o> created at line 429
+    Found 16-bit comparator equal for signal <fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o> created at line 429
     Summary:
 	inferred  17 Adder/Subtractor(s).
 	inferred 766 D-type flip-flop(s).
-	inferred  10 Comparator(s).
+	inferred  12 Comparator(s).
 	inferred  24 Multiplexer(s).
 	inferred   1 Finite State Machine(s).
 Unit <adc_control> synthesized.
@@ -1537,51 +1541,54 @@ Unit <xbar_control> synthesized.
 Synthesizing Unit <mem>.
     Related source file is "/home/lykkebo/mecobo/fpga/mem.v".
         POSITION = 242
+        MAX_SAMPLES = 65536
         idle = 4'b0001
         store = 4'b0010
         increment = 4'b0100
         fetch = 4'b1000
-WARNING:Xst:647 - Input <ebi_data_in<15:8>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 231: Output port <dob> of the instance <sample_ram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 260: Output port <dob> of the instance <sample_ram> is unconnected or connected to loadless signal.
     Found 16x8-bit dual-port RAM <Mram_collection_channels> for signal <collection_channels>.
     Found 16x16-bit single-port RAM <Mram_last_fetched> for signal <last_fetched>.
     Register <inc_num_samples> equivalent to <inc_curr_id_idx> has been removed
+    Found 4-bit register for signal <num_units>.
     Found 16-bit register for signal <ebi_data_out>.
     Found 19-bit register for signal <memory_bottom_addr>.
     Found 1-bit register for signal <rd_d>.
     Found 1-bit register for signal <inc_curr_id_idx>.
     Found 1-bit register for signal <ram_write_enable>.
+    Found 1-bit register for signal <res_cmd_reg>.
     Found 4-bit register for signal <state>.
     Found 1-bit register for signal <output_sample>.
     Found 8-bit register for signal <channel_select>.
     Found 4-bit register for signal <current_id_idx>.
     Found 19-bit register for signal <num_samples>.
     Found 19-bit register for signal <memory_top_addr>.
-    Found 4-bit register for signal <num_units>.
+    Found 16-bit register for signal <command>.
     Found finite state machine <FSM_19> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 4                                              |
-    | Transitions        | 4                                              |
-    | Inputs             | 1                                              |
+    | Transitions        | 6                                              |
+    | Inputs             | 3                                              |
     | Outputs            | 4                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 0001                                           |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 4-bit adder for signal <num_units[3]_GND_60_o_add_3_OUT> created at line 55.
-    Found 19-bit adder for signal <memory_bottom_addr[18]_GND_60_o_add_10_OUT> created at line 74.
-    Found 4-bit adder for signal <current_id_idx[3]_GND_60_o_add_34_OUT> created at line 213.
-    Found 19-bit adder for signal <num_samples[18]_GND_60_o_add_36_OUT> created at line 217.
-    Found 19-bit adder for signal <memory_top_addr[18]_GND_60_o_add_37_OUT> created at line 218.
-    Found 16-bit comparator not equal for signal <n0022> created at line 172
+    Found 4-bit adder for signal <num_units[3]_GND_60_o_add_4_OUT> created at line 68.
+    Found 19-bit adder for signal <memory_bottom_addr[18]_GND_60_o_add_17_OUT> created at line 92.
+    Found 4-bit adder for signal <current_id_idx[3]_GND_60_o_add_47_OUT> created at line 239.
+    Found 19-bit adder for signal <num_samples[18]_GND_60_o_add_50_OUT> created at line 244.
+    Found 19-bit adder for signal <memory_top_addr[18]_GND_60_o_add_51_OUT> created at line 245.
+    Found 16-bit comparator not equal for signal <n0036> created at line 194
+    Found 19-bit comparator lessequal for signal <num_samples[18]_GND_60_o_LessThan_50_o> created at line 243
     WARNING:Xst:2404 -  FFs/Latches <capture_sample_data<0:0>> (without init value) have a constant value of 0 in block <mem>.
     Summary:
 	inferred   2 RAM(s).
 	inferred   5 Adder/Subtractor(s).
-	inferred  93 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred   1 Multiplexer(s).
+	inferred 110 D-type flip-flop(s).
+	inferred   2 Comparator(s).
+	inferred   3 Multiplexer(s).
 	inferred   1 Finite State Machine(s).
 Unit <mem> synthesized.
 
@@ -1611,22 +1618,25 @@ Macro Statistics
  27-bit adder                                          : 1
  4-bit adder                                           : 4
  9-bit adder                                           : 1
-# Registers                                            : 253
- 1-bit register                                        : 102
+# Registers                                            : 255
+ 1-bit register                                        : 103
  128-bit register                                      : 2
- 16-bit register                                       : 136
+ 16-bit register                                       : 137
  19-bit register                                       : 5
  27-bit register                                       : 1
  4-bit register                                        : 4
  512-bit register                                      : 1
  8-bit register                                        : 1
  9-bit register                                        : 1
-# Comparators                                          : 27
+# Comparators                                          : 30
+ 11-bit comparator lessequal                           : 2
  16-bit comparator equal                               : 9
  16-bit comparator greater                             : 16
  16-bit comparator not equal                           : 1
+ 19-bit comparator lessequal                           : 1
  4-bit comparator lessequal                            : 1
-# Multiplexers                                         : 108
+# Multiplexers                                         : 110
+ 1-bit 2-to-1 multiplexer                              : 2
  16-bit 2-to-1 multiplexer                             : 104
  16-bit 32-to-1 multiplexer                            : 1
  16-bit 8-to-1 multiplexer                             : 3
@@ -1679,11 +1689,11 @@ The following registers are absorbed into counter <led_heartbeat>: 1 register on
 Unit <mecobo> synthesized (advanced).
 
 Synthesizing (advanced) Unit <mem>.
-The following registers are absorbed into counter <current_id_idx>: 1 register on signal <current_id_idx>.
+The following registers are absorbed into counter <num_units>: 1 register on signal <num_units>.
 The following registers are absorbed into counter <memory_bottom_addr>: 1 register on signal <memory_bottom_addr>.
 The following registers are absorbed into counter <num_samples>: 1 register on signal <num_samples>.
+The following registers are absorbed into counter <current_id_idx>: 1 register on signal <current_id_idx>.
 The following registers are absorbed into counter <memory_top_addr>: 1 register on signal <memory_top_addr>.
-The following registers are absorbed into counter <num_units>: 1 register on signal <num_units>.
 INFO:Xst:3231 - The small RAM <Mram_collection_channels> will be implemented on LUTs in order to maximize performance and save block RAM resources. If you want to force its implementation on block, use option/constraint ram_style.
     -----------------------------------------------------------------------
     | ram_type           | Distributed                         |          |
@@ -1693,7 +1703,7 @@ INFO:Xst:3231 - The small RAM <Mram_collection_channels> will be implemented on 
     |     clkA           | connected to signal <clk>           | rise     |
     |     weA            | connected to internal node          | high     |
     |     addrA          | connected to signal <num_units>     |          |
-    |     diA            | connected to signal <ebi_data_in>   |          |
+    |     diA            | connected to signal <ebi_data_in<7:0>> |          |
     -----------------------------------------------------------------------
     | Port B                                                              |
     |     aspect ratio   | 16-word x 8-bit                     |          |
@@ -1711,7 +1721,7 @@ INFO:Xst:3226 - The RAM <sample_ram/Mram_ram> will be implemented as a BLOCK RAM
     |     enA            | connected to signal <ram_write_enable> | high     |
     |     weA            | connected to signal <VCC>           | high     |
     |     addrA          | connected to signal <memory_top_addr<16:0>> |          |
-    |     diA            | connected to signal <_n0096>        |          |
+    |     diA            | connected to signal <_n0131>        |          |
     |     doA            | connected to signal <ram_data_out>  |          |
     -----------------------------------------------------------------------
     | optimization       | speed                               |          |
@@ -1829,15 +1839,17 @@ Macro Statistics
  27-bit up counter                                     : 1
  4-bit up counter                                      : 4
  9-bit up counter                                      : 1
-# Registers                                            : 2285
- Flip-Flops                                            : 2285
-# Comparators                                          : 27
+# Registers                                            : 2302
+ Flip-Flops                                            : 2302
+# Comparators                                          : 30
+ 11-bit comparator lessequal                           : 2
  16-bit comparator equal                               : 9
  16-bit comparator greater                             : 16
  16-bit comparator not equal                           : 1
+ 19-bit comparator lessequal                           : 1
  4-bit comparator lessequal                            : 1
-# Multiplexers                                         : 872
- 1-bit 2-to-1 multiplexer                              : 784
+# Multiplexers                                         : 874
+ 1-bit 2-to-1 multiplexer                              : 786
  1-bit 32-to-1 multiplexer                             : 16
  1-bit 8-to-1 multiplexer                              : 32
  16-bit 2-to-1 multiplexer                             : 39
@@ -2041,11 +2053,7 @@ Optimizing FSM <mem0/FSM_19> on signal <state[1:4]> with user encoding.
  0010  | 0010
  0100  | 0100
 -------------------
-INFO:Xst:2146 - In block <mem>, Counter <memory_top_addr> <num_samples> are equivalent, XST will keep only <memory_top_addr>.
-WARNING:Xst:1426 - The value init of the FF/Latch state_FSM_FFd4 hinder the constant cleaning in the block mem.
-   You should achieve better results by setting this init to 0.
-WARNING:Xst:2677 - Node <memory_top_addr_17> of sequential type is unconnected in block <mem>.
-WARNING:Xst:2677 - Node <memory_top_addr_18> of sequential type is unconnected in block <mem>.
+INFO:Xst:2146 - In block <mem>, Counter <num_samples> <memory_top_addr> are equivalent, XST will keep only <num_samples>.
 INFO:Xst:1901 - Instance clocks/pll_base_inst in unit clocks/pll_base_inst of type PLL_BASE has been replaced by PLL_ADV
 INFO:Xst:2261 - The FF/Latch <state_FSM_FFd3> in Unit <mem> is equivalent to the following FF/Latch, which will be removed : <output_sample> 
 
@@ -2058,48 +2066,190 @@ Optimizing unit <dac_control> ...
 Optimizing unit <xbar_control> ...
 
 Optimizing unit <mem> ...
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_29> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_46> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_61> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_62> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_79> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_93> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_95> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_110> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_111> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_125> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_119> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_118> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_117> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_116> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_115> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_114> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_113> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_112> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_111> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_110> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_109> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_108> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_107> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_106> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_105> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_104> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_103> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_102> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_101> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_126> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_125> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_111> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_110> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_95> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_93> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_79> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_62> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_61> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_46> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_29> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_127> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_126> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_125> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_124> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_123> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_122> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_121> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_120> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_80> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_79> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_78> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_77> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_76> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_75> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_74> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_73> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_72> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_71> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_70> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_69> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_68> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_67> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_66> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_65> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_64> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <mem0/num_samples_18> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <mem0/num_samples_17> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_100> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_99> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_98> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_97> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_96> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_95> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_94> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_93> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_92> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_91> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_90> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_89> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_88> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_87> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_86> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_85> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_84> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_83> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_82> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <adc0/overflow_register_7_81> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_3> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_4> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_5> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_6> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_7> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_8> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_9> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_10> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_11> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_12> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_14> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_0> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_1> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_2> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_3> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_4> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_5> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_0> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_1> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_2> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_3> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_4> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_5> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_6> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_7> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_8> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_9> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_10> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_11> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_12> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_14> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<3><15:0>_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_0> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_1> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<2><15:0>_2> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <adc0/tmp_register_7_127> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_131> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_142> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_133> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_153> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_134> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_144> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_155> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_146> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_156> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_137> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_147> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_14> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_12> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_11> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_10> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_9> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_8> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_7> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_6> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_5> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_4> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_6> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_7> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_8> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_9> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_10> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_11> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_12> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_3> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_2> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_1> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<0><15:0>_0> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_14> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/fast_clk_counter<1><15:0>_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_157> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_147> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_137> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_156> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_136> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_155> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_154> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_144> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_143> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_133> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_142> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_13> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/tmp_register_7_14> <adc0/tmp_register_7_13> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_31> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_30> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_47> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_45> 
 INFO:Xst:2261 - The FF/Latch <adc0/state_FSM_FFd1> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/load_last_executed_command> 
 INFO:Xst:2261 - The FF/Latch <adc0/state_FSM_FFd2> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/copy_to_tmp> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_78> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_77> 
-INFO:Xst:2261 - The FF/Latch <mem0/memory_top_addr_0> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <mem0/current_id_idx_0> 
-INFO:Xst:2261 - The FF/Latch <mem0/memory_top_addr_1> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <mem0/current_id_idx_1> 
-INFO:Xst:2261 - The FF/Latch <mem0/memory_top_addr_2> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <mem0/current_id_idx_2> 
-INFO:Xst:2261 - The FF/Latch <mem0/memory_top_addr_3> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <mem0/current_id_idx_3> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_10> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_5> <adc0/sequence_number<3><15:0>_5> <adc0/sequence_number<1><15:0>_5> <adc0/sequence_number<0><15:0>_5> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_11> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_4> <adc0/sequence_number<3><15:0>_4> <adc0/sequence_number<1><15:0>_4> <adc0/sequence_number<0><15:0>_4> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_12> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_3> <adc0/sequence_number<3><15:0>_3> <adc0/sequence_number<1><15:0>_3> <adc0/sequence_number<0><15:0>_3> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_13> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_2> <adc0/sequence_number<3><15:0>_2> <adc0/sequence_number<1><15:0>_2> <adc0/sequence_number<0><15:0>_2> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_14> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_1> <adc0/sequence_number<3><15:0>_1> <adc0/sequence_number<1><15:0>_1> <adc0/sequence_number<0><15:0>_1> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_0> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_15> <adc0/sequence_number<3><15:0>_15> <adc0/sequence_number<1><15:0>_15> <adc0/sequence_number<0><15:0>_15> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_15> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_0> <adc0/sequence_number<3><15:0>_0> <adc0/sequence_number<1><15:0>_0> <adc0/sequence_number<0><15:0>_0> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_1> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_14> <adc0/sequence_number<3><15:0>_14> <adc0/sequence_number<1><15:0>_14> <adc0/sequence_number<0><15:0>_14> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_2> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_13> <adc0/sequence_number<3><15:0>_13> <adc0/sequence_number<1><15:0>_13> <adc0/sequence_number<0><15:0>_13> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_3> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_12> <adc0/sequence_number<3><15:0>_12> <adc0/sequence_number<1><15:0>_12> <adc0/sequence_number<0><15:0>_12> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_4> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_11> <adc0/sequence_number<3><15:0>_11> <adc0/sequence_number<1><15:0>_11> <adc0/sequence_number<0><15:0>_11> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_5> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_10> <adc0/sequence_number<3><15:0>_10> <adc0/sequence_number<1><15:0>_10> <adc0/sequence_number<0><15:0>_10> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_6> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_9> <adc0/sequence_number<3><15:0>_9> <adc0/sequence_number<1><15:0>_9> <adc0/sequence_number<0><15:0>_9> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_7> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_8> <adc0/sequence_number<3><15:0>_8> <adc0/sequence_number<1><15:0>_8> <adc0/sequence_number<0><15:0>_8> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_8> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_7> <adc0/sequence_number<3><15:0>_7> <adc0/sequence_number<1><15:0>_7> <adc0/sequence_number<0><15:0>_7> 
+INFO:Xst:2261 - The FF/Latch <led_heartbeat_9> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <adc0/sequence_number<2><15:0>_6> <adc0/sequence_number<3><15:0>_6> <adc0/sequence_number<1><15:0>_6> <adc0/sequence_number<0><15:0>_6> 
 
 Mapping all equations...
 Building and optimizing final netlist ...
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_151> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_141> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_14> <adc0/sample_register_13> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_151> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_141> <adc0/sample_register_131> 
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_152> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_132> 
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_145> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_135> 
-Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 16.
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_15> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_14> 
+Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 15.
 FlipFlop adc0/shift_in_register_13 has been replicated 5 time(s)
 FlipFlop adc0/shift_in_register_14 has been replicated 5 time(s)
 FlipFlop adc0/shift_in_register_15 has been replicated 5 time(s)
@@ -2110,8 +2260,8 @@ Final Macro Processing ...
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 3134
- Flip-Flops                                            : 3134
+# Registers                                            : 2963
+ Flip-Flops                                            : 2963
 
 =========================================================================
 
@@ -2134,25 +2284,25 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 4694
+# BELS                             : 4118
 #      GND                         : 1
-#      INV                         : 73
-#      LUT1                        : 532
-#      LUT2                        : 71
-#      LUT3                        : 857
-#      LUT4                        : 230
-#      LUT5                        : 504
-#      LUT6                        : 691
-#      MUXCY                       : 849
-#      MUXF7                       : 64
+#      INV                         : 59
+#      LUT1                        : 412
+#      LUT2                        : 59
+#      LUT3                        : 873
+#      LUT4                        : 173
+#      LUT5                        : 511
+#      LUT6                        : 591
+#      MUXCY                       : 697
+#      MUXF7                       : 48
 #      VCC                         : 1
-#      XORCY                       : 821
-# FlipFlops/Latches                : 3136
-#      FD                          : 213
-#      FDE                         : 1385
+#      XORCY                       : 693
+# FlipFlops/Latches                : 2965
+#      FD                          : 150
+#      FDE                         : 1325
 #      FDE_1                       : 31
 #      FDR                         : 329
-#      FDRE                        : 1170
+#      FDRE                        : 1122
 #      FDS                         : 6
 #      ODDR2                       : 2
 # RAMS                             : 84
@@ -2180,18 +2330,18 @@ Selected Device : 6slx45csg324-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:            3136  out of  54576     5%  
- Number of Slice LUTs:                 2982  out of  27288    10%  
-    Number used as Logic:              2958  out of  27288    10%  
+ Number of Slice Registers:            2965  out of  54576     5%  
+ Number of Slice LUTs:                 2702  out of  27288     9%  
+    Number used as Logic:              2678  out of  27288     9%  
     Number used as Memory:               24  out of   6408     0%  
        Number used as RAM:               24
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   3880
-   Number with an unused Flip Flop:     744  out of   3880    19%  
-   Number with an unused LUT:           898  out of   3880    23%  
-   Number of fully used LUT-FF pairs:  2238  out of   3880    57%  
-   Number of unique control sets:       161
+ Number of LUT Flip Flop pairs used:   3623
+   Number with an unused Flip Flop:     658  out of   3623    18%  
+   Number with an unused LUT:           921  out of   3623    25%  
+   Number of fully used LUT-FF pairs:  2044  out of   3623    56%  
+   Number of unique control sets:       157
 
 IO Utilization: 
  Number of IOs:                         162
@@ -2224,7 +2374,7 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-clocks/pll_base_inst/CLKOUT0       | BUFG                   | 2919  |
+clocks/pll_base_inst/CLKOUT0       | BUFG                   | 2748  |
 clocks/pll_base_inst/CLKOUT2       | BUFG                   | 209   |
 clocks/pll_base_inst/CLKOUT3       | BUFG                   | 64    |
 clocks/pll_base_inst/CLKOUT1       | DCM_SP:CLKDV           | 30    |
@@ -2239,7 +2389,7 @@ Timing Summary:
 Speed Grade: -3
 
    Minimum period: 4.724ns (Maximum Frequency: 211.699MHz)
-   Minimum input arrival time before clock: 9.053ns
+   Minimum input arrival time before clock: 8.718ns
    Maximum output required time after clock: 5.862ns
    Maximum combinational path delay: 5.859ns
 
@@ -2250,28 +2400,28 @@ All values displayed in nanoseconds (ns)
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT0'
   Clock period: 4.724ns (frequency: 211.699MHz)
-  Total number of paths / destination ports: 33461 / 5141
+  Total number of paths / destination ports: 26447 / 4863
 -------------------------------------------------------------------------
 Delay:               4.724ns (Levels of Logic = 8)
-  Source:            adc0/overflow_register_7_34 (FF)
-  Destination:       adc0/sequence_number<5><15:0>_0 (FF)
+  Source:            adc0/overflow_register_7_2 (FF)
+  Destination:       adc0/sequence_number<7><15:0>_0 (FF)
   Source Clock:      clocks/pll_base_inst/CLKOUT0 rising
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
 
-  Data Path: adc0/overflow_register_7_34 to adc0/sequence_number<5><15:0>_0
+  Data Path: adc0/overflow_register_7_2 to adc0/sequence_number<7><15:0>_0
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDE:C->Q              2   0.447   0.981  adc0/overflow_register_7_34 (adc0/overflow_register_7_34)
-     LUT6:I0->O            1   0.203   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_lut<0> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_lut<0>)
-     MUXCY:S->O            1   0.172   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<0> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<0>)
-     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<1> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<1>)
-     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<2> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<2>)
-     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<3> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<3>)
-     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<4> (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<4>)
-     MUXCY:CI->O          18   0.019   1.049  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<5> (adc0/fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o)
-     INV:I->O             29   0.206   1.249  adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<5>_inv_INV_0 (adc0/Mcompar_fast_clk_counter[5][15]_overflow_register[5][15]_equal_129_o_cy<5>_inv)
-     FDRE:CE                   0.322          adc0/sample_register_02
+     FDE:C->Q              2   0.447   0.981  adc0/overflow_register_7_2 (adc0/overflow_register_7_2)
+     LUT6:I0->O            1   0.203   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_lut<0> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_lut<0>)
+     MUXCY:S->O            1   0.172   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<0> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<0>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<1> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<1>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<2> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<2>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<3> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<3>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<4> (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<4>)
+     MUXCY:CI->O          18   0.019   1.049  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<5> (adc0/fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o)
+     INV:I->O             29   0.206   1.249  adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<5>_inv_INV_0 (adc0/Mcompar_fast_clk_counter[7][15]_overflow_register[7][15]_equal_138_o_cy<5>_inv)
+     FDRE:CE                   0.322          adc0/sample_register_01
     ----------------------------------------
     Total                      4.724ns (1.445ns logic, 3.279ns route)
                                        (30.6% logic, 69.4% route)
@@ -2292,7 +2442,7 @@ Delay:               2.054ns (Levels of Logic = 1)
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
      FDE_1:C->Q           19   0.447   1.300  adc0/shift_in_register_14_2 (adc0/shift_in_register_14_2)
-     LUT4:I1->O            1   0.205   0.000  adc0/mux26011 (adc0/tmp_register[1][15]_shift_in_register[15]_mux_68_OUT<13>)
+     LUT4:I1->O            1   0.205   0.000  adc0/mux26011 (adc0/tmp_register[1][15]_shift_in_register[15]_mux_69_OUT<13>)
      FDE:D                     0.102          adc0/tmp_register_7_109
     ----------------------------------------
     Total                      2.054ns (0.754ns logic, 1.300ns route)
@@ -2349,31 +2499,31 @@ Delay:               5.027ns (Levels of Logic = 4)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 38564 / 4032
+  Total number of paths / destination ports: 37113 / 3809
 -------------------------------------------------------------------------
-Offset:              9.053ns (Levels of Logic = 4)
-  Source:            ebi_addr<6> (PAD)
+Offset:              8.718ns (Levels of Logic = 4)
+  Source:            ebi_addr<3> (PAD)
   Destination:       pinControl[2].pc/command_15 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
 
-  Data Path: ebi_addr<6> to pinControl[2].pc/command_15
+  Data Path: ebi_addr<3> to pinControl[2].pc/command_15
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           169   1.222   2.273  ebi_addr_6_IBUF (ebi_addr_6_IBUF)
-     LUT6:I2->O          260   0.203   2.296  pinControl[0].pc/_n0181_inv121 (pinControl[0].pc/_n0181_inv12)
+     IBUF:I->O            57   1.222   1.938  ebi_addr_3_IBUF (ebi_addr_3_IBUF)
+     LUT6:I1->O          260   0.203   2.296  pinControl[0].pc/_n0181_inv121 (pinControl[0].pc/_n0181_inv12)
      LUT3:I0->O           15   0.205   1.326  pinControl[0].pc/addr[7]_GND_25_o_equal_17_o1 (pinControl[0].pc/addr[7]_GND_25_o_equal_17_o)
      LUT5:I0->O           16   0.203   1.004  pinControl[10].pc/_n0195_inv1 (pinControl[10].pc/_n0195_inv)
      FDRE:CE                   0.322          pinControl[10].pc/command_0
     ----------------------------------------
-    Total                      9.053ns (2.155ns logic, 6.898ns route)
-                                       (23.8% logic, 76.2% route)
+    Total                      8.718ns (2.155ns logic, 6.563ns route)
+                                       (24.7% logic, 75.3% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT2'
   Total number of paths / destination ports: 102 / 102
 -------------------------------------------------------------------------
-Offset:              5.177ns (Levels of Logic = 2)
+Offset:              5.145ns (Levels of Logic = 2)
   Source:            reset (PAD)
   Destination:       adc0/current_command_15 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT2 rising
@@ -2382,18 +2532,18 @@ Offset:              5.177ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O          1025   1.222   2.318  reset_IBUF (reset_IBUF)
-     LUT2:I0->O           16   0.203   1.004  adc0/_n20081 (adc0/_n2008)
+     IBUF:I->O           894   1.222   2.286  reset_IBUF (reset_IBUF)
+     LUT2:I0->O           16   0.203   1.004  adc0/_n17531 (adc0/_n1753)
      FDRE:R                    0.430          adc0/current_command_0
     ----------------------------------------
-    Total                      5.177ns (1.855ns logic, 3.322ns route)
-                                       (35.8% logic, 64.2% route)
+    Total                      5.145ns (1.855ns logic, 3.290ns route)
+                                       (36.1% logic, 63.9% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT3'
   Total number of paths / destination ports: 82 / 82
 -------------------------------------------------------------------------
-Offset:              5.177ns (Levels of Logic = 2)
+Offset:              5.145ns (Levels of Logic = 2)
   Source:            reset (PAD)
   Destination:       dac0/current_command_15 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT3 rising
@@ -2402,18 +2552,18 @@ Offset:              5.177ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O          1025   1.222   2.318  reset_IBUF (reset_IBUF)
+     IBUF:I->O           894   1.222   2.286  reset_IBUF (reset_IBUF)
      LUT2:I0->O           16   0.203   1.004  dac0/_n01341 (dac0/_n0134)
      FDRE:R                    0.430          dac0/current_command_0
     ----------------------------------------
-    Total                      5.177ns (1.855ns logic, 3.322ns route)
-                                       (35.8% logic, 64.2% route)
+    Total                      5.145ns (1.855ns logic, 3.290ns route)
+                                       (36.1% logic, 63.9% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT1'
   Total number of paths / destination ports: 39 / 39
 -------------------------------------------------------------------------
-Offset:              5.127ns (Levels of Logic = 2)
+Offset:              5.096ns (Levels of Logic = 2)
   Source:            reset (PAD)
   Destination:       xbar0/counter_8 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT1 rising 0.2X
@@ -2422,12 +2572,12 @@ Offset:              5.127ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O          1025   1.222   2.442  reset_IBUF (reset_IBUF)
+     IBUF:I->O           894   1.222   2.410  reset_IBUF (reset_IBUF)
      LUT3:I0->O            9   0.205   0.829  xbar0/_n01791 (xbar0/_n0179)
      FDRE:R                    0.430          xbar0/counter_0
     ----------------------------------------
-    Total                      5.127ns (1.857ns logic, 3.270ns route)
-                                       (36.2% logic, 63.8% route)
+    Total                      5.096ns (1.857ns logic, 3.239ns route)
+                                       (36.4% logic, 63.6% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clocks/pll_base_inst/CLKOUT0'
@@ -2539,7 +2689,7 @@ Source Clock                |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ----------------------------+---------+---------+---------+---------+
 clocks/pll_base_inst/CLKOUT0|    4.724|         |         |         |
 clocks/pll_base_inst/CLKOUT1|    2.801|         |         |         |
-clocks/pll_base_inst/CLKOUT2|    2.629|         |         |         |
+clocks/pll_base_inst/CLKOUT2|    2.529|         |         |         |
 clocks/pll_base_inst/CLKOUT3|    1.579|         |         |         |
 ----------------------------+---------+---------+---------+---------+
 
@@ -2573,15 +2723,15 @@ clocks/pll_base_inst/CLKOUT3|    3.442|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 37.00 secs
-Total CPU time to Xst completion: 36.66 secs
+Total REAL time to Xst completion: 36.00 secs
+Total CPU time to Xst completion: 35.11 secs
  
 --> 
 
 
-Total memory usage is 478540 kilobytes
+Total memory usage is 496844 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  160 (   0 filtered)
-Number of infos    :   23 (   0 filtered)
+Number of warnings :  287 (   0 filtered)
+Number of infos    :   35 (   0 filtered)
 
