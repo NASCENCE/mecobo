@@ -145,7 +145,7 @@ void TIMER1_IRQHandler(void)
 }
 
 void TIMER2_IRQHandler(void)
-{ 
+{
   TIMER_IntClear(TIMER2, TIMER_IF_OF);
   timeTick++;
 }
@@ -172,7 +172,6 @@ int main(void)
     sinus[i] = (uint8_t)((sin(j)*(float)128.0)+(float)128.0);
     printf("%u\n", sinus[i]);
   }
-
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
 
@@ -184,6 +183,9 @@ int main(void)
      */
 
 
+  //Testing
+  uint16_t * memaddr = getPinAddress(242);
+  memaddr[0] = 12;
 
   if(!skip_boot_tests) {
 
@@ -192,7 +194,7 @@ int main(void)
     if (dac[PINCONFIG_STATUS_REG] == 0xdac) {
         has_daughterboard = 1;
         printf("Detected daughterboard bitfile (has DAC controller)\n");
-    } 
+    }
 
     if (has_daughterboard) {
 	  //Check DAC controllers.
@@ -203,7 +205,7 @@ int main(void)
       printf("Setting up DAC and ADCs\n");
       setupDAC();
       setupADC();
-    } 
+    }
 
     int i = 0;
     printf("Response from digital controllers at 0 to 57:\n");
@@ -711,7 +713,7 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate)
   inputChannels[numInputChannels++] = channel;
 }
 
-//TODO: We can get away with only 1 read here. In time. 
+//TODO: We can get away with only 1 read here. In time.
 inline void getInput(FPGA_IO_Pins_TypeDef channel)
 {
 
@@ -748,7 +750,10 @@ inline uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef channel)
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
   }
 
-  //ADC channels
+  //ADC channels share a controller, and within this controller
+  //there are 8 channels.
+  //TODO: Just use one full 8-bit address block for each channel
+  //and avoid this subdivision stuff.
   if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
     uint16_t boardChan = channel - AD_CHANNELS_START;
     uint16_t controllerNr = channel - boardChan;

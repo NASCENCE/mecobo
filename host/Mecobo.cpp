@@ -366,7 +366,7 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
 
   uint32_t countervalue = (uint32_t)(magic * frequency);
 
-  std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
+  //std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;

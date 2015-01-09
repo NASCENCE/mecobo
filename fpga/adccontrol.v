@@ -40,10 +40,11 @@ module adc_control (
                                             
 //                          |offset                | channel| command
 //Address layout: [18,17,16,15,14,13,12 | 11,10,9,8| 7,6,5,4,3,2,1,0]
-parameter POSITION = 0;
+parameter MIN_CHANNEL = 0;
+parameter MAX_CHANNEL = 1;
 
 wire controller_enable;
-assign controller_enable = (enable & (addr[18:8] == POSITION));
+assign controller_enable = (enable & ((addr[18:8] >= MIN_CHANNEL) & (addr[18:8] <= MAX_CHANNEL));
 
 wire busy = (state != get_values);
 
@@ -76,7 +77,7 @@ always @ (posedge clk) begin
       end
       //Data driving
       if (addr[3:0] == OVERFLOW) begin
-        overflow_register[addr[7:4]] <= data_in;
+        overflow_register[addr[11:8]] <= data_in;
       end
 
       if (addr[3:0] == DIVIDE) begin
@@ -88,11 +89,11 @@ always @ (posedge clk) begin
     if(controller_enable & re) begin
       //Getting sample values.
       if (addr[3:0] == SAMPLE) begin
-        data_out <= sample_register[addr[7:4]];
+        data_out <= sample_register[addr[11:8]];
       end
 
       if (addr[3:0] == SEQUENCE) begin
-        data_out <= sequence_number[addr[7:4]];
+        data_out <= sequence_number[addr[11:8]];
       end
 
 
