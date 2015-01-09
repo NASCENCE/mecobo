@@ -14,7 +14,6 @@ module adc_control (
   input sclk,  //clocks the serial interface.
   input reset,
 
-  output reg new_sample,
   input [18:0] addr,
   input [15:0] data_in,
   input enable,
@@ -22,13 +21,9 @@ module adc_control (
   input wr,
   output reg [15:0] data_out,
 
-  //Sample storage memory interface-- accessible only through ADC?
-  output reg s_re,
-  output reg s_we,
-  output reg s_cs1,
-  output reg s_cs2,
-  inout  reg s_data,
-  output reg s_addr,
+  input output_sample,
+  input [7:0] channel_select,
+  output reg [15:0] sample_data,
 
   // interfacing the chip.
   output reg cs,
@@ -62,10 +57,13 @@ localparam [3:0]
 //--------------------------------------------------------------------
 reg[15:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
-  if (reset) 
+  if (reset)  begin
     data_out <= 0;
-  else begin
+    sample_data <= 0;
+    end else begin
 
+    if (output_sample) 
+      sample_data <= sample_register[channel_select-128];
 //    if (reset_ebi_capture_reg) begin
  //     ebi_capture_reg <= 0;
   //  end
@@ -114,6 +112,7 @@ always @ (posedge clk) begin
       end else
         data_out <= 0;
     end
+
   end
   //---------------------------------------------------------------------
 

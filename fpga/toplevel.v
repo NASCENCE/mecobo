@@ -9,6 +9,8 @@
 //[currentTick] -- read only
 //[lastValue]
 
+
+
 `define WITH_DB
 
 module mecobo   (osc, 
@@ -20,11 +22,6 @@ module mecobo   (osc,
                 ebi_rd, 
                 ebi_cs, 
                 fpga_ready, 
-                sram_addr,
-                sram_data,
-                sram_rd,
-                sram_wr,
-                sram_cs,
                 HN, 
                 HW);
 
@@ -38,11 +35,11 @@ input ebi_rd;
 input ebi_cs;
 
 //SRAM INTERFACE
-output  sram_addr;
-inout   sram_data;
-output  sram_rd;
-output  sram_wr;
-output  sram_cs[2:0];
+//output  sram_addr;
+//inout   sram_data;
+//output  sram_rd;
+//output  sram_wr;
+//output  sram_cs[2:0];
 
 //output [15:0] debug;
 
@@ -59,7 +56,6 @@ assign led[1] =  read_enable;
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
-
 
 //(* tristate2logic = "yes" *)
 wor [15:0] data_out;
@@ -92,6 +88,13 @@ wire da_clk;
 wire ad_clk;
 
 wire xbar_predivided;
+
+
+wire sample_enable_output;
+wire [7:0] sample_channel_select;
+wor [15:0] sample_data_bus;
+
+
 
 //----------------------------------- CLOCKING -------------------------
 //DCM instance for clock division
@@ -173,7 +176,10 @@ generate
         .data_in(data_in),
         .data_rd(read_enable),
         .data_out(data_out),
-        .pin(pin_rerouting[i])
+        .pin(pin_rerouting[i]),
+        .output_sample(sample_enable_output),
+        .channel_select(sample_channel_select),
+        .sample_data(sample_data_bus)
       );
     //end
   end //for end
@@ -191,7 +197,11 @@ adc_control #(.MIN_CHANNEL(100), MAX_CHANNEL(107))
       //interface to the world
       .cs(HN[48]),
       .adc_din(HN[32]),
-      .adc_dout(HN[40]));
+      .adc_dout(HN[40]),
+      .output_sample(sample_enable_output),
+      .channel_select(sample_channel_select),
+      .sample_data(sample_data_bus)
+    );
 
 dac_control #(.POSITION(50))
     dac0 (
@@ -234,13 +244,31 @@ xbar_control #(.POSITION(200))
         .data_in(data_in),
         .data_rd(read_enable),
         .data_out(data_out),
-        .pin(HN[i+1])
+        .pin(HN[i+1]),
+        .output_sample(sample_enable_output),
+        .channel_select(sample_channel_select),
+        .sample_data(sample_data_bus)
       );
       //end
     end //for end
   `endif
 
     endgenerate
+
+      mem mem0(
+      .clk(sys_clk),
+      .rst(reset),
+      .addr(ebi_addr),
+      .ebi_data_in(data_in),
+      .ebi_data_out(data_out),
+      .cs(chip_select),
+      .re(read_enable),
+      .wr(write_enable),
+      .output_sample(sample_enable_output),
+      .channel_select(sample_channel_select),
+      .sample_data(sample_data_bus)
+    );
+
 
     // ------------------------- SAMPLING ---------------------
     // Sampling module will access the ADC register at a given sampling rate.
@@ -249,5 +277,6 @@ xbar_control #(.POSITION(200))
     // with some wasted space.
     // The ADC will raise an interrupt when it has a new sample available, and 
     // the sampling module will fetch this and put it into memory.
+    //
 endmodule
 

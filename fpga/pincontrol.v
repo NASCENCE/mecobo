@@ -1,4 +1,4 @@
-module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin);
+module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin, output_sample, channel_select, sample_data);
 
 input clk;
 input reset;
@@ -11,6 +11,11 @@ inout pin;
 
 input data_wr;
 input data_rd;
+
+input output_sample;
+input [7:0] channel_select;
+output reg [15:0] sample_data;
+
 
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
@@ -34,6 +39,10 @@ always @ (posedge clk) begin
       data_out <= 16'b0;
   end else
     data_out <= 16'b0;
+
+  if (output_sample & (channel_select == POSITION)) 
+    sample_data <= {sample_cnt, sample_register};
+
 end
 
 
@@ -117,11 +126,12 @@ reg enable_pin_output = 0;
 
 reg [3:0] state = idle;
 
-localparam [3:0] 
-  idle =          4'b0001,
-  high =          4'b0010,
-  low  =          4'b0100,
-  input_stream =  4'b1000;
+localparam [5:0] 
+  idle =          5'b00001,
+  high =          5'b00010,
+  low  =          5'b00100,
+  input_stream =  5'b01000,
+  enable_out =    5'b10000;;
 
 always @ (posedge clk) begin
   if (reset)
@@ -161,7 +171,7 @@ always @ (posedge clk) begin
 
     if (command == CMD_RESET) 
       state <= idle;
-    end else
+    else
       state <= enable_out;
   end
 
