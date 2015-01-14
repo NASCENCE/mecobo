@@ -18,14 +18,14 @@ output reg [15:0] sample_data;
 
 
 reg sample_register = 0;
-reg [15:0] sample_cnt = 16'h0000;
+reg [14:0] sample_cnt = 14'h0000;
 reg [31:0] nco_counter = 32'h00000000;
 reg [31:0] nco_pa = 0;
 
 wire pin_input;
 //Input, output: PWM, SGEN, CONST
 
-wire enable_in = (enable & (addr[18:8] == POSITION));
+wire enable_in = (enable & (addr[15:8] == POSITION));
 
 always @ (posedge clk) begin
   if (enable_in & data_rd) begin
@@ -124,14 +124,14 @@ reg update_data_out    = 0;
 reg update_sample_cnt = 0;
 reg enable_pin_output = 0;
 
-reg [3:0] state = idle;
+reg [4:0] state = idle;
 
-localparam [5:0] 
+localparam [4:0] 
   idle =          5'b00001,
   high =          5'b00010,
   low  =          5'b00100,
   input_stream =  5'b01000,
-  enable_out =    5'b10000;;
+  enable_out =    5'b10000;
 
 always @ (posedge clk) begin
   if (reset)

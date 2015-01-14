@@ -39,7 +39,13 @@ parameter MIN_CHANNEL = 0;
 parameter MAX_CHANNEL = 1;
 
 wire controller_enable;
-assign controller_enable = (enable & ((addr[18:8] >= MIN_CHANNEL) & (addr[18:8] <= MAX_CHANNEL)));
+wor  channels_selected;
+genvar ch;
+for (ch = MIN_CHANNEL; ch <= MAX_CHANNEL; ch = ch + 1) begin
+	assign channels_selected = ((addr[15:8]) == ch);
+end
+//assign controller_enable = enable & ((MIN_CHANNEL <= addr[15:8]) & (addr[15:8] <= MAX_CHANNEL));
+assign controller_enable = enable & channels_selected;
 
 wire busy = (state != get_values);
 
@@ -60,13 +66,13 @@ always @ (posedge clk) begin
   if (reset)  begin
     data_out <= 0;
     sample_data <= 0;
-    end else begin
+  end else begin
 
-    if (output_sample) 
-      sample_data <= sample_register[channel_select-128];
-//    if (reset_ebi_capture_reg) begin
- //     ebi_capture_reg <= 0;
-  //  end
+    if (output_sample) begin
+      sample_data <= sample_register[channel_select[2:0]];
+    end else begin
+      sample_data <= 0;
+    end
 
     if (controller_enable & wr) begin
       //Decode the command field.
@@ -109,11 +115,11 @@ always @ (posedge clk) begin
           data_out <= last_executed_command;
       end
 
-      end else
-        data_out <= 0;
-    end
+    end else
+      data_out <= 0;
 
-  end
+  end //reset ifelse enmd
+end //always end
   //---------------------------------------------------------------------
 
 
@@ -153,7 +159,7 @@ reg [15:0] current_command = 0;
 reg [15:0] last_executed_command = 0;
 
 always @ (posedge sclk)  begin
-  if (!reset) begin
+  if (~reset) begin
 
     if (load_last_executed_command) begin
       last_executed_command <= current_command;
@@ -428,7 +434,7 @@ for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
     end else
       if (fast_clk_counter[i] == overflow_register[i]) begin
         fast_clk_counter[i] <= 0;
-        sample_register[i] <= tmp_register[i];
+        sample_register[i] <= {sequence_number[i][3:0], tmp_register[i][11:0]};
         sequence_number[i] <= sequence_number[i] + 1;
       end else begin
         fast_clk_counter[i] <= (fast_clk_counter[i] + 1);
