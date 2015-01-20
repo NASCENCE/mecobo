@@ -135,10 +135,10 @@ extern "C" {
 //Start output on given pin
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);
-void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate);
+void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration);
 void getInput(FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
-uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
+uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
 void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);

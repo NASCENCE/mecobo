@@ -91,8 +91,8 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
 
-  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
-  std::cout << "Divisor found:" << divisor << std::endl;
+  //int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  //std::cout << "Divisor found:" << divisor << std::endl;
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
   } else {
@@ -104,7 +104,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = divisor;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
