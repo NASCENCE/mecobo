@@ -14,7 +14,7 @@ input data_rd;
 
 input output_sample;
 input [7:0] channel_select;
-output reg [15:0] sample_data;
+output reg [31:0] sample_data;
 
 
 reg sample_register = 0;
@@ -28,6 +28,11 @@ wire pin_input;
 wire enable_in = (enable & (addr[15:8] == POSITION));
 
 always @ (posedge clk) begin
+  if(reset) begin
+    sample_data <= 32'hZ;
+    data_out <= 0;
+  end else begin
+
   if (enable_in & data_rd) begin
     if (addr[7:0] == ADDR_SAMPLE_REG) 
       data_out <= {15'b0, sample_register};
@@ -41,8 +46,11 @@ always @ (posedge clk) begin
     data_out <= 16'b0;
 
   if (output_sample & (channel_select == POSITION)) 
-    sample_data <= {sample_cnt, sample_register};
+    sample_data <= {sample_cnt, 12'hABC, 3'b111, sample_register};
+  else 
+    sample_data <= 32'hZ;
 
+end
 end
 
 

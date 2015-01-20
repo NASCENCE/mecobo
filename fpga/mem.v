@@ -26,15 +26,19 @@
     output [7:0] channel_select,
 
     //Memory writing interface exposed to the mem-subsystem of the controllers.
-    input [15:0] sample_data
+    input [31:0] sample_data
 );
 
 parameter POSITION = 242;
-parameter MAX_SAMPLES = 65536;
+parameter MAX_SAMPLES = 65533;
+parameter MAX_COLLECTION_UNITS = 16;
 
 localparam ADDR_NEXT_SAMPLE = 1;
 localparam ADDR_NUM_SAMPLES = 2;
+localparam ADDR_READ_ADDR = 3;
+localparam ADDR_NEW_UNIT = 4;
 localparam ADDR_LOCAL_COMMAND = 5;
+localparam ADDR_NUM_UNITS = 6;
 localparam ADDR_DEBUG = 10;
 
 localparam
@@ -53,50 +57,89 @@ reg [18:0] memory_bottom_addr = 0;
 reg [15:0] command;
 //will start out as 0.
 reg rd_d = 0;
-wire rd_transaction_done;
+reg wr_d = 0;
+reg rd_transaction_done;
+reg wr_transaction_done;
 
 wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
+reg [15:0] ebi_captured_data;
+reg new_unit_added;
+reg new_unit_write_seen;
+reg sample_fetched;
+reg sample_fetch_read_seen;
+
 //EBI capture
 always @ (posedge clk) begin
   if(rst) begin
     ebi_data_out <= 0;
+    ebi_captured_data <= 0;
+    sample_fetched <= 0;
+    new_unit_added <= 0;
+    new_unit_write_seen <= 0;
   end else begin
     if (res_cmd_reg) 
       command <= 0;
     else begin
       if (controller_enable & wr) begin
-        if (addr[7:0] == 0) begin
-          collection_channels[num_units] <= ebi_data_in[7:0];
-          num_units <= num_units + 1;
-        end
+        if (addr[7:0] == ADDR_NEW_UNIT) begin
+	  new_unit_write_seen <= 1'b1;
+          ebi_captured_data <= ebi_data_in;
+	end
+ 
         if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
           command <= ebi_data_in;
         end
+
+      end else begin
+        //let's update collection channels here, since the write is over.
+        if (~wr & new_unit_write_seen) begin
+          new_unit_write_seen <= 1'b0;
+          new_unit_added <= 1'b1;
+        end else begin
+	  new_unit_added <= 1'b0;
+	end 
       end
-    end //if cmd reset end
+    end //if res_cmd_reg end
   
   /*
     Every time we read from this register, there should be a new
     sample ready.
   */
     if (controller_enable & re) begin
-      if (addr[7:0] == ADDR_NEXT_SAMPLE) begin
-        ebi_data_out <= ram_data_out; //collect what's on the output
-      end
-
+      if ((addr[7:0] == ADDR_NEXT_SAMPLE)) begin
+        ebi_data_out <= ram_data_out;
+        sample_fetched <= 1'b1;
+      end      
       if (addr[7:0] == ADDR_NUM_SAMPLES) begin
         ebi_data_out <= num_samples;
       end
 
-      if (addr[7:0] == ADDR_DEBUG) begin
-        ebi_data_out <= 16'hDEAD;
+      if (addr[7:0] == ADDR_NUM_UNITS) begin
+        ebi_data_out <= num_units;
       end
+
+      if (addr[7:0] == ADDR_DEBUG) begin
+        ebi_data_out <= 16'hBAAB;
+      end
+
+      if (addr[7:0] == ADDR_READ_ADDR) begin
+        ebi_data_out <= memory_bottom_addr;
+      end
+
     end //if re end
-    else
+    else begin
       ebi_data_out <= 0;
+      
+      if(~re & sample_fetch_read_seen) begin 
+        sample_fetch_read_seen <= 1'b0;
+        sample_fetched <= 1'b1;
+      end else
+        sample_fetched <= 1'b0;
+
+    end
   end //rst end
 
   end
@@ -105,13 +148,19 @@ always @ (posedge clk) begin
 
 //-----------------------------------------------------------------------------------
 //rd falling edge detection to see if a transaction has finished
-  always @ (posedge clk) begin
-  if(rst)
+always @ (posedge clk) begin
+  if(rst) begin
     rd_d <= 1'b0;
-  else
+    wr_d <= 1'b0;
+    rd_transaction_done <= 0;
+    wr_transaction_done <= 0;
+  end else begin
     rd_d <= re;
+    wr_d <= wr;
+  end
+  rd_transaction_done <= rd_d & (~re);
+  wr_transaction_done <= wr_d & (~wr);
 end
-assign rd_transaction_done = rd_d & (~re);
 //-----------------------------------------------------------------------------------
 
 
@@ -122,27 +171,37 @@ assign rd_transaction_done = rd_d & (~re);
 //state machine that runs across all collection_channels and fetches a sample,
 //and then stores it at memory_top_addr.
 
-parameter idle = 4'b0001;
-parameter store = 4'b0010;
-parameter increment = 4'b0100;
-parameter fetch = 4'b1000;
-reg [3:0] state;
+parameter idle = 5'b00001;
+parameter store = 5'b00010;
+parameter increment = 5'b00100;
+parameter fetch = 5'b01000;
+parameter fetch_wait = 5'b10000;
+reg [4:0] state;
 
 /* control path signals */
 reg inc_curr_id_idx;
 reg inc_num_samples;
-reg capture_sample_data;
 reg ram_write_enable;
 reg en_read;
 reg res_cmd_reg;
 reg res_sampling;
+reg capture_sample_data;
 
+reg [31:0] last_fetched [0:15];
+reg [31:0] sample_data_reg;
+
+integer mi;
 initial begin 
   state = idle;
+  for (mi = 0; mi < MAX_COLLECTION_UNITS; mi = mi + 1)  begin
+    collection_channels[mi] = 255;
+    last_fetched[mi] = 0;
+  end
+    
+
 end
 
 
-reg [15:0] last_fetched [0:15];
 reg [3:0] current_id_idx = 0;
 
 
@@ -150,11 +209,11 @@ always @ (posedge clk) begin
   if (rst) begin
     inc_curr_id_idx <= 1'b0;
     inc_num_samples <= 1'b0;
-    capture_sample_data <= 1'b0;
     ram_write_enable <= 1'b0;
     en_read <= 1'b0;
-    res_cmd_reg <= 1'b0;
-    res_sampling <= 1'b0;
+    res_cmd_reg <= 1'b1;
+    res_sampling <= 1'b1;
+    capture_sample_data <= 1'b0;
 
     state <= idle;
   end
@@ -162,71 +221,93 @@ always @ (posedge clk) begin
   case (state)
     idle: begin
       output_sample <= 1'b0;
+      capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
       inc_num_samples <= 1'b0;
-      capture_sample_data <= 1'b0;
       ram_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
-      res_sampling <= 1'b1;
+      res_sampling <= 1'b0;
 
       if(command == CMD_START_SAMPLING) begin
+      	res_cmd_reg <= 1'b1;
         state <= fetch;
       end else 
         state <= idle;
     end
 
+    //instruct adc to output new sample data
     fetch: begin
       output_sample <= 1'b1;
-      inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      capture_sample_data <= 1'b1;
-      ram_write_enable <= 1'b0;
-      en_read <= 1'b1;
-      res_cmd_reg <= 1'b1;
-      res_sampling <= 1'b0;
-
-      state <= store;
-    end
-
-    store: begin
-      output_sample <= 1'b0;
-      inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
       capture_sample_data <= 1'b0;
+      inc_curr_id_idx <= 1'b0;
+      inc_num_samples <= 1'b0;
       ram_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
 
-      if (last_fetched[current_id_idx] != sample_data) begin
-        ram_write_enable <= 1'b1;
-      end
+      state <= fetch_wait;
+    end
+   
+    //give the adc time to set up the new sample data 
+    fetch_wait: begin
+      output_sample <= 1'b1;
+      capture_sample_data <= 1'b0;
+      inc_curr_id_idx <= 1'b0;
+      inc_num_samples <= 1'b0;
+      ram_write_enable <= 1'b0;
+      en_read <= 1'b1;
+      res_cmd_reg <= 1'b0;
+      res_sampling <= 1'b0;
 
+      state <= store;
+    end
+
+    //capture newly set up sample data
+    store: begin
+      output_sample <= 1'b0;
+      capture_sample_data <= 1'b1;
+      inc_curr_id_idx <= 1'b0;
+      inc_num_samples <= 1'b0;
+      ram_write_enable <= 1'b0;
+      en_read <= 1'b1;
+      res_cmd_reg <= 1'b0;
+      res_sampling <= 1'b0;
+
+      
       state <= increment; 
     end
 
+    //increment index counters
     increment: begin
       output_sample <= 1'b0;
-      inc_curr_id_idx <= 1'b1;
-      inc_num_samples <= 1'b1;
       capture_sample_data <= 1'b0;
+      inc_curr_id_idx <= 1'b1;
+      inc_num_samples <= 1'b0;
       ram_write_enable <= 1'b0;
       en_read <= 1'b1;
-      res_cmd_reg <= 1'b1;
+      res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
 
-      if(command == CMD_RESET) 
+      if (last_fetched[current_id_idx] != sample_data_reg) begin
+        ram_write_enable <= 1'b1;
+      	inc_num_samples <= 1'b1;
+      end
+
+      if(command == CMD_RESET)  begin
+	res_sampling <= 1'b1;
+        res_cmd_reg <= 1'b1;
         state <= idle;
-      else
+      end else
         state <= fetch;
     end
 
     default: begin
       output_sample <= 1'b0;
+      capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
       inc_num_samples <= 1'b0;
-      capture_sample_data <= 1'b0;
       ram_write_enable <= 1'b0;
       en_read <= 1'b0;
       res_cmd_reg <= 1'b1;
@@ -238,24 +319,28 @@ always @ (posedge clk) begin
   endcase
 end
 
-
 assign channel_select = collection_channels[current_id_idx];
 
+reg [15:0] debugcounter = 0;
+
+
+integer mj;
 always @ (posedge clk) begin
-  
- 
-  if (inc_curr_id_idx) begin
-    //only increment mod num_units-1 (0-indexed)
-    if(current_id_idx == (num_units-1)) 
-      current_id_idx <= 0;
-    else
-      current_id_idx <= (current_id_idx + 1);
-  end
+
 
   if(res_sampling == 1'b1) begin
     num_samples <= 0;
+    num_units <= 0;
     memory_top_addr <= 0;
     memory_bottom_addr <= 0;
+    current_id_idx <= 0;
+    sample_data_reg <= 0;
+
+    for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
+      collection_channels[mj] <= 255; //no such channel: special.
+      last_fetched[mj] <= 0;
+    end
+ 
   end else begin
     if (inc_num_samples) begin
       if (num_samples < MAX_SAMPLES) begin
@@ -264,22 +349,37 @@ always @ (posedge clk) begin
       end
     end
 
+    if (new_unit_added) begin
+      collection_channels[num_units] <= ebi_captured_data[7:0];
+      num_units <= num_units + 1;
+    end
+
     //Only increment if we have seen a falling edge on read signal.
-    if (rd_transaction_done) begin
+    if (sample_fetched) begin
       memory_bottom_addr <= memory_bottom_addr + 1;
     end 
-  end
-  
-  if (capture_sample_data)
-    last_fetched[current_id_idx] <= sample_data;
 
-  
+    if(capture_sample_data) begin
+      sample_data_reg <= sample_data;
+      last_fetched[current_id_idx] <= sample_data_reg;
+    end
+	 
+    //only increment mod num_units-1 (0-indexed)
+    if (inc_curr_id_idx) begin
+      if(current_id_idx == (num_units-1)) 
+        current_id_idx <= 0;
+      else
+        current_id_idx <= (current_id_idx + 1);
+    end
+
+  end
 end
 
 
 wire [15:0] ram_data_out;
 wire [15:0] ram_data_in;
-assign ram_data_in = last_fetched[current_id_idx];
+
+assign ram_data_in = {current_id_idx[2:0], sample_data_reg[12:0]}; //last_fetched[current_id_idx][15:0];
 
 dp_ram sample_ram(
   .clk(clk),
@@ -289,8 +389,8 @@ dp_ram sample_ram(
   .addra(memory_top_addr),
   .addrb(memory_bottom_addr),
   .dia(ram_data_in),
-  .doa(ram_data_out),
-  .dob()
+  .doa(),
+  .dob(ram_data_out)
 );
 
 endmodule

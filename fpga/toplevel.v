@@ -92,8 +92,17 @@ wire xbar_predivided;
 
 wire sample_enable_output;
 wire [7:0] sample_channel_select;
-wor [15:0] sample_data_bus;
+wire [31:0] sample_data_bus;
 
+wire locked;
+assign led[2] = locked;
+
+//                     locked   reset
+// 0                   1        0 
+// 1                   0        1
+// 0                   1        1
+// 1                   0        0
+wire mecobo_reset = ~locked & ~reset;
 
 
 //----------------------------------- CLOCKING -------------------------
@@ -105,15 +114,15 @@ main_clocks clocks
   .CLK_OUT_5(xbar_predivided),
   .CLK_OUT_10(ad_clk),
   .CLK_OUT_30(da_clk),
-  .RESET(reset),
-  .LOCKED(led[2])
+  .RESET(1'b0),
+  .LOCKED(locked)
 );
 
 
-xbar_clock(
+xbar_clock xbarclocks0(
   .CLK_IN_5(xbar_predivided),
   .XBAR_CLK(xbar_clk),
-  .RESET(reset),
+  .RESET(1'b0),
   .LOCKED(led[3])
 );
 
@@ -147,10 +156,10 @@ assign HW[3] = pin_rerouting[1];
 assign HW[5] = pin_rerouting[2];
 assign HW[7] = pin_rerouting[3];   
 assign HW[2] = pin_rerouting[4];
-assign HW[4] = pin_rerouting[5];
+assign HW[3] = pin_rerouting[5];
 assign HW[13] = pin_rerouting[6]; 
 assign HW[15] = pin_rerouting[7]; 
-assign HW[6] = pin_rerouting[8];
+assign HW[4] = pin_rerouting[8];
 assign HW[8] = pin_rerouting[9];  
 assign HW[10] = pin_rerouting[10];
 assign HW[14] = pin_rerouting[11];
@@ -169,7 +178,7 @@ generate
       pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
-        .reset(reset),
+        .reset(mecobo_reset),
         .enable(chip_select),
         .addr(ebi_addr),
         .data_wr(write_enable),
@@ -188,7 +197,7 @@ adc_control #(.MIN_CHANNEL(100),
     adc0 (
       .clk(sys_clk),
       .sclk(ad_clk),
-      .reset(reset),
+      .reset(mecobo_reset),
       .enable(chip_select),
       .re(read_enable),
       .wr(write_enable),
@@ -208,7 +217,7 @@ dac_control #(.POSITION(50))
     dac0 (
       .ebi_clk(sys_clk),
       .sclk(da_clk),
-      .reset(reset),
+      .reset(mecobo_reset),
       .enable(chip_select),
       .re(read_enable),
       .wr(write_enable),
@@ -223,7 +232,7 @@ xbar_control #(.POSITION(200))
     xbar0 (
       .ebi_clk(sys_clk),
       .sclk(xbar_clk),
-      .reset(reset),
+      .reset(mecobo_reset),
       .enable(chip_select),
       .re(read_enable),
       .wr(write_enable),
@@ -238,7 +247,7 @@ xbar_control #(.POSITION(200))
       pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
-        .reset(reset),
+        .reset(mecobo_reset),
         .enable(chip_select),
         .addr(ebi_addr),
         .data_wr(write_enable),
@@ -258,7 +267,7 @@ xbar_control #(.POSITION(200))
 
       mem mem0(
       .clk(sys_clk),
-      .rst(reset),
+      .rst(mecobo_reset),
       .addr(ebi_addr),
       .ebi_data_in(data_in),
       .ebi_data_out(data_out),

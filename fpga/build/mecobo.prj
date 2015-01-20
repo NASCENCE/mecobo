@@ -7,3 +7,5 @@ verilog work "../adccontrol.v"
 verilog work "../toplevel.v"
 verilog work "../mem.v"
 verilog work "../ram.v"
+verilog work "../tb.v"
+verilog work $XILINX/verilog/src/glbl.v
