@@ -94,8 +94,8 @@ uint16_t numItemsInFlight = 0;
 static int * lastCollected;
 static int runItems = 0;
 
-static int fpgaTableToChannel[8];
-static int numSamplesPerFPGATableIndex[8];
+static uint8_t fpgaTableToChannel[8];
+static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
 
 #define SRAM1_START 0x84000000
@@ -348,15 +348,7 @@ int main(void)
     //For all the input pins, collect samples into the big buff!
     //TODO: Make pinControllers notify uC when it has new data, interrupt?
     if(runItems) {
-      /*
-      for(int ch = 0; ch < numInputChannels; ch++) {
-        //struct sampleValue val;
-        getInput((FPGA_IO_Pins_TypeDef)inputChannels[ch]);
-      }
-      */
-
-
-      //This is the execution stage.
+            //This is the execution stage.
       //Special cases are required for items
       //that should stay in-flight forever.
       if(numItemsLeftToExecute > 0) {
@@ -386,7 +378,7 @@ int main(void)
         if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
           nextKillTime = currentItem->endTime;
         }
-      } 
+      }
       //Certain items in flight needs updating: specially REGISTERS
       if (lastTimeTick != timeTick) {
         for(unsigned int flight = 0; flight < numItemsInFlight; flight++) {
@@ -506,19 +498,16 @@ int UsbDataSent(USB_Status_TypeDef status,
   (void) remaining;
 
 
-  if ((status == USB_STATUS_OK) && (xf > 0)) 
-  {
+  if ((status == USB_STATUS_OK) && (xf > 0)) {
     //we probably sent some data :-)
     //don't free the sample buffer
-    if((packToSend.command != USB_CMD_GET_INPUT_BUFFER) &&
-        (packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE)) 
-    {
+    if(packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE) {
       if(packToSend.data != NULL) {
         free(packToSend.data);
       } else {
         printf("Tried to free NULL-pointer\n");
       }
-    } 
+    }
 
     //Reset sample counter now.
     if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
@@ -564,9 +553,9 @@ inline void execute(struct pinItem * item)
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       addr = getChannelAddress(item->pin);
-      printf("  %d DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
       uint16_t nocLow = (uint16_t)item->nocCounter;
       uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
+      printf("  %d DIGITAL: Digital C:%d, nocCounter: %u, ad: %p\n", timeMs, item->pin, item->nocCounter, addr);
 
       addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
@@ -656,20 +645,21 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 {
   uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   memctrl[4] = channel;
-  int index = memctrl[6];
-  fpgaTableToChannel[index] = channel;
-  printf("Channel %u added, index %u\n", channel, index);
+  int index = memctrl[6]-1; //off by 1 relative to number of units
+  fpgaTableToChannel[index] = (uint8_t)channel;
+  printf("Channel %u added, index %u, table entry %d\n", channel, index, (uint8_t)fpgaTableToChannel[index]);
 
   //How many samples?
   //The overflow register is what decides this.
   //We set it to something that sort of achieves the wished sample rate.
   //If we want for instance 44.1KHz sample rate, the counter is
   //roughly 1701, so actual sample rate is about 44.09
-  int overflow = 75000000/sampleRate;
-  numSamplesPerFPGATableIndex[index] = (sampleRate*1000)/duration;
-  fpgaNumSamples += (1000*sampleRate)/duration;
+  float overflow = 75000000/(float)sampleRate;
+  float numSamples = (sampleRate)*((float)duration/1000);
+  numSamplesPerFPGATableIndex[index] = (int)numSamples;
+  fpgaNumSamples += (int)numSamples;
 
-  printf("Estimated %d samples for rate %d, of %d, channel %d, duration %d\n", (1000*sampleRate)/duration, sampleRate, overflow, channel, duration);
+  printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
 
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
@@ -700,7 +690,7 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       //addr[0x04] = 0x8014;
 
       //setup FPGA AD controller
-      addr[0x01] = overflow; //overflow register, so this isn't sample rate at all.
+      addr[0x01] = (int)overflow; //overflow register, so this isn't sample rate at all.
       addr[0x02] = 1; //divide
       //Sequence register write.
 
@@ -906,8 +896,10 @@ void execCurrentPack()
     lastTimeTick = 0;
     timeMs = 0;
 
-    for(int q = 0; q < 8; q++)
+    for(int q = 0; q < 8; q++) {
       numSamplesPerFPGATableIndex[q] = 0;
+      fpgaTableToChannel[q] = 0;
+    }
 
 
 
@@ -966,12 +958,12 @@ void execCurrentPack()
     for(int i = 0; i < *txSamples; i++) {
       uint16_t data = (uint16_t)memctrl[1];
       uint8_t fpgaTableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
-     
       //if(DEBUG_PRINTING)
         //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-      if(i < 5) 
-        printf("fpga-data: %x\n", data);
+      if(i < 10) 
+        printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[fpgaTableIndex]);
+
       samples[i].sampleNum = i;
       samples[i].channel = fpgaTableToChannel[fpgaTableIndex];
       samples[i].value = data;
@@ -1066,7 +1058,7 @@ void resetAllPins()
   printf("OK\n");
 }
 
-void led(int l, int mode) 
+void led(int l, int mode)
 {
   switch(l) {
     case FRONT_LED_0:

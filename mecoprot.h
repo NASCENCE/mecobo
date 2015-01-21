@@ -28,7 +28,7 @@
 #define PINTYPE_IN      0x1
 
 //USB package data offsets for the pinconfig package
-#define USB_PACK_SIZE_BYTES   40 //10 * 4
+#define USB_PACK_SIZE_BYTES 44 //11 * 4
 #define PINCONFIG_DATA_FPGA_PIN 0
 #define PINCONFIG_DATA_TYPE 1
 #define PINCONFIG_DATA_CONST 2

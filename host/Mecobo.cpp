@@ -247,6 +247,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   for(auto s : samples) {
     //Since one channel can be on many pins we'll collect them all.
     if(hasDaughterboard) {
+    //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
     std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
     for (auto p : pin) {
       //Cast from 13 bit to 32 bit two's complement int.
@@ -256,9 +257,8 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     }
     } else {
       pinRecordings[s.channel].push_back(s.value);
-    }
   }
-
+  }
   return pinRecordings[materialPin];
 }
 
@@ -364,8 +364,9 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
   //2^32/75*10^6 = 57.26623061333333333333
   double magic = 57.26623061333333333333;
 
-  uint32_t countervalue = (uint32_t)(magic * frequency);
+  int countervalue = (int)(magic * frequency);
 
+  std::cout << " ----  Counter value: " << countervalue << std::endl;
   //std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
