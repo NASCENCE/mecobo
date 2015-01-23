@@ -12,5 +12,5 @@ bitgen:
 	bitgen -intstyle ise -f mecobo.ut mecobo.ncd 
 
 test:
-	fuse -incremental -prj mecobo.prj -o toplevel_tb -L unisims_ver -L unimacro_ver -L xilinxcorelib_ver  work.toplevel_tb work.glbl
+	fuse -incremental -d DEBUG -prj mecobo.prj -o toplevel_tb -L unisims_ver -L unimacro_ver -L xilinxcorelib_ver  work.toplevel_tb work.glbl
 	./toplevel_tb -tclbatch tb.tcl

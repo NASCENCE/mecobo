@@ -72,7 +72,7 @@ reg [26:0] led_heartbeat = 0;
 assign led[0] = led_heartbeat[26] | led_heartbeat[25];
 
 always @ (posedge sys_clk) begin
-  if(reset)
+  if(mecobo_reset)
     led_heartbeat <= 0;
   else
     led_heartbeat <= led_heartbeat + 1'b1;

@@ -43,6 +43,7 @@ localparam ADDR_DEBUG = 10;
 
 localparam
 CMD_START_SAMPLING = 1,
+CMD_STOP_SAMPLING = 2,
 CMD_RESET = 5;
 
 
@@ -56,10 +57,8 @@ reg [18:0] memory_bottom_addr = 0;
 
 reg [15:0] command;
 //will start out as 0.
-reg rd_d = 0;
-reg wr_d = 0;
-reg rd_transaction_done;
-reg wr_transaction_done;
+wire rd_transaction_done;
+wire wr_transaction_done;
 
 wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
@@ -67,9 +66,7 @@ assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 reg [15:0] ebi_captured_data;
 reg new_unit_added;
-reg new_unit_write_seen;
 reg sample_fetched;
-reg sample_fetch_read_seen;
 
 //EBI capture
 always @ (posedge clk) begin
@@ -78,14 +75,12 @@ always @ (posedge clk) begin
     ebi_captured_data <= 0;
     sample_fetched <= 0;
     new_unit_added <= 0;
-    new_unit_write_seen <= 0;
   end else begin
     if (res_cmd_reg) 
       command <= 0;
     else begin
       if (controller_enable & wr) begin
         if (addr[7:0] == ADDR_NEW_UNIT) begin
-	  new_unit_write_seen <= 1'b1;
           ebi_captured_data <= ebi_data_in;
 	end
  
@@ -93,15 +88,7 @@ always @ (posedge clk) begin
           command <= ebi_data_in;
         end
 
-      end else begin
-        //let's update collection channels here, since the write is over.
-        if (~wr & new_unit_write_seen) begin
-          new_unit_write_seen <= 1'b0;
-          new_unit_added <= 1'b1;
-        end else begin
-	  new_unit_added <= 1'b0;
-	end 
-      end
+      end       
     end //if res_cmd_reg end
   
   /*
@@ -111,7 +98,6 @@ always @ (posedge clk) begin
     if (controller_enable & re) begin
       if ((addr[7:0] == ADDR_NEXT_SAMPLE)) begin
         ebi_data_out <= ram_data_out;
-        sample_fetched <= 1'b1;
       end      
       if (addr[7:0] == ADDR_NUM_SAMPLES) begin
         ebi_data_out <= num_samples;
@@ -132,35 +118,40 @@ always @ (posedge clk) begin
     end //if re end
     else begin
       ebi_data_out <= 0;
-      
-      if(~re & sample_fetch_read_seen) begin 
-        sample_fetch_read_seen <= 1'b0;
-        sample_fetched <= 1'b1;
-      end else
-        sample_fetched <= 1'b0;
-
     end
   end //rst end
-
-  end
+end
 
 //
 
 //-----------------------------------------------------------------------------------
 //rd falling edge detection to see if a transaction has finished
+
+
+reg rd_d = 0;
+reg rd_dd = 0;
+reg wr_d = 0;
+reg wr_dd = 0;
+
 always @ (posedge clk) begin
   if(rst) begin
     rd_d <= 1'b0;
     wr_d <= 1'b0;
-    rd_transaction_done <= 0;
-    wr_transaction_done <= 0;
+    rd_dd <= 1'b0;
+    wr_dd <= 1'b0;
   end else begin
-    rd_d <= re;
-    wr_d <= wr;
-  end
-  rd_transaction_done <= rd_d & (~re);
-  wr_transaction_done <= wr_d & (~wr);
+    rd_d <= re & controller_enable;
+    rd_dd <= rd_d;
+    wr_d <= wr & controller_enable;
+    wr_dd <= wr_d;
+  end 
 end
+
+//if r_dd is high and rd_d is low, we have seen a falling edge.
+assign rd_transaction_done = (~rd_d) & (rd_dd);
+assign wr_transaction_done = (~wr_d) & (wr_dd);
+
+
 //-----------------------------------------------------------------------------------
 
 
@@ -232,7 +223,11 @@ always @ (posedge clk) begin
       if(command == CMD_START_SAMPLING) begin
       	res_cmd_reg <= 1'b1;
         state <= fetch;
-      end else 
+      end else if (command == CMD_RESET) begin
+        res_cmd_reg <= 1'b1;
+        res_sampling <= 1'b1;
+        state <= idle;
+      end else
         state <= idle;
     end
 
@@ -299,6 +294,9 @@ always @ (posedge clk) begin
 	res_sampling <= 1'b1;
         res_cmd_reg <= 1'b1;
         state <= idle;
+      end else if (command == CMD_STOP_SAMPLING) begin
+        res_cmd_reg <= 1'b1;
+        state <= idle;
       end else
         state <= fetch;
     end
@@ -349,20 +347,24 @@ always @ (posedge clk) begin
       end
     end
 
-    if (new_unit_added) begin
+    if (wr_transaction_done & (addr[7:0] == ADDR_NEW_UNIT)) begin
       collection_channels[num_units] <= ebi_captured_data[7:0];
       num_units <= num_units + 1;
     end
 
     //Only increment if we have seen a falling edge on read signal.
-    if (sample_fetched) begin
-      memory_bottom_addr <= memory_bottom_addr + 1;
+    if (rd_transaction_done & (addr[7:0] == ADDR_NEXT_SAMPLE)) begin
+      if(memory_bottom_addr < MAX_SAMPLES)
+        memory_bottom_addr <= memory_bottom_addr + 1;
     end 
 
     if(capture_sample_data) begin
       sample_data_reg <= sample_data;
-      last_fetched[current_id_idx] <= sample_data_reg;
     end
+  
+   if(ram_write_enable) begin
+     last_fetched[current_id_idx] <= sample_data_reg;
+   end
 	 
     //only increment mod num_units-1 (0-indexed)
     if (inc_curr_id_idx) begin
