@@ -58,7 +58,11 @@ end
 // ------------------------- NCO ----------------------------------
 // Output frequency will be roughly freq(clk) * (nco_counter/2^32)
 always @ (posedge clk) begin
-  nco_pa <= nco_pa + nco_counter;
+  if(reset)
+    nco_pa <= 0;
+  else begin
+    nco_pa <= nco_pa + nco_counter;
+  end
 end
 
 //Drive output pin from MSB of nco_pa statemachine if output is enabled.
@@ -82,18 +86,23 @@ localparam [7:0]
   ADDR_STATUS_REG =  9;
 
 always @ (posedge clk) begin
-  if (res_cmd_reg)
-    command <= 0;
-  else if (enable_in & data_wr) begin
-    if (addr[7:0] == ADDR_LOCAL_CMD)
-      command <= data_in;
-    else if (addr[7:0] == ADDR_SAMPLE_RATE)
-      sample_rate <= data_in;
-    else if (addr[7:0] == ADDR_NCO_COUNTER_LOW)
-      nco_counter[15:0] <= data_in;
-    else if (addr[7:0] == ADDR_NCO_COUNTER_HIGH)
-      nco_counter[31:16] <= data_in;
-  end 
+  if (reset)
+    nco_counter <= 0;
+  else
+	  if (res_cmd_reg) begin
+	    command <= 0;
+	  end else begin
+	    if (enable_in & data_wr) begin
+	      if (addr[7:0] == ADDR_LOCAL_CMD)
+		command <= data_in;
+	      else if (addr[7:0] == ADDR_SAMPLE_RATE)
+		sample_rate <= data_in;
+	      else if (addr[7:0] == ADDR_NCO_COUNTER_LOW)
+		nco_counter[15:0] <= data_in;
+	      else if (addr[7:0] == ADDR_NCO_COUNTER_HIGH)
+		nco_counter[31:16] <= data_in;
+	    end
+	  end
 end
 
 //Command parse

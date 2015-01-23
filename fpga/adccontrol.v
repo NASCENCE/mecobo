@@ -77,11 +77,15 @@ localparam [3:0]
 
 //Data capture from EBI
 //--------------------------------------------------------------------
+integer c;
 reg[15:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
   if (reset)  begin
     data_out <= 0;
     sample_data <= 32'hZ;
+    for (c = 0; c < 8; c = c+1) begin
+      overflow_register[c] <= 0;
+    end
   end else begin
 
     if (output_sample & channels_selected) begin
@@ -142,11 +146,10 @@ end //always end
 integer q;
 initial begin
   for(q = 0; q < 8; q = q + 1) begin
-    overflow_register[q] = 0;
     tmp_register[q] = 0;
     sample_register[q] = 0;
     sequence_number[q] = 0;
-    fast_clk_counter[q] = 0;
+    fast_clk_counter[q] = 1;
   end
 end
 
@@ -216,7 +219,11 @@ end
 //Handle clocking in of data.
 always @ (negedge sclk) begin
   if (shift_in) begin
-    shift_in_register  <= {shift_in_register[14:0], adc_dout};
+    `ifdef(DEBUG) 
+      shift_in_register  <= {shift_in_register[14:0], 1'b1};
+    `else
+      shift_in_register  <= {shift_in_register[14:0], adc_dout};
+    `endif
   end
 end
 
@@ -441,15 +448,20 @@ end
 //------------------ Handles copying on overflow to real data register -----------
 //TODO: statemachine that controls the sample rate copying.
 //Controlled by fast clock. 
+//Since the slow clock is 10Hz, and we have 16 ticks before a new value is ready in tmp, 
+//it takes at least 1600ns before a new value is ready-- or 1.6uS. 
+//this means that it doesn't make sense for overflow_register to be less
+//than 120. Oh well.
 genvar i;
 for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
   always @ (posedge clk) begin
     if (reset) begin
       sample_register[i] <= 0;
       sequence_number[i] <= 0;
+      fast_clk_counter[i] <= 1;
     end else
       if (fast_clk_counter[i] == overflow_register[i]) begin
-        fast_clk_counter[i] <= 0;
+        fast_clk_counter[i] <= 1;
         sample_register[i] <= tmp_register[i];
         sequence_number[i] <= sequence_number[i] + 1;
       end else begin
