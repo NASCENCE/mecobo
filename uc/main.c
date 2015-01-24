@@ -98,12 +98,6 @@ static uint8_t fpgaTableToChannel[8];
 static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
 
-#define SRAM1_START 0x84000000
-#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
-
-#define SRAM2_START 0x88000000
-#define SRAM2_BYTES 256*1024 
-
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
 uint16_t DACreg[NUM_DAC_REGS];
@@ -176,16 +170,8 @@ int main(void)
     sinus[i] = (uint8_t)((sin(j)*(float)128.0)+(float)128.0);
     printf("%u\n", sinus[i]);
   }
-  printf("Address of samplebuffer: %p\n", sampleBuffer);
-  printf("Have room for %d samples\n", MAX_SAMPLES);
 
   int skip_boot_tests= 0;
-  /*
-     for(int j = 0; j < 100000; j++) {
-     printf("%x: %x\n", ((uint8_t*)(EBI_ADDR_BASE + j)), *((uint8_t*)(EBI_ADDR_BASEl + j)));
-     }
-     */
-
 
     if(!skip_boot_tests) {
 
@@ -224,50 +210,8 @@ int main(void)
     }
 
     printf("FPGA check complete\n");
-    printf("SRAM 1 TEST\n");
-    uint8_t * ram = (uint8_t*)sampleBuffer;
-    for(int i = 0; i < 4; i++) {
-      for(int j = 0; j < SRAM1_BYTES; j++) {
-        ram[i*(16*1024)+j] = j%255;
-      }
-      for(int j = 0; j < 16*1024; j++) {
-        uint8_t rb = ram[i*(16*1024) + j];
-        if(rb != j%255) {
-          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-        }
-      }
-      //Null out before use.
-      ram[i] = 0;
-    }
-    printf("Complete.\n");
 
-
-    printf("SRAM 1 TEST SAME PATTERN\n");
-    uint8_t * pat = (uint8_t*)SRAM1_START;
-    for(int j = 0; j < SRAM1_BYTES; j++) {
-      pat[j] = 0xAA;
-      if(pat[j] != 0xAA) {
-        printf("Failed RAM test!\n");
-      }
-    }
-    printf("Complete.\n");
-
-    printf("SRAM 2 TEST\n");
-    ram = (uint8_t*)SRAM2_START;
-    for(int i = 0; i < 4; i++) {
-      for(int j = 0; j < SRAM2_BYTES; j++) {
-        ram[i*(16*1024)+j] = j%255;
-      }
-      for(int j = 0; j < 16*1024; j++) {
-        uint8_t rb = ram[i*(16*1024) + j];
-        if(rb != j%255) {
-          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-        }
-      }
-    }
-  }
-  printf("Complete.\n");
-
+  testRam();
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 

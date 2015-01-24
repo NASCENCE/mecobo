@@ -150,6 +150,7 @@ pinItem.c\
 dac.c\
 adc.c\
 efm32.c\
+startup.c\
 main.c
 
 CXX_SRC += \
