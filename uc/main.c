@@ -76,8 +76,6 @@ static int sendPackReady = 0;
 static int sendInProgress = 0;
 static int executeInProgress = 0;
 
-//Keep track of which pins are input pins. 
-static int nPins = 250;
 
 //Are we programming the FPGA
 int fpgaUnderConfiguration = 0;
@@ -91,13 +89,13 @@ static struct pinItem ** itemsInFlight;
 uint16_t iifPos  = 0;
 uint16_t numItemsInFlight = 0;
 
-static int * lastCollected;
 static int runItems = 0;
 
+static int fpgaTableIndex = 0;
 static uint8_t fpgaTableToChannel[8];
 static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
-
+static uint16_t * memctrl;
 #define SRAM1_START 0x84000000
 #define SRAM1_BYTES 256*1024  //16Mbit = 256KB
 
@@ -178,6 +176,7 @@ int main(void)
   }
   printf("Address of samplebuffer: %p\n", sampleBuffer);
   printf("Have room for %d samples\n", MAX_SAMPLES);
+  memctrl = (uint16_t*)getChannelAddress(242);
 
   int skip_boot_tests= 0;
   /*
@@ -272,10 +271,7 @@ int main(void)
   inBufferTop = 0;
 
   //TODO: This is just silly, don't need to malloc here.
-  lastCollected = malloc(sizeof(int)*nPins);
-  for(int i = 0; i < nPins; i++) {
-    lastCollected[i] = -1;
-  }
+  
   //Put FPGA out of reset
   GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 5); //Reset
@@ -348,7 +344,8 @@ int main(void)
     //For all the input pins, collect samples into the big buff!
     //TODO: Make pinControllers notify uC when it has new data, interrupt?
     if(runItems) {
-            //This is the execution stage.
+
+      //This is the execution stage.
       //Special cases are required for items
       //that should stay in-flight forever.
       if(numItemsLeftToExecute > 0) {
@@ -363,14 +360,8 @@ int main(void)
                 numItemsLeftToExecute--;
           }
 
-
-          //if (currentItem->endTime != (-1)) {
-            itemsInFlight[iifPos++] = currentItem;
-            //Do not decrease counter if this is a run-forever
-            //style item.
-            numItemsInFlight++;
-         // }
-          //Items To Apply queue increase because we started an item.
+          itemsInFlight[iifPos++] = currentItem;
+          numItemsInFlight++;
           itaPos++;
         }
 
@@ -379,7 +370,11 @@ int main(void)
           nextKillTime = currentItem->endTime;
         }
       }
-      //Certain items in flight needs updating: specially REGISTERS
+
+
+
+
+      //Certain items in flight needs updating and "re-execution"
       if (lastTimeTick != timeTick) {
         for(unsigned int flight = 0; flight < numItemsInFlight; flight++) {
           //if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
@@ -387,13 +382,16 @@ int main(void)
           //}
           if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
             execute(itemsInFlight[flight]);
-                  registersUpdated[itemsInFlight[flight]->constantValue] = 0;
+            registersUpdated[itemsInFlight[flight]->constantValue] = 0;
           }
         }
         //update counters.
         lastTimeTick = timeTick;
         timeMs = timeTick/10;
       }
+
+
+
 
       //Kill items that are in flight and whose time has come.
       //We cannot guarantee the same as we do for starting so we need to check.
@@ -415,7 +413,6 @@ int main(void)
           }
         }
       }
-
     }
   } //main for loop ends
 }
@@ -512,6 +509,7 @@ int UsbDataSent(USB_Status_TypeDef status,
     //Reset sample counter now.
     if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
       numSamples = 0;
+      fpgaNumSamples = 0;
     }
   }
   sendInProgress = 0;
@@ -563,13 +561,15 @@ inline void execute(struct pinItem * item)
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD:
-      printf("  %d RECORD DIGITAL: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-      startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
+      printf("  %d RD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
+      startInput();
+  //    startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-      printf("  %d RECORD ANAL: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-      startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
+      printf("  %d RA: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
+      //startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
+      startInput();
       break;
 
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
@@ -624,7 +624,7 @@ void killItem(struct pinItem * item)
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
-      printf("  %d RECORD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
+      printf("  %d K R: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       for(int i = 0; i < numInputChannels; i++) {
         if (inputChannels[i] == item->pin) {
           printf("Rec stop: %d\n", item->pin);
@@ -639,28 +639,26 @@ void killItem(struct pinItem * item)
     default:
       break;
   }
-  }
+}
 
-inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
+inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   memctrl[4] = channel;
-  int index = memctrl[6]-1; //off by 1 relative to number of units
-  fpgaTableToChannel[index] = (uint8_t)channel;
-  printf("Channel %u added, index %u, table entry %d\n", channel, index, (uint8_t)fpgaTableToChannel[index]);
+  fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
+  printf("Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
 
   //How many samples?
   //The overflow register is what decides this.
   //We set it to something that sort of achieves the wished sample rate.
   //If we want for instance 44.1KHz sample rate, the counter is
   //roughly 1701, so actual sample rate is about 44.09
-  float overflow = 75000000/(float)sampleRate;
-  float numSamples = (sampleRate)*((float)duration/1000);
-  numSamplesPerFPGATableIndex[index] = (int)numSamples;
+  float overflow = (75000000)/((float)sampleRate);
+  float numSamples = (sampleRate)*((float)duration/(float)1000);
+  numSamplesPerFPGATableIndex[fpgaTableIndex] = (int)numSamples;
   fpgaNumSamples += (int)numSamples;
+  fpgaTableIndex++;
 
   printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
-
 
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
   uint16_t * addr = getChannelAddress(channel);
@@ -690,7 +688,8 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       //addr[0x04] = 0x8014;
 
       //setup FPGA AD controller
-      addr[0x01] = (int)overflow; //overflow register, so this isn't sample rate at all.
+      addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
+      for (int i = 0; i < 10; i++);
       addr[0x02] = 1; //divide
       //Sequence register write.
 
@@ -721,65 +720,20 @@ inline void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
   inputChannels[numInputChannels++] = channel;
 
-  //start sampling to fpga memory
+}
+
+
+inline void startInput() 
+{
   memctrl[5] = 1;
 }
 
-//TODO: We can get away with only 1 read here. In time.
-inline void getInput(FPGA_IO_Pins_TypeDef channel)
-{
-
-  uint16_t * addr = getChannelAddress(channel);
-
-  struct sampleValue val;
-
-  val.sampleNum = addr[PINCONFIG_SAMPLE_CNT];
-  val.channel = (uint8_t)channel;
-  val.value = addr[PINCONFIG_SAMPLE_REG];
-
-  //uint16_t * a = addr + PINCONFIG_STATUS_REG;
-  //printf("S@%p: %u %u %u cntr: %d\n", addr, val.sampleNum, val.channel, val.value, *a);
-
-  if(!sendInProgress && (val.sampleNum != (uint16_t)lastCollected[channel])) {
-    lastCollected[channel] = val.sampleNum;
-    if(numSamples < MAX_SAMPLES) {
-      sampleBuffer[numSamples++] = val;
-    }
-  }
-
-}
-
-//TODO: MAKE LOOKUPTABLE
 inline uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef channel)
 {
 
-  return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
   if(!has_daughterboard) {
     return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
   }
-  //Digital channels.
-  if (channel < IO_CHANNELS_END) {
-    //printf("ch: %d, %p\n", channel, (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100));
-    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
-  }
-
-  //ADC channels share a controller, and within this controller
-  //there are 8 channels.
-  //TODO: Just use one full 8-bit address block for each channel
-  //and avoid this subdivision stuff.
-  if ((AD_CHANNELS_START <= channel) && (channel <= AD_CHANNELS_END)) {
-    //uint16_t boardChan = channel - AD_CHANNELS_START;
-    //uint16_t controllerNr = channel - boardChan;
-    //Each board has 1 controller, each channel is at 16 uint16_t's offset.
-    //return (uint16_t*)(EBI_ADDR_BASE) + (controllerNr * 0x100) + (0x10*boardChan);
-    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
-  }
-
-  if ((DA_CHANNELS_START <= channel) && (channel <= DA_CHANNELS_END)) {
-    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
-  }
-  //Each channel controller has 2^8 = 0x100 16-bit words, or
-  //2^9 bytes.
   return (uint16_t*)(EBI_ADDR_BASE) + channel*0x100;
 }
 
@@ -796,7 +750,7 @@ void execCurrentPack()
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
   }
 
-  if(currentPack.command == USB_CMD_CONFIG_PIN) {
+  else if(currentPack.command == USB_CMD_CONFIG_PIN) {
     struct pinItem item;
     if(currentPack.data != NULL) {
       uint32_t * d = (uint32_t *)(currentPack.data);
@@ -826,6 +780,12 @@ void execCurrentPack()
     } else {
       printf("Curr data NULL\n");
     }
+
+    //Recording pins need some setup
+    if((item.type == PINCONFIG_DATA_TYPE_RECORD_ANALOGUE) || (item.type == PINCONFIG_DATA_TYPE_RECORD)) {
+      setupInput(item.pin, item.sampleRate, item.endTime-item.startTime);
+    }
+
   }
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
@@ -846,7 +806,7 @@ void execCurrentPack()
     uint16_t * d = (uint16_t*)(currentPack.data);
     for(int i = 0; i < 32; i++) {
       xbar[i] = d[i];
-      printf("XBAR: Word %d: %x\n", i, d[i]); 
+      //printf("XBAR: Word %d: %x\n", i, d[i]); 
     }
     xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
     USBTIMER_DelayMs(3);
@@ -876,6 +836,7 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_RESET_ALL) {
     mecoboStatus = MECOBO_STATUS_BUSY;
 
+    fpgaTableIndex = 0;
     uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
     memctrl[5] = 5; //reset
 
@@ -955,17 +916,18 @@ void execCurrentPack()
 
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
 
-    for(int i = 0; i < *txSamples; i++) {
-      uint16_t data = (uint16_t)memctrl[1];
-      uint8_t fpgaTableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
+    for(unsigned int i = 0; i < *txSamples; i++) {
+      uint16_t data = memctrl[1];
+      uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
       //if(DEBUG_PRINTING)
         //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-      if(i < 10) 
-        printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[fpgaTableIndex]);
+      if(i < 5)  {
+        printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
+      }
 
       samples[i].sampleNum = i;
-      samples[i].channel = fpgaTableToChannel[fpgaTableIndex];
+      samples[i].channel = fpgaTableToChannel[tableIndex];
       samples[i].value = data;
     }
 
@@ -1046,16 +1008,12 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
 void resetAllPins()
 {
-  for (int i = 0; i < nPins; i++) {
-    lastCollected[i] = -1;
-  }
-
-  printf("Reseting all digital pin controllers\n");
+   printf("Reseting all digital pin controllers\n");
   for(int j = 0; j < 50; j++) {
     uint16_t * addr = (getChannelAddress((j)));
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-  }
-  printf("OK\n");
+   }
+   printf("OK\n");
 }
 
 void led(int l, int mode)
