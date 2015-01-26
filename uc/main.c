@@ -841,9 +841,10 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
     //printf("SHIPPING numSamples: %d\n", numSamples);
-    printf("SHIPPING numSamples: %d\n", fpgaNumSamples);
+    printf("Sending %u samples back\n", fpgaNumSamples);
 
     sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&fpgaNumSamples);
+
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
@@ -851,13 +852,9 @@ void execCurrentPack()
     uint16_t * memctrl = getChannelAddress(242);
 
     //Send back the whole sending buffer.
-    //Max packet size is 64000 bytes, so we need to split into several xfer's.
-
     //Data contains the number of samples to xfer.
     uint32_t * txSamples = (uint32_t *)(currentPack.data);
-
     int bytes = sizeof(struct sampleValue) * *txSamples;
-
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
 
     for(unsigned int i = 0; i < *txSamples; i++) {

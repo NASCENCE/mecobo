@@ -239,7 +239,6 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
 
 std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel) 
 {
-  std::cout << "::: Channel is " << channel << std::endl;
   return channelToPin[channel];
 }
 

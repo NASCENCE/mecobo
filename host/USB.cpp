@@ -138,9 +138,6 @@ void USB::sendBytesDefaultEndpoint(uint8_t * bytes, int numBytes)
 void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
 {
   //Get data back.
-  //printf("Waiting for %d bytes from meco\n", nBytes);
-  //TODO: There is a bug. Sometimes hang. If the buffer is larger than 64K it seems.
-
   int bytesRemaining = numBytes;
   int transfered = 0;
   int ret = 0;
