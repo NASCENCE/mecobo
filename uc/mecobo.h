@@ -16,6 +16,14 @@
 #include "em_gpio.h"
 #include "../mecoprot.h"
 
+
+#define SRAM1_START 0x84000000
+#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
+
+#define SRAM2_START 0x88000000
+#define SRAM2_BYTES 256*1024 
+
+
 #define FPGA_BASE_ADDR 0
 
 //LED defines
@@ -147,6 +155,7 @@ void resetAllPins();
 void led(int l, int mode);
 void programFPGA();
 
+void testRam();
 
 #endif //__MECOBO_H_
 

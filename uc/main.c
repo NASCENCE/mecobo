@@ -61,7 +61,7 @@ static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 static int timeMs = 0;
 static int timeTick = 0; //10,000 per second.
 static int lastTimeTick = 0;
- 
+
 static int has_daughterboard = 0;
 
 //USB Variables
@@ -95,12 +95,6 @@ static int fpgaTableIndex = 0;
 static uint8_t fpgaTableToChannel[8];
 static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
-static uint16_t * memctrl;
-#define SRAM1_START 0x84000000
-#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
-
-#define SRAM2_START 0x88000000
-#define SRAM2_BYTES 256*1024 
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -114,7 +108,6 @@ static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
 static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
 //Such a waste of space, should use hash map.
 
-struct sampleValue * sampleBuffer = (struct sampleValue*)SRAM1_START;
 int numSamples = 0;
 
 int inputChannels[MAX_INPUT_CHANNELS];
@@ -174,33 +167,23 @@ int main(void)
     sinus[i] = (uint8_t)((sin(j)*(float)128.0)+(float)128.0);
     printf("%u\n", sinus[i]);
   }
-  printf("Address of samplebuffer: %p\n", sampleBuffer);
-  printf("Have room for %d samples\n", MAX_SAMPLES);
-  memctrl = (uint16_t*)getChannelAddress(242);
-
   int skip_boot_tests= 0;
-  /*
-     for(int j = 0; j < 100000; j++) {
-     printf("%x: %x\n", ((uint8_t*)(EBI_ADDR_BASE + j)), *((uint8_t*)(EBI_ADDR_BASEl + j)));
-     }
-     */
 
-
-    if(!skip_boot_tests) {
+  if(!skip_boot_tests) {
 
     //Verify presence of daughterboard bitfile
     uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
     if (dac[PINCONFIG_STATUS_REG] == 0xdac) {
-        has_daughterboard = 1;
-        printf("Detected daughterboard bitfile (has DAC controller)\n");
+      has_daughterboard = 1;
+      printf("Detected daughterboard bitfile (has DAC controller)\n");
     }
 
     if (has_daughterboard) {
-	  //Check DAC controllers.
-	  printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
-	  uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
-	  printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
-	  printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
+      //Check DAC controllers.
+      printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
+      uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
+      printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
+      printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
       printf("Setting up DAC and ADCs\n");
       setupDAC();
       setupADC();
@@ -223,55 +206,14 @@ int main(void)
     }
 
     printf("FPGA check complete\n");
-    printf("SRAM 1 TEST\n");
-    uint8_t * ram = (uint8_t*)sampleBuffer;
-    for(int i = 0; i < 4; i++) {
-      for(int j = 0; j < SRAM1_BYTES; j++) {
-        ram[i*(16*1024)+j] = j%255;
-      }
-      for(int j = 0; j < 16*1024; j++) {
-        uint8_t rb = ram[i*(16*1024) + j];
-        if(rb != j%255) {
-          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-        }
-      }
-      //Null out before use.
-      ram[i] = 0;
-    }
-    printf("Complete.\n");
 
-
-    printf("SRAM 1 TEST SAME PATTERN\n");
-    uint8_t * pat = (uint8_t*)SRAM1_START;
-    for(int j = 0; j < SRAM1_BYTES; j++) {
-      pat[j] = 0xAA;
-      if(pat[j] != 0xAA) {
-        printf("Failed RAM test!\n");
-      }
-    }
-    printf("Complete.\n");
-
-    printf("SRAM 2 TEST\n");
-    ram = (uint8_t*)SRAM2_START;
-    for(int i = 0; i < 4; i++) {
-      for(int j = 0; j < SRAM2_BYTES; j++) {
-        ram[i*(16*1024)+j] = j%255;
-      }
-      for(int j = 0; j < 16*1024; j++) {
-        uint8_t rb = ram[i*(16*1024) + j];
-        if(rb != j%255) {
-          printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-        }
-      }
-    }
+    testRam();
   }
-  printf("Complete.\n");
-
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
   //TODO: This is just silly, don't need to malloc here.
-  
+
   //Put FPGA out of reset
   GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 5); //Reset
@@ -355,9 +297,9 @@ int main(void)
         if (currentItem->startTime <= timeMs) {
           execute(currentItem);
           if(numItemsLeftToExecute == 0) {
-                printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
+            printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
           } else {
-                numItemsLeftToExecute--;
+            numItemsLeftToExecute--;
           }
 
           itemsInFlight[iifPos++] = currentItem;
@@ -378,7 +320,7 @@ int main(void)
       if (lastTimeTick != timeTick) {
         for(unsigned int flight = 0; flight < numItemsInFlight; flight++) {
           //if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
-            //execute(itemsInFlight[flight]);
+          //execute(itemsInFlight[flight]);
           //}
           if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
             execute(itemsInFlight[flight]);
@@ -537,7 +479,7 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 
 }
 
-static inline uint32_t get_bit(uint32_t val, uint32_t bit) 
+inline uint32_t get_bit(uint32_t val, uint32_t bit) 
 {
   return (val >> bit) & 0x1;
 }
@@ -563,7 +505,7 @@ inline void execute(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD:
       printf("  %d RD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       startInput();
-  //    startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
+      //    startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
@@ -643,6 +585,7 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
+  uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
   printf("Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
@@ -725,6 +668,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
 inline void startInput() 
 {
+  uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   memctrl[5] = 1;
 }
 
@@ -868,7 +812,7 @@ void execCurrentPack()
       for(int r = 0; r < 4; r++) {
         adcSequence[r] = 0xE000;
       }
-      
+
       for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
         DACreg[i] = 128;
         registersUpdated[i] = 0;
@@ -890,7 +834,7 @@ void execCurrentPack()
     }
 
     resetAllPins();
-    
+
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
   }
@@ -920,7 +864,7 @@ void execCurrentPack()
       uint16_t data = memctrl[1];
       uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
       //if(DEBUG_PRINTING)
-        //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
+      //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
       if(i < 5)  {
         printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
@@ -1008,12 +952,12 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 
 void resetAllPins()
 {
-   printf("Reseting all digital pin controllers\n");
+  printf("Reseting all digital pin controllers\n");
   for(int j = 0; j < 50; j++) {
     uint16_t * addr = (getChannelAddress((j)));
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-   }
-   printf("OK\n");
+  }
+  printf("OK\n");
 }
 
 void led(int l, int mode)
