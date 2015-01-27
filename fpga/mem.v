@@ -65,16 +65,12 @@ assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
 reg [15:0] ebi_captured_data;
-reg new_unit_added;
-reg sample_fetched;
 
 //EBI capture
 always @ (posedge clk) begin
   if(rst) begin
     ebi_data_out <= 0;
     ebi_captured_data <= 0;
-    sample_fetched <= 0;
-    new_unit_added <= 0;
   end else begin
     if (res_cmd_reg) 
       command <= 0;
@@ -179,7 +175,7 @@ reg res_sampling;
 reg capture_sample_data;
 
 reg [31:0] last_fetched [0:15];
-reg [31:0] sample_data_reg;
+reg [31:0] sample_data_reg [0:15];
 
 integer mi;
 initial begin 
@@ -285,7 +281,7 @@ always @ (posedge clk) begin
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
 
-      if (last_fetched[current_id_idx] != sample_data_reg) begin
+      if (last_fetched[current_id_idx] != sample_data_reg[current_id_idx]) begin
         ram_write_enable <= 1'b1;
       	inc_num_samples <= 1'b1;
       end
@@ -332,11 +328,11 @@ always @ (posedge clk) begin
     memory_top_addr <= 0;
     memory_bottom_addr <= 0;
     current_id_idx <= 0;
-    sample_data_reg <= 0;
 
     for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
       collection_channels[mj] <= 255; //no such channel: special.
       last_fetched[mj] <= 0;
+      sample_data_reg[mj] <= 0;
     end
  
   end else begin
@@ -359,11 +355,11 @@ always @ (posedge clk) begin
     end 
 
     if(capture_sample_data) begin
-      sample_data_reg <= sample_data;
+      sample_data_reg[current_id_idx] <= sample_data;
     end
   
    if(ram_write_enable) begin
-     last_fetched[current_id_idx] <= sample_data_reg;
+     last_fetched[current_id_idx] <= sample_data_reg[current_id_idx];
    end
 	 
     //only increment mod num_units-1 (0-indexed)
@@ -381,7 +377,7 @@ end
 wire [15:0] ram_data_out;
 wire [15:0] ram_data_in;
 
-assign ram_data_in = {current_id_idx[2:0], sample_data_reg[12:0]}; //last_fetched[current_id_idx][15:0];
+assign ram_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
 
 dp_ram sample_ram(
   .clk(clk),

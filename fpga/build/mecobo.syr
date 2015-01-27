@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.09 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.09 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Reading design: mecobo.prj
@@ -234,14 +234,13 @@ Elaborating module <xbar_control(POSITION=200)>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/xbar_control.v" Line 224: Result of 10-bit expression is truncated to fit in 9-bit target.
 
 Elaborating module <mem>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 103: Result of 19-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 115: Result of 19-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/mem.v" Line 72: Assignment to sample_fetched ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 345: Result of 20-bit expression is truncated to fit in 19-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 346: Result of 20-bit expression is truncated to fit in 19-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 352: Result of 5-bit expression is truncated to fit in 4-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 358: Result of 20-bit expression is truncated to fit in 19-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 374: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 99: Result of 19-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 111: Result of 19-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 341: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 342: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 348: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 354: Result of 20-bit expression is truncated to fit in 19-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 370: Result of 5-bit expression is truncated to fit in 4-bit target.
 
 Elaborating module <dp_ram>.
 
@@ -2132,7 +2131,7 @@ Synthesizing Unit <mem>.
         fetch = 5'b01000
         fetch_wait = 5'b10000
 WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 386: Output port <doa> of the instance <sample_ram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 382: Output port <doa> of the instance <sample_ram> is unconnected or connected to loadless signal.
     Register <ram_write_enable> equivalent to <inc_num_samples> has been removed
     Found 16-bit register for signal <ebi_captured_data>.
     Found 16-bit register for signal <command>.
@@ -2153,9 +2152,9 @@ INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 386: Output port <doa> of
     Found 19-bit register for signal <memory_top_addr>.
     Found 19-bit register for signal <memory_bottom_addr>.
     Found 4-bit register for signal <current_id_idx>.
-    Found 32-bit register for signal <sample_data_reg>.
-    Found 128-bit register for signal <n0157[127:0]>.
-    Found 512-bit register for signal <n0165[511:0]>.
+    Found 128-bit register for signal <n0177[127:0]>.
+    Found 512-bit register for signal <n0185[511:0]>.
+    Found 512-bit register for signal <n0186[511:0]>.
     Found 16-bit register for signal <ebi_data_out>.
     Found finite state machine <FSM_19> for signal <state>.
     -----------------------------------------------------------------------
@@ -2168,23 +2167,25 @@ INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/mem.v" line 386: Output port <doa> of
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 5-bit subtractor for signal <GND_604_o_GND_604_o_sub_113_OUT> created at line 371.
-    Found 19-bit adder for signal <num_samples[18]_GND_604_o_add_61_OUT> created at line 345.
-    Found 19-bit adder for signal <memory_top_addr[18]_GND_604_o_add_62_OUT> created at line 346.
-    Found 4-bit adder for signal <num_units[3]_GND_604_o_add_85_OUT> created at line 352.
-    Found 19-bit adder for signal <memory_bottom_addr[18]_GND_604_o_add_90_OUT> created at line 358.
-    Found 4-bit adder for signal <current_id_idx[3]_GND_604_o_add_114_OUT> created at line 374.
-    Found 32-bit 16-to-1 multiplexer for signal <current_id_idx[3]_last_fetched[15][31]_wide_mux_33_OUT> created at line 288.
-    Found 8-bit 16-to-1 multiplexer for signal <channel_select> created at line 320.
-    Found 32-bit comparator not equal for signal <n0047> created at line 288
-    Found 19-bit comparator lessequal for signal <num_samples[18]_GND_604_o_LessThan_61_o> created at line 344
-    Found 19-bit comparator lessequal for signal <memory_bottom_addr[18]_GND_604_o_LessThan_90_o> created at line 357
-    Found 32-bit comparator equal for signal <GND_604_o_GND_604_o_equal_114_o> created at line 371
+    Found 5-bit subtractor for signal <GND_604_o_GND_604_o_sub_132_OUT> created at line 367.
+    Found 19-bit adder for signal <num_samples[18]_GND_604_o_add_62_OUT> created at line 341.
+    Found 19-bit adder for signal <memory_top_addr[18]_GND_604_o_add_63_OUT> created at line 342.
+    Found 4-bit adder for signal <num_units[3]_GND_604_o_add_86_OUT> created at line 348.
+    Found 19-bit adder for signal <memory_bottom_addr[18]_GND_604_o_add_91_OUT> created at line 354.
+    Found 4-bit adder for signal <current_id_idx[3]_GND_604_o_add_133_OUT> created at line 370.
+    Found 32-bit 16-to-1 multiplexer for signal <current_id_idx[3]_last_fetched[15][31]_wide_mux_33_OUT> created at line 284.
+    Found 32-bit 16-to-1 multiplexer for signal <current_id_idx[3]_sample_data_reg[15][31]_wide_mux_112_OUT> created at line 284.
+    Found 8-bit 16-to-1 multiplexer for signal <channel_select> created at line 316.
+    Found 13-bit 16-to-1 multiplexer for signal <ram_data_in<12:0>> created at line 380.
+    Found 32-bit comparator not equal for signal <n0048> created at line 284
+    Found 19-bit comparator lessequal for signal <num_samples[18]_GND_604_o_LessThan_62_o> created at line 340
+    Found 19-bit comparator lessequal for signal <memory_bottom_addr[18]_GND_604_o_LessThan_91_o> created at line 353
+    Found 32-bit comparator equal for signal <GND_604_o_GND_604_o_equal_133_o> created at line 367
     Summary:
 	inferred   6 Adder/Subtractor(s).
-	inferred 796 D-type flip-flop(s).
+	inferred 1276 D-type flip-flop(s).
 	inferred   4 Comparator(s).
-	inferred  41 Multiplexer(s).
+	inferred  59 Multiplexer(s).
 	inferred   1 Finite State Machine(s).
 Unit <mem> synthesized.
 
@@ -2225,9 +2226,9 @@ Macro Statistics
  19-bit register                                       : 5
  27-bit register                                       : 1
  31-bit register                                       : 16
- 32-bit register                                       : 34
+ 32-bit register                                       : 33
  4-bit register                                        : 4
- 512-bit register                                      : 2
+ 512-bit register                                      : 3
  9-bit register                                        : 1
 # Comparators                                          : 30
  16-bit comparator equal                               : 9
@@ -2236,13 +2237,14 @@ Macro Statistics
  32-bit comparator equal                               : 1
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
-# Multiplexers                                         : 477
+# Multiplexers                                         : 495
  1-bit 2-to-1 multiplexer                              : 267
+ 13-bit 16-to-1 multiplexer                            : 1
  16-bit 2-to-1 multiplexer                             : 108
  16-bit 32-to-1 multiplexer                            : 1
  16-bit 8-to-1 multiplexer                             : 2
- 32-bit 16-to-1 multiplexer                            : 1
- 32-bit 2-to-1 multiplexer                             : 80
+ 32-bit 16-to-1 multiplexer                            : 2
+ 32-bit 2-to-1 multiplexer                             : 96
  32-bit 8-to-1 multiplexer                             : 1
  8-bit 16-to-1 multiplexer                             : 1
  8-bit 2-to-1 multiplexer                              : 16
@@ -2524,8 +2526,8 @@ Macro Statistics
  9-bit up counter                                      : 1
 # Accumulators                                         : 16
  32-bit up accumulator                                 : 16
-# Registers                                            : 3910
- Flip-Flops                                            : 3910
+# Registers                                            : 4390
+ Flip-Flops                                            : 4390
 # Comparators                                          : 30
  16-bit comparator equal                               : 9
  16-bit comparator greater                             : 16
@@ -2533,11 +2535,12 @@ Macro Statistics
  32-bit comparator equal                               : 1
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
-# Multiplexers                                         : 1903
- 1-bit 16-to-1 multiplexer                             : 40
- 1-bit 2-to-1 multiplexer                              : 1691
+# Multiplexers                                         : 2448
+ 1-bit 16-to-1 multiplexer                             : 72
+ 1-bit 2-to-1 multiplexer                              : 2203
  1-bit 32-to-1 multiplexer                             : 16
  1-bit 8-to-1 multiplexer                              : 48
+ 13-bit 16-to-1 multiplexer                            : 1
  16-bit 2-to-1 multiplexer                             : 43
  16-bit 8-to-1 multiplexer                             : 1
  32-bit 2-to-1 multiplexer                             : 64
@@ -3047,23 +3050,22 @@ Mapping all equations...
 Building and optimizing final netlist ...
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_14> <adc0/sample_register_13> 
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_151> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_141> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_144> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_134> 
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_152> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_132> 
-Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 26.
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_144> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_134> 
+Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 30.
 FlipFlop adc0/shift_in_register_13 has been replicated 5 time(s)
 FlipFlop adc0/shift_in_register_14 has been replicated 5 time(s)
 FlipFlop adc0/shift_in_register_15 has been replicated 5 time(s)
-FlipFlop mem0/current_id_idx_0 has been replicated 6 time(s)
-FlipFlop mem0/current_id_idx_1 has been replicated 7 time(s)
-FlipFlop mem0/current_id_idx_2 has been replicated 2 time(s)
-FlipFlop mem0/current_id_idx_3 has been replicated 2 time(s)
+FlipFlop mem0/current_id_idx_0 has been replicated 11 time(s)
+FlipFlop mem0/current_id_idx_1 has been replicated 13 time(s)
+FlipFlop mem0/current_id_idx_2 has been replicated 7 time(s)
+FlipFlop mem0/current_id_idx_3 has been replicated 3 time(s)
+FlipFlop mem0/inc_num_samples has been replicated 1 time(s)
 FlipFlop mem0/memory_bottom_addr_12 has been replicated 1 time(s)
-FlipFlop mem0/memory_bottom_addr_13 has been replicated 1 time(s)
 FlipFlop mem0/memory_bottom_addr_2 has been replicated 1 time(s)
 FlipFlop mem0/memory_bottom_addr_9 has been replicated 1 time(s)
 FlipFlop mem0/num_samples_12 has been replicated 1 time(s)
 FlipFlop mem0/num_samples_13 has been replicated 1 time(s)
-FlipFlop mem0/num_samples_8 has been replicated 1 time(s)
 FlipFlop mem0/num_samples_9 has been replicated 1 time(s)
 FlipFlop mem0/num_units_0 has been replicated 1 time(s)
 FlipFlop mem0/num_units_1 has been replicated 1 time(s)
@@ -3076,8 +3078,8 @@ Final Macro Processing ...
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 4922
- Flip-Flops                                            : 4922
+# Registers                                            : 5418
+ Flip-Flops                                            : 5418
 
 =========================================================================
 
@@ -3100,26 +3102,26 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 8172
+# BELS                             : 9061
 #      GND                         : 1
 #      INV                         : 83
 #      LUT1                        : 536
 #      LUT2                        : 657
 #      LUT3                        : 893
-#      LUT4                        : 623
-#      LUT5                        : 273
-#      LUT6                        : 2021
-#      MUXCY                       : 1554
-#      MUXF7                       : 156
-#      MUXF8                       : 40
+#      LUT4                        : 651
+#      LUT5                        : 297
+#      LUT6                        : 2689
+#      MUXCY                       : 1588
+#      MUXF7                       : 246
+#      MUXF8                       : 85
 #      VCC                         : 1
 #      XORCY                       : 1334
-# FlipFlops/Latches                : 4924
-#      FD                          : 544
+# FlipFlops/Latches                : 5420
+#      FD                          : 562
 #      FDE                         : 948
 #      FDE_1                       : 31
 #      FDR                         : 829
-#      FDRE                        : 2428
+#      FDRE                        : 2906
 #      FDS                         : 14
 #      FDSE                        : 128
 #      ODDR2                       : 2
@@ -3145,15 +3147,15 @@ Selected Device : 6slx45csg324-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:            4924  out of  54576     9%  
- Number of Slice LUTs:                 5086  out of  27288    18%  
-    Number used as Logic:              5086  out of  27288    18%  
+ Number of Slice Registers:            5420  out of  54576     9%  
+ Number of Slice LUTs:                 5806  out of  27288    21%  
+    Number used as Logic:              5806  out of  27288    21%  
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   5942
-   Number with an unused Flip Flop:    1018  out of   5942    17%  
-   Number with an unused LUT:           856  out of   5942    14%  
-   Number of fully used LUT-FF pairs:  4068  out of   5942    68%  
+ Number of LUT Flip Flop pairs used:   6571
+   Number with an unused Flip Flop:    1151  out of   6571    17%  
+   Number with an unused LUT:           765  out of   6571    11%  
+   Number of fully used LUT-FF pairs:  4655  out of   6571    70%  
    Number of unique control sets:       160
 
 IO Utilization: 
@@ -3187,7 +3189,7 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-clocks/pll_base_inst/CLKOUT0       | BUFG                   | 4688  |
+clocks/pll_base_inst/CLKOUT0       | BUFG                   | 5184  |
 clocks/pll_base_inst/CLKOUT2       | BUFG                   | 209   |
 clocks/pll_base_inst/CLKOUT3       | BUFG                   | 64    |
 clocks/pll_base_inst/CLKOUT1       | DCM_SP:CLKDV           | 30    |
@@ -3201,7 +3203,7 @@ Timing Summary:
 ---------------
 Speed Grade: -3
 
-   Minimum period: 4.912ns (Maximum Frequency: 203.603MHz)
+   Minimum period: 4.962ns (Maximum Frequency: 201.539MHz)
    Minimum input arrival time before clock: 8.904ns
    Maximum output required time after clock: 5.862ns
    Maximum combinational path delay: 6.496ns
@@ -3212,29 +3214,26 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Clock period: 4.912ns (frequency: 203.603MHz)
-  Total number of paths / destination ports: 73090 / 9449
+  Clock period: 4.962ns (frequency: 201.539MHz)
+  Total number of paths / destination ports: 104544 / 10901
 -------------------------------------------------------------------------
-Delay:               4.912ns (Levels of Logic = 5)
-  Source:            mem0/current_id_idx_0_1 (FF)
-  Destination:       adc0/sample_data_14 (FF)
+Delay:               4.962ns (Levels of Logic = 2)
+  Source:            mem0/num_samples_8 (FF)
+  Destination:       mem0/num_samples_18 (FF)
   Source Clock:      clocks/pll_base_inst/CLKOUT0 rising
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
 
-  Data Path: mem0/current_id_idx_0_1 to adc0/sample_data_14
+  Data Path: mem0/num_samples_8 to mem0/num_samples_18
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q              17   0.447   1.132  mem0/current_id_idx_0_1 (mem0/current_id_idx_0_1)
-     LUT6:I4->O            1   0.203   0.000  mem0/mux674_4 (mem0/mux674_4)
-     MUXF7:I1->O           1   0.140   0.000  mem0/mux674_3_f7 (mem0/mux674_3_f7)
-     MUXF8:I1->O          80   0.152   1.746  mem0/mux674_2_f8 (sample_channel_select<2>)
-     LUT3:I2->O            1   0.205   0.580  adc0/mux261_2_f7_SW0 (N155)
-     LUT6:I5->O            1   0.205   0.000  adc0/mux261_2_f7 (adc0/n1501<14>)
-     FD:D                      0.102          adc0/sample_data_14
+     FDRE:C->Q            68   0.447   2.011  mem0/num_samples_8 (mem0/num_samples_8)
+     LUT6:I1->O            1   0.203   0.684  mem0/_n0379_inv1 (mem0/_n0379_inv1)
+     LUT5:I3->O           20   0.203   1.092  mem0/_n0379_inv4 (mem0/_n0379_inv)
+     FDRE:CE                   0.322          mem0/num_samples_0
     ----------------------------------------
-    Total                      4.912ns (1.454ns logic, 3.458ns route)
-                                       (29.6% logic, 70.4% route)
+    Total                      4.962ns (1.175ns logic, 3.787ns route)
+                                       (23.7% logic, 76.3% route)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT2'
@@ -3309,7 +3308,7 @@ Delay:               5.027ns (Levels of Logic = 4)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 51165 / 6653
+  Total number of paths / destination ports: 51157 / 6652
 -------------------------------------------------------------------------
 Offset:              8.904ns (Levels of Logic = 4)
   Source:            reset (PAD)
@@ -3498,7 +3497,7 @@ Clock to Setup on destination clock clocks/pll_base_inst/CLKOUT0
                             | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ----------------------------+---------+---------+---------+---------+
-clocks/pll_base_inst/CLKOUT0|    4.912|         |         |         |
+clocks/pll_base_inst/CLKOUT0|    4.962|         |         |         |
 clocks/pll_base_inst/CLKOUT1|    3.029|         |         |         |
 clocks/pll_base_inst/CLKOUT2|    2.629|         |         |         |
 clocks/pll_base_inst/CLKOUT3|    1.579|         |         |         |
@@ -3534,15 +3533,15 @@ clocks/pll_base_inst/CLKOUT3|    3.930|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 55.00 secs
-Total CPU time to Xst completion: 54.70 secs
+Total REAL time to Xst completion: 59.00 secs
+Total CPU time to Xst completion: 58.43 secs
  
 --> 
 
 
-Total memory usage is 519356 kilobytes
+Total memory usage is 545688 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  433 (   0 filtered)
+Number of warnings :  432 (   0 filtered)
 Number of infos    :   51 (   0 filtered)
 
