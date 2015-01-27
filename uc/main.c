@@ -95,6 +95,7 @@ static int fpgaTableIndex = 0;
 static uint8_t fpgaTableToChannel[8];
 static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
+static int samplingStarted = 0;
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -574,6 +575,9 @@ void killItem(struct pinItem * item)
             inputChannels[j] = inputChannels[j+1];
           }
           numInputChannels--;
+          if(numInputChannels == 0) {
+            samplingStarted = 0;
+          }
           //break;
         }
       }
@@ -666,10 +670,13 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 }
 
 
-inline void startInput() 
+inline void startInput()
 {
-  uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-  memctrl[5] = 1;
+  if(!samplingStarted) {
+    uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
+    memctrl[5] = 1;
+    samplingStarted = 1;
+  }
 }
 
 inline uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef channel)
@@ -863,7 +870,7 @@ void execCurrentPack()
       //if(DEBUG_PRINTING)
       //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-      if(i < 5)  {
+      if(i < 100)  {
         printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
       }
 
