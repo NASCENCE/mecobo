@@ -143,7 +143,8 @@ extern "C" {
 //Start output on given pin
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);
-void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration);
+void startInput();
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration);
 void getInput(FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef pin);

@@ -192,6 +192,8 @@ void Mecobo::programFPGA(const char * filename)
 
 std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 {
+
+  //This holds all the samples.
   std::vector<sampleValue> samples;
 
   //Send request for buffer size
@@ -201,38 +203,64 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 
   //Retrieve bytes.
   uint32_t nSamples = 0;
+  int usbTransfers = 1;
+  int remainderSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
+  
+  int maxSamplesPerTx = (64000/sizeof(sampleValue));
 
-  //Got the input buffer size back, now we collect it.
+  //Number of samples ready to be fetched.
   std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
+    std::cout << "WARNING: No samples collected. Something might be wrong :(" << std::endl;
     return pinRecordings[materialPin];
-  } else {
-    if(nSamples >= 64000/sizeof(sampleValue)) {
-      nSamples = 64000/sizeof(sampleValue);
-      std::cout << "WARNING: Receiving less (" << nSamples << ") than what we could because of USB." << std::endl;
-    } 
-    int totalBytes = nSamples * sizeof(sampleValue);
+  }
 
-    sampleValue* collectedSamples = new sampleValue[nSamples];
+  //max tx size is 64k
+  usbTransfers = nSamples/maxSamplesPerTx;
+  remainderSamples = nSamples%maxSamplesPerTx;
+  std::cout << "Splitting in "<< usbTransfers << " transfers and " << remainderSamples << " remainder" << std::endl;
+  //additional transfer for the remainder
+  if (remainderSamples > 0) {
+    usbTransfers++;
+  }
 
-    std::cout << "Receiving bytes:" << totalBytes << std::endl;
+  //Do the required number of transfers
+  for(int p = 1; p <= usbTransfers; p++) {
+
+    int thisTxBytes = nSamples * sizeof(sampleValue);
+    int thisTxSamples = nSamples;
+    if(remainderSamples > 0) {
+      //last tx
+      if(p == usbTransfers) {
+        thisTxBytes = remainderSamples * sizeof(sampleValue);
+        thisTxSamples = remainderSamples;
+      } else {
+        thisTxBytes = maxSamplesPerTx * sizeof(sampleValue);
+        thisTxSamples = maxSamplesPerTx;
+      }
+    } else {
+      thisTxBytes = nSamples * sizeof(sampleValue);
+      thisTxSamples = nSamples;
+    }
+    
+    
+    
+    sampleValue* collectedSamples = new sampleValue[thisTxSamples];
+
+    std::cout << "Receiving bytes:" << thisTxBytes << std::endl;
 
     //Ask for samples back.
-    //uint32_t ch = xbar.getChannel(materialPin);
-    createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
+    createMecoPack(&pack, (uint8_t*)&thisTxSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack);
 
-    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, totalBytes);
+    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, thisTxBytes);
 
     sampleValue * casted = (sampleValue *)collectedSamples;
-    for(int i = 0; i < (int)nSamples; i++) {
+    for(int i = 0; i < (int)thisTxSamples; i++) {
       samples.push_back(casted[i]);
     }
 
-    //std::sort(samples.begin(), samples.end(), 
-     //   [](sampleValue const & a, sampleValue const & b) { return a.sampleNum < b.sampleNum; });
-    
     delete[] collectedSamples;
   }
 
