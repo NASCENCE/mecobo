@@ -503,6 +503,18 @@ inline void execute(struct pinItem * item)
       addr[PINCONFIG_LOCAL_CMD]         = CMD_START_OUTPUT;
       break;
 
+    case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
+      addr = getChannelAddress(item->pin);
+      printf("  %d DIGITAL CONST: Digital C:%d, constant: %u, ad: %p\n", timeMs, item->pin, item->constantValue, addr);
+      if(item->constantValue == 1) {
+        printf( "    const high\n");
+        addr[PINCONFIG_LOCAL_CMD] = CMD_CONST_HIGH;
+      } else {
+        printf( "    const low\n");
+        addr[PINCONFIG_LOCAL_CMD] = CMD_CONST_LOW;
+      }
+      break;
+
     case PINCONFIG_DATA_TYPE_RECORD:
       printf("  %d RD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
       startInput();
@@ -552,6 +564,7 @@ void killItem(struct pinItem * item)
   uint16_t * addr = getChannelAddress(item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+    case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
       printf("  KILL %d : DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
       //addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       //addr[PINCONFIG_ANTIDUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
@@ -705,7 +718,7 @@ void execCurrentPack()
     struct pinItem item;
     if(currentPack.data != NULL) {
       uint32_t * d = (uint32_t *)(currentPack.data);
-      item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);
+      item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);  //pin is channel, actually
       item.duty = d[PINCONFIG_DATA_DUTY];
       item.antiDuty = d[PINCONFIG_DATA_ANTIDUTY];
       item.startTime = d[PINCONFIG_START_TIME];

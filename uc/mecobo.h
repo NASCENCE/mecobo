@@ -62,9 +62,9 @@
 
 //Possible FPGA commands
 #define CMD_START_OUTPUT  1
-#define CMD_READ_PIN    2
+#define CMD_CONST_LOW  2
 #define CMD_INPUT_STREAM  3
-#define CMD_PROGRAM_FPGA  4
+#define CMD_CONST_HIGH   4
 #define CMD_RESET  5
 #define CMD_CONST  6
 

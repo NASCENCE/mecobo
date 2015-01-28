@@ -405,6 +405,10 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
   //data[PINCONFIG_DATA_DUTY] = duty;
   //data[PINCONFIG_DATA_ANTIDUTY] = period - duty;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_OUT;
+  if(dutyCycle==100) {
+    data[PINCONFIG_DATA_CONST] = frequency;
+    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_CONST;
+  }
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);

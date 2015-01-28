@@ -58,7 +58,7 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_15] = 15;
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i].push_back(FPGA_IO_Pins_TypeDef::INVALID);
+    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
   }
 }
 
@@ -75,7 +75,7 @@ void channelMap::reset()
   channelToPin.clear();
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i].push_back(FPGA_IO_Pins_TypeDef::INVALID);
+    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
   }
 }
 
@@ -91,18 +91,22 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
       }*/
   //Check if we record from the same pin twice
 
-  for(auto chan : pinToChannel[pin]) {
+  auto chan = pinToChannel[pin];
     if(isADChannel(chan) && isADChannel(channel)) {
       emException e;
       e.Reason = "Can't record the same pin twice, ignored.";
       throw e;
       return;
     }
-  }
+    //Pin has already been mapped
+    if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
+      return;
+    }
   
   std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
-  pinToChannel[pin].push_back(channel);
+  pinToChannel[pin] = channel;
   channelToPin[channel].push_back(pin);
+  numIOchannels++;
   return;
 }
 
@@ -163,11 +167,15 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
     //depending on the command given.
     default:
       if (numIOchannels < maxIOchannels) {
-        channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
-        for(auto p: pin) {
-          mapPin(p, channel);
+        //TODO Bug? We whould probably return a list of channels here
+        if(pinToChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
+          channel = pinToChannel[pin[0]];
+        } else {
+          channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
+          for(auto p: pin) {
+            mapPin(p, channel);
+          }
         }
-        numIOchannels++;
       } else {
         std::cout << "All out of IO channels" << std::endl;
         emException e;
@@ -197,17 +205,17 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     config.push_back(data);
   }
 
-  for(auto channels : pinToChannel) { 
-  //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable.
-    for (auto pc : channels.second) {
-      FPGA_IO_Pins_TypeDef channel = pc;
+  for(auto pc : pinToChannel) { 
+  //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
+    //for (auto pin : channelToPin) {
+      FPGA_IO_Pins_TypeDef channel = pc.second;
     
       //Skip invalid mappings
       if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
         continue;
       }
 
-      int pin = channels.first;
+      int pin = pc.first;
       int configIndex = -1;
 
       //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
@@ -226,7 +234,7 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
       
       config[configIndex] |= (1 << (channelToXbar[channel]));
       std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
-    }
+    //}
   }
 
   std::vector<uint8_t> ret;
@@ -245,6 +253,6 @@ std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel)
 //one pin can only have one channel assigned to it.
 FPGA_IO_Pins_TypeDef channelMap::getChannel(int pin) 
 {
-  return pinToChannel[pin][0];
+  return pinToChannel[pin];
 }
 
