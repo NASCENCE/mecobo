@@ -212,7 +212,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   //Number of samples ready to be fetched.
   std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
-    std::cout << "WARNING: No samples collected. Something might be wrong :(" << std::endl;
+    std::cout << "WARNING: No samples collected. Something might be wrong, but there might just be no new samples as well." << std::endl;
     return pinRecordings[materialPin];
   }
 
@@ -275,17 +275,18 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   for(auto s : samples) {
     //Since one channel can be on many pins we'll collect them all.
     if(hasDaughterboard) {
-    //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
-    std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-    for (auto p : pin) {
-      //Cast from 13 bit to 32 bit two's complement int.
-      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-      //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
-      pinRecordings[(int)p].push_back(v);
-    }
+      std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
+      //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
+      for (auto p : pin) {
+        //std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
+        //Cast from 13 bit to 32 bit two's complement int.
+        int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
+        //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+        pinRecordings[(int)p].push_back(v);
+      }
     } else {
       pinRecordings[s.channel].push_back(s.value);
-  }
+    }
   }
   return pinRecordings[materialPin];
 }
