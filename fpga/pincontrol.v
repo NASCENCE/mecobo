@@ -61,7 +61,12 @@ always @ (posedge clk) begin
   if(reset)
     nco_pa <= 0;
   else begin
-    nco_pa <= nco_pa + nco_counter;
+    if (const_output_null)
+      nco_pa <= 0;
+    else if (const_output_one) 
+      nco_pa <= 32'hFFFFFFFF;
+    else
+      nco_pa <= nco_pa + nco_counter;
   end
 end
 
@@ -108,7 +113,9 @@ end
 //Command parse
 localparam
   CMD_START_OUTPUT = 1,
+  CMD_CONST_LOW = 2,
   CMD_INPUT_STREAM = 3,
+  CMD_CONST_HIGH = 4,
   CMD_RESET = 5;
 
 reg [15:0] command = 0;
@@ -140,6 +147,9 @@ reg dec_sample_counter = 0;
 reg update_data_out    = 0;
 reg update_sample_cnt = 0;
 reg enable_pin_output = 0;
+reg const_output_null = 0;
+reg const_output_one = 0;
+
 
 reg [4:0] state = idle;
 
@@ -164,16 +174,25 @@ always @ (posedge clk) begin
       res_cmd_reg <= 1'b0;
       update_data_out <= 1'b0;
 
+      const_output_null <= 1'b0;
+      const_output_one <= 1'b0;
+
       //Check command register for waiting command.
-      if ( (command == CMD_INPUT_STREAM) ) begin
+      if (command == CMD_INPUT_STREAM) begin
         state <= input_stream;
         res_cmd_reg <= 1'b1; //reset command since this is a single command.
-      end
+      end 
       //Output command.
-      else if ( (command == CMD_START_OUTPUT) ) begin
+      else if (command == CMD_START_OUTPUT) begin
         state <= enable_out;
         res_cmd_reg <= 1'b1; //reset command since this is a single command
       //No command..
+      end else if (command == CMD_CONST_HIGH) begin
+        state <= high;
+        res_cmd_reg <= 1'b1; //reset command since this is a single command
+      end else if (command == CMD_CONST_LOW) begin
+        state <= low;
+        res_cmd_reg <= 1'b1; //reset command since this is a single command
       end else
         state <= idle;
     end
@@ -186,10 +205,57 @@ always @ (posedge clk) begin
     enable_pin_output <= 1'b1;
     res_cmd_reg <= 1'b0;
 
-    if (command == CMD_RESET) 
+    const_output_null <= 1'b0;
+    const_output_one <= 1'b0;
+
+
+    if (command == CMD_RESET) begin
+      res_cmd_reg <= 1'b1;
       state <= idle;
-    else
+    end else
       state <= enable_out;
+  end
+
+  low: begin
+    dec_sample_counter <= 1'b0;
+    res_sample_counter <= 1'b0;
+
+    update_data_out <= 1'b0;
+    enable_pin_output <= 1'b1;
+    res_cmd_reg <= 1'b0;
+
+    const_output_null <= 1'b1;
+    const_output_one <= 1'b0;
+
+    if (command == CMD_RESET) begin
+      state <= idle;
+      res_cmd_reg <= 1'b1;
+    end else if (command == CMD_CONST_HIGH) begin
+      state <= high;
+      res_cmd_reg <= 1'b1;
+    end else
+      state <= low;
+  end
+
+  high: begin
+    dec_sample_counter <= 1'b0;
+    res_sample_counter <= 1'b0;
+
+    update_data_out <= 1'b0;
+    enable_pin_output <= 1'b1;
+    res_cmd_reg <= 1'b0;
+
+    const_output_null <= 1'b0;
+    const_output_one <= 1'b1;
+
+    if (command == CMD_RESET) begin 
+      state <= idle;
+      res_cmd_reg <= 1'b1;
+    end else if (command == CMD_CONST_LOW) begin
+      state <= low;
+      res_cmd_reg <= 1'b1;
+    end else
+      state <= high;
   end
 
   //Stream back data.
@@ -200,6 +266,11 @@ always @ (posedge clk) begin
     update_data_out <= 1'b0;
     enable_pin_output <= 1'b0;
     dec_sample_counter <= 1'b0;
+
+    const_output_null <= 1'b0;
+    const_output_one <= 1'b0;
+
+
 
     //If we have counted down to 1, it's time to update sample reg.
       if (cnt_sample_rate <= 1) begin
@@ -225,6 +296,9 @@ always @ (posedge clk) begin
     res_sample_counter <= 1'b0;
     update_data_out <= 1'b0;
     enable_pin_output <= 1'b0;
+    
+    const_output_null <= 1'b0;
+    const_output_one <= 1'b0;
   end
   endcase
 end
