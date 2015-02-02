@@ -497,10 +497,15 @@ inline void execute(struct pinItem * item)
       uint16_t nocLow = (uint16_t)item->nocCounter;
       uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
       printf("  %d DIGITAL: Digital C:%d, nocCounter: %u, ad: %p\n", timeMs, item->pin, item->nocCounter, addr);
-
+      
+      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      while(addr[10] != CMD_RESET) addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
       addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
+      while(addr[10] != nocLow) addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
-      addr[PINCONFIG_LOCAL_CMD]         = CMD_START_OUTPUT;
+      while(addr[10] != nocHigh) addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
+      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+      while(addr[10] != CMD_START_OUTPUT) addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
@@ -772,9 +777,20 @@ void execCurrentPack()
       xbar[i] = d[i];
       //printf("XBAR: Word %d: %x\n", i, d[i]); 
     }
+
     xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
     USBTIMER_DelayMs(3);
-    while(xbar[0x0A]) { printf("."); }
+    int waitCount = 0;
+    while(xbar[0x0A]) {
+      USBTIMER_DelayMs(1);
+      waitCount++;
+      if(waitCount == 100) {
+        printf("WARNING: Timeout. Continuing.\n");
+        xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+        continue;
+      }
+    }
+
 
     printf("\nXBAR configured\n");
     mecoboStatus = MECOBO_STATUS_READY;
@@ -848,8 +864,16 @@ void execCurrentPack()
 
       xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
       USBTIMER_DelayMs(3);
+      int waitCount = 0;
       while(xbar[0x0A]) { 
         printf("Waiting for XBAR\n"); 
+        USBTIMER_DelayMs(1);
+        waitCount++;
+        if(waitCount == 100) {
+          printf("WARNING: Timeout. Continuing.\n");
+          xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+          continue;
+        }
       }; //hang around until command completes.
     }
 
