@@ -653,7 +653,11 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       //addr[0x04] = 0x8014;
 
       //setup FPGA AD controller
-      addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
+      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
+      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
+      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
+      addr[0x01] = (uint16_t)overflow;
+      addr[0x01] = (uint16_t)overflow;
       for (int i = 0; i < 10; i++);
       addr[0x02] = 1; //divide
       //Sequence register write.
@@ -907,7 +911,7 @@ void execCurrentPack()
       //if(DEBUG_PRINTING)
       //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-      if(i < 100)  {
+      if(i < 10)  {
         printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
       }
 

@@ -353,7 +353,7 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   }
 
 
-  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  int divisor = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
