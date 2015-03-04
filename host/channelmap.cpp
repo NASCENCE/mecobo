@@ -96,7 +96,6 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
   std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
   pinToChannel[pin] = channel;
   channelToPin[channel].push_back(pin);
-  numIOchannels++;
   return;
 }
 
@@ -174,6 +173,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
           } else {
             channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
             mapPin(p, channel);
+            numIOchannels++;
           }
         } else {
           std::cout << "All out of IO channels" << std::endl;
