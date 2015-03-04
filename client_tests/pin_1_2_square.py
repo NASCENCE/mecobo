@@ -24,29 +24,19 @@ cli.reset()
 cli.clearSequences()
 
 it = emSequenceItem()
-it.pin = [1]
+it.pin = [2]
 it.startTime = 5
 it.endTime = 100
-it.frequency = 20000
+it.frequency = 50000
 it.cycleTime = 50
 it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
 
 it = emSequenceItem()
-it.pin = [4]
-it.startTime = 5
-it.endTime = 100
-it.frequency = 78000
-it.cycleTime = 50
-it.operationType = emSequenceOperationType().DIGITAL
-#cli.appendSequenceAction(it)
-
-
-it = emSequenceItem()
-it.pin = [2]
+it.pin = [3]
 it.startTime = 0
 it.endTime = 110
-it.frequency = 200000
+it.frequency = 500000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 

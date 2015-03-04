@@ -91,18 +91,8 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
       }*/
   //Check if we record from the same pin twice
 
-  auto chan = pinToChannel[pin];
-    if(isADChannel(chan) && isADChannel(channel)) {
-      emException e;
-      e.Reason = "Can't record the same pin twice, ignored.";
-      throw e;
-      return;
-    }
-    //Pin has already been mapped
-    if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
-      return;
-    }
-  
+ //auto chan = pinToChannel[pin];
+ 
   std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
   pinToChannel[pin] = channel;
   channelToPin[channel].push_back(pin);
@@ -126,65 +116,74 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
   }
 
   FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
- 
-  switch(pinconfigDataType) {
-    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+  for (auto p: pin) {
 
-      if (numADchannels < maxADchannels) {
-        channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-        for (auto p: pin) {
+    auto chan = pinToChannel[p];
+    if(isADChannel(chan)) {
+      emException e;
+      e.Reason = "Can't record the same pin twice, ignored.";
+      throw e;
+    }
+    //Pin has already been mapped
+    if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
+      return chan;
+    }
+
+
+    switch(pinconfigDataType) {
+      case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+
+        if (numADchannels < maxADchannels) {
+          channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
           mapPin(p, channel);
+          //or not...
+          numDAchannels++;
         }
-        numADchannels++;
-      } else {
-        std::cout << "All out of AD channels" << std::endl;
-        emException e;
-        e.Reason = "All out of AD channels.";
-        e.Source = "channelMap::mapItem()";
-        throw e;
-      }
-    break;
+        else {
+          std::cout << "All out of AD channels" << std::endl;
+          emException e;
+          e.Reason = "All out of AD channels.";
+          e.Source = "channelMap::mapItem()";
+          throw e;
+        }
+        break;
 
-    case PINCONFIG_DATA_TYPE_DAC_CONST:
-    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-      //Try to map to a analogue pin.
-      if (numDAchannels < maxDAchannels) {
-        channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
-        for(auto p : pin) {
+      case PINCONFIG_DATA_TYPE_DAC_CONST:
+      case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+        //Try to map to a analogue pin.
+        if (numDAchannels < maxDAchannels) {
+          channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
           mapPin(p, channel);
-        }
-        numDAchannels++;
-      } else {
-        std::cout << "All out of DA channels" << std::endl;
-        emException e;
-        e.Reason = "All out of DA channels.";
-        e.Source = "channelMap::mapItem()";
-        throw e;
-      }
-    break;
-
-    //By default we give a Digital channel -- these can be both recording and analogue,
-    //depending on the command given.
-    default:
-      if (numIOchannels < maxIOchannels) {
-        //TODO Bug? We whould probably return a list of channels here
-        if(pinToChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
-          channel = pinToChannel[pin[0]];
+          numDAchannels++;
         } else {
-          channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
-          for(auto p: pin) {
+          std::cout << "All out of DA channels" << std::endl;
+          emException e;
+          e.Reason = "All out of DA channels.";
+          e.Source = "channelMap::mapItem()";
+          throw e;
+        }
+        break;
+
+        //By default we give a Digital channel -- these can be both recording and analogue,
+        //depending on the command given.
+      default:
+        if (numIOchannels < maxIOchannels) {
+          //TODO Bug? We whould probably return a list of channels here
+          if(pinToChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
+            channel = pinToChannel[pin[0]];
+          } else {
+            channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
             mapPin(p, channel);
           }
+        } else {
+          std::cout << "All out of IO channels" << std::endl;
+          emException e;
+          e.Reason = "All out of IO channels.";
+          e.Source = "channelMap::mapItem()";
+          throw e;
         }
-      } else {
-        std::cout << "All out of IO channels" << std::endl;
-        emException e;
-        e.Reason = "All out of IO channels.";
-        e.Source = "channelMap::mapItem()";
-        throw e;
-      }
-      break;
-
+        break;
+    }
   }
   return channel;
 }
