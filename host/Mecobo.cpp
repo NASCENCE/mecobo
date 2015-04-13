@@ -288,12 +288,12 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     //Since one channel can be on many pins we'll collect them all.
     if(hasDaughterboard) {
       std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-      std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
+      //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
       for (auto p : pin) {
-        std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
+        //std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
         //Cast from 13 bit to 32 bit two's complement int.
         int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-        std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+        //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
         pinRecordings[(int)p].push_back(v);
       }
     } else {
