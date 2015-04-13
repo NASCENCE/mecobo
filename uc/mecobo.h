@@ -23,6 +23,8 @@
 #define SRAM2_START 0x88000000
 #define SRAM2_BYTES 256*1024 
 
+#define NOR_START 0x8B000000
+#define NOR_BYTES 256*1024 
 
 #define FPGA_BASE_ADDR 0
 
@@ -156,6 +158,8 @@ void led(int l, int mode);
 void programFPGA();
 
 void testRam();
+void testNOR();
+void programFPGA();
 
 #endif //__MECOBO_H_
 
