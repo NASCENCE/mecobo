@@ -136,7 +136,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
           channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
           mapPin(p, channel);
           //or not...
-          numDAchannels++;
+          numADchannels++;
         }
         else {
           std::cout << "All out of AD channels" << std::endl;
