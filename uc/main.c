@@ -227,19 +227,18 @@ int main(void)
   //while(1);
 
 
-  //nor out of reset
-  GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
-  GPIO_PinOutSet(gpioPortC, 2); //active low
-
   //set byte mode
   GPIO_PinModeSet(gpioPortC, 1, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortC, 1); //active low
 
   //turn off write protect
   GPIO_PinModeSet(gpioPortB, 7, gpioModePushPull, 1);  
-  GPIO_PinOutClear(gpioPortB, 7); //active low
+  GPIO_PinOutSet(gpioPortB, 7); //active low
 
 
+  //nor out of reset
+  GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
+  GPIO_PinOutSet(gpioPortC, 2); //active low
 
   uint32_t * n32 = (uint32_t *)NOR_START;
 
@@ -1081,9 +1080,9 @@ void programFPGA()
   for(int i = 0; i < bitfileLength; i++) {
     uint8_t bait = nor[i];
 
-    if(i > 1400000) {
-      printf("Byte %x: %x\n", i, bait);
-    }
+    //if(i > 1400000) {
+    //  printf("Byte %x: %x\n", i, bait);
+   // }
     for(int b = 7; b >= 0; b--) {
       GPIO_PinOutClear(gpioPortA, 8); //clk low
       //clock a bit.
