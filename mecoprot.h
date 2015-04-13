@@ -23,6 +23,7 @@
 #define USB_CMD_RUN_SEQ 0xD
 #define USB_CMD_PROGRAM_XBAR 0xE
 #define USB_CMD_UPDATE_REGISTER 0xF
+#define USB_CMD_LOAD_BITFILE 0x10
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
