@@ -276,6 +276,12 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
     delete[] collectedSamples;
   }
 
+
+  //Take away the first few samples to make sure we're out of the initial transient region with respect to time taken to start recording
+  
+  samples.erase(samples.begin(), samples.begin()+100); 
+  
+  //
   //TODO: Sort the samples here, we could have a wrapped-around buffer.
   //Assumtion is that the sequence numbers from the FPGA are always
   //increasing, which can also be false, so this is "best effort"
