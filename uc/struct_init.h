@@ -111,7 +111,7 @@ static EBI_Init_TypeDef ebiConfigSRAM2 = {
 
 static EBI_Init_TypeDef ebiConfigNOR = {   
 
-  ebiModeD16,      /* 8 bit address, 8 bit data */  \
+    ebiModeD16,      /* 8 bit address, 8 bit data */  \
     ebiActiveLow,     /* ARDY polarity */              \
     ebiActiveLow,     /* ALE polarity */               \
     ebiActiveLow,     /* WE polarity */                \
@@ -124,18 +124,18 @@ static EBI_Init_TypeDef ebiConfigNOR = {
     false,            /* don't disable ARDY timeout */ \
     EBI_BANK3,        /* enable bank 0 */              \
     EBI_CS3,          /* enable chip select 0 */       \
-    1,                /* addr setup cycles */          \
-    1,                /* addr hold cycles */           \
+    3,                /* addr setup cycles */          \
+    3,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
-    1,                /* read setup cycles */          \
-    3,                /* read strobe cycles */         \
-    1,                /* read hold cycles */           \
-    false,            /* disable page mode */          \
+    3,                /* read setup cycles */          \
+    7,                /* read strobe cycles */         \
+    3,                /* read hold cycles */           \
+    true,             /* disable page mode */          \
     false,            /* disable prefetch */           \
     false,            /* do not enable half cycle REn strobe */ \
-    1,                /* write setup cycles */         \
-    3,                /* write strobe cycles */        \
-    1,                /* write hold cycles */          \
+    3,                /* write setup cycles */         \
+    7,                /* write strobe cycles */        \
+    3,                /* write hold cycles */          \
     true,            /* do not disable the write buffer */ \
     false,            /* do not enable halc cycle WEn strobe */ \
     ebiALowA0,        /* ALB - Low bound, address lines */ \

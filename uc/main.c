@@ -25,6 +25,7 @@
 #include "em_timer.h"
 #include "bsp.h"
 #include "bsp_trace.h"
+#include "norflash.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -161,6 +162,28 @@ int main(void)
   setupSWOForPrint();
   printf("Printing online.\n");
 
+//  NORFLASH_Init();
+
+  /*
+  printf( "\n  Manufacturer ID   :  0x%04X",  NORFLASH_DeviceInfo()->manufacturerId );
+  printf( "\n  Device ID         :  0x%06lX", NORFLASH_DeviceInfo()->deviceId       );
+  printf( "\n  Sector count      :  %ld",     NORFLASH_DeviceInfo()->sectorCount    );
+  printf( "\n  Sector size       :  %ld",     NORFLASH_DeviceInfo()->sectorSize     );
+  printf( "\n  Device size       :  %ld (%ldMB)", NORFLASH_DeviceInfo()->deviceSize,
+                                            NORFLASH_DeviceInfo()->deviceSize/1024/1024 );
+  printf( " - Erasing entire device (worst case erase time is 256 seconds)\n" );
+      if ( NORFLASH_EraseDevice() != NORFLASH_STATUS_OK )
+      {
+        printf( " ---> Device erase failure <---\n" );
+      }
+
+
+  uint8_t * nor = (uint8_t *)NOR_START;
+  writeToNor(0, 0xAA);
+  printf("Byte from NOR: %x\n", nor[0]);
+
+*/
+
   //Generate sine table for a half period (0 to 1)
   if(DEBUG_PRINTING) printf("Generating sine table\n");
 
@@ -216,16 +239,11 @@ int main(void)
   
 
 
-  //eraseNorChip();
-  //writeToNor(0, 0x40);
-  //writeToNor(1, 0x41);
-  //w/riteToNor(2, 0x42);
-  //writeToNor(3, 0x43);
-  //returnToRead();
-
-
   //while(1);
 
+  //nor out of reset
+  GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
+  GPIO_PinOutSet(gpioPortC, 2); //active low
 
   //set byte mode
   GPIO_PinModeSet(gpioPortC, 1, gpioModePushPull, 1);  
@@ -235,10 +253,15 @@ int main(void)
   GPIO_PinModeSet(gpioPortB, 7, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 7); //active low
 
+  //eraseNorChip();
 
-  //nor out of reset
-  GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
-  GPIO_PinOutSet(gpioPortC, 2); //active low
+
+  writeToNor(0, 0x40);
+  writeToNor(1, 0x41);
+  writeToNor(2, 0x42);
+  writeToNor(3, 0x43);
+  //returnToRead();
+
 
   uint32_t * n32 = (uint32_t *)NOR_START;
 
@@ -950,15 +973,15 @@ if(currentPack.command == USB_CMD_LOAD_BITFILE) {
     eraseNorChip();
 
     //magic header 
-    writeToNor((uint32_t)0, (uint8_t)MAGIC_FPGA_BITFILE_CONSTANT);
-    writeToNor((uint32_t)1, (uint8_t)MAGIC_FPGA_BITFILE_CONSTANT);
-    writeToNor((uint32_t)2, (uint8_t)MAGIC_FPGA_BITFILE_CONSTANT);
-    writeToNor((uint32_t)3, (uint8_t)MAGIC_FPGA_BITFILE_CONSTANT);
+    writeToNor((uint32_t)0, (uint16_t)MAGIC_FPGA_BITFILE_CONSTANT);
+    writeToNor((uint32_t)1, (uint16_t)MAGIC_FPGA_BITFILE_CONSTANT);
+    writeToNor((uint32_t)2, (uint16_t)MAGIC_FPGA_BITFILE_CONSTANT);
+    writeToNor((uint32_t)3, (uint16_t)MAGIC_FPGA_BITFILE_CONSTANT);
 
   }
   //uint8_t * nor = (uint8_t *)NOR_START;
   //memcpy((uint8_t*)(NOR_START + bitfileOffset + 8), (uint8_t*)currentPack.data, currentPack.size);
-  uint8_t * p = (uint8_t*)currentPack.data;
+  uint16_t * p = (uint16_t*)currentPack.data;
   for(int b = 0; b < currentPack.size; b++) {
     writeToNor(bitfileOffset + b + 8, p[b]);
   }
@@ -1112,7 +1135,7 @@ void programFPGA()
 
 void eraseNorChip()
 {
-  uint8_t * nor = (uint8_t *)NOR_START;
+  uint16_t * nor = (uint16_t *)NOR_START;
   printf("Doing chip erase\n");
   nor[0x555] = 0xAA;
   nor[0x2AA] = 0x55;
@@ -1120,16 +1143,49 @@ void eraseNorChip()
   nor[0x555] = 0xAA;
   nor[0x2AA] = 0x55;
   nor[0x555] = 0x10;
+
+  uint8_t databit = 1;
+  int done = 0;
+  uint8_t dq1, dq5, dq7;
+  while(!done) {
+    dq1 = (nor[1] >> 1) & 0x1;
+    dq5 = (nor[1] >> 5) & 0x1;
+    dq7 = (nor[1] >> 7) & 0x1;
+
+    printf("dq7: %x, dq5: %x, dq1: %x\n", dq7, dq5, dq1);
+    if(dq7 == databit) {
+      if(!dq5) {
+        done = 1;
+      }
+    }
+  }
+
   printf("Done\n");
 }
-void writeToNor(uint32_t offset, uint8_t data)
+
+void writeToNor(uint32_t offset, uint16_t data)
 {
-  uint8_t * nor = (uint8_t *)NOR_START;
+  uint16_t * nor = (uint16_t *)NOR_START;
+  uint16_t databit = (data >> 7) & 0x01;
   //write
   nor[0x555] = 0xAA;
   nor[0x2AA] = 0x55;
   nor[0x555] = 0xA0;
   nor[offset] = data;
+
+  int done = 0;
+  uint16_t dq1, dq5, dq7;
+  while(!done) {
+    dq1 = (nor[offset] >> 1) & 0x1;
+    dq5 = (nor[offset] >> 5) & 0x1;
+    dq7 = (nor[offset] >> 7) & 0x1;
+
+    printf("dq7: %x, dq5: %x, dq1: %x\n", dq7, dq5, dq1);
+    if(dq7 == databit) {
+      done = 1;
+    } 
+  }
+  //while(((nor[offset] >> 7) & 0x01) != dq7);
   //now we need to wait until we're done.
   //for(int i = 0; i < 1000; i++);
 }

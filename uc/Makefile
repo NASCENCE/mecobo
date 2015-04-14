@@ -130,6 +130,7 @@ efm32/v2/Device/EnergyMicro/EFM32GG/Source/system_efm32gg.c \
 efm32/v2/kits/common/bsp/bsp_dk_3201.c \
 efm32/v2/kits/common/bsp/bsp_trace.c \
 efm32/v2/kits/common/drivers/dmactrl.c \
+efm32/v2/kits/common/drivers/norflash.c \
 efm32/v2/emlib/src/em_assert.c \
 efm32/v2/emlib/src/em_cmu.c \
 efm32/v2/emlib/src/em_dma.c \

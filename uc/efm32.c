@@ -196,8 +196,35 @@ void eADesigner_Init(void)
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
+
+  //special NOR SETUP
+  EBI_Init_TypeDef ebiConfigNOR = EBI_INIT_DEFAULT;
+  //EBI_Init(&ebiConfigNOR);
+  ebiConfigNOR.mode = ebiModeD16;
+  ebiConfigNOR.ardyPolarity = ebiActiveLow;
+  ebiConfigNOR.alePolarity = ebiActiveLow;
+  ebiConfigNOR.wePolarity = ebiActiveLow;
+  ebiConfigNOR.rePolarity = ebiActiveLow;
+  ebiConfigNOR.csPolarity = ebiActiveLow;
+
+  ebiConfigNOR.banks = EBI_BANK3;
+  ebiConfigNOR.csLines = EBI_CS3;
+
+  ebiConfigNOR.aLow = ebiALowA0;
+  ebiConfigNOR.aHigh = ebiAHighA23;
+  ebiConfigNOR.location = ebiLocation1;
+
+  /* Read cycle times */
+  ebiConfigNOR.readStrobeCycles = 15;
+  ebiConfigNOR.readHoldCycles   = 3;
+  ebiConfigNOR.readSetupCycles  = 3;
+
+  /* Write cycle times */
+  ebiConfigNOR.writeStrobeCycles = 15;
+  ebiConfigNOR.writeHoldCycles   = 3;
+  ebiConfigNOR.writeSetupCycles  = 3;
+
   EBI_Init(&ebiConfigNOR);
- 
 
 }
 

@@ -142,52 +142,64 @@ void Mecobo::sendPacket(struct mecoPack * packet)
 
 void Mecobo::programFPGA(const char * filename)
 {
+  printf("ProgramFPGA\n");
   FILE* bitfile;
 
+  int onlyProgram = 0;
+  if(filename == NULL) {
+    printf("No filename, assuming bitfile in NOR FLASH, Instructing uC to program\n");
+    onlyProgram = 1;
+  }
+
+  if(!onlyProgram) {
 
 #ifdef WIN32
-  int openResult = fopen_s(&bitfile, filename, "rb");
-  perror ("programFPGA");
+    int openResult = fopen_s(&bitfile, filename, "rb");
+    perror ("programFPGA");
 #else
-  bitfile = fopen(filename, "rb");
+    bitfile = fopen(filename, "rb");
 #endif
 
-  printf("Programming FPGA with bitfile %s\n", filename);
-  fseek(bitfile, 0L, SEEK_END);
-  long nBytes = ftell(bitfile);
-  rewind(bitfile);
+    printf("Programming FPGA with bitfile %s\n", filename);
+    fseek(bitfile, 0L, SEEK_END);
+    long nBytes = ftell(bitfile);
+    rewind(bitfile);
 
-  int packsize = 32*1024;
-  int nPackets = nBytes / packsize;
-  int rest = nBytes % (packsize);
-  printf("supposed to have ballpark 6,440,432 bits. have %ld\n", 8*nBytes * 8);
-  printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
-        nBytes, nPackets, packsize, rest);
-  uint8_t * bytes;
-  bytes = (uint8_t *)malloc(nBytes);
+    int packsize = 32*1024;
+    int nPackets = nBytes / packsize;
+    int rest = nBytes % (packsize);
+    printf("supposed to have ballpark 6,440,432 bits. have %ld\n", 8*nBytes * 8);
+    printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
+          nBytes, nPackets, packsize, rest);
+    uint8_t * bytes;
+    bytes = (uint8_t *)malloc(nBytes);
 
-  fread(bytes, 1, nBytes, bitfile);
+    fread(bytes, 1, nBytes, bitfile);
 
-  struct mecoPack send;
-  int i;
-  for(i =0; i < nPackets; i++) {
-    printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
-    printf("position %u in array\n", (i * packsize));
-    createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_PROGRAM_FPGA);
-    sendPacket(&send);
-  }
-  //Send the rest if there is any.
-  if(rest > 0) {
-    printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
-    struct mecoPack lol;
-    createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_PROGRAM_FPGA);
-    sendPacket(&lol);
-  }
+    struct mecoPack send;
+    int i;
+    for(i =0; i < nPackets; i++) {
+      printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
+      printf("position %u in array\n", (i * packsize));
+      createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_LOAD_BITFILE);
+      sendPacket(&send);
+    }
+    //Send the rest if there is any.
+    if(rest > 0) {
+      printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
+      struct mecoPack lol;
+      createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_LOAD_BITFILE);
+      sendPacket(&lol);
+    }
 
-  free(bytes);
-  printf("\n");
-  fclose(bitfile);
-
+    printf("Data send finished\n");
+    free(bytes);
+    fclose(bitfile);
+    
+      }
+  struct mecoPack lol;
+  createMecoPack(&lol, NULL, 0, USB_CMD_PROGRAM_FPGA);
+  sendPacket(&lol);
 }
 
 std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
