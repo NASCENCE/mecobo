@@ -145,13 +145,6 @@ void Mecobo::programFPGA(const char * filename)
   printf("ProgramFPGA\n");
   FILE* bitfile;
 
-  int onlyProgram = 0;
-  if(filename == NULL) {
-    printf("No filename, assuming bitfile in NOR FLASH, Instructing uC to program\n");
-    onlyProgram = 1;
-  }
-
-  if(!onlyProgram) {
 
 #ifdef WIN32
     int openResult = fopen_s(&bitfile, filename, "rb");
@@ -181,14 +174,14 @@ void Mecobo::programFPGA(const char * filename)
     for(i =0; i < nPackets; i++) {
       printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
       printf("position %u in array\n", (i * packsize));
-      createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_LOAD_BITFILE);
+      createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_PROGRAM_FPGA);
       sendPacket(&send);
     }
     //Send the rest if there is any.
     if(rest > 0) {
       printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
       struct mecoPack lol;
-      createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_LOAD_BITFILE);
+      createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_PROGRAM_FPGA);
       sendPacket(&lol);
     }
 
@@ -196,10 +189,6 @@ void Mecobo::programFPGA(const char * filename)
     free(bytes);
     fclose(bitfile);
     
-      }
-  struct mecoPack lol;
-  createMecoPack(&lol, NULL, 0, USB_CMD_PROGRAM_FPGA);
-  sendPacket(&lol);
 }
 
 std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
