@@ -1,7 +1,7 @@
 GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp USB.cpp Mecobo.cpp channelmap.cpp emMotherboard.cpp
 GEN_OBJ := $(patsubst %.cpp,%.o, $(GEN_SRC))
 
-THRIFT_DIR := /home/sigveseb/thrift-0.9.2/lib/cpp/src/
+THRIFT_DIR := /usr/local/include/thrift
 BOOST_DIR := /usr/local/include
 
 INC := -I$(THRIFT_DIR) -I$(BOOST_DIR) -I /usr/include/libusb-1.0/
