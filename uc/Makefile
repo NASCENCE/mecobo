@@ -107,18 +107,18 @@ override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=corte
 # NOTE: The -Wl,--gc-sections,--no-wchar-size-warning flag may interfere with debugging using gdb.
 #
 override LDFLAGS += -Xlinker -Map=$(LST_DIR)/$(PROJECTNAME).map -mcpu=cortex-m3 \
--mthumb -TDevice/EnergyMicro/EFM32GG/Source/GCC/efm32gg.ld \
+-mthumb -Tefm32/v2/Device/EnergyMicro/EFM32GG/Source/GCC/efm32gg.ld \
  -Wl,--gc-sections,--no-wchar-size-warning
 
 LIBS = -Wl,--start-group -lgcc -lc -lnosys -lm -Wl,--end-group 
 INCLUDEPATHS += \
 -I. \
--ICMSIS/Include \
--IDevice/EnergyMicro/EFM32GG/Include \
--Iemlib/inc \
--Iusb/inc \
--Ikits/common/drivers \
--Ikits/common/bsp \
+-Iefm32/v2/CMSIS/Include \
+-Iefm32/v2/Device/EnergyMicro/EFM32GG/Include \
+-Iefm32/v2/emlib/inc \
+-Iefm32/v2/usb/inc \
+-Iefm32/v2/kits/common/drivers \
+-Iefm32/v2/kits/common/bsp \
 -Iconfig
 
 ####################################################################
@@ -126,30 +126,31 @@ INCLUDEPATHS += \
 ####################################################################
 
 C_SRC +=  \
-Device/EnergyMicro/EFM32GG/Source/system_efm32gg.c \
-kits/common/bsp/bsp_dk_3201.c \
-kits/common/bsp/bsp_trace.c \
-kits/common/drivers/dmactrl.c \
-emlib/src/em_assert.c \
-emlib/src/em_cmu.c \
-emlib/src/em_dma.c \
-emlib/src/em_ebi.c \
-emlib/src/em_emu.c \
-emlib/src/em_gpio.c \
-emlib/src/em_int.c \
-emlib/src/em_system.c \
-emlib/src/em_timer.c \
-emlib/src/em_usart.c \
-usb/src/em_usbd.c \
-usb/src/em_usbdch9.c \
-usb/src/em_usbhal.c \
-usb/src/em_usbdep.c \
-usb/src/em_usbdint.c \
-usb/src/em_usbtimer.c \
+efm32/v2/Device/EnergyMicro/EFM32GG/Source/system_efm32gg.c \
+efm32/v2/kits/common/bsp/bsp_dk_3201.c \
+efm32/v2/kits/common/bsp/bsp_trace.c \
+efm32/v2/kits/common/drivers/dmactrl.c \
+efm32/v2/emlib/src/em_assert.c \
+efm32/v2/emlib/src/em_cmu.c \
+efm32/v2/emlib/src/em_dma.c \
+efm32/v2/emlib/src/em_ebi.c \
+efm32/v2/emlib/src/em_emu.c \
+efm32/v2/emlib/src/em_gpio.c \
+efm32/v2/emlib/src/em_int.c \
+efm32/v2/emlib/src/em_system.c \
+efm32/v2/emlib/src/em_timer.c \
+efm32/v2/emlib/src/em_usart.c \
+efm32/v2/usb/src/em_usbd.c \
+efm32/v2/usb/src/em_usbdch9.c \
+efm32/v2/usb/src/em_usbhal.c \
+efm32/v2/usb/src/em_usbdep.c \
+efm32/v2/usb/src/em_usbdint.c \
+efm32/v2/usb/src/em_usbtimer.c \
 pinItem.c\
 dac.c\
 adc.c\
 efm32.c\
+startup.c\
 main.c
 
 CXX_SRC += \
@@ -157,7 +158,7 @@ CXX_SRC += \
 s_SRC += 
 
 S_SRC +=  \
-Device/EnergyMicro/EFM32GG/Source/GCC/startup_efm32gg.S
+efm32/v2/Device/EnergyMicro/EFM32GG/Source/GCC/startup_efm32gg.S
 
 ####################################################################
 # Rules                                                            #

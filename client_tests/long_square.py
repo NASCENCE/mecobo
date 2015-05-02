@@ -23,18 +23,28 @@ cli.reset()
 cli.clearSequences()
 
 it = emSequenceItem()
-it.pin = [15]
+it.pin = [0]
 it.startTime = 0
-it.endTime = 1000
-it.amplitude = 212
-it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
+it.endTime = -1
+it.frequency = 1800
+it.cycleTime = 50
+it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
 
 it = emSequenceItem()
-it.pin = [0]
+it.pin = [3]
 it.startTime = 0
-it.endTime = 100
-it.frequency = 44000
+it.endTime = -1
+it.frequency = 1000
+it.cycleTime = 50
+it.operationType = emSequenceOperationType().DIGITAL
+#cli.appendSequenceAction(it)
+
+it = emSequenceItem()
+it.pin = [6]
+it.startTime = 0
+it.endTime = 6000
+it.frequency = 10000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 
@@ -43,7 +53,7 @@ cli.runSequences()
 cli.joinSequences()
 
 res = []
-for i in cli.getRecording(0).Samples:
+for i in cli.getRecording(6).Samples:
   res.append(i * (5.0/4096.0));
 
 plt.ylim(-6,6)
@@ -51,5 +61,8 @@ plt.plot(res)
 
 plt.draw()
 plt.show()
+
+cli.reset()
+
 
 transport.close()

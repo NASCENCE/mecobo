@@ -11,6 +11,10 @@ initial begin
   #10
   reset = 0;
   #10
-
 end
+
+
+
+
+
 endmodule

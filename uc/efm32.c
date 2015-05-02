@@ -196,6 +196,7 @@ void eADesigner_Init(void)
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
+  EBI_Init(&ebiConfigNOR);
  
 
 }

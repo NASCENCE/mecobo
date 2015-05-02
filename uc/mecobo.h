@@ -16,6 +16,16 @@
 #include "em_gpio.h"
 #include "../mecoprot.h"
 
+
+#define SRAM1_START 0x84000000
+#define SRAM1_BYTES 256*1024  //16Mbit = 256KB
+
+#define SRAM2_START 0x88000000
+#define SRAM2_BYTES 256*1024 
+
+#define NOR_START 0x8B000000
+#define NOR_BYTES 256*1024 
+
 #define FPGA_BASE_ADDR 0
 
 //LED defines
@@ -42,8 +52,8 @@
 
 //Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
-#define PINCONFIG_DUTY_CYCLE 1
-#define PINCONFIG_ANTIDUTY_CYCLE 2
+#define PINCONFIG_NCO_COUNTER_LOW 2
+#define PINCONFIG_NCO_COUNTER_HIGH 3
 #define PINCONFIG_CYCLES 3
 #define PINCONFIG_RUN_INF 4
 #define PINCONFIG_LOCAL_CMD 5
@@ -54,9 +64,9 @@
 
 //Possible FPGA commands
 #define CMD_START_OUTPUT  1
-#define CMD_READ_PIN    2
+#define CMD_CONST_LOW  2
 #define CMD_INPUT_STREAM  3
-#define CMD_PROGRAM_FPGA  4
+#define CMD_CONST_HIGH   4
 #define CMD_RESET  5
 #define CMD_CONST  6
 
@@ -70,6 +80,7 @@ struct pinConfig {
   uint32_t phase;
   uint32_t antiduty;
   uint32_t duty;
+  uint16_t noc;
   uint32_t cycles;
   uint32_t runInf;
   uint32_t sampleRate;
@@ -134,10 +145,11 @@ extern "C" {
 //Start output on given pin
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);
-void startInput(FPGA_IO_Pins_TypeDef channel, int sampleRate);
+void startInput();
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration);
 void getInput(FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
-uint16_t * getPinAddress(FPGA_IO_Pins_TypeDef pin);
+uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef pin);
 int noDataCmd(int cmd);
 void execCurrentPack();
 void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data);
@@ -145,6 +157,9 @@ void resetAllPins();
 void led(int l, int mode);
 void programFPGA();
 
+void testRam();
+void testNOR();
+void programFPGA();
 
 #endif //__MECOBO_H_
 

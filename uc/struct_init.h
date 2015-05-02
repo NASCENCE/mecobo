@@ -91,19 +91,55 @@ static EBI_Init_TypeDef ebiConfigSRAM2 = {
     0,                /* addr setup cycles */          \
     0,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
-    0,                /* read setup cycles */          \
-    2,                /* read strobe cycles */         \
-    0,                /* read hold cycles */           \
+    1,                /* read setup cycles */          \
+    3,                /* read strobe cycles */         \
+    1,                /* read hold cycles */           \
     false,            /* disable page mode */          \
     false,            /* disable prefetch */           \
     false,            /* do not enable half cycle REn strobe */ \
-    0,                /* write setup cycles */         \
-    2,                /* write strobe cycles */        \
-    0,                /* write hold cycles */          \
+    1,                /* write setup cycles */         \
+    3,                /* write strobe cycles */        \
+    1,                /* write hold cycles */          \
     true,            /* do not disable the write buffer */ \
     false,            /* do not enable halc cycle WEn strobe */ \
     ebiALowA0,        /* ALB - Low bound, address lines */ \
     ebiAHighA20,       /* APEN - High bound, address lines */   \
+    ebiLocation1,     /* Use Location 0 */             \
+    true,             /* enable EBI */                 \
+};
+
+
+static EBI_Init_TypeDef ebiConfigNOR = {   
+
+  ebiModeD16,      /* 8 bit address, 8 bit data */  \
+    ebiActiveLow,     /* ARDY polarity */              \
+    ebiActiveLow,     /* ALE polarity */               \
+    ebiActiveLow,     /* WE polarity */                \
+    ebiActiveLow,     /* RE polarity */                \
+    ebiActiveLow,     /* CS polarity */                \
+    ebiActiveLow,     /* BL polarity */                \
+    false,            /* enable BL */                  \
+    false,            /* enable NOIDLE */              \
+    false,            /* enable ARDY */                \
+    false,            /* don't disable ARDY timeout */ \
+    EBI_BANK3,        /* enable bank 0 */              \
+    EBI_CS3,          /* enable chip select 0 */       \
+    1,                /* addr setup cycles */          \
+    1,                /* addr hold cycles */           \
+    false,            /* do not enable half cycle ALE strobe */ \
+    1,                /* read setup cycles */          \
+    3,                /* read strobe cycles */         \
+    1,                /* read hold cycles */           \
+    false,            /* disable page mode */          \
+    false,            /* disable prefetch */           \
+    false,            /* do not enable half cycle REn strobe */ \
+    1,                /* write setup cycles */         \
+    3,                /* write strobe cycles */        \
+    1,                /* write hold cycles */          \
+    true,            /* do not disable the write buffer */ \
+    false,            /* do not enable halc cycle WEn strobe */ \
+    ebiALowA0,        /* ALB - Low bound, address lines */ \
+    ebiAHighA23,       /* APEN - High bound, address lines */   \
     ebiLocation1,     /* Use Location 0 */             \
     true,             /* enable EBI */                 \
 };

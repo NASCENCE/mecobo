@@ -1,13 +1,10 @@
-// Two clock domains:
-//  CK1 The controller domain (runs at system clock)
+// Two clock domains: //  CK1 The controller domain (runs at system clock)
 //  CK2 The the ADC domain; which is the serial clock in/out to the chip.
 // 
 // CK1 is used for access to the EBI interface and is also used for the state 
 // machine that updates access_reg every clock cycle.
 // CK2 is used for for clocking the DOUT and DIN lines as well as the shift reg that eats DIN
 // and DOUT.
-
-
 
 module adc_control (
   input clk,   //main system clock (100Mhz?)
@@ -21,6 +18,10 @@ module adc_control (
   input wr,
   output reg [15:0] data_out,
 
+  input output_sample,
+  input [7:0] channel_select,
+  output reg [31:0] sample_data,
+
   // interfacing the chip.
   output reg cs,
   //data line into the cip.
@@ -31,12 +32,38 @@ module adc_control (
                                             
 //                          |offset                | channel| command
 //Address layout: [18,17,16,15,14,13,12 | 11,10,9,8| 7,6,5,4,3,2,1,0]
-parameter POSITION = 0;
+parameter MIN_CHANNEL = 0;
+parameter MAX_CHANNEL = 1;
 
-wire controller_enable;
-assign controller_enable = (enable & (addr[18:8] == POSITION));
+wor  controller_enable_ch;
+wor  channels_selected;
+genvar ch;
+for (ch = MIN_CHANNEL; ch <= MAX_CHANNEL; ch = ch + 1) begin
+  assign controller_enable_ch = (addr[15:8] == ch);
+  assign channels_selected = (channel_select == ch);
+end
+//assign controller_enable = enable & ((MIN_CHANNEL <= addr[15:8]) & (addr[15:8] <= MAX_CHANNEL));
+assign controller_enable = enable & controller_enable_ch;
 
 wire busy = (state != get_values);
+
+wire [3:0] chan_idx = channel_select-MIN_CHANNEL;
+wire [3:0] int_chan_idx = addr[15:8]-MIN_CHANNEL;
+
+
+//Assumes 8 ADC channels.
+reg [15:0] clock_divide_register = 0;
+reg [15:0] overflow_register [0:7];
+reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
+reg [15:0] sample_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
+reg [15:0] sequence_number [0:7]; //Holds sequence number.
+reg [15:0] fast_clk_counter[0:7];
+reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
+reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
+
+
+
+
 
 localparam [3:0] 
   PROGRAM  = 4'h4,
@@ -50,15 +77,23 @@ localparam [3:0]
 
 //Data capture from EBI
 //--------------------------------------------------------------------
+integer c;
 reg[15:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
-  if (reset) 
+  if (reset)  begin
     data_out <= 0;
-  else begin
+    sample_data <= 32'hZ;
+    for (c = 0; c < 8; c = c+1) begin
+      overflow_register[c] <= 0;
+    end
+  end else begin
 
-//    if (reset_ebi_capture_reg) begin
- //     ebi_capture_reg <= 0;
-  //  end
+    if (output_sample & channels_selected) begin
+      //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
+      sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
+    end else begin
+      sample_data <= 32'hZ;
+    end
 
     if (controller_enable & wr) begin
       //Decode the command field.
@@ -67,7 +102,7 @@ always @ (posedge clk) begin
       end
       //Data driving
       if (addr[3:0] == OVERFLOW) begin
-        overflow_register[addr[7:4]] <= data_in;
+        overflow_register[int_chan_idx] <= data_in;
       end
 
       if (addr[3:0] == DIVIDE) begin
@@ -79,11 +114,11 @@ always @ (posedge clk) begin
     if(controller_enable & re) begin
       //Getting sample values.
       if (addr[3:0] == SAMPLE) begin
-        data_out <= sample_register[addr[7:4]];
+        data_out <= sample_register[int_chan_idx];
       end
 
       if (addr[3:0] == SEQUENCE) begin
-        data_out <= sequence_number[addr[7:4]];
+        data_out <= sequence_number[int_chan_idx];
       end
 
 
@@ -101,22 +136,22 @@ always @ (posedge clk) begin
           data_out <= last_executed_command;
       end
 
-      end else
-        data_out <= 0;
-    end
-  end
+    end else
+      data_out <= 0;
+
+  end //reset ifelse enmd
+end //always end
   //---------------------------------------------------------------------
 
-
-reg [15:0] clock_divide_register = 0;
-reg [15:0] overflow_register [0:7];
-reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
-reg [15:0] sample_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
-reg [15:0] sequence_number [0:7]; //Holds sequence number.
-reg [15:0] fast_clk_counter[0:7];
-reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
-reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
-
+integer q;
+initial begin
+  for(q = 0; q < 8; q = q + 1) begin
+    tmp_register[q] = 0;
+    sample_register[q] = 0;
+    sequence_number[q] = 0;
+    fast_clk_counter[q] = 1;
+  end
+end
 
 reg [3:0] clkcounter;
 //Control lines from controlling state machine to data path
@@ -143,7 +178,7 @@ reg [15:0] current_command = 0;
 reg [15:0] last_executed_command = 0;
 
 always @ (posedge sclk)  begin
-  if (!reset) begin
+  if (~reset) begin
 
     if (load_last_executed_command) begin
       last_executed_command <= current_command;
@@ -176,7 +211,7 @@ always @ (posedge sclk)  begin
     end
     //Copy from shift register to temp register every 16 cycles. (first bits indicate which channel it's from)
     if (copy_to_tmp) begin
-      $display("Copy from shift %h", shift_in_register[15:13]);
+      //$display("Copy from shift %h", shift_in_register[15:13]);
       tmp_register[shift_in_register[15:13]] <= shift_in_register;
     end
 end
@@ -184,7 +219,11 @@ end
 //Handle clocking in of data.
 always @ (negedge sclk) begin
   if (shift_in) begin
-    shift_in_register  <= {shift_in_register[14:0], adc_dout};
+    `ifdef(DEBUG) 
+      shift_in_register  <= {shift_in_register[14:0], 1'b1};
+    `else
+      shift_in_register  <= {shift_in_register[14:0], adc_dout};
+    `endif
   end
 end
 
@@ -409,15 +448,20 @@ end
 //------------------ Handles copying on overflow to real data register -----------
 //TODO: statemachine that controls the sample rate copying.
 //Controlled by fast clock. 
+//Since the slow clock is 10Hz, and we have 16 ticks before a new value is ready in tmp, 
+//it takes at least 1600ns before a new value is ready-- or 1.6uS. 
+//this means that it doesn't make sense for overflow_register to be less
+//than 120. Oh well.
 genvar i;
 for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
   always @ (posedge clk) begin
     if (reset) begin
       sample_register[i] <= 0;
       sequence_number[i] <= 0;
+      fast_clk_counter[i] <= 1;
     end else
       if (fast_clk_counter[i] == overflow_register[i]) begin
-        fast_clk_counter[i] <= 0;
+        fast_clk_counter[i] <= 1;
         sample_register[i] <= tmp_register[i];
         sequence_number[i] <= sequence_number[i] + 1;
       end else begin

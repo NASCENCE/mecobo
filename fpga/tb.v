@@ -1,120 +1,119 @@
-		module pwm_tb;
+
+`timescale 1ns / 10ps
+
+module toplevel_tb;
+
 
 reg clk,reset;
 reg [255:0] sample;
 wire q;
 
+wire [15:0] ebi_data_wires;
 reg [15:0] ebi_data;
-reg [20:0] ebi_addr;
+
+reg [18:0] ebi_addr;
 reg ebi_wr;
 reg ebi_rd;
 reg ebi_cs;
 
 reg [15:0] got;
 
+reg uc_clk = 0;
+
+always begin
+  #20 uc_clk = ~uc_clk;
+end
+
+integer               data_file    ; // file handler
+integer               scan_file    ; // file handler
+integer		      oper;
+reg   [15:0] file_ebi_data;
+reg   [18:0] file_ebi_addr;
+reg   [15:0] ebi_captured_data;
+`define NULL 0 
+
+
 initial begin
+
+  $dumpfile("top.vcd");
+  $dumpvars(0,mecobo0);
+
+  uc_clk = 0;
   clk = 0;
-  reset = 1;
+  reset = 0;
   sample = 1;
   ebi_rd = 1'b0;
+  ebi_wr = 1'b0;
+  ebi_cs = 1'b0;
 
-//pin controller 0
-
-  #21
-  //Duty cycle write
-  reset = 0;
-  ebi_wr = 1;
-  ebi_addr = 1;
-  ebi_data = 2;
-  #21
-  //Anti duty write
-  ebi_addr = 2;
-  ebi_data = 2; //2 cycles low
-  #21
-  //Run for 5 cycles.	
-  ebi_addr = 3;
-  ebi_data = 5; //total 5 cycles run
-
-  #21
-  ebi_wr = 0; //stop doing stuff.
-  ebi_data = 0;
-  ebi_addr = 0;
-
-  #30
-  //Pin 1
-  ebi_wr = 1;
-  ebi_addr = 256 + 1;
-  ebi_data = 10;
-  #21
-  ebi_addr = 256 + 2;
-  ebi_data = 20;
-  #21 
-  ebi_addr = 256 + 4; //inf reg
-  ebi_data = 1;
-  #21 
-  // start command
-  ebi_addr = 0 + 5;
-  ebi_data = 1;
-  #21
-// start command
-  ebi_addr = 256 + 5;
-  ebi_data = 1;
-#21
-  ebi_wr = 0;
-
-  /*
-  #21
-  //Send local command to start being an input!
-  ebi_addr = 16'h0106; //set sample rate register
-  ebi_data = 10; //sample every 10 cycles
-  #21
-  ebi_addr = 16'h0108;
-  ebi_data = 3; //set pin mode
-  #21 
-  ebi_addr[15:0] = 16'h0105; //set sample rate register
-  ebi_data = 3; //start capture command
-
-  #21
-  //Global command reg 0, start output.
-  ebi_addr = 0; 
-  ebi_data = 1;
-
-  #21
-  ebi_wr = 0;
-  ebi_rd = 1;
-  ebi_addr[15:0] = 16'h0107; //set sample rate register
-  got = ebi_data;
-    $display ("got: %b\n", got);
-  */
-
+  data_file = $fopen("instructions.txt", "r");
+  if (data_file == `NULL) begin
+    $display("data_file handle was NULL");
+    $finish;
+  end
 end
 
-//clockin'
+always @(posedge uc_clk) begin
+  scan_file = $fscanf(data_file, "%s %x %x", oper, file_ebi_addr, file_ebi_data); 
+  if (!$feof(data_file)) begin
+    //use captured_data as you would any other wire or reg value;
+ 
+    ebi_rd <= 1'b0;
+    ebi_wr <= 1'b0;
+    ebi_cs <= 1'b0;
+   
+    case(oper)
+    "r": begin
+      $display("READ from %x", file_ebi_addr);
+      ebi_addr <= file_ebi_addr;
+      ebi_data <= 16'hZ;
+      ebi_captured_data <= ebi_data_wires;
+      ebi_rd <= 1'b1;
+      ebi_wr <= 1'b0;
+      ebi_cs <= 1'b1;
+    end 
+
+    "w": begin
+      $display("WRITE %x to %x", file_ebi_data, file_ebi_addr);
+      ebi_addr <= file_ebi_addr;
+      ebi_data <= file_ebi_data;
+      ebi_wr <= 1'b1;
+      ebi_rd <= 1'b0;
+      ebi_cs <= 1'b1;
+    end
+
+    "h": begin
+      $display("Waiting for %d", file_ebi_addr);
+      #(file_ebi_addr);
+    end
+
+    "q": begin
+      $display("Quit command given.");
+      $finish;
+    end
+
+     default: begin
+      $display("Unknown operation: %d", oper);
+      $finish;
+      end
+    endcase
+  end
+end
+
+
+assign ebi_data_wires = ebi_data;
+
 always begin
-  #10 clk = !clk;
+  #10 clk = ~clk;
 end
-
-wire [15:0] fjas;
-assign fjas = ebi_data;
-
-wire [15:0] pins;
 
 mecobo mecobo0 (
-.clk(clk),
-//.reset(reset),
-.ebi_data(fjas),
+.osc(clk),
+.reset(reset),
+.ebi_data(ebi_data_wires),
 .ebi_addr(ebi_addr),
-.ebi_wr(ebi_wr),
-.ebi_rd(ebi_rd),
-.ebi_cs(ebi_cs),
-.pin(pins));
+.ebi_wr(~ebi_wr),
+.ebi_rd(~ebi_rd),
+.ebi_cs(~ebi_cs));
 
-/*
-pwm pwm0 (
-  .clk(clk),
-  .reset(reset),
-  .data_in(sample),
-  .pwm_out(q)
-);
-*/
 endmodule

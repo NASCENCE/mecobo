@@ -18,6 +18,7 @@ struct pinItem
     int duty;
     int antiDuty;
     int sampleRate;
+    int nocCounter;
 };
 
 void execute(struct pinItem * item);

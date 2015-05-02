@@ -22,7 +22,7 @@ class channelMap {
     int maxIOchannels;
 
     //One pin has only one channel
-    std::map<int, std::vector<FPGA_IO_Pins_TypeDef>> pinToChannel;
+    std::map<int, FPGA_IO_Pins_TypeDef> pinToChannel;
     //One channel can be on many pins
     std::map<FPGA_IO_Pins_TypeDef, std::vector<int>> channelToPin;
 

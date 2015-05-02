@@ -91,8 +91,8 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
 
-  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
-  std::cout << "Divisor found:" << divisor << std::endl;
+  //int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  //std::cout << "Divisor found:" << divisor << std::endl;
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
   } else {
@@ -104,7 +104,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = divisor;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
@@ -142,56 +142,59 @@ void Mecobo::sendPacket(struct mecoPack * packet)
 
 void Mecobo::programFPGA(const char * filename)
 {
+  printf("ProgramFPGA\n");
   FILE* bitfile;
 
 
 #ifdef WIN32
-  int openResult = fopen_s(&bitfile, filename, "rb");
-  perror ("programFPGA");
+    int openResult = fopen_s(&bitfile, filename, "rb");
+    perror ("programFPGA");
 #else
-  bitfile = fopen(filename, "rb");
+    bitfile = fopen(filename, "rb");
 #endif
 
-  printf("Programming FPGA with bitfile %s\n", filename);
-  fseek(bitfile, 0L, SEEK_END);
-  long nBytes = ftell(bitfile);
-  rewind(bitfile);
+    printf("Programming FPGA with bitfile %s\n", filename);
+    fseek(bitfile, 0L, SEEK_END);
+    long nBytes = ftell(bitfile);
+    rewind(bitfile);
 
-  int packsize = 32*1024;
-  int nPackets = nBytes / packsize;
-  int rest = nBytes % (packsize);
-  printf("supposed to have ballpark 6,440,432 bits. have %ld\n", 8*nBytes * 8);
-  printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
-        nBytes, nPackets, packsize, rest);
-  uint8_t * bytes;
-  bytes = (uint8_t *)malloc(nBytes);
+    int packsize = 32*1024;
+    int nPackets = nBytes / packsize;
+    int rest = nBytes % (packsize);
+    printf("supposed to have ballpark 6,440,432 bits. have %ld\n", 8*nBytes * 8);
+    printf("file is %ld bytes, sending %d packets of %d bytes and one pack of %d bytes\n",
+          nBytes, nPackets, packsize, rest);
+    uint8_t * bytes;
+    bytes = (uint8_t *)malloc(nBytes);
 
-  fread(bytes, 1, nBytes, bitfile);
+    fread(bytes, 1, nBytes, bitfile);
 
-  struct mecoPack send;
-  int i;
-  for(i =0; i < nPackets; i++) {
-    printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
-    printf("position %u in array\n", (i * packsize));
-    createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_PROGRAM_FPGA);
-    sendPacket(&send);
-  }
-  //Send the rest if there is any.
-  if(rest > 0) {
-    printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
-    struct mecoPack lol;
-    createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_PROGRAM_FPGA);
-    sendPacket(&lol);
-  }
+    struct mecoPack send;
+    int i;
+    for(i =0; i < nPackets; i++) {
+      printf("Sending pack %d of %d, %d bytes of %ld for fpga programming\n", i + 1, nPackets, packsize, nBytes);
+      printf("position %u in array\n", (i * packsize));
+      createMecoPack(&send, bytes + (i*packsize), packsize, USB_CMD_PROGRAM_FPGA);
+      sendPacket(&send);
+    }
+    //Send the rest if there is any.
+    if(rest > 0) {
+      printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
+      struct mecoPack lol;
+      createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_PROGRAM_FPGA);
+      sendPacket(&lol);
+    }
 
-  free(bytes);
-  printf("\n");
-  fclose(bitfile);
-
+    printf("Data send finished\n");
+    free(bytes);
+    fclose(bitfile);
+    
 }
 
 std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 {
+
+  //This holds all the samples.
   std::vector<sampleValue> samples;
 
   //Send request for buffer size
@@ -201,41 +204,73 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 
   //Retrieve bytes.
   uint32_t nSamples = 0;
+  int usbTransfers = 1;
+  int remainderSamples = 0;
   usb.getBytesDefaultEndpoint((uint8_t *)&nSamples, 4);
+  
+  int maxSamplesPerTx = (64000/sizeof(sampleValue));
 
-  //Got the input buffer size back, now we collect it.
+  //Number of samples ready to be fetched.
   std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
+    std::cout << "WARNING: No samples collected. Something might be wrong, but there might just be no new samples as well." << std::endl;
     return pinRecordings[materialPin];
-  } else {
-    if(nSamples >= 64000/sizeof(sampleValue)) {
-      nSamples = 64000/sizeof(sampleValue);
-      std::cout << "WARNING: Receiving less (" << nSamples << ") than what we could because of USB." << std::endl;
-    } 
-    int totalBytes = nSamples * sizeof(sampleValue);
+  }
 
-    sampleValue* collectedSamples = new sampleValue[nSamples];
+  //max tx size is 64k
+  usbTransfers = nSamples/maxSamplesPerTx;
+  remainderSamples = nSamples%maxSamplesPerTx;
+  std::cout << "Splitting in "<< usbTransfers << " transfers and " << remainderSamples << " remainder" << std::endl;
+  //additional transfer for the remainder
+  if (remainderSamples > 0) {
+    usbTransfers++;
+  }
 
-    std::cout << "Receiving bytes:" << totalBytes << std::endl;
+  //Do the required number of transfers
+  for(int p = 1; p <= usbTransfers; p++) {
+
+    int thisTxBytes = nSamples * sizeof(sampleValue);
+    int thisTxSamples = nSamples;
+    if(remainderSamples > 0) {
+      //last tx
+      if(p == usbTransfers) {
+        thisTxBytes = remainderSamples * sizeof(sampleValue);
+        thisTxSamples = remainderSamples;
+      } else {
+        thisTxBytes = maxSamplesPerTx * sizeof(sampleValue);
+        thisTxSamples = maxSamplesPerTx;
+      }
+    } else {
+      thisTxBytes = nSamples * sizeof(sampleValue);
+      thisTxSamples = nSamples;
+    }
+    
+    
+    
+    sampleValue* collectedSamples = new sampleValue[thisTxSamples];
+
+    std::cout << "Receiving bytes:" << thisTxBytes << std::endl;
 
     //Ask for samples back.
-    //uint32_t ch = xbar.getChannel(materialPin);
-    createMecoPack(&pack, (uint8_t*)&nSamples, 4, USB_CMD_GET_INPUT_BUFFER);
+    createMecoPack(&pack, (uint8_t*)&thisTxSamples, 4, USB_CMD_GET_INPUT_BUFFER);
     sendPacket(&pack);
 
-    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, totalBytes);
+    usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, thisTxBytes);
 
     sampleValue * casted = (sampleValue *)collectedSamples;
-    for(int i = 0; i < (int)nSamples; i++) {
+    for(int i = 0; i < (int)thisTxSamples; i++) {
       samples.push_back(casted[i]);
     }
 
-    //std::sort(samples.begin(), samples.end(), 
-     //   [](sampleValue const & a, sampleValue const & b) { return a.sampleNum < b.sampleNum; });
-    
     delete[] collectedSamples;
   }
 
+
+  //Take away the first few samples to make sure we're out of the initial transient region with respect to time taken to start recording
+  
+  samples.erase(samples.begin(), samples.begin()+100); 
+  
+  //
   //TODO: Sort the samples here, we could have a wrapped-around buffer.
   //Assumtion is that the sequence numbers from the FPGA are always
   //increasing, which can also be false, so this is "best effort"
@@ -247,18 +282,19 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   for(auto s : samples) {
     //Since one channel can be on many pins we'll collect them all.
     if(hasDaughterboard) {
-    std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-    for (auto p : pin) {
-      //Cast from 13 bit to 32 bit two's complement int.
-      int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-      //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
-      pinRecordings[(int)p].push_back(v);
-    }
+      std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
+      //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
+      for (auto p : pin) {
+        //std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
+        //Cast from 13 bit to 32 bit two's complement int.
+        int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
+        //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+        pinRecordings[(int)p].push_back(v);
+      }
     } else {
       pinRecordings[s.channel].push_back(s.value);
     }
   }
-
   return pinRecordings[materialPin];
 }
 
@@ -324,7 +360,7 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   }
 
 
-  int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  int divisor = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
@@ -353,21 +389,33 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
     channel = (FPGA_IO_Pins_TypeDef)pin[0];
   }
 
+  /*
   int period = 0;
   if(frequency != 0) {
     period = std::min(65500, (int)(75000000/frequency)); //(int)pow(2, 17-(frequency/1000.0));
   }
   
   int duty = std::min(65500, int(period * ((double)dutyCycle/100.0)));
+  */
+  //2^32/75*10^6 = 57.26623061333333333333
+  double magic = 57.26623061333333333333;
 
-  std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
+  int countervalue = (int)(magic * frequency);
+
+  std::cout << " ----  Counter value: " << countervalue << std::endl;
+  //std::cout << "p:" << period << "d:" << duty << "ad:" << period - duty << std::endl;
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
-  data[PINCONFIG_DATA_DUTY] = duty;
-  data[PINCONFIG_DATA_ANTIDUTY] = period - duty;
+  data[PINCONFIG_DATA_NOC_COUNTER] = countervalue;
+  //data[PINCONFIG_DATA_DUTY] = duty;
+  //data[PINCONFIG_DATA_ANTIDUTY] = period - duty;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_OUT;
+  if(dutyCycle==100) {
+    data[PINCONFIG_DATA_CONST] = frequency;
+    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_DIGITAL_CONST;
+  }
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
