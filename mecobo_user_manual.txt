@@ -229,7 +229,9 @@ On the leftmost column, select «Flash».
 
 Once there, select «Browse» and navigate to the mecobo_uc_vXX.bin file you with to apply. Make sure «Reset EFM32 after flashing» is checked, and then hit «Flash EFM32».
 
-Then disconnect recently connecte cables and connect back old one.
+Alternatively run the command <eACommander> -m out -f <binary> -r
+
+Then disconnect recently connected cables and connect back old one.
 
 Turn off the board, restart the server (make sure the FPGA gets programmed) and start running experiments again!
 

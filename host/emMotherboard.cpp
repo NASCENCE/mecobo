@@ -356,6 +356,15 @@ int main(int argc, char **argv) {
   std::string bitfilename = std::string("mecobo.bin");
   //Command line arguments
   if (argc > 1) {
+    if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+      printf("Usage: %s [options]\n" 
+              "Options:\n"
+              "  -f            Start server without programming FPGA\n"
+              "  -b            Start server and program FPGA with mecobo.bin\n"
+              "  -b <bitfile>  Start server and program FPGA with <bitfile>\n"
+              "  -n            Assume no daughterboard connected\n", argv[0]);
+      return 0;
+    }
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
         forceProgFpga = 0;

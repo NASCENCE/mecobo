@@ -126,6 +126,7 @@ xbar_clock xbarclocks0(
   .LOCKED(led[3])
 );
 
+`ifdef WITH_DB
 ODDR2 clkout_oddr_ad
  (.Q  (HN[4]),
   .C0 (ad_clk),
@@ -145,7 +146,7 @@ ODDR2 clkout_oddr_da
   .D1 (1'b0),
   .R  (1'b0),
   .S  (1'b0));
-
+`endif
 
 // Stupid mistake. These fixes need to be
 // applied to the physical daughterboard as well.
