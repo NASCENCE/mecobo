@@ -22,7 +22,6 @@ void setupSWOForPrint(void)
 
   /* Enable Serial wire output pin */
   GPIO->ROUTE |= GPIO_ROUTE_SWOPEN;
-
 #if defined(_EFM32_GIANT_FAMILY) || defined(_EFM32_LEOPARD_FAMILY) || defined(_EFM32_WONDER_FAMILY)
   /* Set location 0 */
   GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK)) | GPIO_ROUTE_SWLOCATION_LOC0;
@@ -194,11 +193,15 @@ void eADesigner_Init(void)
   TIMER_Init(TIMER2, &timerInit);
   //special NOR SETUP
   EBI_Init_TypeDef ebiConfigNOR = EBI_INIT_DEFAULT;
+
   //EBI_Init(&ebiConfigNOR);
   ebiConfigNOR.mode = ebiModeD16;
   ebiConfigNOR.wePolarity = ebiActiveLow;
   ebiConfigNOR.rePolarity = ebiActiveLow;
   ebiConfigNOR.csPolarity = ebiActiveLow;
+
+  //ebiConfigNOR.addrSetupCycles = 1;
+ // ebiConfigNOR.addrHoldCycles = 3;
 
   ebiConfigNOR.banks = EBI_BANK3;
   ebiConfigNOR.csLines = EBI_CS3;
@@ -211,19 +214,18 @@ void eADesigner_Init(void)
   //ebiConfig.addrSetupCycles = 5;
 
   /* Read cycle times */
-  ebiConfigNOR.readStrobeCycles = 11;
-  ebiConfigNOR.readHoldCycles   = 2;
-  ebiConfigNOR.readSetupCycles  = 2;
+  ebiConfigNOR.readStrobeCycles = 7;
+  ebiConfigNOR.readHoldCycles   = 3;
+  ebiConfigNOR.readSetupCycles  = 3;
 
   /* Write cycle times */
-  ebiConfigNOR.writeStrobeCycles = 11;
-  ebiConfigNOR.writeHoldCycles   = 2;
-  ebiConfigNOR.writeSetupCycles  = 2;
+  ebiConfigNOR.writeStrobeCycles = 7;
+  ebiConfigNOR.writeHoldCycles   = 3;
+  ebiConfigNOR.writeSetupCycles  = 3;
 
   EBI_Init(&ebiConfig);
 //  EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
-
   //address lines in case some of them are funky
   GPIO_PinModeSet( gpioPortB,  0, gpioModePushPull, 0 );
   GPIO_PinModeSet( gpioPortB,  1, gpioModePushPull, 0 );

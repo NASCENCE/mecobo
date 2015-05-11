@@ -156,7 +156,6 @@ int main(void)
 {
 
   eADesigner_Init();
-
   //release fpga reset (active high)
   //GPIO_PinOutClear(gpioPortB, 3);
 
@@ -178,84 +177,17 @@ int main(void)
   //nor out of reset
   GPIO_PinOutSet(gpioPortC, 2); //active low
 
-  GPIO_PinModeSet(gpioPortD, 7, gpioModeInput, 1);
-
-
-
-  printf("Waiting for NOR to deassert busy line\n");
-  while(NORBusy());
-
-
-  uint16_t versionWord =  *((uint16_t*)NOR_START);
-  /*
-  if ((versionWord & 0x4200)) {
-    printf("Found FPGA bitfile in NOR, version word %x. Programming!\n", versionWord);
-    programFPGA();
-  }
-  */
-
-
-  if(DEBUG_PRINTING) printf("Generating sine table\n");
-
-  float incr = 6.2830/(float)256.0;
-  float j = 0.0;
-  for(int i = 0; i < 256; i++, j += incr) {
-    sinus[i] = (uint8_t)((sin(j)*(float)128.0)+(float)128.0);
-  }
-  int skip_boot_tests= 0;
-
-  if(!skip_boot_tests) {
-
-    //Verify presence of daughterboard bitfile
-    uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
-    if (dac[PINCONFIG_STATUS_REG] == 0xdac) {
-      has_daughterboard = 1;
-      printf("Detected daughterboard bitfile (has DAC controller)\n");
-    }
-
-    if (has_daughterboard) {
-      //Check DAC controllers.
-      printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
-      uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
-      printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
-      printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
-      printf("Setting up DAC and ADCs\n");
-      setupDAC();
-      setupADC();
-    }
-
-    int i = 0;
-    printf("Response from digital controllers at 0 to 57:\n");
-    for(int i = 0; i < 57; i++) {
-      uint16_t * a = getChannelAddress(i) + PINCONFIG_STATUS_REG;
-      uint16_t foo = *a;
-      if (DEBUG_PRINTING) printf("Controller %d says it's position is %d\n", i, foo);
-    }
-
-    uint16_t * a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
-    uint16_t foo = *a;
-    if (foo != 2) {
-      printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
-    } else {
-      printf("FPGA responding as expected\n");
-    }
-
-    printf("FPGA check complete\n");
-
-    testRam();
-  }
-
 
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
-  //TODO: This is just silly, don't need to malloc here.
 
   //Put FPGA out of reset
   GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 5); //Reset
   GPIO_PinOutClear(gpioPortB, 5); //Reset clear
 
+  programFPGA();
 
   sendPackReady = 0;
 
@@ -266,7 +198,6 @@ int main(void)
   }
 
 
-  //itemsToApply will be ordered by start time, hurrah!
   itemsToApply = malloc(sizeof(struct pinItem) * 50);
   itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
   printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
