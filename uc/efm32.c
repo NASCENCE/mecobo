@@ -192,17 +192,10 @@ void eADesigner_Init(void)
 
   TIMER_Init(TIMER1, &timerInit);
   TIMER_Init(TIMER2, &timerInit);
-
-  EBI_Init(&ebiConfig);
-  EBI_Init(&ebiConfigSRAM1);
-  EBI_Init(&ebiConfigSRAM2);
-
   //special NOR SETUP
   EBI_Init_TypeDef ebiConfigNOR = EBI_INIT_DEFAULT;
   //EBI_Init(&ebiConfigNOR);
   ebiConfigNOR.mode = ebiModeD16;
-  ebiConfigNOR.ardyPolarity = ebiActiveLow;
-  ebiConfigNOR.alePolarity = ebiActiveLow;
   ebiConfigNOR.wePolarity = ebiActiveLow;
   ebiConfigNOR.rePolarity = ebiActiveLow;
   ebiConfigNOR.csPolarity = ebiActiveLow;
@@ -214,17 +207,46 @@ void eADesigner_Init(void)
   ebiConfigNOR.aHigh = ebiAHighA23;
   ebiConfigNOR.location = ebiLocation1;
 
+  //ebiConfig.addrHoldCycles  = 5;
+  //ebiConfig.addrSetupCycles = 5;
+
   /* Read cycle times */
-  ebiConfigNOR.readStrobeCycles = 15;
-  ebiConfigNOR.readHoldCycles   = 3;
-  ebiConfigNOR.readSetupCycles  = 3;
+  ebiConfigNOR.readStrobeCycles = 11;
+  ebiConfigNOR.readHoldCycles   = 2;
+  ebiConfigNOR.readSetupCycles  = 2;
 
   /* Write cycle times */
-  ebiConfigNOR.writeStrobeCycles = 15;
-  ebiConfigNOR.writeHoldCycles   = 3;
-  ebiConfigNOR.writeSetupCycles  = 3;
+  ebiConfigNOR.writeStrobeCycles = 11;
+  ebiConfigNOR.writeHoldCycles   = 2;
+  ebiConfigNOR.writeSetupCycles  = 2;
+
+  EBI_Init(&ebiConfig);
+//  EBI_Init(&ebiConfigSRAM1);
+  EBI_Init(&ebiConfigSRAM2);
+
+  //address lines in case some of them are funky
+  GPIO_PinModeSet( gpioPortB,  0, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  1, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  2, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  3, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  4, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  5, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortB,  6, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortC,  0, gpioModePushPull, 0 );
+
+
+
+  //chipsels
+  GPIO_PinModeSet( gpioPortD,  9, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 10, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 11, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 12, gpioModePushPull, 1 );
+
+  //selcets
+  GPIO_PinModeSet( gpioPortF,  8, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortF,  9, gpioModePushPull, 1 );
+
 
   EBI_Init(&ebiConfigNOR);
-
 }
 

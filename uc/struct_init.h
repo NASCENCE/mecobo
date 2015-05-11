@@ -109,43 +109,6 @@ static EBI_Init_TypeDef ebiConfigSRAM2 = {
 };
 
 
-static EBI_Init_TypeDef ebiConfigNOR = {   
-
-    ebiModeD16,      /* 8 bit address, 8 bit data */  \
-    ebiActiveLow,     /* ARDY polarity */              \
-    ebiActiveLow,     /* ALE polarity */               \
-    ebiActiveLow,     /* WE polarity */                \
-    ebiActiveLow,     /* RE polarity */                \
-    ebiActiveLow,     /* CS polarity */                \
-    ebiActiveLow,     /* BL polarity */                \
-    false,            /* enable BL */                  \
-    false,            /* enable NOIDLE */              \
-    false,            /* enable ARDY */                \
-    false,            /* don't disable ARDY timeout */ \
-    EBI_BANK3,        /* enable bank 0 */              \
-    EBI_CS3,          /* enable chip select 0 */       \
-    3,                /* addr setup cycles */          \
-    3,                /* addr hold cycles */           \
-    false,            /* do not enable half cycle ALE strobe */ \
-    3,                /* read setup cycles */          \
-    7,                /* read strobe cycles */         \
-    3,                /* read hold cycles */           \
-    true,             /* disable page mode */          \
-    false,            /* disable prefetch */           \
-    false,            /* do not enable half cycle REn strobe */ \
-    3,                /* write setup cycles */         \
-    7,                /* write strobe cycles */        \
-    3,                /* write hold cycles */          \
-    true,            /* do not disable the write buffer */ \
-    false,            /* do not enable halc cycle WEn strobe */ \
-    ebiALowA0,        /* ALB - Low bound, address lines */ \
-    ebiAHighA23,       /* APEN - High bound, address lines */   \
-    ebiLocation1,     /* Use Location 0 */             \
-    true,             /* enable EBI */                 \
-};
-
-
-
 static TIMER_Init_TypeDef timerInit = {
   .enable     = true, 
   .debugRun   = true, 

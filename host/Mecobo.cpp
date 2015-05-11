@@ -187,8 +187,17 @@ void Mecobo::programFPGA(const char * filename)
     //Send the rest if there is any.
     if(rest > 0) {
       printf("Sending the rest pack, position %u, size %d\n", (i*packsize), rest);
+      //Create a new buffer that holds the rest data and padding.
+      std::vector<uint8_t> newBuf;
+      for (int b = 0; b < packsize; b++) {
+        if(b < rest) {
+          newBuf.push_back(bytes[b + (i*packsize)]);
+        } else {
+          newBuf.push_back(0xFF);
+        }
+      }
       struct mecoPack lol;
-      createMecoPack(&lol, bytes + (i*packsize), rest, USB_CMD_LOAD_BITFILE);
+      createMecoPack(&lol, newBuf.data(), packsize, USB_CMD_LOAD_BITFILE);
       sendPacket(&lol);
     }
 

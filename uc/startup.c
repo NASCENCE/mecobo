@@ -3,46 +3,36 @@
 
 void testRam()
 {
-  printf("SRAM 1 TEST\n");
-  
-  uint8_t * ram = (uint8_t*)SRAM1_START;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM1_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
-    }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-      }
-    }
-    //Null out before use.
-    ram[i] = 0;
-  }
-  printf("Complete.\n");
 
 
-  printf("SRAM 1 TEST SAME PATTERN\n");
-  uint8_t * pat = (uint8_t*)SRAM1_START;
-  for(int j = 0; j < SRAM1_BYTES; j++) {
-    pat[j] = 0xAA;
-    if(pat[j] != 0xAA) {
-      printf("Failed RAM test!\n");
-    }
-  }
-  printf("Complete.\n");
-
+  uint16_t * ram = (uint16_t*)SRAM2_START;
   printf("SRAM 2 TEST\n");
-  ram = (uint8_t*)SRAM2_START;
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < SRAM2_BYTES; j++) {
-      ram[i*(16*1024)+j] = j%255;
-    }
-    for(int j = 0; j < 16*1024; j++) {
-      uint8_t rb = ram[i*(16*1024) + j];
-      if(rb != j%255) {
-        printf("FAIL at %u wanted %u got %u\n", i*(16 * 1024) + j, j%255, rb);
-      }
+
+  ram[100] = 0xff42;
+  ram[101] = 0xff43;
+  ram[102] = 0xff44;
+  ram[103] = 0xff45;
+  ram[104] = 0xff46;
+  ram[105] = 0x5555;
+  ram[106] = 0xAAAA;
+
+  printf("ram: %x\n", ram[100]);
+  printf("ram: %x\n", ram[101]);
+  printf("ram: %x\n", ram[102]);
+  printf("ram: %x\n", ram[103]);
+  printf("ram: %x\n", ram[104]);
+  printf("ram: %x\n", ram[105]);
+  printf("ram: %x\n", ram[106]);
+
+  for(uint16_t i = 0; i < 10000; i++) {
+    ram[i] = i;
+  }
+
+
+  for(uint16_t i = 0; i < 10000; i++) {
+    if (ram[i] != i) {
+      printf("FAIL at %p got value %x wanted %x\n", &ram[i], ram[i], i);
     }
   }
+
 }
