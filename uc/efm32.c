@@ -226,6 +226,18 @@ void eADesigner_Init(void)
   EBI_Init(&ebiConfig);
 //  EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
+
+  GPIO_PinModeSet( gpioPortA,  0, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  1, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  2, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  3, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  4, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  5, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortA,  6, gpioModePushPull, 0 );
+
+  /* EBI AD8 */
+  GPIO_PinModeSet( gpioPortA, 15, gpioModePushPull, 0 );
+
   //address lines in case some of them are funky
   GPIO_PinModeSet( gpioPortB,  0, gpioModePushPull, 0 );
   GPIO_PinModeSet( gpioPortB,  1, gpioModePushPull, 0 );
@@ -237,14 +249,13 @@ void eADesigner_Init(void)
   GPIO_PinModeSet( gpioPortC,  0, gpioModePushPull, 0 );
 
 
-
   //chipsels
-  GPIO_PinModeSet( gpioPortD,  9, gpioModePushPull, 1 );
-  GPIO_PinModeSet( gpioPortD, 10, gpioModePushPull, 1 );
-  GPIO_PinModeSet( gpioPortD, 11, gpioModePushPull, 1 );
-  GPIO_PinModeSet( gpioPortD, 12, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD,  9, gpioModePushPull, 1 ); //cs0
+  GPIO_PinModeSet( gpioPortD, 10, gpioModePushPull, 1 ); //cs1
+  GPIO_PinModeSet( gpioPortD, 11, gpioModePushPull, 1 ); //cs2
+  GPIO_PinModeSet( gpioPortD, 12, gpioModePushPull, 1 ); //cs3
 
-  //selcets
+  //wen ren
   GPIO_PinModeSet( gpioPortF,  8, gpioModePushPull, 1 );
   GPIO_PinModeSet( gpioPortF,  9, gpioModePushPull, 1 );
 

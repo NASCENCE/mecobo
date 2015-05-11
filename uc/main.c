@@ -46,6 +46,9 @@
 
 char * BUILD_VERSION = __GIT_COMMIT__;
 
+int NORPollData(uint16_t writtenWord, uint32_t addr);
+
+
 #define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
@@ -81,7 +84,7 @@ static int executeInProgress = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
-uint32_t bitfileOffset = 0;
+uint32_t bitfileOffset = 256;
 uint32_t lastPackSize = 0;
 
 //Data stuff for items
@@ -156,11 +159,9 @@ int main(void)
 {
 
   eADesigner_Init();
-  //release fpga reset (active high)
-  //GPIO_PinOutClear(gpioPortB, 3);
 
   setupSWOForPrint();
-  printf("Printing online.\n");
+  printf("Print output online\n");
 
   //nor in reset
   GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
@@ -181,13 +182,14 @@ int main(void)
   inBuffer = (uint8_t*)malloc(128*8);
   inBufferTop = 0;
 
-
   //Put FPGA out of reset
   GPIO_PinModeSet(gpioPortB, 5, gpioModePushPull, 1);  
   GPIO_PinOutSet(gpioPortB, 5); //Reset
   GPIO_PinOutClear(gpioPortB, 5); //Reset clear
 
-  programFPGA();
+
+  resetNor();
+  //programFPGA();
 
   sendPackReady = 0;
 
@@ -197,6 +199,58 @@ int main(void)
     GPIO_PinOutSet(gpioPortD, 0); //turn on led (we're configured)
   }
 
+
+
+  int skip_boot_tests= 0;
+
+  if(!skip_boot_tests) {
+
+    //Verify presence of daughterboard bitfile
+    uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
+    if (dac[PINCONFIG_STATUS_REG] == 0xdac) {
+      has_daughterboard = 1;
+      printf("Detected daughterboard bitfile (has DAC controller)\n");
+    }
+
+    if (has_daughterboard) {
+      //Check DAC controllers.
+      printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
+      uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
+      printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
+      printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
+      printf("Setting up DAC and ADCs\n");
+      setupDAC();
+      setupADC();
+    }
+
+    int i = 0;
+    printf("Response from digital controllers at 0 to 57:\n");
+    for(int i = 0; i < 57; i++) {
+      uint16_t * a = getChannelAddress(i) + PINCONFIG_STATUS_REG;
+      uint16_t foo = *a;
+      if (DEBUG_PRINTING) printf("Controller %d says it's position is %d\n", i, foo);
+    }
+
+    uint16_t * a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
+    uint16_t foo = *a;
+    if (foo != 2) {
+      printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
+    } else {
+      printf("FPGA responding as expected\n");
+    }
+
+    printf("FPGA check complete\n");
+
+    //testNOR();
+    testRam();
+  }
+
+
+
+  autoSelectNor();
+
+  //writeToNor(0, 0x4242);
+  //eraseNorChip();
 
   itemsToApply = malloc(sizeof(struct pinItem) * 50);
   itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
@@ -880,28 +934,20 @@ void execCurrentPack()
       //eraseNorChip();  //we want to chuck in a new file, kill this.
     }
 
-    //enterEnhancedMode();
+    autoSelectNor();
+    //resetNor();
+    enterEnhancedMode();
     //We send packs in neat multiple-of 512 byte packages,
     //so we can load 256 words (2bytes) a time into the NOR. 
     uint16_t * p = (uint16_t*)currentPack.data;
-    /*
     int wordsInPack = currentPack.size/2;
+
     for(int writes = 0; writes < (wordsInPack/256); writes++) {
-      write256Buffer(p + (writes*256), bitfileOffset);
-      bitfileOffset += 256;
+       write256Buffer(p + (writes*256), bitfileOffset);
+       bitfileOffset += 256;
     }
-    */
 
-    uint8_t * sram2 = (uint8_t*)(SRAM2_START);
-
-    for(int i = 0; i < currentPack.size; i++) {
-      sram2[bitfileOffset + i] = currentPack.data[i];
-    }
-    //memcpy((sram2 + bitfileOffset), currentPack.data, currentPack.size);
-
-    bitfileOffset += currentPack.size;
-
-    //exitEnhancedMode();
+    exitEnhancedMode();
     //word offsets
     free(currentPack.data);
     printf("Got data, current offset %u\n", (unsigned int)bitfileOffset);
@@ -910,7 +956,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_PROGRAM_FPGA) {
     programFPGA();
-    bitfileOffset = 0;
+    bitfileOffset = 256;
   }
 
   //if/else done.
@@ -976,7 +1022,7 @@ void led(int l, int mode)
 
 void programFPGA()
 {
-  returnToRead(); //set NOR in read mode
+  autoSelectNor(); //set NOR in read mode
   printf("Programming FPGA!\n");
   //Start the configuration process.
   //set the input pin modes.
@@ -1014,8 +1060,7 @@ void programFPGA()
   //uint32_t * n32 = (uint32_t *)(NOR_START + 4); //this is where we store the length
   //uint32_t bitfileLength = *n32; //stored at the 4 bytes
   //int nb = 0;
-  //uint8_t * nor = (uint8_t *)(NOR_START + 256); //this is where data starts
-  uint8_t * nor = (uint8_t *)(SRAM2_START); //this is where data starts
+  uint8_t * nor = (uint8_t *)(NOR_START + 512); //this is where data starts
   //printf("Programming with %u bytes\n", (unsigned int)bitfileLength);
   //  for(int i = 0; i < bitfileLength; i++) {
 
@@ -1059,58 +1104,46 @@ void eraseNorChip()
   uint16_t * nor = (uint16_t *)NOR_START;
   printf("Doing chip erase\n");
   nor[0x555] = 0xCA;
-  while(NORBusy());
   nor[0x2AA] = 0x35;
-  while(NORBusy());
   nor[0x555] = 0x80;
-  while(NORBusy());
   nor[0x555] = 0xCA;
-  while(NORBusy());
   nor[0x2AA] = 0x35;
-  while(NORBusy());
   nor[0x555] = 0x10;
 
-  uint32_t i = 0;
-  while(NORBusy()) {
-    if ((i++ % 10000000) == 0)
-      printf("Still erasing...\n");
-  }
-
-  /*
-     uint8_t databit = 1;
-     int done = 0;
-     uint8_t dq1, dq5, dq7;
-     while(!done) {
-     dq1 = (nor[1] >> 1) & 0x1;
-     dq5 = (nor[1] >> 5) & 0x1;
-     dq7 = (nor[1] >> 7) & 0x1;
-
-     printf("dq7: %x, dq5: %x, dq1: %x\n", dq7, dq5, dq1);
-     if(dq7 == databit) {
-     if(!dq5) {
-     done = 1;
-     }
-     }
-     }
-     */
+  while(NORPollData(1, 0));
 
   printf("Done\n");
 }
 
 
 
-int NORBusy() {
-  if(GPIO_PinInGet(gpioPortD, 7) == 0){
-    return 1;
+void NORBusy() {
+
+  uint16_t * nor = (uint16_t *)NOR_START;
+  #define TOGGLE_BIT 0x20
+  uint8_t status = 0;
+  uint8_t done = 0;
+  int counter = 0;
+  while(!done) {
+    status = nor[0];
+    //read once more
+    if((nor[0] & TOGGLE_BIT) == (status & TOGGLE_BIT)) {
+      done = 1;
+    }
+    if (((counter++)%100000) == 0) {
+      printf("NOR busy... %x\n", status);
+    }
   }
-  return 0;
+  printf("Final status %x\n", nor[0]);
+
+  return;
 }
 
 void resetNor()
 {
+  printf("NOR RESET\n");
   uint16_t * nor = (uint16_t *)NOR_START;
   nor[0x555] = 0xF0;
-  while(NORBusy());
 }
 
 void writeBufferToNor(uint16_t * buf, uint32_t offset, uint32_t len) 
@@ -1125,49 +1158,20 @@ void writeToNor(uint32_t offset, uint16_t data)
   //uint16_t databit = (data >> 7) & 0x01;
   //write -- dq5 and dq6 are flippedyflopped.
   nor[0x555] = 0xCA;
-  while(NORBusy());
   nor[0x2AA] = 0x35;
-  while(NORBusy());
   nor[0x555] = 0xC0;
-  while(NORBusy());
-
-  //uint16_t old = data;
-  //uint16_t x = ((data >> 5) ^ (data >> 6)) & 0x01;
-  //data = data ^ ((x << 5) | (x << 6));
-  //  printf("Original: %x flipped: %d\n", old, data);
+  //NORToggling();
 
   nor[offset] = data;
-  while(NORBusy());
-
-  /*
-     int done = 0;
-     uint16_t dq1, dq5, dq7;
-     while(!done) {
-     dq1 = (nor[offset] >> 1) & 0x1;
-     dq5 = (nor[offset] >> 6) & 0x1;  //dq5 is dq6 and vice versa...
-     dq7 = (nor[offset] >> 7) & 0x1;
-
-     printf("dq7: %x, dq5: %x, dq1: %x\n", dq7, dq5, dq1);
-     printf("wrd: %x\n", nor[offset]);
-     if(dq7 == databit) {
-     done = 1;
-     } 
-     }
-     */
-  //while(((nor[offset] >> 7) & 0x01) != dq7);
-  //now we need to wait until we're done.
-  //for(int i = 0; i < 1000; i++);
+  while(NORPollData(data, offset));
 }
 
 void returnToRead()
 {
   uint8_t * nor = (uint8_t *)NOR_START;
   nor[0x555] = 0xCA;
-  while(NORBusy());
   nor[0x2AA] = 0x35;
-  while(NORBusy());
   nor[0x123] = 0xF0;
-  while(NORBusy());
 }
 
 void unlockByPass()
@@ -1182,34 +1186,26 @@ void autoSelectNor()
 {
   uint16_t * nugg = (uint16_t*)NOR_START;
   nugg[0x55] = 0x90; //auto select
-  while(NORBusy());
-
 }
 
 
 void enterEnhancedMode()
 {
-
+  printf("Entering enhanced mode\n");
   uint16_t * nor = (uint16_t *)NOR_START;
   //Enter enhanced mode
   nor[0x555] = 0xCA;
-  while(NORBusy());
   nor[0x2AA] = 0x35;
-  while(NORBusy());
   nor[0x555] = 0x58;
-  while(NORBusy());
-
 }
 
 void exitEnhancedMode()
 {
   uint16_t * nor = (uint16_t *)NOR_START;
-
   /* Exit enhanced program command */
   nor[0] = 0x90;
-  while(NORBusy());
   nor[0] = 0x00;
-  while(NORBusy());
+  printf("Exit enhanced mode\n");
 }
 
 
@@ -1225,35 +1221,56 @@ void write256Buffer(uint16_t * data, uint32_t offset)
 
   //Now start command
   nor[bad] = 0x53;
-  while(NORBusy());
 
   for (int i = 0; i < 256; i++) {
     nor[offset + i] = data[i];
   }
 
-  //while(NORBusy());
 
   nor[bad] = 0x49;
-  int j = 0; 
 
-  /* Check if we have error or whatever */
+  //Wait until we no longer toggle
+  while(NORToggling());
+
+  //NORError();
+
+  printf("Wrote bytes\n");
+}
+
 
 #define TOGGLE_BIT 0x20
-  uint8_t status = 0;
-  uint8_t done = 0;
-  while(!done) {
-    status = nor[0];
-    if((nor[0] & TOGGLE_BIT) == (status & TOGGLE_BIT)) {
-      done = 1;
-    }
-  }
+int NORToggling() 
+{
+  uint16_t * nor = (uint16_t *)NOR_START;
+  uint16_t a = nor[0];
+  uint16_t b = nor[0];
 
-  /*
-  while(NORBusy()) {
-    if ((j%1000000)==0){
-      printf("Writing 256 word block...\n");
-    }
-    j++;
+  if ((a & TOGGLE_BIT) != (b & TOGGLE_BIT)) {
+    printf("TOGGLECHECK: %x and %x\n", a, b);
+    return 1;
   }
-  */
+  return 0;
 }
+
+#define DATA_BIT 0x80
+int NORPollData(uint16_t writtenWord, uint32_t addr)
+{
+  uint16_t * nor = (uint16_t *)NOR_START;
+  if ((nor[addr] & DATA_BIT) != (writtenWord & DATA_BIT)) {
+    return 1;
+  }
+  return 0;
+}
+
+#define ERROR_BIT 0x40
+int NORError() {
+  uint16_t * nor = (uint16_t *)NOR_START;
+  uint16_t status = nor[0];
+  if(status & ERROR_BIT) {
+    printf("Error detected. Status reg: %x\n", status);
+    return 1;
+  }
+  else return 0;
+}
+
+
