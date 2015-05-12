@@ -214,19 +214,16 @@ void eADesigner_Init(void)
   //ebiConfig.addrSetupCycles = 5;
 
   /* Read cycle times */
-  ebiConfigNOR.readStrobeCycles = 7;
-  ebiConfigNOR.readHoldCycles   = 3;
-  ebiConfigNOR.readSetupCycles  = 3;
+  ebiConfigNOR.readStrobeCycles = 10;
+  ebiConfigNOR.readHoldCycles   = 2;
+  ebiConfigNOR.readSetupCycles  = 2;
 
   /* Write cycle times */
-  ebiConfigNOR.writeStrobeCycles = 7;
-  ebiConfigNOR.writeHoldCycles   = 3;
-  ebiConfigNOR.writeSetupCycles  = 3;
+  ebiConfigNOR.writeStrobeCycles = 10;
+  ebiConfigNOR.writeHoldCycles   = 2;
+  ebiConfigNOR.writeSetupCycles  = 2;
 
-  EBI_Init(&ebiConfig);
-//  EBI_Init(&ebiConfigSRAM1);
-  EBI_Init(&ebiConfigSRAM2);
-
+  /* Configure GPIO pins as push pull */ /* EBI AD9..15 */
   GPIO_PinModeSet( gpioPortA,  0, gpioModePushPull, 0 );
   GPIO_PinModeSet( gpioPortA,  1, gpioModePushPull, 0 );
   GPIO_PinModeSet( gpioPortA,  2, gpioModePushPull, 0 );
@@ -238,16 +235,21 @@ void eADesigner_Init(void)
   /* EBI AD8 */
   GPIO_PinModeSet( gpioPortA, 15, gpioModePushPull, 0 );
 
-  //address lines in case some of them are funky
-  GPIO_PinModeSet( gpioPortB,  0, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  1, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  2, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  3, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  4, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  5, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortB,  6, gpioModePushPull, 0 );
-  GPIO_PinModeSet( gpioPortC,  0, gpioModePushPull, 0 );
+  /* EBI CS0-CS3 */
+  GPIO_PinModeSet( gpioPortD,  9, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 10, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 11, gpioModePushPull, 1 );
+  GPIO_PinModeSet( gpioPortD, 12, gpioModePushPull, 1 );
 
+  /* EBI AD0..7 */
+  GPIO_PinModeSet( gpioPortE,  8, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE,  9, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 10, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 11, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 12, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 13, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 14, gpioModePushPull, 0 );
+  GPIO_PinModeSet( gpioPortE, 15, gpioModePushPull, 0 );
 
   //chipsels
   GPIO_PinModeSet( gpioPortD,  9, gpioModePushPull, 1 ); //cs0
@@ -260,6 +262,8 @@ void eADesigner_Init(void)
   GPIO_PinModeSet( gpioPortF,  9, gpioModePushPull, 1 );
 
 
+  EBI_Init(&ebiConfig);
+  EBI_Init(&ebiConfigSRAM2);
   EBI_Init(&ebiConfigNOR);
 }
 
