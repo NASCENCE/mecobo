@@ -146,28 +146,6 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
-
-// Stupid mistake. These fixes need to be
-// applied to the physical daughterboard as well.
-`ifdef WITH_DB
-wire [15:0] pin_rerouting;
-assign HW[1] = pin_rerouting[0];
-assign HW[3] = pin_rerouting[1];  
-assign HW[5] = pin_rerouting[2];
-assign HW[7] = pin_rerouting[3];   
-assign HW[2] = pin_rerouting[4];
-assign HW[3] = pin_rerouting[5];
-assign HW[13] = pin_rerouting[6]; 
-assign HW[15] = pin_rerouting[7]; 
-assign HW[4] = pin_rerouting[8];
-assign HW[8] = pin_rerouting[9];  
-assign HW[10] = pin_rerouting[10];
-assign HW[14] = pin_rerouting[11];
-assign HW[25] = pin_rerouting[12];
-assign HW[27] = pin_rerouting[13];
-assign HW[16] = pin_rerouting[14]; 
-assign HW[31] = pin_rerouting[15];
-`endif
 // CONTROL MODULES
 // -------------------------------------
 //Standard pin controllers
@@ -185,7 +163,7 @@ generate
         .data_in(data_in),
         .data_rd(read_enable),
         .data_out(data_out),
-        .pin(pin_rerouting[i]),
+        .pin(HW[i+1]),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
         .sample_data(sample_data_bus)

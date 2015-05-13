@@ -113,7 +113,7 @@ module main_clocks
     .CLKOUT1_DIVIDE         (90),
     .CLKOUT1_PHASE          (0.000),
     .CLKOUT1_DUTY_CYCLE     (0.500),
-    .CLKOUT2_DIVIDE         (45),
+    .CLKOUT2_DIVIDE         (53),
     .CLKOUT2_PHASE          (0.000),
     .CLKOUT2_DUTY_CYCLE     (0.500),
     .CLKOUT3_DIVIDE         (15),

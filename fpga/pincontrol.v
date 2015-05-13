@@ -40,6 +40,8 @@ always @ (posedge clk) begin
       data_out <= sample_cnt;
     else if (addr[7:0] == ADDR_STATUS_REG)
       data_out <= POSITION;
+    else if (addr[7:0] == ADDR_LAST_DATA)
+      data_out <= ebi_captured_data;
     else
       data_out <= 16'b0;
   end else
@@ -88,7 +90,22 @@ localparam [7:0]
   ADDR_SAMPLE_RATE =  6,
   ADDR_SAMPLE_REG =  7,
   ADDR_SAMPLE_CNT =  8,
-  ADDR_STATUS_REG =  9;
+  ADDR_STATUS_REG =  9,
+  ADDR_LAST_DATA = 10;
+
+
+
+reg [15:0] ebi_captured_data;
+
+always @ (posedge clk) begin
+  if (reset)
+    ebi_captured_data <= 0;
+  else 
+    if (enable_in & data_wr) begin
+      ebi_captured_data <= data_in;
+    end
+end
+
 
 always @ (posedge clk) begin
   if (reset)
