@@ -144,4 +144,11 @@ struct mecoboStatus {
   uint16_t samplesInBuffer;
 };
 
+struct NORFileTableEntry {
+  char name[8]; //must be null-terminated
+  uint32_t size; //in bytes
+  uint32_t offset; //in bytes
+};
+
+
 #endif //__MECOPROT_H__

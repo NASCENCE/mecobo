@@ -165,6 +165,25 @@ void Mecobo::programFPGA(const char * filename)
     long nBytes = ftell(bitfile);
     rewind(bitfile);
 
+    struct NORFileTableEntry filetable[32];
+    //Add in the file table first because we're 
+    //programming the NOR only once.
+    struct NORFileTableEntry entry;
+    //TODO: entry.name = filename;
+    entry.size = nBytes;
+    entry.offset = 512;
+
+    filetable[0] = entry;
+
+    //hackyhack, only 1 entry for now.
+    entry.size = 0; 
+    filetable[1] = entry;
+    
+
+
+    //Add table size to bytes transferred
+    nBytes += 512;
+
     int packsize = 32*1024;
     int nPackets = nBytes / packsize;
     int rest = nBytes % (packsize);
@@ -173,8 +192,9 @@ void Mecobo::programFPGA(const char * filename)
           nBytes, nPackets, packsize, rest);
     uint8_t * bytes;
     bytes = (uint8_t *)malloc(nBytes);
+    memcpy(bytes, (uint8_t*)filetable, 512);
 
-    fread(bytes, 1, nBytes, bitfile);
+    fread(bytes + 512, 1, nBytes, bitfile);
 
     struct mecoPack send;
     int i;

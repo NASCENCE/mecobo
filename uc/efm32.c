@@ -214,12 +214,12 @@ void eADesigner_Init(void)
   //ebiConfig.addrSetupCycles = 5;
 
   /* Read cycle times */
-  ebiConfigNOR.readStrobeCycles = 10;
+  ebiConfigNOR.readStrobeCycles = 11;
   ebiConfigNOR.readHoldCycles   = 2;
   ebiConfigNOR.readSetupCycles  = 2;
 
   /* Write cycle times */
-  ebiConfigNOR.writeStrobeCycles = 10;
+  ebiConfigNOR.writeStrobeCycles = 11;
   ebiConfigNOR.writeHoldCycles   = 2;
   ebiConfigNOR.writeSetupCycles  = 2;
 
@@ -261,6 +261,8 @@ void eADesigner_Init(void)
   GPIO_PinModeSet( gpioPortF,  8, gpioModePushPull, 1 );
   GPIO_PinModeSet( gpioPortF,  9, gpioModePushPull, 1 );
 
+
+  //Some LED pins
 
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM2);

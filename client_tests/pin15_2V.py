@@ -26,7 +26,7 @@ it = emSequenceItem()
 it.pin = [15]
 it.startTime = 0
 it.endTime = 1000
-it.amplitude = 212
+it.amplitude = 1
 it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
 cli.appendSequenceAction(it)
 

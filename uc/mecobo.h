@@ -160,6 +160,7 @@ void programFPGA();
 void testRam();
 void testNOR();
 void programFPGA();
+//void parseNORFileTable(int * numEntries, struct NORFileTableEntry ** entries);
 
 #endif //__MECOBO_H_
 

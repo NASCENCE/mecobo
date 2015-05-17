@@ -84,7 +84,7 @@ static int executeInProgress = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
-uint32_t bitfileOffset = 256;
+uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
 //Data stuff for items
@@ -163,6 +163,9 @@ int main(void)
   setupSWOForPrint();
   printf("Print output online\n");
 
+  //Turn on front led 1 to indicate we are setting up the system.
+  led(FRONT_LED_0, 1);
+
   //nor in reset
   GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);  
   GPIO_PinOutClear(gpioPortC, 2); //active low
@@ -188,17 +191,23 @@ int main(void)
   GPIO_PinOutClear(gpioPortB, 5); //Reset clear
 
 
-  resetNor();
-  //programFPGA();
-
   sendPackReady = 0;
 
-  //Check if DONE pin is high, which means that the FPGA is configured.
-  if(!GPIO_PinInGet(gpioPortD, 15) && GPIO_PinInGet(gpioPortD, 12)) {
-    fpgaConfigured = 1;
-    GPIO_PinOutSet(gpioPortD, 0); //turn on led (we're configured)
-  }
+  resetNor();
+  autoSelectNor();
 
+
+  //Make sure NOR has come up.
+  for(int norwait = 0; norwait < 10000000; norwait++);
+
+  uint16_t * a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
+  uint16_t foo = *a;
+  if (foo != 2) {
+    printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
+     programFPGA();
+  } else {
+    printf("FPGA responding as expected\n");
+  }
 
 
   int skip_boot_tests= 0;
@@ -231,14 +240,6 @@ int main(void)
       if (DEBUG_PRINTING) printf("Controller %d says it's position is %d\n", i, foo);
     }
 
-    uint16_t * a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
-    uint16_t foo = *a;
-    if (foo != 2) {
-      printf("Got unexpected %x from FPGA at %x, addr %p\n", foo, i, a);
-    } else {
-      printf("FPGA responding as expected\n");
-    }
-
     printf("FPGA check complete\n");
 
     //testNOR();
@@ -247,7 +248,6 @@ int main(void)
 
 
 
-  autoSelectNor();
 
   //writeToNor(0, 0x4242);
   //eraseNorChip();
@@ -262,14 +262,16 @@ int main(void)
     DACreg[i] = 128;
   }
 
-  //Note: Do this late, things have to have had a chance to settle.
-  printf("Initializing USB\n");
+
+  
+
   USBD_Init(&initstruct);
   printf("USB Initialized.\n");
   USBD_Disconnect();
   USBTIMER_DelayMs(100);
   USBD_Connect();
   led(BOARD_LED_U3, 1);
+
 
   printf("Cycling LEDs :-)\n");
   //Cycle leds.
@@ -930,8 +932,8 @@ void execCurrentPack()
 
 
   if(currentPack.command == USB_CMD_LOAD_BITFILE) {
-    if(bitfileOffset == 256) {
-      //eraseNorChip();  //we want to chuck in a new file, kill this.
+    if(bitfileOffset == 0) {
+      eraseNorChip();  //we want to chuck in a new file, kill this.
     }
 
     autoSelectNor();
@@ -956,7 +958,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_PROGRAM_FPGA) {
     programFPGA();
-    bitfileOffset = 256;
+    bitfileOffset = 0;
   }
 
   //if/else done.
@@ -990,16 +992,16 @@ void led(int l, int mode)
 {
   switch(l) {
     case FRONT_LED_0:
-      GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1-mode);  //Led 1
+      GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1-mode);  //Led 1
       break;
     case FRONT_LED_1:
-      GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1-mode);  //Led 2
-      break; 
+      GPIO_PinModeSet(gpioPortD, 6, gpioModePushPull, 1-mode);  //Led 2
+      break;
     case FRONT_LED_2:
-      GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1-mode);  //Led 4
+      GPIO_PinModeSet(gpioPortD, 13, gpioModePushPull, 1-mode);  //Led 4
       break;
     case FRONT_LED_3:
-      GPIO_PinModeSet(gpioPortB, 8, gpioModePushPull, 1-mode);  //Led 3
+      GPIO_PinModeSet(gpioPortC, 5, gpioModePushPull, 1-mode);  //Led 3
       break;
 
     case BOARD_LED_U0:
@@ -1018,6 +1020,7 @@ void led(int l, int mode)
       break;
   }
 }
+
 
 
 void programFPGA()
@@ -1054,23 +1057,30 @@ void programFPGA()
   while(!GPIO_PinInGet(gpioPortD, 15)) {
     printf("Waiting for initb to go high again\n");
   }
+  //Bring front led 2 on to indicate programming.
 
-  GPIO_PinModeSet(gpioPortD, 7, gpioModeInput, 1);
+  GPIO_PinModeSet(gpioPortD, 6, gpioModeInput, 1);
 
   //uint32_t * n32 = (uint32_t *)(NOR_START + 4); //this is where we store the length
   //uint32_t bitfileLength = *n32; //stored at the 4 bytes
   //int nb = 0;
-  uint8_t * nor = (uint8_t *)(NOR_START + 512); //this is where data starts
+ 
+
+  int numEntries;
+  struct NORFileTableEntry * entries = (struct NORFileTableEntry *)NOR_START;
+  //parseNORFileTable(&numEntries, &entries);
+  printf("Found a bitfile, size %u\n", entries[0].size);
+  //TODO: Select which bitfile to use here. For now,
+  //assume only 1 bitfile present.
+  uint8_t * nor = (uint8_t *)(NOR_START + entries[0].offset); //this is where data starts
   //printf("Programming with %u bytes\n", (unsigned int)bitfileLength);
   //  for(int i = 0; i < bitfileLength; i++) {
 
   uint32_t nb = 0;
-  while(!GPIO_PinInGet(gpioPortC, 4)) {
+  while(nb < entries[0].size) {
     uint8_t bait = nor[nb];
 
-    //if(i > 1400000) {
-    //  printf("Byte %x: %x\n", i, bait);
-    // }
+    //printf("wat\n");
     for(int b = 7; b >= 0; b--) {
       GPIO_PinOutClear(gpioPortA, 8); //clk low
       //clock a bit.
@@ -1086,6 +1096,8 @@ void programFPGA()
       printf("Last byte programmed: %x\n", bait);
       if(!GPIO_PinInGet(gpioPortD, 15)) {
         printf("CRC error during config, INITB went high!\n");
+      } else {
+        printf("BYTE OK\n");
       }
     }
   }
@@ -1110,7 +1122,8 @@ void eraseNorChip()
   nor[0x2AA] = 0x35;
   nor[0x555] = 0x10;
 
-  while(NORPollData(1, 0));
+  //while(NORPollData(1, 0));
+  NORBusy();
 
   printf("Done\n");
 }
@@ -1246,7 +1259,7 @@ int NORToggling()
   uint16_t b = nor[0];
 
   if ((a & TOGGLE_BIT) != (b & TOGGLE_BIT)) {
-    printf("TOGGLECHECK: %x and %x\n", a, b);
+    //printf("TOGGLECHECK: %x and %x\n", a, b);
     return 1;
   }
   return 0;
@@ -1272,5 +1285,14 @@ int NORError() {
   }
   else return 0;
 }
-
-
+/*
+void parseNORFileTable(int * numEntries, struct NORFileTableEntry * entries)
+{
+  //printf("Parsing nor file table\n");
+  //struct NORFileTableEntry * nte = (struct NORFileTableEntry *)NOR_START;
+  //size of 0 indicates invalid entry
+  //int entry = 0;
+ // entries[entry] = *nte;
+//  printf("Entry size %u, offset %u\n", entries[0].size, entries[0].offset);
+}
+*/
