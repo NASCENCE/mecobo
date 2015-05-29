@@ -184,8 +184,6 @@ initial begin
     collection_channels[mi] = 255;
     last_fetched[mi] = 0;
   end
-    
-
 end
 
 
@@ -379,6 +377,7 @@ wire [15:0] ram_data_in;
 
 assign ram_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
 
+/*
 dp_ram sample_ram(
   .clk(clk),
   .ena(ram_write_enable),
@@ -390,5 +389,7 @@ dp_ram sample_ram(
   .doa(),
   .dob(ram_data_out)
 );
+*/
+
 
 endmodule
