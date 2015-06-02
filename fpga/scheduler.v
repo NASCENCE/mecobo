@@ -1,28 +1,33 @@
-module scheduler (	input clk,
-			input rst,
+module scheduler (	input 			clk,
+			input 			rst,
 
 			//interface to timer.
-			input [31:0] current_time,
-			output reset_time,
+			input 	[31:0]		current_time,
+			output reg		reset_time,
 
 			//cmd fifo
-			input [63:0]	cmd_fifo_dout,
-			input		cmd_fifo_empty,
-			input		cmd_fifo_valid,
-			output reg	cmd_fifo_rd_en,
+			input [63:0]		cmd_fifo_dout,
+			input			cmd_fifo_empty,
+			input			cmd_fifo_valid,
+			output reg		cmd_fifo_rd_en,
 			//dac fifo
-			input [15:0]	dac_fifo_dout,
-			input		dac_fifo_empty,
-			output		dac_fifo_rd_en
+			input [15:0]		dac_fifo_dout,
+			input			dac_fifo_empty,
+			output			dac_fifo_rd_en,
 
 			//External bus interface to all the chippies.
 			output 	[18:0] 	cmd_bus_addr,
 			output 	[15:0] 	cmd_bus_data,
-			output		cmd_bus_en,
-			output		cmd_bus_rd,
-			output		cmd_bus_wr
+			output	reg		cmd_bus_en,
+			output	reg		cmd_bus_rd,
+			output	reg		cmd_bus_wr
 );
 
+
+localparam [3:0] 	fetch 	= 4'b0000,
+			exec	= 4'b0001,
+			bus	= 4'b0010,
+			idle	= 4'b0100;
 
 //control section state machine.
 reg [3:0] state, nextState;
@@ -34,20 +39,33 @@ always @ (posedge clk or posedge rst)
 
 //output and next state logic.
 //note that outputs are not registered.
+
+
+reg writeCommandReg = 1'b0;
+
 always @ ( * ) begin
 	nextState = 4'bXXXX;
-	cmd_fifo_rd_en <= 1'b0;
+	cmd_fifo_rd_en = 1'b0;
 	cmd_bus_wr = 1'b0;
 	cmd_bus_rd = 1'b0;
 	cmd_bus_en = 1'b0;	
 	writeCommandReg = 1'b0;
+	reset_time = 1'b0;
 	case (state)
+		idle: begin
+			nextState = fetch;
+			cmd_fifo_rd_en = 1'b1;
+			reset_time = 1'b1;	
+		end
+
 		fetch: begin
 			nextState = fetch;
 			if (current_time >= command) begin
 				cmd_fifo_rd_en = 1'b1;
 				nextState = exec;	
 			end
+		end
+
 		exec: begin
 			writeCommandReg = 1'b1;
 			nextState = bus;
@@ -76,8 +94,8 @@ localparam DATA_L = 0;
 
 reg [63:0] command = 0;
 
-assign cmd_bus_addr[15:0] <= {command[CTRL_H:CTRL_L],4'b0,command[CMD_H:CMD_L]};
-assign cmd_bus_data <= command[DATA_H:DATA_L];
+assign cmd_bus_addr[15:0] = {command[CTRL_H:CTRL_L],4'b0,command[CMD_H:CMD_L]};
+assign cmd_bus_data = command[DATA_H:DATA_L];
 
 always @ (posedge clk) begin
 	if (writeCommandReg & cmd_fifo_valid) begin

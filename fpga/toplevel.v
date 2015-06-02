@@ -153,7 +153,7 @@ ebi ebi_if(
 	.rst(mecobo_reset),
 	.data_in(),
 	.data_out(),
-	.addr(),.
+	.addr(),
 	.rd(),
 	.wr(),
 	.cs(),
@@ -302,8 +302,8 @@ xbar_control #(.POSITION(200))
       );
       //end
     end //for end
-  `endif
 */
+  `endif
     endgenerate
 
       mem mem0(
