@@ -146,6 +146,68 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
+
+//EBI
+ebi ebi_if(
+	.clk(sys_clk),
+	.rst(mecobo_reset),
+	.data_in(),
+	.data_out(),
+	.addr(),.
+	.rd(),
+	.wr(),
+	.cs(),
+	.cmd_fifo_data_in(ebi_fifo_din),
+	.cmd_fifo_wr_en(ebi_fifo_wr),
+	.cmd_fifo_almost_full(ebi_fifo_almost_full),
+	.cmd_fifo_full(ebi_fifo_full),
+	.cmd_fifo_almost_empty(ebi_fifo_almost_empty),
+	.cmd_fifo_empty(ebi_fifo_empty)
+);
+
+
+//FIFOS
+
+command_fifo cmd_fifo (
+	.clk(sys_clk),
+	.rst(mecobo_reset),
+	.din(ebi_fifo_din),
+	.wr_en(ebi_fifo_wr),
+	.full(ebi_fifo_full),
+	.almost_full(ebi_fifo_almost_full),
+	.empty(ebi_fifo_empty),
+	.almost_empty(ebi_fifo_almost_empty),
+	.valid(sched_fifo_valid),
+	.dout(sched_fifo_data),
+	.rd_en(sched_fifo_rd)
+);
+
+reg [31:0] global_clock = 0;
+always @ (posedge sys_clk) begin
+	if (global_clock_reset)
+		global_clock <= 0; 
+	else
+		global_clock <= global_clock + 1;
+end
+	
+//SCHEDULER
+scheduler sched(
+	.clk(sys_clk),
+	.rst(mecobo_reset),
+	.current_time(global_clock),
+	.reset_time(global_clock_reset),
+	.cmd_fifo_dout(sched_fifo_data),
+	.cmd_fifo_empty(sched_fifo_empty),
+	.cmd_fifo_valid(sched_fifo_valid),
+	.cmd_fifo_rd_en(sched_fifo_rd_en),
+
+	.cmd_bus_addr(cmd_bus_addr),
+	.cmd_bus_data(cmd_bus_data_in),
+	.cmd_bus_en(cmd_bus_en),
+	.cmd_bus_wr(cmd_bus_wr)
+);
+
+
 // CONTROL MODULES
 // -------------------------------------
 //Standard pin controllers
@@ -157,12 +219,12 @@ generate
       pc (
         .clk(sys_clk),
         .reset(mecobo_reset),
-        .enable(chip_select),
-        .addr(ebi_addr),
-        .data_wr(write_enable),
-        .data_in(data_in),
-        .data_rd(read_enable),
-        .data_out(data_out),
+        .enable(cmd_bus_en),
+        .addr(cmd_bus_addr),
+        .data_wr(cmd_bus_wr),
+        .data_in(cmd_bus_data_in),
+        .data_rd(),
+        .data_out(),
         .pin(HW[i+1]),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
@@ -170,6 +232,7 @@ generate
       );
     //end
   end //for end
+/*
 adc_control #(.MIN_CHANNEL(100), 
               .MAX_CHANNEL(107))
     adc0 (
@@ -240,7 +303,7 @@ xbar_control #(.POSITION(200))
       //end
     end //for end
   `endif
-
+*/
     endgenerate
 
       mem mem0(

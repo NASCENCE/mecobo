@@ -46,7 +46,8 @@ module command_fifo(
   full,
   almost_full,
   empty,
-  almost_empty
+  almost_empty,
+  valid 
 );
 
 input clk;
@@ -59,6 +60,7 @@ output full;
 output almost_full;
 output empty;
 output almost_empty;
+output valid;
 
 // synthesis translate_off
 
@@ -282,7 +284,7 @@ output almost_empty;
     .INJECTSBITERR(),
     .WR_ACK(),
     .OVERFLOW(),
-    .VALID(),
+    .VALID(valid),
     .UNDERFLOW(),
     .DATA_COUNT(),
     .RD_DATA_COUNT(),
