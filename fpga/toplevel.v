@@ -146,17 +146,17 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
-
+wire [63:0] ebi_fifo_din;
 //EBI
 ebi ebi_if(
 	.clk(sys_clk),
 	.rst(mecobo_reset),
-	.data_in(),
-	.data_out(),
-	.addr(),
-	.rd(),
-	.wr(),
-	.cs(),
+	.data_in(data_in),
+	.data_out(data_out),
+	.addr(ebi_addr),
+	.rd(read_enable),
+	.wr(write_enable),
+	.cs(chip_select),
 	.cmd_fifo_data_in(ebi_fifo_din),
 	.cmd_fifo_wr_en(ebi_fifo_wr),
 	.cmd_fifo_almost_full(ebi_fifo_almost_full),
@@ -168,6 +168,9 @@ ebi ebi_if(
 
 //FIFOS
 
+wire [15:0] cmd_bus_data_in;
+wire [18:0] cmd_bus_addr;
+wire [63:0] sched_fifo_data;
 command_fifo cmd_fifo (
 	.clk(sys_clk),
 	.rst(mecobo_reset),
@@ -179,7 +182,8 @@ command_fifo cmd_fifo (
 	.almost_empty(ebi_fifo_almost_empty),
 	.valid(sched_fifo_valid),
 	.dout(sched_fifo_data),
-	.rd_en(sched_fifo_rd)
+	.rd_en(sched_fifo_rd),
+	.wr_ack()
 );
 
 reg [31:0] global_clock = 0;
@@ -191,15 +195,16 @@ always @ (posedge sys_clk) begin
 end
 	
 //SCHEDULER
+
 scheduler sched(
 	.clk(sys_clk),
 	.rst(mecobo_reset),
 	.current_time(global_clock),
 	.reset_time(global_clock_reset),
 	.cmd_fifo_dout(sched_fifo_data),
-	.cmd_fifo_empty(sched_fifo_empty),
+	.cmd_fifo_empty(ebi_fifo_empty),
 	.cmd_fifo_valid(sched_fifo_valid),
-	.cmd_fifo_rd_en(sched_fifo_rd_en),
+	.cmd_fifo_rd_en(sched_fifo_rd),
 
 	.cmd_bus_addr(cmd_bus_addr),
 	.cmd_bus_data(cmd_bus_data_in),

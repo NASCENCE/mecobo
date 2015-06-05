@@ -45,9 +45,10 @@ module command_fifo(
   dout,
   full,
   almost_full,
+  wr_ack,
   empty,
   almost_empty,
-  valid 
+  valid
 );
 
 input clk;
@@ -58,6 +59,7 @@ input rd_en;
 output [63 : 0] dout;
 output full;
 output almost_full;
+output wr_ack;
 output empty;
 output almost_empty;
 output valid;
@@ -153,8 +155,8 @@ output valid;
     .C_HAS_SLAVE_CE(0),
     .C_HAS_SRST(0),
     .C_HAS_UNDERFLOW(0),
-    .C_HAS_VALID(0),
-    .C_HAS_WR_ACK(0),
+    .C_HAS_VALID(1),
+    .C_HAS_WR_ACK(1),
     .C_HAS_WR_DATA_COUNT(0),
     .C_HAS_WR_RST(0),
     .C_IMPLEMENTATION_TYPE(0),
@@ -264,8 +266,10 @@ output valid;
     .DOUT(dout),
     .FULL(full),
     .ALMOST_FULL(almost_full),
+    .WR_ACK(wr_ack),
     .EMPTY(empty),
     .ALMOST_EMPTY(almost_empty),
+    .VALID(valid),
     .BACKUP(),
     .BACKUP_MARKER(),
     .SRST(),
@@ -282,9 +286,7 @@ output valid;
     .INT_CLK(),
     .INJECTDBITERR(),
     .INJECTSBITERR(),
-    .WR_ACK(),
     .OVERFLOW(),
-    .VALID(valid),
     .UNDERFLOW(),
     .DATA_COUNT(),
     .RD_DATA_COUNT(),

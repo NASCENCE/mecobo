@@ -66,8 +66,10 @@ command_fifo your_instance_name (
   .dout(dout), // output [63 : 0] dout
   .full(full), // output full
   .almost_full(almost_full), // output almost_full
+  .wr_ack(wr_ack), // output wr_ack
   .empty(empty), // output empty
-  .almost_empty(almost_empty) // output almost_empty
+  .almost_empty(almost_empty), // output almost_empty
+  .valid(valid) // output valid
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 

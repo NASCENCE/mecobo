@@ -95,6 +95,8 @@ ARCHITECTURE simulation_arch OF command_fifo_synth IS
 
     -- FIFO interface signal declarations
     SIGNAL clk_i	                  :   STD_LOGIC;
+    SIGNAL wr_ack                         :   STD_LOGIC;
+    SIGNAL valid                          :   STD_LOGIC;
     SIGNAL almost_full                    :   STD_LOGIC;
     SIGNAL almost_empty                   :   STD_LOGIC;
     SIGNAL rst	                          :   STD_LOGIC;
@@ -256,6 +258,8 @@ ARCHITECTURE simulation_arch OF command_fifo_synth IS
   command_fifo_inst : command_fifo_exdes 
     PORT MAP (
            CLK                       => clk_i,
+           WR_ACK                    => wr_ack,
+           VALID                     => valid,
            ALMOST_FULL               => almost_full,
            ALMOST_EMPTY              => almost_empty,
            RST                       => rst,

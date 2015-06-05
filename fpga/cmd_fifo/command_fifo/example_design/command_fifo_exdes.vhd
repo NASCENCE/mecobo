@@ -74,6 +74,8 @@ use unisim.vcomponents.all;
 entity command_fifo_exdes is
    PORT (
            CLK                       : IN  std_logic;
+           WR_ACK                    : OUT std_logic;
+           VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;
            ALMOST_EMPTY              : OUT std_logic;
            RST                       : IN  std_logic;
@@ -97,6 +99,8 @@ architecture xilinx of command_fifo_exdes is
   component command_fifo is
    PORT (
            CLK                       : IN  std_logic;
+           WR_ACK                    : OUT std_logic;
+           VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;
            ALMOST_EMPTY              : OUT std_logic;
            RST                       : IN  std_logic;
@@ -122,6 +126,8 @@ begin
   exdes_inst : command_fifo 
     PORT MAP (
            CLK                       => clk_i,
+           WR_ACK                    => wr_ack,
+           VALID                     => valid,
            ALMOST_FULL               => almost_full,
            ALMOST_EMPTY              => almost_empty,
            RST                       => rst,
