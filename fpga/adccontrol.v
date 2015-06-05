@@ -38,7 +38,7 @@ parameter MAX_CHANNEL = 1;
 wor  controller_enable_ch;
 wor  channels_selected;
 genvar ch;
-for (ch = MIN_CHANNEL; ch <= MAX_CHANNEL; ch = ch + 1) begin
+for (ch = MIN_CHANNEL; ch <= MAX_CHANNEL; ch = ch + 1) begin : enable_for_generator
   assign controller_enable_ch = (addr[15:8] == ch);
   assign channels_selected = (channel_select == ch);
 end

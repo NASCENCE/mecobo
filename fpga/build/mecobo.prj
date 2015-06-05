@@ -1,4 +1,7 @@
 verilog work "../xbar_control.v"
+verilog work "../scheduler.v"
+verilog work "../ebi.v"
+verilog work "../cmd_fifo/command_fifo.v"
 verilog work "../xbar_clock.v"
 verilog work "../pincontrol.v"
 verilog work "../main_clocks.v"
