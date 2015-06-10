@@ -22,7 +22,7 @@ module ebi(	input clk,
 		input 		sample_fifo_almost_empty,
 		input		sample_fifo_empty,
 		//TODO: DAC buffers.
-		output          irq
+		output          reg irq
 );	
 
 // ------------- EBI INTERFACE -----------------
@@ -88,40 +88,38 @@ end
 //
 //
 
-assign irq = 				cmd_fifo_almost_full |
-					cmd_fifo_full |
-					cmd_fifo_almost_empty |
-					cmd_fifo_empty |
-					sample_fifo_almost_full |
-					sample_fifo_full |
-					sample_fifo_empty |
-					sample_fifo_almost_empty;
-
+reg [15:0] status_register = 0;
+reg [15:0] status_register_old = 0;
 
 integer i;
 always @ (posedge clk) begin
 	if (rst) begin
 		for ( i = 0; i < 4; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
-	end
-	if (load_capture_reg) begin
-		ebi_captured_data[addr-1] <= data_in;
-	end
+	end else begin
+		if (load_capture_reg) begin
+			ebi_captured_data[addr-1] <= data_in;
+		end
 
-	//Reading
-	if (addr == EBI_ADDR_STATUS_REG) begin
-		data_out <= 	{
-					cmd_fifo_almost_full,
-					cmd_fifo_full,
-					cmd_fifo_almost_empty,
-					cmd_fifo_empty,
-					sample_fifo_almost_full,
-					sample_fifo_full,
-					sample_fifo_empty,
-					sample_fifo_almost_empty,
-					8'h00
+		status_register <= 	{	cmd_fifo_almost_full,
+						cmd_fifo_full,
+						cmd_fifo_almost_empty,
+						cmd_fifo_empty,
+						sample_fifo_almost_full,
+						sample_fifo_full,
+						sample_fifo_empty,
+						sample_fifo_almost_empty,
+						8'h00
+					};
 
-				};
+	
+		irq <= (status_register != status_register_old);	
+		//Reading
+		//This will clear the interrupt
+		if (addr == EBI_ADDR_STATUS_REG) begin
+			data_out <= status_register;
+			status_register_old <= status_register;
+		end
 	end
 end
 
