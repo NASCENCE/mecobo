@@ -66,7 +66,7 @@ assign data_in = ebi_data; //write op
 assign ebi_data = (chip_select & read_enable) ? data_out : 16'bz; //read op
 
 wire ebi_irq;
-assign fpga_ready = global_irq;
+assign fpga_ready = ebi_irq;
 
 //Heartbeat
 reg [26:0] led_heartbeat = 0;

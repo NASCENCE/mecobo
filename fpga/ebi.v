@@ -2,7 +2,7 @@ module ebi(	input clk,
 		input rst,
 		//External interface to the world
 		input [15:0] data_in,
-		output [15:0] data_out,
+		output reg [15:0] data_out,
 		input [18:0] addr,
 		input rd,
 		input wr,
@@ -20,9 +20,9 @@ module ebi(	input clk,
 		input 		sample_fifo_almost_full,
 		input		sample_fifo_full,
 		input 		sample_fifo_almost_empty,
-		input		sample_fifo_empty
+		input		sample_fifo_empty,
 		//TODO: DAC buffers.
-		output          irq;
+		output          irq
 );	
 
 // ------------- EBI INTERFACE -----------------
@@ -118,11 +118,12 @@ always @ (posedge clk) begin
 					sample_fifo_almost_full,
 					sample_fifo_full,
 					sample_fifo_empty,
-					sample_fifo_almost_empty
+					sample_fifo_almost_empty,
+					8'h00
 
 				};
+	end
 end
-
 
 
 
