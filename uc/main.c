@@ -15,6 +15,11 @@
 
 
 
+/*
+ * Listen to the interrupt! It will be raised if any of the
+ * FIFOs are full, empty or any other stuff stuff happens.
+ */
+
 #include "em_dma.h"
 #include "em_gpio.h"
 #include "em_int.h"
@@ -193,18 +198,36 @@ int main(void)
 
   sendPackReady = 0;
 
-  resetNor();
-  autoSelectNor();
+  //resetNor();
+  //autoSelectNor();
+
+
+  uint16_t * a = getChannelAddress(0);
+  a[1] = 0;
+  a[2] = 0x30;
+  a[3] = 0x20;
+  a[4] = 0x9;
+
+
+  a[1] = 0;
+  a[2] = 0x30;
+  a[3] = 0x30;
+  a[4] = 0x42;
+
+  a[1] = 0;
+  a[2] = 0x30;
+  a[3] = 0x50;
+  a[4] = 1;
 
 
   //Make sure NOR has come up.
   for(int norwait = 0; norwait < 10000000; norwait++);
 
-  uint16_t * a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
+  a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-     programFPGA();
+     //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }

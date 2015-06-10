@@ -22,11 +22,12 @@ module ebi(	input clk,
 		input 		sample_fifo_almost_empty,
 		input		sample_fifo_empty
 		//TODO: DAC buffers.
+		output          irq;
 );	
 
 // ------------- EBI INTERFACE -----------------
 
-localparam EBI_ADDR_DEBUG_REG 		= 0;
+localparam EBI_ADDR_STATUS_REG 		= 0;
 localparam EBI_ADDR_CMD_FIFO_WRD_1 	= 1;
 localparam EBI_ADDR_CMD_FIFO_WRD_2 	= 2;
 localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
@@ -84,6 +85,19 @@ always @ ( * ) begin
 end
 
 //datapath
+//
+//
+
+assign irq = 				cmd_fifo_almost_full |
+					cmd_fifo_full |
+					cmd_fifo_almost_empty |
+					cmd_fifo_empty |
+					sample_fifo_almost_full |
+					sample_fifo_full |
+					sample_fifo_empty |
+					sample_fifo_almost_empty;
+
+
 integer i;
 always @ (posedge clk) begin
 	if (rst) begin
@@ -93,7 +107,24 @@ always @ (posedge clk) begin
 	if (load_capture_reg) begin
 		ebi_captured_data[addr-1] <= data_in;
 	end
+
+	//Reading
+	if (addr == EBI_ADDR_STATUS_REG) begin
+		data_out <= 	{
+					cmd_fifo_almost_full,
+					cmd_fifo_full,
+					cmd_fifo_almost_empty,
+					cmd_fifo_empty,
+					sample_fifo_almost_full,
+					sample_fifo_full,
+					sample_fifo_empty,
+					sample_fifo_almost_empty
+
+				};
 end
+
+
+
 
 genvar j;
 for (j = 0; j < 4; j = j + 1) begin : blu

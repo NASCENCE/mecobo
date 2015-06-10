@@ -1,4 +1,17 @@
-module pincontrol (clk, reset, enable, addr, data_wr, data_rd, data_in, data_out, pin, output_sample, channel_select, sample_data);
+module pincontrol ( clk,
+                    reset,
+                    enable,
+                    addr,
+                    data_wr,
+                    data_rd,
+                    data_in,
+                    data_out,
+                    pin,
+                    output_sample,
+                    channel_select,
+                    sample_data);
+
+
 
 input clk;
 input reset;

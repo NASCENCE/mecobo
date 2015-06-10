@@ -65,7 +65,8 @@ assign data_in = ebi_data; //write op
 //build multiplexer
 assign ebi_data = (chip_select & read_enable) ? data_out : 16'bz; //read op
 
-assign fpga_ready = 1'b1;
+wire ebi_irq;
+assign fpga_ready = global_irq;
 
 //Heartbeat
 reg [26:0] led_heartbeat = 0;
@@ -162,7 +163,8 @@ ebi ebi_if(
 	.cmd_fifo_almost_full(ebi_fifo_almost_full),
 	.cmd_fifo_full(ebi_fifo_full),
 	.cmd_fifo_almost_empty(ebi_fifo_almost_empty),
-	.cmd_fifo_empty(ebi_fifo_empty)
+	.cmd_fifo_empty(ebi_fifo_empty),
+	.irq(ebi_irq)
 );
 
 
