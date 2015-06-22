@@ -47,6 +47,12 @@
 
 #include "dac.h"
 #include "adc.h"
+
+
+#include "fifo.h"
+
+struct fifo cmdFifo;
+
 #define MAGIC_FPGA_BITFILE_CONSTANT 0x4242
 
 char * BUILD_VERSION = __GIT_COMMIT__;
@@ -86,15 +92,23 @@ static int sendPackReady = 0;
 static int sendInProgress = 0;
 static int executeInProgress = 0;
 
+static int feedCmdFifo = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
 uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
+
+
 //Data stuff for items
 static struct pinItem * itemsToApply;
+int itaFifoSize = 50;
 int itaPos  = 0;
+int itaHead = 0;
+int itaTail = 0;
+
+
 uint16_t numItemsLeftToExecute = 0;
 static struct pinItem ** itemsInFlight;
 uint16_t iifPos  = 0;
@@ -201,33 +215,15 @@ int main(void)
   //resetNor();
   //autoSelectNor();
 
-
-  uint16_t * a = getChannelAddress(0);
-  a[1] = 0;
-  a[2] = 0x30;
-  a[3] = 0x20;
-  a[4] = 0x9;
-
-
-  a[1] = 0;
-  a[2] = 0x30;
-  a[3] = 0x30;
-  a[4] = 0x42;
-
-  a[1] = 0;
-  a[2] = 0x30;
-  a[3] = 0x50;
-  a[4] = 1;
-
-
   //Make sure NOR has come up.
   for(int norwait = 0; norwait < 10000000; norwait++);
 
+  uint16_t * a;
   a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-     //programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -244,6 +240,7 @@ int main(void)
       printf("Detected daughterboard bitfile (has DAC controller)\n");
     }
 
+    has_daughterboard = 0;
     if (has_daughterboard) {
       //Check DAC controllers.
       printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
@@ -255,7 +252,6 @@ int main(void)
       setupADC();
     }
 
-    int i = 0;
     printf("Response from digital controllers at 0 to 57:\n");
     for(int i = 0; i < 57; i++) {
       uint16_t * a = getChannelAddress(i) + PINCONFIG_STATUS_REG;
@@ -272,10 +268,7 @@ int main(void)
 
 
 
-  //writeToNor(0, 0x4242);
-  //eraseNorChip();
-
-  itemsToApply = malloc(sizeof(struct pinItem) * 50);
+  itemsToApply = malloc(sizeof(struct pinItem) * itaFifoSize);
   itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
   printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
   printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
@@ -286,7 +279,7 @@ int main(void)
   }
 
 
-  
+
 
   USBD_Init(&initstruct);
   printf("USB Initialized.\n");
@@ -310,6 +303,21 @@ int main(void)
   printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
   printf("Entering main loop.\n");
 
+
+  fifoInit(&cmdFifo, 50, sizeof(struct pinItem));
+
+  for (;;) {
+    if (cmdFifo.numElements > 0) {
+      void * item = NULL;
+      fifoGet(&cmdFifo, &item);
+      struct pinItem * it = (struct pinItem *)item;
+      printf("SATAN %d\n", it->pin);
+      pushToCmdFifo(it);
+    }
+  }
+}
+/*
+
   for (;;) {
     //For all the input pins, collect samples into the big buff!
     //TODO: Make pinControllers notify uC when it has new data, interrupt?
@@ -319,7 +327,6 @@ int main(void)
       //Special cases are required for items
       //that should stay in-flight forever.
       if(numItemsLeftToExecute > 0) {
-        struct pinItem * currentItem = &(itemsToApply[itaPos]);
 
         //Is it time to start the item at the head of the queue?
         if (currentItem->startTime <= timeMs) {
@@ -361,8 +368,6 @@ int main(void)
       }
 
 
-
-
       //Kill items that are in flight and whose time has come.
       //We cannot guarantee the same as we do for starting so we need to check.
       if(nextKillTime <= timeMs) {
@@ -386,7 +391,7 @@ int main(void)
     }
   } //main for loop ends
 }
-
+*/
 
 
 int UsbHeaderReceived(USB_Status_TypeDef status,
@@ -737,6 +742,8 @@ inline uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef channel)
   return (uint16_t*)(EBI_ADDR_BASE) + channel*0x100;
 }
 
+
+
 void execCurrentPack()
 {
   executeInProgress = 1;
@@ -763,7 +770,10 @@ void execCurrentPack()
       item.type = d[PINCONFIG_DATA_TYPE];
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
-      itemsToApply[itaPos++] = item;
+
+      //itemsToApply[itaHead++] = item;
+      fifoInsert(&cmdFifo, &item);
+
 
       //find lowest first killtime, but ignore -1 endtimes,
       //they should run forever.
@@ -776,11 +786,10 @@ void execCurrentPack()
       }
 
       numItemsLeftToExecute++;
-      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
+      //if(DEBUG_PRINTING) //printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
-
     //Recording pins need some setup
     if((item.type == PINCONFIG_DATA_TYPE_RECORD_ANALOGUE) || (item.type == PINCONFIG_DATA_TYPE_RECORD)) {
       setupInput(item.pin, item.sampleRate, item.endTime-item.startTime);
@@ -801,6 +810,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
   {
+    return;
     mecoboStatus = MECOBO_STATUS_BUSY;
     if(DEBUG_PRINTING) printf("Configuring XBAR\n");
     uint16_t * d = (uint16_t*)(currentPack.data);
@@ -968,8 +978,8 @@ void execCurrentPack()
     int wordsInPack = currentPack.size/2;
 
     for(int writes = 0; writes < (wordsInPack/256); writes++) {
-       write256Buffer(p + (writes*256), bitfileOffset);
-       bitfileOffset += 256;
+      write256Buffer(p + (writes*256), bitfileOffset);
+      bitfileOffset += 256;
     }
 
     exitEnhancedMode();
@@ -1087,12 +1097,10 @@ void programFPGA()
   //uint32_t * n32 = (uint32_t *)(NOR_START + 4); //this is where we store the length
   //uint32_t bitfileLength = *n32; //stored at the 4 bytes
   //int nb = 0;
- 
 
-  int numEntries;
+
   struct NORFileTableEntry * entries = (struct NORFileTableEntry *)NOR_START;
-  //parseNORFileTable(&numEntries, &entries);
-  printf("Found a bitfile, size %u\n", entries[0].size);
+  printf("Found a bitfile, size %u\n", (unsigned int)entries[0].size);
   //TODO: Select which bitfile to use here. For now,
   //assume only 1 bitfile present.
   uint8_t * nor = (uint8_t *)(NOR_START + entries[0].offset); //this is where data starts
@@ -1156,7 +1164,7 @@ void eraseNorChip()
 void NORBusy() {
 
   uint16_t * nor = (uint16_t *)NOR_START;
-  #define TOGGLE_BIT 0x20
+#define TOGGLE_BIT 0x20
   uint8_t status = 0;
   uint8_t done = 0;
   int counter = 0;
@@ -1180,26 +1188,6 @@ void resetNor()
   printf("NOR RESET\n");
   uint16_t * nor = (uint16_t *)NOR_START;
   nor[0x555] = 0xF0;
-}
-
-void writeBufferToNor(uint16_t * buf, uint32_t offset, uint32_t len) 
-{
-  uint16_t * nor = (uint16_t *)NOR_START;
-}
-
-void writeToNor(uint32_t offset, uint16_t data)
-{
-  printf("Write to nor %x, %x\n", offset, data);
-  uint16_t * nor = (uint16_t *)NOR_START;
-  //uint16_t databit = (data >> 7) & 0x01;
-  //write -- dq5 and dq6 are flippedyflopped.
-  nor[0x555] = 0xCA;
-  nor[0x2AA] = 0x35;
-  nor[0x555] = 0xC0;
-  //NORToggling();
-
-  nor[offset] = data;
-  while(NORPollData(data, offset));
 }
 
 void returnToRead()
@@ -1253,7 +1241,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
   //autoSelectNor();
 
   uint32_t bad = offset & 0xFFFFFF00;
-  printf("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, offset, bad);
+  printf("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
 
   //Now start command
   nor[bad] = 0x53;
@@ -1309,13 +1297,72 @@ int NORError() {
   else return 0;
 }
 /*
-void parseNORFileTable(int * numEntries, struct NORFileTableEntry * entries)
-{
-  //printf("Parsing nor file table\n");
-  //struct NORFileTableEntry * nte = (struct NORFileTableEntry *)NOR_START;
-  //size of 0 indicates invalid entry
-  //int entry = 0;
- // entries[entry] = *nte;
+   void parseNORFileTable(int * numEntries, struct NORFileTableEntry * entries)
+   {
+//printf("Parsing nor file table\n");
+//struct NORFileTableEntry * nte = (struct NORFileTableEntry *)NOR_START;
+//size of 0 indicates invalid entry
+//int entry = 0;
+// entries[entry] = *nte;
 //  printf("Entry size %u, offset %u\n", entries[0].size, entries[0].offset);
 }
 */
+
+
+#define STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT 	0x8000
+#define STATUS_REG_CMD_FIFO_FULL_BIT 		0x4000
+#define STATUS_REG_CMD_FIFO_ALMOST_EMPTY	0x2000
+#define STATUS_REG_CMD_FIFO_EMPTY               0x1000
+
+void fpgaIrqHandler(uint8_t pin) {
+  uint16_t statusReg = *getChannelAddress(0);
+  printf("Interrupt detected: %x\n", pin);
+  printf("Status reg: %x\n", statusReg);
+  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
+    printf("FIFO almost full\n");
+    feedCmdFifo = 0;
+  }
+
+  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
+    printf("FIFO almost empty\n");
+    feedCmdFifo = 1;
+  }
+
+}
+
+
+void putInFifo(struct fifoCmd * cmd) 
+{
+  uint16_t * cmdInterfaceAddr = getChannelAddress(0);
+  uint16_t * serialCmd = (uint16_t *)cmd;
+  for(int i = 0; i < 4; i++) {
+    cmdInterfaceAddr[i+1] = serialCmd[i];
+  }
+}
+
+inline void pushToCmdFifo(struct pinItem * item)
+{
+  struct fifoCmd command;
+  command.time = (item->startTime * 75000);
+  command.controller = (uint8_t)item->pin;
+
+  printf("FIFO i %u, ctrl %u\n", (unsigned int)command.time, (unsigned int)command.controller);
+  switch(item->type) {
+    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+      command.ctrlCmd = 0x20;  //NCO low
+      command.data = (uint16_t)item->nocCounter;
+      putInFifo(&command);
+      
+      command.ctrlCmd = 0x30;  //NCO high word
+      command.data = (uint16_t)(item->nocCounter >> 16);
+      putInFifo(&command);
+
+      command.ctrlCmd = 0x50;
+      command.data = 0x1; //cmd_start_output
+      putInFifo(&command);
+      break;
+    default:
+      break;
+  }
+}
+

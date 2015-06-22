@@ -32,24 +32,27 @@ it.cycleTime = 50
 it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
 
+
 it = emSequenceItem()
-it.pin = [15]
-it.startTime = 0
-it.endTime = 110
-it.frequency = 500000
-it.operationType = emSequenceOperationType().RECORD   #implies analogue 
+it.pin = [0]
+it.startTime = 5
+it.endTime = 100
+it.frequency = 50000
+it.cycleTime = 50
+it.operationType = emSequenceOperationType().DIGITAL
+cli.appendSequenceAction(it)
+
+
+it = emSequenceItem()
+it.pin = [0]
+it.startTime = 5
+it.endTime = 100
+it.frequency = 50000
+it.cycleTime = 50
+it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
 
 cli.runSequences()
 cli.joinSequences()
-
-plt.ylim(-6,6)
-plt.plot(freqs, 1.0/len(res) * numpy.abs(yplot))
-
-plt.draw()
-plt.show()
-
-cli.reset()
-
 
 transport.close()

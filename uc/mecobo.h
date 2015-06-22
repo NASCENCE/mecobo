@@ -15,7 +15,7 @@
 #include "em_usb.h"
 #include "em_gpio.h"
 #include "../mecoprot.h"
-
+#include "pinItem.h"
 
 #define SRAM1_START 0x84000000
 #define SRAM1_BYTES 256*1024  //16Mbit = 256KB
@@ -90,6 +90,15 @@ struct pinConfig {
   uint32_t * samples; //points to allocated data of samples. (12 bit samples)
 };
 
+
+
+struct fifoCmd {
+  uint32_t time;
+  uint8_t controller;
+  uint8_t ctrlCmd;
+  uint16_t data;
+};
+
 //Programs the FPGA via the slave serial interface.
 int progFPGA(uint8_t * data);
 
@@ -159,7 +168,18 @@ void programFPGA();
 
 void testRam();
 void testNOR();
+void NORBusy();
 void programFPGA();
+void eraseNorChip();
+void autoSelectNor();
+void enterEnhancedMode();
+void exitEnhancedMode();
+void write256Buffer(uint16_t * data, uint32_t offset);
+int NORToggling();
+
+//fifo related stuff
+void putInFifo(struct fifoCmd * cmd);
+void pushToCmdFifo(struct pinItem * item);
 //void parseNORFileTable(int * numEntries, struct NORFileTableEntry ** entries);
 
 #endif //__MECOBO_H_

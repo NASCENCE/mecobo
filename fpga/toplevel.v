@@ -235,7 +235,8 @@ generate
         .pin(HW[i+1]),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
-        .sample_data(sample_data_bus)
+        .sample_data(sample_data_bus),
+        .current_time(global_clock)
       );
     //end
   end //for end

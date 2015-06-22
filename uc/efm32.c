@@ -12,8 +12,11 @@
 #include "em_timer.h"
 #include "bsp.h"
 #include "bsp_trace.h"
+#include "gpiointerrupt.h"
 
 #include "struct_init.h"
+
+extern void fpgaIrqHandler(uint8_t pin);
 
 void setupSWOForPrint(void)
 {
@@ -261,8 +264,15 @@ void eADesigner_Init(void)
   GPIO_PinModeSet( gpioPortF,  8, gpioModePushPull, 1 );
   GPIO_PinModeSet( gpioPortF,  9, gpioModePushPull, 1 );
 
+  
+  /* Initialize GPIO interrupt dispatcher */
+  printf("Initializing interrupts\n");
+  GPIOINT_Init();
+  GPIO_PinModeSet( gpioPortD, 14, gpioModeInput, 0); //irq
+  GPIOINT_CallbackRegister(14, fpgaIrqHandler);
 
-  //Some LED pins
+  /* Set rising edge interrupt for both ports */
+  GPIO_IntConfig(gpioPortD, 14, true, false, true);
 
   EBI_Init(&ebiConfig);
   EBI_Init(&ebiConfigSRAM2);

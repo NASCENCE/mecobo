@@ -89,9 +89,8 @@ always @ ( * ) begin
 end
 	
 
-
+// |    32 bits: TIME     | 4 bits: CMD  |  20 bits: DATA | 
 //datapath
-
 localparam CTRL_H = 31;  //nibble 1 .. 2
 localparam CTRL_L = 24;  //
 localparam CMD_H = 23;   //nibble 3

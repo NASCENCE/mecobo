@@ -9,7 +9,8 @@ module pincontrol ( clk,
                     pin,
                     output_sample,
                     channel_select,
-                    sample_data);
+                    sample_data,
+                    current_time);
 
 
 
@@ -25,6 +26,8 @@ inout pin;
 input data_wr;
 input data_rd;
 
+input [31:0] current_time;
+
 input output_sample;
 input [7:0] channel_select;
 output reg [31:0] sample_data;
@@ -34,6 +37,10 @@ reg sample_register = 0;
 reg [14:0] sample_cnt = 14'h0000;
 reg [31:0] nco_counter = 32'h00000000;
 reg [31:0] nco_pa = 0;
+
+reg [31:0] start_time = 0;
+reg [31:0] end_time = 0;
+
 
 wire pin_input;
 //Input, output: PWM, SGEN, CONST
@@ -104,8 +111,11 @@ localparam [7:0]
   ADDR_SAMPLE_REG =  7,
   ADDR_SAMPLE_CNT =  8,
   ADDR_STATUS_REG =  9,
-  ADDR_LAST_DATA = 10;
-
+  ADDR_LAST_DATA = 10,
+  ADDR_START_TIME_L = 11,
+  ADDR_START_TIME_H = 12,
+  ADDR_END_TIME_L = 13,
+  ADDR_END_TIME_H = 14;
 
 
 reg [15:0] ebi_captured_data;
@@ -129,13 +139,21 @@ always @ (posedge clk) begin
 	  end else begin
 	    if (enable_in & data_wr) begin
 	      if (addr[7:0] == ADDR_LOCAL_CMD)
-		command <= data_in;
+		      command <= data_in;
 	      else if (addr[7:0] == ADDR_SAMPLE_RATE)
-		sample_rate <= data_in;
+		      sample_rate <= data_in;
 	      else if (addr[7:0] == ADDR_NCO_COUNTER_LOW)
-		nco_counter[15:0] <= data_in;
+		      nco_counter[15:0] <= data_in;
 	      else if (addr[7:0] == ADDR_NCO_COUNTER_HIGH)
-		nco_counter[31:16] <= data_in;
+		      nco_counter[31:16] <= data_in;
+        else if (addr[7:0] == ADDR_START_TIME_L) 
+          start_time[15:0] <= data_in;
+        else if (addr[7:0] == ADDR_START_TIME_H)
+          start_time[31:16] <= data_in;
+        else if (addr[7:0] == ADDR_END_TIME_L)
+          end_time[15:0] <= data_in;
+        else if (addr[7:0] == ADDR_END_TIME_H)
+          end_time[31:16] <= data_in;
 	    end
 	  end
 end
@@ -207,22 +225,24 @@ always @ (posedge clk) begin
       const_output_null <= 1'b0;
       const_output_one <= 1'b0;
 
-      //Check command register for waiting command.
-      if (command == CMD_INPUT_STREAM) begin
-        state <= input_stream;
-        res_cmd_reg <= 1'b1; //reset command since this is a single command.
-      end 
-      //Output command.
-      else if (command == CMD_START_OUTPUT) begin
-        state <= enable_out;
-        res_cmd_reg <= 1'b1; //reset command since this is a single command
-      //No command..
-      end else if (command == CMD_CONST_HIGH) begin
-        state <= high;
-        res_cmd_reg <= 1'b1; //reset command since this is a single command
-      end else if (command == CMD_CONST_LOW) begin
-        state <= low;
-        res_cmd_reg <= 1'b1; //reset command since this is a single command
+      if (current_time >= start_time) begin
+        //Check command register for waiting command.
+        if (command == CMD_INPUT_STREAM) begin
+          state <= input_stream;
+          res_cmd_reg <= 1'b1; //reset command since this is a single command.
+        end 
+        //Output command.
+        else if (command == CMD_START_OUTPUT) begin
+          state <= enable_out;
+          res_cmd_reg <= 1'b1; //reset command since this is a single command
+        //No command..
+        end else if (command == CMD_CONST_HIGH) begin
+          state <= high;
+          res_cmd_reg <= 1'b1; //reset command since this is a single command
+        end else if (command == CMD_CONST_LOW) begin
+          state <= low;
+          res_cmd_reg <= 1'b1; //reset command since this is a single command
+        end
       end else
         state <= idle;
     end
@@ -260,7 +280,11 @@ always @ (posedge clk) begin
     if (command == CMD_RESET) begin
       state <= idle;
       res_cmd_reg <= 1'b1;
-    end else if (command == CMD_CONST_HIGH) begin
+    end else begin
+      if (current_time >= end_time) begin
+        res_cmd_reg <= 1'b1;
+        state <= idle;
+      end else if (command == CMD_CONST_HIGH) begin
       state <= high;
       res_cmd_reg <= 1'b1;
     end else

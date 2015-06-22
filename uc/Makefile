@@ -119,6 +119,7 @@ INCLUDEPATHS += \
 -Iefm32/v2/usb/inc \
 -Iefm32/v2/kits/common/drivers \
 -Iefm32/v2/kits/common/bsp \
+-Iefm32/v2/emdrv/gpiointerrupt/inc/ \
 -Iconfig
 
 ####################################################################
@@ -141,12 +142,14 @@ efm32/v2/emlib/src/em_int.c \
 efm32/v2/emlib/src/em_system.c \
 efm32/v2/emlib/src/em_timer.c \
 efm32/v2/emlib/src/em_usart.c \
+efm32/v2/emdrv/gpiointerrupt/src/gpiointerrupt.c \
 efm32/v2/usb/src/em_usbd.c \
 efm32/v2/usb/src/em_usbdch9.c \
 efm32/v2/usb/src/em_usbhal.c \
 efm32/v2/usb/src/em_usbdep.c \
 efm32/v2/usb/src/em_usbdint.c \
 efm32/v2/usb/src/em_usbtimer.c \
+fifo.c\
 pinItem.c\
 dac.c\
 adc.c\
