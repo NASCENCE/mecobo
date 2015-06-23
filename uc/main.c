@@ -1343,7 +1343,8 @@ void putInFifo(struct fifoCmd * cmd)
 inline void pushToCmdFifo(struct pinItem * item)
 {
   struct fifoCmd command;
-  command.time = (item->startTime * 75000);
+  command.startTime = (item->startTime * 75000);
+  command.endTime = (item->endTime * 75000);
   command.controller = (uint8_t)item->pin;
 
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.time, (unsigned int)command.controller);
@@ -1357,8 +1358,17 @@ inline void pushToCmdFifo(struct pinItem * item)
       command.data = (uint16_t)(item->nocCounter >> 16);
       putInFifo(&command);
 
+      command.ctrlCmd = 0xB0;  //NCO high word
+      command.data = (uint16_t)(item->nocCounter);
+      putInFifo(&command);
+
+      command.ctrlCmd = 0xC0;  //NCO high word
+      command.data = (uint16_t)(item->nocCounter >> 16);
+      putInFifo(&command);
+
+
       command.ctrlCmd = 0x50;
-      command.data = 0x1; //cmd_start_output
+      command.data = 0x1; //cmd_start_output  -- this actually means 'start freq output'
       putInFifo(&command);
       break;
     default:
