@@ -60,10 +60,10 @@
 command_fifo your_instance_name (
   .clk(clk), // input clk
   .rst(rst), // input rst
-  .din(din), // input [63 : 0] din
+  .din(din), // input [95 : 0] din
   .wr_en(wr_en), // input wr_en
   .rd_en(rd_en), // input rd_en
-  .dout(dout), // output [63 : 0] dout
+  .dout(dout), // output [95 : 0] dout
   .full(full), // output full
   .almost_full(almost_full), // output almost_full
   .wr_ack(wr_ack), // output wr_ack

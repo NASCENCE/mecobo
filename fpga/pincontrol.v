@@ -277,6 +277,8 @@ always @ (posedge clk) begin
     const_output_null <= 1'b1;
     const_output_one <= 1'b0;
 
+    state <= low;
+
     if (command == CMD_RESET) begin
       state <= idle;
       res_cmd_reg <= 1'b1;
@@ -285,10 +287,10 @@ always @ (posedge clk) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
       end else if (command == CMD_CONST_HIGH) begin
-      state <= high;
-      res_cmd_reg <= 1'b1;
-    end else
-      state <= low;
+        state <= high;
+        res_cmd_reg <= 1'b1;
+      end
+    end 
   end
 
   high: begin

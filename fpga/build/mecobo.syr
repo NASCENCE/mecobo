@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.08 secs
+Total CPU time to Xst completion: 0.07 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.08 secs
+Total CPU time to Xst completion: 0.07 secs
  
 --> 
 Reading design: mecobo.prj
@@ -169,71 +169,72 @@ Elaborating module <command_fifo>.
 WARNING:HDLCompiler:1499 - "/home/lykkebo/mecobo/fpga/cmd_fifo/command_fifo.v" Line 39: Empty module <command_fifo> remains a black box.
 
 Elaborating module <scheduler>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/scheduler.v" Line 106: Result of 20-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/scheduler.v" Line 105: Result of 20-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/scheduler.v" Line 112: Result of 96-bit expression is truncated to fit in 64-bit target.
 
 Elaborating module <pincontrol(POSITION=0)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=1)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=2)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=3)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=4)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=5)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=6)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=7)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=8)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=9)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=10)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=11)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=12)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=13)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=14)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <pincontrol(POSITION=15)>.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 164: Result of 32-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 168: Result of 16-bit expression is truncated to fit in 15-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 182: Result of 32-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 186: Result of 16-bit expression is truncated to fit in 15-bit target.
 
 Elaborating module <mem>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/mem.v" Line 99: Result of 19-bit expression is truncated to fit in 16-bit target.
@@ -341,8 +342,9 @@ Unit <xbar_clock> synthesized.
 Synthesizing Unit <ebi>.
     Related source file is "/home/lykkebo/mecobo/fpga/ebi.v".
 WARNING:Xst:647 - Input <sample_fifo_data_out> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:653 - Signal <cmd_fifo_data_in<95:64>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <sample_fifo_rd_en> is used but never assigned. This sourceless signal will be automatically connected to value GND.
-    Found 64-bit register for signal <cmd_fifo_data_in>.
+    Found 64-bit register for signal <n0058[63:0]>.
     Found 16-bit register for signal <status_register>.
     Found 1-bit register for signal <irq>.
     Found 16-bit register for signal <data_out>.
@@ -374,6 +376,7 @@ Unit <ebi> synthesized.
 
 Synthesizing Unit <scheduler>.
     Related source file is "/home/lykkebo/mecobo/fpga/scheduler.v".
+WARNING:Xst:647 - Input <cmd_fifo_dout<95:64>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dac_fifo_dout> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dac_fifo_empty> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:653 - Signal <cmd_bus_addr<18:16>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
@@ -410,6 +413,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -425,58 +430,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_2> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_29_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_29_o_GND_29_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_90_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_29_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_29_o_GND_29_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_90_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_12_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_1> synthesized.
@@ -490,6 +497,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -505,58 +514,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_3> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_63_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_63_o_GND_63_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_126_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_63_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_63_o_GND_63_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_126_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     WARNING:Xst:2404 -  FFs/Latches <Z_13_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_2> synthesized.
@@ -570,6 +581,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -585,58 +598,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_4> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_97_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_97_o_GND_97_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_160_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_97_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_97_o_GND_97_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_160_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     WARNING:Xst:2404 -  FFs/Latches <Z_14_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_3> synthesized.
@@ -650,6 +665,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -665,58 +682,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_5> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_131_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_131_o_GND_131_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_194_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_131_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_131_o_GND_131_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_194_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_15_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_4> synthesized.
@@ -730,6 +749,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -745,58 +766,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_6> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_165_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_165_o_GND_165_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_228_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_165_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_165_o_GND_165_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_228_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_16_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_5> synthesized.
@@ -810,6 +833,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -825,58 +850,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_7> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_199_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_199_o_GND_199_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_262_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_199_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_199_o_GND_199_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_262_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     WARNING:Xst:2404 -  FFs/Latches <Z_17_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_6> synthesized.
@@ -890,6 +917,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -905,58 +934,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_8> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_233_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_233_o_GND_233_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_296_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_233_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_233_o_GND_233_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_296_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_18_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_7> synthesized.
@@ -970,6 +1001,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -985,58 +1018,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_9> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_267_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_267_o_GND_267_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_330_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_267_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_267_o_GND_267_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_330_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     WARNING:Xst:2404 -  FFs/Latches <Z_19_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_8> synthesized.
@@ -1050,6 +1085,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1065,58 +1102,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_10> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_301_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_301_o_GND_301_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_364_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_301_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_301_o_GND_301_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_364_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_20_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_9> synthesized.
@@ -1130,6 +1169,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1145,58 +1186,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_11> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_335_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_335_o_GND_335_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_398_o> created at line 306
-    WARNING:Xst:2404 -  FFs/Latches <Z_21_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_10>.
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_335_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_335_o_GND_335_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_398_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_10>.
+    WARNING:Xst:2404 -  FFs/Latches <Z_21_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_10>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_10> synthesized.
@@ -1210,6 +1253,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1225,58 +1270,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_12> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_369_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_369_o_GND_369_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_432_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_369_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_369_o_GND_369_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_432_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_11>.
     WARNING:Xst:2404 -  FFs/Latches <Z_22_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_11>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_11> synthesized.
@@ -1290,6 +1337,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1305,58 +1354,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_13> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_403_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_403_o_GND_403_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_466_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_403_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_403_o_GND_403_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_466_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_12>.
     WARNING:Xst:2404 -  FFs/Latches <Z_23_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_12>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_12> synthesized.
@@ -1370,6 +1421,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1385,58 +1438,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_14> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_437_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_437_o_GND_437_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_500_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_437_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_437_o_GND_437_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_500_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_13>.
     WARNING:Xst:2404 -  FFs/Latches <Z_24_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_13>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_13> synthesized.
@@ -1450,6 +1505,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1465,58 +1522,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_15> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_471_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_471_o_GND_471_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_534_o> created at line 306
-    WARNING:Xst:2404 -  FFs/Latches <Z_25_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_14>.
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_471_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_471_o_GND_471_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_534_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_14>.
+    WARNING:Xst:2404 -  FFs/Latches <Z_25_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_14>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_14> synthesized.
@@ -1530,6 +1589,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1545,58 +1606,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_16> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_505_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_505_o_GND_505_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_568_o> created at line 306
-    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_15>.
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_505_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_505_o_GND_505_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_568_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <Z_26_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_15>.
+    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_15>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_15> synthesized.
@@ -1610,6 +1673,8 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 32-bit register for signal <nco_counter>.
     Found 16-bit register for signal <command>.
     Found 16-bit register for signal <sample_rate>.
+    Found 32-bit register for signal <start_time>.
+    Found 32-bit register for signal <end_time>.
     Found 16-bit register for signal <cnt_sample_rate>.
     Found 1-bit register for signal <sample_register>.
     Found 15-bit register for signal <sample_cnt>.
@@ -1625,58 +1690,60 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found finite state machine <FSM_17> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 18                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 20                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 84.
-    Found 15-bit adder for signal <sample_cnt[14]_GND_539_o_add_56_OUT> created at line 168.
-    Found 16-bit subtractor for signal <GND_539_o_GND_539_o_sub_54_OUT<15:0>> created at line 164.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 43
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 43
-    Found 1-bit tristate buffer for signal <pin> created at line 89
-    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_602_o> created at line 306
+    Found 32-bit adder for signal <nco_pa[31]_nco_counter[31]_add_18_OUT> created at line 91.
+    Found 15-bit adder for signal <sample_cnt[14]_GND_539_o_add_80_OUT> created at line 186.
+    Found 16-bit subtractor for signal <GND_539_o_GND_539_o_sub_78_OUT<15:0>> created at line 182.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 50
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 50
+    Found 1-bit tristate buffer for signal <pin> created at line 96
+    Found 32-bit comparator greater for signal <n0169> created at line 228
+    Found 32-bit comparator greater for signal <n0186> created at line 286
+    Found 16-bit comparator greater for signal <cnt_sample_rate[15]_INV_602_o> created at line 332
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_16>.
     WARNING:Xst:2404 -  FFs/Latches <Z_27_o_dff_15_OUT<31:31>> (without init value) have a constant value of 0 in block <pincontrol_16>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
-	inferred 167 D-type flip-flop(s).
-	inferred   1 Comparator(s).
-	inferred  26 Multiplexer(s).
+	inferred 231 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  69 Multiplexer(s).
 	inferred  33 Tristate(s).
 	inferred   1 Finite State Machine(s).
 Unit <pincontrol_16> synthesized.
@@ -1759,7 +1826,7 @@ Macro Statistics
  32-bit adder                                          : 17
  4-bit adder                                           : 2
  5-bit subtractor                                      : 1
-# Registers                                            : 284
+# Registers                                            : 316
  1-bit register                                        : 155
  128-bit register                                      : 1
  15-bit register                                       : 16
@@ -1767,23 +1834,23 @@ Macro Statistics
  19-bit register                                       : 2
  27-bit register                                       : 1
  31-bit register                                       : 16
- 32-bit register                                       : 33
+ 32-bit register                                       : 65
  4-bit register                                        : 2
  512-bit register                                      : 2
  64-bit register                                       : 2
-# Comparators                                          : 23
+# Comparators                                          : 55
  16-bit comparator greater                             : 16
  16-bit comparator not equal                           : 1
  19-bit comparator lessequal                           : 2
  32-bit comparator equal                               : 1
- 32-bit comparator greater                             : 1
+ 32-bit comparator greater                             : 33
  32-bit comparator lessequal                           : 1
  32-bit comparator not equal                           : 1
-# Multiplexers                                         : 481
- 1-bit 2-to-1 multiplexer                              : 326
+# Multiplexers                                         : 1169
+ 1-bit 2-to-1 multiplexer                              : 870
  16-bit 2-to-1 multiplexer                             : 24
  32-bit 16-to-1 multiplexer                            : 2
- 32-bit 2-to-1 multiplexer                             : 112
+ 32-bit 2-to-1 multiplexer                             : 256
  8-bit 16-to-1 multiplexer                             : 1
  8-bit 2-to-1 multiplexer                              : 16
 # Tristates                                            : 544
@@ -1796,23 +1863,23 @@ Macro Statistics
 *                       Advanced HDL Synthesis                          *
 =========================================================================
 
-INFO:Xst:2261 - The FF/Latch <status_register_old_10> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_10> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_11> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_11> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_12> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_12> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_0> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_0> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_13> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_13> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_1> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_1> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_14> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_14> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_2> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_2> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_15> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_15> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_3> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_3> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_4> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_4> 
-INFO:Xst:2261 - The FF/Latch <status_register_0> in Unit <ebi_if> is equivalent to the following 11 FFs/Latches, which will be removed : <status_register_1> <status_register_2> <status_register_3> <status_register_4> <status_register_5> <status_register_6> <status_register_7> <status_register_8> <status_register_9> <status_register_10> <status_register_11> 
-INFO:Xst:2261 - The FF/Latch <status_register_old_5> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_5> 
 INFO:Xst:2261 - The FF/Latch <status_register_old_6> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_6> 
 INFO:Xst:2261 - The FF/Latch <status_register_old_7> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_7> 
 INFO:Xst:2261 - The FF/Latch <status_register_old_8> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_8> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_10> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_10> 
 INFO:Xst:2261 - The FF/Latch <status_register_old_9> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_9> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_11> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_11> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_12> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_12> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_13> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_13> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_14> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_14> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_15> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_15> 
+INFO:Xst:2261 - The FF/Latch <status_register_0> in Unit <ebi_if> is equivalent to the following 11 FFs/Latches, which will be removed : <status_register_1> <status_register_2> <status_register_3> <status_register_4> <status_register_5> <status_register_6> <status_register_7> <status_register_8> <status_register_9> <status_register_10> <status_register_11> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_0> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_0> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_1> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_1> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_2> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_2> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_3> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_3> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_4> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_4> 
+INFO:Xst:2261 - The FF/Latch <status_register_old_5> in Unit <ebi_if> is equivalent to the following FF/Latch, which will be removed : <data_out_5> 
 INFO:Xst:2261 - The FF/Latch <status_register_old_0> in Unit <ebi_if> is equivalent to the following 11 FFs/Latches, which will be removed : <status_register_old_1> <status_register_old_2> <status_register_old_3> <status_register_old_4> <status_register_old_5> <status_register_old_6> <status_register_old_7> <status_register_old_8> <status_register_old_9> <status_register_old_10> <status_register_old_11> 
 INFO:Xst:2261 - The FF/Latch <Z_12_o_dff_15_OUT_1> in Unit <pinControl[0].pc> is equivalent to the following 9 FFs/Latches, which will be removed : <Z_12_o_dff_15_OUT_2> <Z_12_o_dff_15_OUT_3> <Z_12_o_dff_15_OUT_6> <Z_12_o_dff_15_OUT_7> <Z_12_o_dff_15_OUT_8> <Z_12_o_dff_15_OUT_9> <Z_12_o_dff_15_OUT_11> <Z_12_o_dff_15_OUT_13> <Z_12_o_dff_15_OUT_15> 
 INFO:Xst:2261 - The FF/Latch <Z_12_o_dff_15_OUT_4> in Unit <pinControl[0].pc> is equivalent to the following 4 FFs/Latches, which will be removed : <Z_12_o_dff_15_OUT_5> <Z_12_o_dff_15_OUT_10> <Z_12_o_dff_15_OUT_12> <Z_12_o_dff_15_OUT_14> 
@@ -2029,21 +2096,21 @@ Macro Statistics
  4-bit up counter                                      : 2
 # Accumulators                                         : 16
  32-bit up loadable accumulator                        : 16
-# Registers                                            : 3039
- Flip-Flops                                            : 3039
-# Comparators                                          : 23
+# Registers                                            : 4063
+ Flip-Flops                                            : 4063
+# Comparators                                          : 55
  16-bit comparator greater                             : 16
  16-bit comparator not equal                           : 1
  19-bit comparator lessequal                           : 2
  32-bit comparator equal                               : 1
- 32-bit comparator greater                             : 1
+ 32-bit comparator greater                             : 33
  32-bit comparator lessequal                           : 1
  32-bit comparator not equal                           : 1
-# Multiplexers                                         : 1681
+# Multiplexers                                         : 2369
  1-bit 16-to-1 multiplexer                             : 72
- 1-bit 2-to-1 multiplexer                              : 1541
+ 1-bit 2-to-1 multiplexer                              : 2085
  16-bit 2-to-1 multiplexer                             : 4
- 32-bit 2-to-1 multiplexer                             : 64
+ 32-bit 2-to-1 multiplexer                             : 208
 # FSMs                                                 : 19
 
 =========================================================================
@@ -2618,21 +2685,54 @@ INFO:Xst:2261 - The FF/Latch <mem0/sample_data_reg_15_415> in Unit <mecobo> is e
 
 Mapping all equations...
 Building and optimizing final netlist ...
-Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 22.
-FlipFlop mem0/current_id_idx_0 has been replicated 14 time(s)
-FlipFlop mem0/current_id_idx_1 has been replicated 14 time(s)
-FlipFlop mem0/current_id_idx_2 has been replicated 6 time(s)
-FlipFlop mem0/current_id_idx_3 has been replicated 2 time(s)
-FlipFlop mem0/num_units_0 has been replicated 2 time(s)
+Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 33.
+FlipFlop global_clock_0 has been replicated 2 time(s)
+FlipFlop global_clock_1 has been replicated 2 time(s)
+FlipFlop global_clock_10 has been replicated 2 time(s)
+FlipFlop global_clock_11 has been replicated 2 time(s)
+FlipFlop global_clock_12 has been replicated 2 time(s)
+FlipFlop global_clock_13 has been replicated 2 time(s)
+FlipFlop global_clock_14 has been replicated 2 time(s)
+FlipFlop global_clock_15 has been replicated 2 time(s)
+FlipFlop global_clock_16 has been replicated 2 time(s)
+FlipFlop global_clock_17 has been replicated 2 time(s)
+FlipFlop global_clock_18 has been replicated 2 time(s)
+FlipFlop global_clock_19 has been replicated 2 time(s)
+FlipFlop global_clock_2 has been replicated 2 time(s)
+FlipFlop global_clock_20 has been replicated 2 time(s)
+FlipFlop global_clock_21 has been replicated 2 time(s)
+FlipFlop global_clock_22 has been replicated 2 time(s)
+FlipFlop global_clock_23 has been replicated 2 time(s)
+FlipFlop global_clock_24 has been replicated 2 time(s)
+FlipFlop global_clock_25 has been replicated 2 time(s)
+FlipFlop global_clock_26 has been replicated 2 time(s)
+FlipFlop global_clock_27 has been replicated 2 time(s)
+FlipFlop global_clock_28 has been replicated 2 time(s)
+FlipFlop global_clock_29 has been replicated 2 time(s)
+FlipFlop global_clock_3 has been replicated 2 time(s)
+FlipFlop global_clock_30 has been replicated 2 time(s)
+FlipFlop global_clock_31 has been replicated 2 time(s)
+FlipFlop global_clock_4 has been replicated 2 time(s)
+FlipFlop global_clock_5 has been replicated 2 time(s)
+FlipFlop global_clock_6 has been replicated 2 time(s)
+FlipFlop global_clock_7 has been replicated 2 time(s)
+FlipFlop global_clock_8 has been replicated 2 time(s)
+FlipFlop global_clock_9 has been replicated 2 time(s)
+FlipFlop mem0/current_id_idx_0 has been replicated 4 time(s)
+FlipFlop mem0/current_id_idx_1 has been replicated 4 time(s)
+FlipFlop mem0/current_id_idx_2 has been replicated 3 time(s)
+FlipFlop mem0/current_id_idx_3 has been replicated 1 time(s)
+FlipFlop mem0/num_units_0 has been replicated 1 time(s)
 FlipFlop mem0/num_units_1 has been replicated 1 time(s)
 FlipFlop mem0/num_units_2 has been replicated 1 time(s)
 FlipFlop mem0/num_units_3 has been replicated 1 time(s)
-FlipFlop mem0/res_sampling has been replicated 1 time(s)
-FlipFlop sched/command_20 has been replicated 1 time(s)
-FlipFlop sched/command_21 has been replicated 1 time(s)
-FlipFlop sched/command_22 has been replicated 1 time(s)
-FlipFlop sched/command_23 has been replicated 1 time(s)
-FlipFlop sched/state_FSM_FFd3 has been replicated 2 time(s)
+FlipFlop sched/command_20 has been replicated 2 time(s)
+FlipFlop sched/command_21 has been replicated 2 time(s)
+FlipFlop sched/command_22 has been replicated 2 time(s)
+FlipFlop sched/command_23 has been replicated 2 time(s)
+FlipFlop sched/command_26 has been replicated 1 time(s)
+FlipFlop sched/command_27 has been replicated 1 time(s)
+FlipFlop sched/state_FSM_FFd3 has been replicated 1 time(s)
 
 Final Macro Processing ...
 
@@ -2644,8 +2744,8 @@ Unit <mecobo> processed.
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 3523
- Flip-Flops                                            : 3523
+# Registers                                            : 4590
+ Flip-Flops                                            : 4590
 # Shift Registers                                      : 1
  2-bit shift register                                  : 1
 
@@ -2670,27 +2770,27 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 8204
+# BELS                             : 11528
 #      GND                         : 1
-#      INV                         : 75
-#      LUT1                        : 319
-#      LUT2                        : 565
-#      LUT3                        : 1354
-#      LUT4                        : 329
-#      LUT5                        : 828
-#      LUT6                        : 2139
-#      MUXCY                       : 1271
+#      INV                         : 87
+#      LUT1                        : 323
+#      LUT2                        : 601
+#      LUT3                        : 1388
+#      LUT4                        : 1326
+#      LUT5                        : 2056
+#      LUT6                        : 2560
+#      MUXCY                       : 1863
 #      MUXF7                       : 134
 #      MUXF8                       : 67
 #      VCC                         : 1
 #      XORCY                       : 1121
-# FlipFlops/Latches                : 3526
-#      FD                          : 561
-#      FDC                         : 4
-#      FDE                         : 730
+# FlipFlops/Latches                : 4593
+#      FD                          : 494
+#      FDC                         : 3
+#      FDE                         : 1802
 #      FDP                         : 1
-#      FDR                         : 719
-#      FDRE                        : 1381
+#      FDR                         : 673
+#      FDRE                        : 1490
 #      FDSE                        : 128
 #      ODDR2                       : 2
 # Shift Registers                  : 1
@@ -2715,18 +2815,18 @@ Selected Device : 6slx45csg324-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:            3526  out of  54576     6%  
- Number of Slice LUTs:                 5610  out of  27288    20%  
-    Number used as Logic:              5609  out of  27288    20%  
+ Number of Slice Registers:            4593  out of  54576     8%  
+ Number of Slice LUTs:                 8342  out of  27288    30%  
+    Number used as Logic:              8341  out of  27288    30%  
     Number used as Memory:                1  out of   6408     0%  
        Number used as SRL:                1
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   5837
-   Number with an unused Flip Flop:    2311  out of   5837    39%  
-   Number with an unused LUT:           227  out of   5837     3%  
-   Number of fully used LUT-FF pairs:  3299  out of   5837    56%  
-   Number of unique control sets:        84
+ Number of LUT Flip Flop pairs used:   8623
+   Number with an unused Flip Flop:    4030  out of   8623    46%  
+   Number with an unused LUT:           281  out of   8623     3%  
+   Number of fully used LUT-FF pairs:  4312  out of   8623    50%  
+   Number of unique control sets:        83
 
 IO Utilization: 
  Number of IOs:                         162
@@ -2757,7 +2857,7 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-clocks/pll_base_inst/CLKOUT0       | BUFG                   | 3525  |
+clocks/pll_base_inst/CLKOUT0       | BUFG                   | 4592  |
 clocks/pll_base_inst/CLKOUT2       | BUFG                   | 2     |
 clocks/pll_base_inst/CLKOUT3       | BUFG                   | 2     |
 -----------------------------------+------------------------+-------+
@@ -2770,7 +2870,7 @@ Timing Summary:
 ---------------
 Speed Grade: -3
 
-   Minimum period: 4.736ns (Maximum Frequency: 211.136MHz)
+   Minimum period: 5.215ns (Maximum Frequency: 191.747MHz)
    Minimum input arrival time before clock: 7.551ns
    Maximum output required time after clock: 4.521ns
    Maximum combinational path delay: 5.849ns
@@ -2781,53 +2881,40 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Clock period: 4.736ns (frequency: 211.136MHz)
-  Total number of paths / destination ports: 243755 / 6758
+  Clock period: 5.215ns (frequency: 191.747MHz)
+  Total number of paths / destination ports: 415550 / 9069
 -------------------------------------------------------------------------
-Delay:               4.736ns (Levels of Logic = 18)
-  Source:            sched/command_32 (FF)
-  Destination:       pinControl[3].pc/nco_counter_1 (FF)
+Delay:               5.215ns (Levels of Logic = 5)
+  Source:            pinControl[0].pc/command_9 (FF)
+  Destination:       pinControl[0].pc/res_cmd_reg (FF)
   Source Clock:      clocks/pll_base_inst/CLKOUT0 rising
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
 
-  Data Path: sched/command_32 to pinControl[3].pc/nco_counter_1
+  Data Path: pinControl[0].pc/command_9 to pinControl[0].pc/res_cmd_reg
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q               3   0.447   0.898  sched/command_32 (sched/command_32)
-     LUT4:I0->O            1   0.203   0.000  sched/Mcompar_n0003_lut<0> (sched/Mcompar_n0003_lut<0>)
-     MUXCY:S->O            1   0.172   0.000  sched/Mcompar_n0003_cy<0> (sched/Mcompar_n0003_cy<0>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<1> (sched/Mcompar_n0003_cy<1>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<2> (sched/Mcompar_n0003_cy<2>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<3> (sched/Mcompar_n0003_cy<3>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<4> (sched/Mcompar_n0003_cy<4>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<5> (sched/Mcompar_n0003_cy<5>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<6> (sched/Mcompar_n0003_cy<6>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<7> (sched/Mcompar_n0003_cy<7>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<8> (sched/Mcompar_n0003_cy<8>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<9> (sched/Mcompar_n0003_cy<9>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<10> (sched/Mcompar_n0003_cy<10>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<11> (sched/Mcompar_n0003_cy<11>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<12> (sched/Mcompar_n0003_cy<12>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<13> (sched/Mcompar_n0003_cy<13>)
-     MUXCY:CI->O           1   0.019   0.000  sched/Mcompar_n0003_cy<14> (sched/Mcompar_n0003_cy<14>)
-     MUXCY:CI->O         318   0.019   0.000  sched/Mcompar_n0003_cy<15> (sched/Mcompar_n0003_cy<15>)
-     MUXCY:CI->O         768   0.258   2.151  pinControl[0].pc/enable_in_data_wr_AND_57_o11_cy (pinControl[0].pc/enable_in_data_wr_AND_57_o1)
-     FDRE:CE                   0.322          pinControl[12].pc/nco_counter_0
+     FDRE:C->Q             3   0.447   1.015  pinControl[0].pc/command_9 (pinControl[0].pc/command_9)
+     LUT6:I0->O            3   0.203   0.755  pinControl[0].pc/GND_29_o_GND_29_o_equal_90_o<15>12 (pinControl[0].pc/GND_29_o_GND_29_o_equal_90_o<15>12)
+     LUT3:I1->O            5   0.203   0.715  pinControl[0].pc/GND_29_o_GND_29_o_equal_90_o<15>13 (pinControl[0].pc/GND_29_o_GND_29_o_equal_90_o<15>1)
+     LUT5:I4->O            1   0.205   0.580  pinControl[0].pc/state[4]_GND_29_o_Select_122_o3 (pinControl[0].pc/state[4]_GND_29_o_Select_122_o3)
+     LUT6:I5->O            1   0.205   0.580  pinControl[0].pc/state[4]_GND_29_o_Select_122_o5_SW1 (N129)
+     LUT6:I5->O            1   0.205   0.000  pinControl[0].pc/state[4]_GND_29_o_Select_122_o5 (pinControl[0].pc/state[4]_GND_29_o_Select_122_o)
+     FD:D                      0.102          pinControl[0].pc/res_cmd_reg
     ----------------------------------------
-    Total                      4.736ns (1.687ns logic, 3.049ns route)
-                                       (35.6% logic, 64.4% route)
+    Total                      5.215ns (1.570ns logic, 3.645ns route)
+                                       (30.1% logic, 69.9% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 18156 / 2410
+  Total number of paths / destination ports: 19183 / 3438
 -------------------------------------------------------------------------
 Offset:              7.551ns (Levels of Logic = 21)
   Source:            ebi_addr<0> (PAD)
-  Destination:       ebi_if/ebi_captured_data_3_47 (FF)
+  Destination:       ebi_if/ebi_captured_data_3_63 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
 
-  Data Path: ebi_addr<0> to ebi_if/ebi_captured_data_3_47
+  Data Path: ebi_addr<0> to ebi_if/ebi_captured_data_3_63
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
@@ -2851,8 +2938,8 @@ Offset:              7.551ns (Levels of Logic = 21)
      XORCY:CI->O           1   0.180   0.808  ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_xor<15> (ebi_if/GND_25_o_GND_25_o_sub_17_OUT<15>)
      LUT3:I0->O            1   0.205   0.944  ebi_if/GND_25_o_GND_25_o_LessThan_18_o23 (ebi_if/GND_25_o_GND_25_o_LessThan_18_o22)
      LUT6:I0->O           64   0.203   1.887  ebi_if/GND_25_o_GND_25_o_LessThan_18_o24 (ebi_if/GND_25_o_GND_25_o_LessThan_18_o)
-     LUT5:I1->O            1   0.203   0.000  ebi_if/mux4711 (ebi_if/ebi_captured_data[1][15]_data_in[15]_mux_21_OUT<9>)
-     FDRE:D                    0.102          ebi_if/ebi_captured_data_3_41
+     LUT5:I1->O            1   0.203   0.000  ebi_if/mux6311 (ebi_if/ebi_captured_data[0][15]_data_in[15]_mux_22_OUT<9>)
+     FDRE:D                    0.102          ebi_if/ebi_captured_data_3_57
     ----------------------------------------
     Total                      7.551ns (2.758ns logic, 4.793ns route)
                                        (36.5% logic, 63.5% route)
@@ -2906,21 +2993,21 @@ Clock to Setup on destination clock clocks/pll_base_inst/CLKOUT0
                             | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ----------------------------+---------+---------+---------+---------+
-clocks/pll_base_inst/CLKOUT0|    4.736|         |         |         |
+clocks/pll_base_inst/CLKOUT0|    5.215|         |         |         |
 ----------------------------+---------+---------+---------+---------+
 
 =========================================================================
 
 
-Total REAL time to Xst completion: 43.00 secs
-Total CPU time to Xst completion: 42.42 secs
+Total REAL time to Xst completion: 66.00 secs
+Total CPU time to Xst completion: 65.60 secs
  
 --> 
 
 
-Total memory usage is 433244 kilobytes
+Total memory usage is 464448 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  467 (   0 filtered)
+Number of warnings :  470 (   0 filtered)
 Number of infos    :  143 (   0 filtered)
 

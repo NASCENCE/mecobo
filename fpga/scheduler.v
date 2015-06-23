@@ -6,7 +6,7 @@ module scheduler (	input 			clk,
 			output reg		reset_time,
 
 			//cmd fifo
-			input [63:0]		cmd_fifo_dout,
+			input [95:0]		cmd_fifo_dout,
 			input			cmd_fifo_empty,
 			input			cmd_fifo_valid,
 			output reg		cmd_fifo_rd_en,

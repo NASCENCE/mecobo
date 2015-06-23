@@ -8,7 +8,7 @@ module ebi(	input clk,
 		input wr,
 		input cs,
 		//Interface to CMD fifo
-		output [63:0] 	cmd_fifo_data_in,   // input into cmd FIFO
+		output [95:0] 	cmd_fifo_data_in,   // input into cmd FIFO
 		output reg	cmd_fifo_wr_en,
 		input  		cmd_fifo_almost_full, 
 		input  		cmd_fifo_full,
