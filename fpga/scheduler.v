@@ -98,7 +98,7 @@ localparam CMD_L = 20;
 localparam DATA_H = 19;  //5 last nibblets 
 localparam DATA_L = 0;
 
-reg [63:0] command = 0;
+reg [95:0] command = 0;
 
 //format the address 
 assign cmd_bus_addr[15:0] = {command[CTRL_H:CTRL_L],4'b0000,command[CMD_H:CMD_L]};
