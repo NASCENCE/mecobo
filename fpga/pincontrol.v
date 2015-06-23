@@ -253,7 +253,7 @@ assign pin_input = pin;
         if (command == CMD_RESET) begin
           res_cmd_reg <= 1'b1;
           state <= idle;
-        end else if (end_time >= current_time) 
+        end else if (current_time >= end_time) 
           state <= idle;
       end
 
@@ -273,7 +273,7 @@ assign pin_input = pin;
         if (command == CMD_RESET) begin
           res_cmd_reg <= 1'b1;
           state <= idle;
-        end else if (end_time >= current_time) 
+        end else if (current_time >= end_time) 
           state <= idle;
       end
 

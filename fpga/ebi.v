@@ -32,10 +32,12 @@ localparam EBI_ADDR_CMD_FIFO_WRD_1 	= 1;
 localparam EBI_ADDR_CMD_FIFO_WRD_2 	= 2;
 localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
 localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
+localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
+localparam EBI_ADDR_CMD_FIFO_WRD_6 	= 6;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
-reg [15:0] ebi_captured_data[0:3];
+reg [15:0] ebi_captured_data[0:5];
 
 
 //Control state machine
@@ -64,7 +66,7 @@ always @ ( * ) begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
-				if (addr == EBI_ADDR_CMD_FIFO_WRD_4) nextState = fifo_load;
+				if (addr == EBI_ADDR_CMD_FIFO_WRD_6) nextState = fifo_load;
 			end
 		end
 
@@ -94,7 +96,7 @@ reg [15:0] status_register_old = 0;
 integer i;
 always @ (posedge clk) begin
 	if (rst) begin
-		for ( i = 0; i < 4; i = i + 1) 
+		for ( i = 0; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 	end else begin
 		if (load_capture_reg) begin
@@ -126,8 +128,8 @@ end
 
 
 genvar j;
-for (j = 0; j < 4; j = j + 1) begin : blu
-	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[3-j];
+for (j = 0; j < 6; j = j + 1) begin : blu
+	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[5-j];
 end
 
 endmodule			
