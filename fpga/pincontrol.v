@@ -136,7 +136,7 @@ end
         else if (addr[7:0] == ADDR_NCO_COUNTER)
           nco_counter[31:0] <= data_in;
         else if (addr[7:0] == ADDR_END_TIME)
-          end_tie[31:0] <= data_in;
+          end_time[31:0] <= data_in;
       end
     end
   end
@@ -150,8 +150,11 @@ end
 
   reg [15:0] command = 0;
 
-  reg [15:0] sample_rate = 0;
 
+   reg [31:0] sample_rate = 0;
+ 
+   //Counters for the cycles.
+   reg [31:0] cnt_sample_rate = 0;
   
   /*outputs from state machine */
   reg res_cmd_reg = 1'b0;
@@ -285,5 +288,20 @@ end
        end
      endcase
    end
+ 
+   always @ (posedge clk) begin
+ 
+     if (res_sample_counter == 1'b1) 
+       cnt_sample_rate <= sample_rate;
+     else if (dec_sample_counter == 1'b1) 
+       cnt_sample_rate <= (cnt_sample_rate - 1);
+ 
+     if (update_data_out)  begin
+       sample_register <= pin_input;
+       sample_cnt <= (sample_cnt + 1);
+     end
+ 
+   end
+
 
    endmodule
