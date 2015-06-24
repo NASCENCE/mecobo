@@ -6,7 +6,7 @@ module scheduler (	input 			clk,
 			output reg		reset_time,
 
 			//cmd fifo
-			input [95:0]		cmd_fifo_dout,
+			input [79:0]		cmd_fifo_dout,
 			input			cmd_fifo_empty,
 			input			cmd_fifo_valid,
 			output reg		cmd_fifo_rd_en,
@@ -89,19 +89,18 @@ always @ ( * ) begin
 end
 	
 
-// |    32 bits: TIME     | 4 bits: CMD  |  20 bits: DATA | 
+// |    32 bits: TIME     | 16 bits: internal bus ADDR  |  32 bits: internal
+// bus DATA | 
 //datapath
-localparam CTRL_H = 31;  //nibble 1 .. 2
-localparam CTRL_L = 24;  //
-localparam CMD_H = 23;   //nibble 3
-localparam CMD_L = 20;   
-localparam DATA_H = 19;  //5 last nibblets 
+localparam ADDR_H = 47;  //nibble 1 .. 2
+localparam ADDR_L = 32;  //
+localparam DATA_H = 31;  //5 last nibblets 
 localparam DATA_L = 0;
 
-reg [95:0] command = 0;
+reg [79:0] command = 0;
 
 //format the address 
-assign cmd_bus_addr[15:0] = {command[CTRL_H:CTRL_L],4'b0000,command[CMD_H:CMD_L]};
+assign cmd_bus_addr[15:0] = command[ADDR_H:ADDR_L];
 assign cmd_bus_data = command[DATA_H:DATA_L];
 
 always @ (posedge clk) begin

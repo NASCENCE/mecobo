@@ -22,3 +22,17 @@ Shifts out data to the DAC serially.
 
 ## Memory interface
 Programmed by appending the channels to a list. The list is iterated round-robin, and if a unit (ADC/Digital pin controller) has a new sample ready (based on the user's sample rate selection of the ADC/PC) a new sample is stored in Block RAM.
+
+
+
+#Mecobo v4.0 brain dump
+
+There is a FIFO that gets loaded with Commands from the EBI interface. Each command is formatted like this:
+
+Timeslot: 32 bits
+Command:  64 bits
+
+the start-time specifies when to schedule the item. the item will run a specific time, given by the command itself and then die. the scheduler does not need to do anything about killing items.
+
+
+

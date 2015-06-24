@@ -147,7 +147,7 @@ ODDR2 clkout_oddr_da
   .R  (1'b0),
   .S  (1'b0));
 
-wire [95:0] ebi_fifo_din;
+wire [79:0] ebi_fifo_din;
 //EBI
 ebi ebi_if(
 	.clk(sys_clk),
@@ -172,7 +172,7 @@ ebi ebi_if(
 
 wire [15:0] cmd_bus_data_in;
 wire [18:0] cmd_bus_addr;
-wire [95:0] sched_fifo_data;
+wire [79:0] sched_fifo_data;
 command_fifo cmd_fifo (
 	.clk(sys_clk),
 	.rst(mecobo_reset),

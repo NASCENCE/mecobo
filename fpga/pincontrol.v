@@ -18,7 +18,7 @@ input clk;
 input reset;
 input enable;
 input [18:0] addr;
-input   [15:0] data_in;
+input   [31:0] data_in;
 //(* tristate2logic = "yes" *)
 output reg [15:0] data_out;
 inout pin;
@@ -37,13 +37,11 @@ reg sample_register = 0;
 reg [14:0] sample_cnt = 14'h0000;
 reg [31:0] nco_counter = 32'h00000000;
 reg [31:0] nco_pa = 0;
-
-reg [31:0] start_time = 0;
 reg [31:0] end_time = 0;
 
 
 wire pin_input;
-//Input, output: PWM, SGEN, CONST
+/*Input, output: PWM, SGEN, CONST */
 
 wire enable_in = (enable & (addr[15:8] == POSITION));
 
@@ -77,8 +75,9 @@ end
 
 
 
-// ------------------------- NCO ----------------------------------
-// Output frequency will be roughly freq(clk) * (nco_counter/2^32)
+/* ------------------------- NCO ----------------------------------
+Output frequency will be roughly freq(clk) * (nco_counter/2^32)
+*/
 always @ (posedge clk) begin
   if(reset)
     nco_pa <= 0;
@@ -92,33 +91,27 @@ always @ (posedge clk) begin
   end
 end
 
-//Drive output pin from MSB of nco_pa statemachine if output is enabled.
-assign pin = (enable_pin_output) ? nco_pa[31] : 1'bZ; //Z or 0
-//else we have input from pin.
-assign pin_input = pin;
+/* Drive output pin from MSB of nco_pa statemachine if output is enabled. */
+  assign pin = (enable_pin_output) ? nco_pa[31] : 1'bZ; /*Z or 0 */
+  assign pin_input = pin;
 
 
-  //Position is the offset in the address map to this pin controller.
   parameter POSITION = 0;
 
-  //These are byte addresses.
+  /*These are byte addresses. */
   localparam [7:0] 
-  ADDR_GLOBAL_CMD = 0, //Address 0 will be a global command register.
-  ADDR_NCO_COUNTER_LOW = 2,
-  ADDR_NCO_COUNTER_HIGH = 3,
-  ADDR_LOCAL_CMD =  5,
-  ADDR_SAMPLE_RATE =  6,
-  ADDR_SAMPLE_REG =  7,
-  ADDR_SAMPLE_CNT =  8,
-  ADDR_STATUS_REG =  9,
-  ADDR_LAST_DATA = 10,
-  ADDR_START_TIME_L = 11,
-  ADDR_START_TIME_H = 12,
-  ADDR_END_TIME_L = 13,
-  ADDR_END_TIME_H = 14;
+  ADDR_GLOBAL_CMD = 0,
+    ADDR_NCO_COUNTER = 1,
+    ADDR_END_TIME = 2,
+    ADDR_LOCAL_CMD =  3,
+    ADDR_SAMPLE_RATE =  4,
+    ADDR_SAMPLE_REG =  5,
+    ADDR_SAMPLE_CNT =  7,
+    ADDR_STATUS_REG =  8,
+    ADDR_LAST_DATA = 9;
 
 
-  reg [15:0] ebi_captured_data;
+  reg [31:0] ebi_captured_data;
 
   always @ (posedge clk) begin
     if (reset)
@@ -140,52 +133,27 @@ assign pin_input = pin;
           command <= data_in;
         else if (addr[7:0] == ADDR_SAMPLE_RATE)
           sample_rate <= data_in;
-        else if (addr[7:0] == ADDR_NCO_COUNTER_LOW)
-          nco_counter[15:0] <= data_in;
-        else if (addr[7:0] == ADDR_NCO_COUNTER_HIGH)
-          nco_counter[31:16] <= data_in;
-        else if (addr[7:0] == ADDR_START_TIME_L) 
-          start_time[15:0] <= data_in;
-        else if (addr[7:0] == ADDR_START_TIME_H)
-          start_time[31:16] <= data_in;
-        else if (addr[7:0] == ADDR_END_TIME_L)
-          end_time[15:0] <= data_in;
-        else if (addr[7:0] == ADDR_END_TIME_H)
-          end_time[31:16] <= data_in;
+        else if (addr[7:0] == ADDR_NCO_COUNTER)
+          nco_counter[31:0] <= data_in;
+        else if (addr[7:0] == ADDR_END_TIME)
+          end_tie[31:0] <= data_in;
       end
     end
   end
 
-  //Command parse
+  /*Command parse */
   localparam
-    CMD_START_OUTPUT = 1,
+  CMD_START_OUTPUT = 1,
     CMD_CONST = 2,
     CMD_INPUT_STREAM = 3,
     CMD_RESET = 5;
 
   reg [15:0] command = 0;
-  //reg [15:0] command = 0;
 
   reg [15:0] sample_rate = 0;
 
-  //Counters for the cycles.
-  reg [15:0] cnt_sample_rate = 0;
-
-  always @ (posedge clk) begin
-
-    if (res_sample_counter == 1'b1) 
-      cnt_sample_rate <= sample_rate;
-    else if (dec_sample_counter == 1'b1) 
-      cnt_sample_rate <= (cnt_sample_rate - 1);
-
-    if (update_data_out)  begin
-      sample_register <= pin_input;
-      sample_cnt <= (sample_cnt + 1);
-    end
-
-  end
-
-  //outputs from state machine
+  
+  /*outputs from state machine */
   reg res_cmd_reg = 1'b0;
   reg res_sample_counter = 0;
   reg dec_sample_counter = 0;
@@ -222,18 +190,16 @@ assign pin_input = pin;
         const_output_one <= 1'b0;
 
         state <= idle;
-        if (current_time >= start_time) begin
-          //Check command register for waiting command.
-          if (command == CMD_INPUT_STREAM) begin
-            state <= input_stream;
-            res_cmd_reg <= 1'b1; //reset command since this is a single command.
-          end else if (command == CMD_START_OUTPUT) begin
-            state <= enable_out;
-            res_cmd_reg <= 1'b1; 
-          end else if (command == CMD_CONST) begin
-            state <= const;
-            res_cmd_reg <= 1'b1;
-          end
+        /*Check command register for waiting command. */
+        if (command == CMD_INPUT_STREAM) begin
+          state <= input_stream;
+          res_cmd_reg <= 1'b1; /*reset command since this is a single command. */
+        end else if (command == CMD_START_OUTPUT) begin
+          state <= enable_out;
+          res_cmd_reg <= 1'b1; 
+        end else if (command == CMD_CONST) begin
+          state <= const;
+          res_cmd_reg <= 1'b1;
         end
       end
 
@@ -277,47 +243,47 @@ assign pin_input = pin;
           state <= idle;
       end
 
-      //Stream back data.
-    input_stream: begin
-      res_cmd_reg <= 1'b0;
+      /*Stream back data. */
+      input_stream: begin
+        res_cmd_reg <= 1'b0;
 
-      res_sample_counter <= 1'b0;
-      update_data_out <= 1'b0;
-      enable_pin_output <= 1'b0;
-      dec_sample_counter <= 1'b0;
+        res_sample_counter <= 1'b0;
+        update_data_out <= 1'b0;
+        enable_pin_output <= 1'b0;
+        dec_sample_counter <= 1'b0;
 
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b0;
+        const_output_null <= 1'b0;
+        const_output_one <= 1'b0;
 
-      //If we have counted down to 1, it's time to update sample reg.
-      if (cnt_sample_rate <= 1) begin
-        update_data_out <= 1'b1; 
-        res_sample_counter <= 1'b1;
-      end else begin
-        update_data_out <= 1'b0; 
-        dec_sample_counter <= 1'b1;
-      end
+        if (cnt_sample_rate <= 1) begin
+          update_data_out <= 1'b1; 
+          res_sample_counter <= 1'b1;
+        end else begin
+          update_data_out <= 1'b0; 
+          dec_sample_counter <= 1'b1;
+        end
 
-      //We're streaming input back
-      //at a certain rate, and will never leave this state
-      //unless reset is called.
-      if (command == CMD_RESET)
-        state <= idle;
-      else
-        state <= input_stream;
-    end 
+        /*We're streaming input back
+        at a certain rate, and will never leave this state
+        unless reset is called.
+          */
+         if (command == CMD_RESET)
+           state <= idle;
+         else
+           state <= input_stream;
+       end 
 
-    default: begin
-      res_cmd_reg <= 1'b0;
-      dec_sample_counter <= 1'b0;
-      res_sample_counter <= 1'b0;
-      update_data_out <= 1'b0;
-      enable_pin_output <= 1'b0;
+       default: begin
+         res_cmd_reg <= 1'b0;
+         dec_sample_counter <= 1'b0;
+         res_sample_counter <= 1'b0;
+         update_data_out <= 1'b0;
+         enable_pin_output <= 1'b0;
 
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b0;
-    end
-  endcase
-end
+         const_output_null <= 1'b0;
+         const_output_one <= 1'b0;
+       end
+     endcase
+   end
 
-endmodule
+   endmodule
