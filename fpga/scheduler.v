@@ -44,6 +44,17 @@ always @ (posedge clk or posedge rst)
 reg writeCommandReg = 1'b0;
 reg resetCommandReg = 1'b0;
 
+// |    32 bits: TIME     | 16 bits: internal bus ADDR  |  32 bits: internal
+// bus DATA | 
+//datapath
+localparam TIME_H = 79;
+localparam TIME_L = 48;
+localparam ADDR_H = 47;  //nibble 1 .. 2
+localparam ADDR_L = 32;  //
+localparam DATA_H = 31;  //5 last nibblets 
+localparam DATA_L = 0;
+
+
 always @ ( * ) begin
 	nextState = 4'bXXXX;
 	cmd_fifo_rd_en = 1'b0;
@@ -77,7 +88,7 @@ always @ ( * ) begin
 
 		exec: begin
 			nextState = exec;
-			if (current_time >= command[63:32]) begin
+			if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
 				resetCommandReg = 1'b1;
@@ -88,15 +99,6 @@ always @ ( * ) begin
 	endcase
 end
 	
-
-// |    32 bits: TIME     | 16 bits: internal bus ADDR  |  32 bits: internal
-// bus DATA | 
-//datapath
-localparam ADDR_H = 47;  //nibble 1 .. 2
-localparam ADDR_L = 32;  //
-localparam DATA_H = 31;  //5 last nibblets 
-localparam DATA_L = 0;
-
 reg [79:0] command = 0;
 
 //format the address 
