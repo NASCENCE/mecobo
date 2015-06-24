@@ -53,10 +53,10 @@ module command_fifo(
 
 input clk;
 input rst;
-input [95 : 0] din;
+input [79 : 0] din;
 input wr_en;
 input rd_en;
-output [95 : 0] dout;
+output [79 : 0] dout;
 output full;
 output almost_full;
 output wr_ack;
@@ -94,7 +94,7 @@ output valid;
     .C_COUNT_TYPE(0),
     .C_DATA_COUNT_WIDTH(10),
     .C_DEFAULT_VALUE("BlankString"),
-    .C_DIN_WIDTH(96),
+    .C_DIN_WIDTH(80),
     .C_DIN_WIDTH_AXIS(1),
     .C_DIN_WIDTH_RACH(32),
     .C_DIN_WIDTH_RDCH(64),
@@ -102,7 +102,7 @@ output valid;
     .C_DIN_WIDTH_WDCH(64),
     .C_DIN_WIDTH_WRCH(2),
     .C_DOUT_RST_VAL("0"),
-    .C_DOUT_WIDTH(96),
+    .C_DOUT_WIDTH(80),
     .C_ENABLE_RLOCS(0),
     .C_ENABLE_RST_SYNC(1),
     .C_ERROR_INJECTION_TYPE(0),

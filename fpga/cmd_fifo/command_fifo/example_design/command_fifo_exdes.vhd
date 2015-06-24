@@ -81,8 +81,8 @@ entity command_fifo_exdes is
            RST                       : IN  std_logic;
            WR_EN 		     : IN  std_logic;
            RD_EN                     : IN  std_logic;
-           DIN                       : IN  std_logic_vector(96-1 DOWNTO 0);
-           DOUT                      : OUT std_logic_vector(96-1 DOWNTO 0);
+           DIN                       : IN  std_logic_vector(80-1 DOWNTO 0);
+           DOUT                      : OUT std_logic_vector(80-1 DOWNTO 0);
            FULL                      : OUT std_logic;
            EMPTY                     : OUT std_logic);
 
@@ -106,8 +106,8 @@ architecture xilinx of command_fifo_exdes is
            RST                       : IN  std_logic;
            WR_EN 		     : IN  std_logic;
            RD_EN                     : IN  std_logic;
-           DIN                       : IN  std_logic_vector(96-1 DOWNTO 0);
-           DOUT                      : OUT std_logic_vector(96-1 DOWNTO 0);
+           DIN                       : IN  std_logic_vector(80-1 DOWNTO 0);
+           DOUT                      : OUT std_logic_vector(80-1 DOWNTO 0);
            FULL                      : OUT std_logic;
            EMPTY                     : OUT std_logic);
 
