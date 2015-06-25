@@ -296,7 +296,7 @@ xbar_control #(.POSITION(200))
 
     */
   `else
-    for (i = 0; i < 50; i = i + 1) begin: pinControl 
+    for (i = 0; i < 10; i = i + 1) begin: pinControl 
      pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
