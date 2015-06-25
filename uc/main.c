@@ -1335,7 +1335,8 @@ void putInFifo(struct fifoCmd * cmd)
 {
   uint16_t * cmdInterfaceAddr = getChannelAddress(0);
   uint16_t * serialCmd = (uint16_t *)cmd;
-  for(unsigned int i = 0; i < sizeof(struct fifoCmd)/2; i++) {
+  for(unsigned int i = 0; i < 5; i++) {
+    printf("pushing word %u : %u\n", i, serialCmd[i]);
     cmdInterfaceAddr[i+1] = serialCmd[i];
   }
 }
@@ -1349,15 +1350,15 @@ void pushToCmdFifo(struct pinItem * item)
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
-      command.ctrlCmd = 0x01;  //NCO low
+      command.addr = 0x01;  //NCO low
       command.data = (uint32_t)item->nocCounter;
       putInFifo(&command);
      
-      command.ctrlCmd = 0x01;  //end time for item
+      command.addr = 0x01;  //end time for item
       command.data = (uint32_t)(item->endTime * 75000);
       putInFifo(&command);
 
-      command.ctrlCmd = 0xC0;  //start-output command.
+      command.addr = 0x03;  //command register address
       command.data = 0x01;   
       putInFifo(&command);
 

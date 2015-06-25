@@ -23,31 +23,12 @@ transport.open();
 cli.reset()
 cli.clearSequences()
 
-it = emSequenceItem()
-it.pin = [0]
-it.startTime = 5
-it.endTime = 100
-it.frequency = 50000
-it.cycleTime = 50
-it.operationType = emSequenceOperationType().DIGITAL
-cli.appendSequenceAction(it)
-
 
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 5
-it.endTime = 100
-it.frequency = 50000
-it.cycleTime = 50
-it.operationType = emSequenceOperationType().DIGITAL
-cli.appendSequenceAction(it)
-
-
-it = emSequenceItem()
-it.pin = [0]
-it.startTime = 5
-it.endTime = 100
-it.frequency = 50000
+it.endTime = 1000
+it.frequency = 5000
 it.cycleTime = 50
 it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)

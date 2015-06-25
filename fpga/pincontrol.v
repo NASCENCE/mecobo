@@ -143,7 +143,7 @@ end
 
   /*Command parse */
   localparam
-  CMD_START_OUTPUT = 1,
+    CMD_START_OUTPUT = 1,
     CMD_CONST = 2,
     CMD_INPUT_STREAM = 3,
     CMD_RESET = 5;

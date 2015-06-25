@@ -95,7 +95,7 @@ struct pinConfig {
 struct fifoCmd {
   uint32_t startTime;
   uint8_t controller;
-  uint8_t ctrlCmd;
+  uint8_t addr;
   uint32_t data;
 };
 

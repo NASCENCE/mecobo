@@ -33,7 +33,6 @@ localparam EBI_ADDR_CMD_FIFO_WRD_2 	= 2;
 localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
 localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
 localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
-localparam EBI_ADDR_CMD_FIFO_WRD_6 	= 6;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -66,7 +65,7 @@ always @ ( * ) begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
-				if (addr == EBI_ADDR_CMD_FIFO_WRD_6) nextState = fifo_load;
+				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
 			end
 		end
 
