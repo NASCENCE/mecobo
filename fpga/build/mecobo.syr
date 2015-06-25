@@ -4,14 +4,14 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 0.00 secs
+Total REAL time to Xst completion: 1.00 secs
 Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 0.00 secs
+Total REAL time to Xst completion: 1.00 secs
 Total CPU time to Xst completion: 0.08 secs
  
 --> 
@@ -6827,11 +6827,11 @@ Primitive and Black Box Usage:
 #      SRLC16E                     : 1
 # Clock Buffers                    : 5
 #      BUFG                        : 5
-# IO Buffers                       : 94
+# IO Buffers                       : 95
 #      IBUF                        : 23
 #      IBUFG                       : 1
 #      IOBUF                       : 66
-#      OBUF                        : 4
+#      OBUF                        : 5
 # Others                           : 2
 #      command_fifo                : 1
 #      PLL_ADV                     : 1
@@ -6858,7 +6858,7 @@ Slice Logic Distribution:
 
 IO Utilization: 
  Number of IOs:                         162
- Number of bonded IOBs:                  94  out of    218    43%  
+ Number of bonded IOBs:                  95  out of    218    43%  
 
 Specific Feature Utilization:
  Number of BUFG/BUFGCTRL/BUFHCEs:         5  out of     16    31%  
@@ -7025,13 +7025,13 @@ clocks/pll_base_inst/CLKOUT0|    8.112|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 96.00 secs
-Total CPU time to Xst completion: 94.92 secs
+Total REAL time to Xst completion: 97.00 secs
+Total CPU time to Xst completion: 95.36 secs
  
 --> 
 
 
-Total memory usage is 563076 kilobytes
+Total memory usage is 566272 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings : 1257 (   0 filtered)

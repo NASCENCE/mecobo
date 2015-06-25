@@ -48,7 +48,7 @@ output fpga_ready;
 inout [60:1] HW;
 inout [57:1] HN;
 
-
+assign led[3] =  1'b0;
 assign led[1] =  read_enable;
 //assign led[3] = chip_select;
 
