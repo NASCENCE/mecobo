@@ -127,8 +127,8 @@ end
 
 
 genvar j;
-for (j = 0; j < 6; j = j + 1) begin : blu
-	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[5-j];
+for (j = 0; j < 5; j = j + 1) begin : blu
+	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[4-j];
 end
 
 endmodule			
