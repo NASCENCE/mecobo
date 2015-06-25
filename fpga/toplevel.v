@@ -120,6 +120,7 @@ main_clocks clocks
 );
 
 
+`ifdef WITH_DB
 xbar_clock xbarclocks0(
   .CLK_IN_5(xbar_predivided),
   .XBAR_CLK(xbar_clk),
@@ -146,6 +147,7 @@ ODDR2 clkout_oddr_da
   .D1 (1'b0),
   .R  (1'b0),
   .S  (1'b0));
+`endif
 
 wire [79:0] ebi_fifo_din;
 //EBI
@@ -316,7 +318,6 @@ xbar_control #(.POSITION(200))
 
       //end
     end //for end
-*/
   `endif
     endgenerate
 
