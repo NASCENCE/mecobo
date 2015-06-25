@@ -223,7 +223,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -1344,7 +1344,8 @@ void putInFifo(struct fifoCmd * cmd)
 void pushToCmdFifo(struct pinItem * item)
 {
   struct fifoCmd command;
-  command.startTime = (item->startTime * 75000);
+  //command.startTime = (item->startTime * 75000);
+  command.startTime = 0;
   command.controller = (uint8_t)item->pin;
 
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
@@ -1354,7 +1355,7 @@ void pushToCmdFifo(struct pinItem * item)
       command.data = (uint32_t)item->nocCounter;
       putInFifo(&command);
      
-      command.addr = 0x01;  //end time for item
+      command.addr = 0x02;  //end time for item
       command.data = (uint32_t)(item->endTime * 75000);
       putInFifo(&command);
 

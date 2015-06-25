@@ -169,11 +169,11 @@ end
 
   reg [4:0] state = idle;
 
-  localparam [4:0] 
-  idle =          5'b00001,
-    const =          5'b00010,
-    input_stream =  5'b01000,
-    enable_out =    5'b10000;
+  localparam [3:0] 
+    idle =            4'b0001,
+    const =           4'b0010,
+    input_stream =    4'b0100,
+    enable_out =      4'b1000;
 
   always @ (posedge clk) begin
     if (reset)

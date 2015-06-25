@@ -11,7 +11,7 @@
 
 
 
-`define WITH_DB
+//`define WITH_DB
 
 module mecobo   (osc, 
                 reset, 
@@ -291,23 +291,29 @@ xbar_control #(.POSITION(200))
       .xbar_clock(HN[6]), //clock from xbar and out to device 
       .pclk(HN[1]),
       .sin(HN[9]));
+
+    */
   `else
     for (i = 0; i < 50; i = i + 1) begin: pinControl 
-      pincontrol #(.POSITION(i))
+     pincontrol #(.POSITION(i))
       pc (
         .clk(sys_clk),
         .reset(mecobo_reset),
-        .enable(chip_select),
-        .addr(ebi_addr),
-        .data_wr(write_enable),
-        .data_in(data_in),
-        .data_rd(read_enable),
-        .data_out(data_out),
+        .enable(cmd_bus_en),
+        .addr(cmd_bus_addr),
+        .data_wr(cmd_bus_wr),
+        .data_in(cmd_bus_data_in),
+        .data_rd(),
+        .data_out(),
         .pin(HN[i+1]),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
-        .sample_data(sample_data_bus)
+        .sample_data(sample_data_bus),
+        .current_time(global_clock)
       );
+
+
+
       //end
     end //for end
 */
