@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.07 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.07 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Reading design: mecobo.prj
@@ -347,9 +347,9 @@ WARNING:Xst:653 - Signal <sample_fifo_rd_en> is used but never assigned. This so
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 20-bit subtractor for signal <GND_25_o_GND_25_o_sub_17_OUT> created at line 103.
-    Found 32-bit comparator lessequal for signal <n0019> created at line 103
-    Found 16-bit comparator not equal for signal <n0035> created at line 118
+    Found 20-bit subtractor for signal <GND_25_o_GND_25_o_sub_17_OUT> created at line 102.
+    Found 32-bit comparator lessequal for signal <n0019> created at line 102
+    Found 16-bit comparator not equal for signal <n0035> created at line 117
     Summary:
 	inferred   1 Adder/Subtractor(s).
 	inferred 145 D-type flip-flop(s).
@@ -3990,7 +3990,7 @@ Timing Summary:
 Speed Grade: -3
 
    Minimum period: 5.044ns (Maximum Frequency: 198.238MHz)
-   Minimum input arrival time before clock: 8.438ns
+   Minimum input arrival time before clock: 8.456ns
    Maximum output required time after clock: 4.521ns
    Maximum combinational path delay: 5.849ns
 
@@ -4027,7 +4027,7 @@ Delay:               5.044ns (Levels of Logic = 4)
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT0'
   Total number of paths / destination ports: 21955 / 2456
 -------------------------------------------------------------------------
-Offset:              8.438ns (Levels of Logic = 7)
+Offset:              8.456ns (Levels of Logic = 7)
   Source:            ebi_addr<0> (PAD)
   Destination:       ebi_if/ebi_captured_data_5_47 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
@@ -4036,7 +4036,7 @@ Offset:              8.438ns (Levels of Logic = 7)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O            23   1.222   1.154  ebi_addr_0_IBUF (ebi_addr_0_IBUF)
+     IBUF:I->O            24   1.222   1.173  ebi_addr_0_IBUF (ebi_addr_0_IBUF)
      LUT1:I0->O            1   0.205   0.000  ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_cy<0>_rt (ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_cy<0>_rt)
      MUXCY:S->O            1   0.172   0.000  ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_cy<0> (ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_cy<0>)
      XORCY:CI->O          81   0.180   1.856  ebi_if/Msub_GND_25_o_GND_25_o_sub_17_OUT_xor<1> (ebi_if/GND_25_o_GND_25_o_sub_17_OUT<1>)
@@ -4045,8 +4045,8 @@ Offset:              8.438ns (Levels of Logic = 7)
      LUT6:I2->O            1   0.203   0.000  ebi_if/mux4711 (ebi_if/ebi_captured_data[3][15]_data_in[15]_mux_21_OUT<9>)
      FDRE:D                    0.102          ebi_if/ebi_captured_data_5_41
     ----------------------------------------
-    Total                      8.438ns (2.490ns logic, 5.948ns route)
-                                       (29.5% logic, 70.5% route)
+    Total                      8.456ns (2.490ns logic, 5.966ns route)
+                                       (29.4% logic, 70.6% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clocks/pll_base_inst/CLKOUT0'
@@ -4103,13 +4103,13 @@ clocks/pll_base_inst/CLKOUT0|    5.044|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 40.00 secs
-Total CPU time to Xst completion: 39.89 secs
+Total REAL time to Xst completion: 41.00 secs
+Total CPU time to Xst completion: 39.79 secs
  
 --> 
 
 
-Total memory usage is 440400 kilobytes
+Total memory usage is 440212 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings : 1597 (   0 filtered)
