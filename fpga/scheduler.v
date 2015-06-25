@@ -17,7 +17,7 @@ module scheduler (	input 			clk,
 
 			//External bus interface to all the chippies.
 			output 	[18:0] 		cmd_bus_addr,
-			output 	[15:0] 		cmd_bus_data,
+			output 	[31:0] 		cmd_bus_data,
 			output	reg		cmd_bus_en,
 			output	reg		cmd_bus_rd,
 			output	reg		cmd_bus_wr
