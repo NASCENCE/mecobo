@@ -223,7 +223,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    //programFPGA();
+    programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -1335,41 +1335,32 @@ void putInFifo(struct fifoCmd * cmd)
 {
   uint16_t * cmdInterfaceAddr = getChannelAddress(0);
   uint16_t * serialCmd = (uint16_t *)cmd;
-  for(int i = 0; i < 4; i++) {
+  for(unsigned int i = 0; i < sizeof(struct fifoCmd)/2; i++) {
     cmdInterfaceAddr[i+1] = serialCmd[i];
   }
 }
 
-inline void pushToCmdFifo(struct pinItem * item)
+void pushToCmdFifo(struct pinItem * item)
 {
   struct fifoCmd command;
   command.startTime = (item->startTime * 75000);
-  command.endTime = (item->endTime * 75000);
   command.controller = (uint8_t)item->pin;
 
-  printf("FIFO i %u, ctrl %u\n", (unsigned int)command.time, (unsigned int)command.controller);
+  printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
-      command.ctrlCmd = 0x20;  //NCO low
-      command.data = (uint16_t)item->nocCounter;
+      command.ctrlCmd = 0x01;  //NCO low
+      command.data = (uint32_t)item->nocCounter;
       putInFifo(&command);
-      
-      command.ctrlCmd = 0x30;  //NCO high word
-      command.data = (uint16_t)(item->nocCounter >> 16);
-      putInFifo(&command);
-
-      command.ctrlCmd = 0xB0;  //NCO high word
-      command.data = (uint16_t)(item->nocCounter);
+     
+      command.ctrlCmd = 0x01;  //end time for item
+      command.data = (uint32_t)(item->endTime * 75000);
       putInFifo(&command);
 
-      command.ctrlCmd = 0xC0;  //NCO high word
-      command.data = (uint16_t)(item->nocCounter >> 16);
+      command.ctrlCmd = 0xC0;  //start-output command.
+      command.data = 0x01;   
       putInFifo(&command);
 
-
-      command.ctrlCmd = 0x50;
-      command.data = 0x1; //cmd_start_output  -- this actually means 'start freq output'
-      putInFifo(&command);
       break;
     default:
       break;

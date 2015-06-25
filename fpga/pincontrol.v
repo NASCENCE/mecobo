@@ -59,7 +59,7 @@ always @ (posedge clk) begin
       else if (addr[7:0] == ADDR_STATUS_REG)
         data_out <= POSITION;
       else if (addr[7:0] == ADDR_LAST_DATA)
-        data_out <= ebi_captured_data;
+        data_out <= ebi_captured_data[15:0];
       else
         data_out <= 16'b0;
     end else
@@ -148,7 +148,7 @@ end
     CMD_INPUT_STREAM = 3,
     CMD_RESET = 5;
 
-  reg [15:0] command = 0;
+  reg [31:0] command = 0;
 
 
    reg [31:0] sample_rate = 0;
