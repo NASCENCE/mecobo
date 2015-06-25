@@ -26,8 +26,8 @@ cli.clearSequences()
 
 it = emSequenceItem()
 it.pin = [0]
-it.startTime = 5
-it.endTime = 10
+it.startTime = 0
+it.endTime = 100000
 it.frequency = 5000
 it.cycleTime = 50
 it.operationType = emSequenceOperationType().DIGITAL

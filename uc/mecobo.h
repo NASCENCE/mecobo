@@ -94,9 +94,9 @@ struct pinConfig {
 
 struct fifoCmd {
   uint32_t startTime;
+  uint32_t data;
   uint8_t controller;
   uint8_t addr;
-  uint32_t data;
 };
 
 //Programs the FPGA via the slave serial interface.

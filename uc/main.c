@@ -181,6 +181,12 @@ int main(void)
 
   setupSWOForPrint();
   printf("Print output online\n");
+  
+  //Small check for endinanness
+  uint32_t integer = 0xDEADBABE;
+  uint8_t * int8 = (uint8_t*)&integer;
+  if(int8[0] == 0xDE) printf("Arch is BIG ENDIAN\n");
+  if(int8[0] == 0xBE) printf("Arch is LITTLE ENDIAN\n");
 
   //Turn on front led 1 to indicate we are setting up the system.
   led(FRONT_LED_0, 1);
@@ -1331,12 +1337,15 @@ void fpgaIrqHandler(uint8_t pin) {
 }
 
 
-void putInFifo(struct fifoCmd * cmd) 
+inline void putInFifo(struct fifoCmd * cmd) 
 {
+  
   uint16_t * cmdInterfaceAddr = getChannelAddress(0);
+
   uint16_t * serialCmd = (uint16_t *)cmd;
+
   for(unsigned int i = 0; i < 5; i++) {
-    printf("pushing word %u : %u\n", i, serialCmd[i]);
+    printf("pushing word %u : %x\n", i, serialCmd[i]);
     cmdInterfaceAddr[i+1] = serialCmd[i];
   }
 }

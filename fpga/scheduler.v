@@ -49,10 +49,10 @@ reg resetCommandReg = 1'b0;
 //datapath
 localparam TIME_H = 79;
 localparam TIME_L = 48;
-localparam ADDR_H = 47;  //nibble 1 .. 2
-localparam ADDR_L = 32;  //
-localparam DATA_H = 31;  //5 last nibblets 
-localparam DATA_L = 0;
+localparam DATA_H = 47;  //nibble 1 .. 2
+localparam DATA_L = 32;  //
+localparam ADDR_H = 31;  //5 last nibblets 
+localparam ADDR_L = 0;
 
 
 always @ ( * ) begin
