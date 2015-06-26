@@ -176,7 +176,9 @@ always @ (posedge clk) begin
 
       state <= idle;
       /*Check command register for waiting command. */
-      if (command == CMD_INPUT_STREAM) begin
+      if (current_time == 0) begin
+        state <= idle;
+      end else if (command == CMD_INPUT_STREAM) begin
         state <= input_stream;
         res_cmd_reg <= 1'b1; /*reset command since this is a single command. */
       end else if (command == CMD_SQUARE_WAVE) begin

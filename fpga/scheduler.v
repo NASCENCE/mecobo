@@ -63,11 +63,9 @@ always @ ( * ) begin
 	cmd_bus_en = 1'b0;	
 	writeCommandReg = 1'b0;
 	resetCommandReg = 1'b0;
-	reset_time = 1'b0;
 	case (state)
 		idle: begin
 			nextState = fetch;
-			reset_time = 1'b1;	
 		end
 
 		fetch: begin
@@ -114,5 +112,7 @@ always @ (posedge clk) begin
 		end
 end
 
+//Reseting timer
+assign reset_time = (cmd_bus_addr[15:0] == 16'hFFFF) ? 1'b1 : 1'b0;
 
 endmodule

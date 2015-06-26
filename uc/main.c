@@ -229,7 +229,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    //programFPGA();
+    programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -1343,18 +1343,30 @@ inline void putInFifo(struct fifoCmd * cmd)
   uint16_t * cmdInterfaceAddr = getChannelAddress(0);
 
   uint16_t * serialCmd = (uint16_t *)cmd;
+  //This will be funked up when splitting the uint32 into 16 bits,
+  //because the ordering is different.
+  //To get the value 0xdeadbeef into the 32 bit reg (BE on meco), 
+  //we must first write 0xdead and then 0xbeef. However,
+  //serialCmd[0] is beef and serialCmd[1] is dead because of little endians.
+  //so. we order manually, like so
 
-  for(unsigned int i = 0; i < 5; i++) {
-    printf("pushing word %u : %x\n", i, serialCmd[i]);
-    cmdInterfaceAddr[i+1] = serialCmd[i];
-  }
+  cmdInterfaceAddr[1] = serialCmd[1];
+  cmdInterfaceAddr[2] = serialCmd[0];
+  cmdInterfaceAddr[3] = serialCmd[3];
+  cmdInterfaceAddr[4] = serialCmd[2];
+  cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that this is OK :-)
+
+  printf("pushing word %u : %x\n", 0, serialCmd[1]);
+  printf("pushing word %u : %x\n", 1, serialCmd[0]);
+  printf("pushing word %u : %x\n", 2, serialCmd[3]);
+  printf("pushing word %u : %x\n", 3, serialCmd[2]);
+  printf("pushing word %u : %x\n", 4, serialCmd[4]);
 }
 
 void pushToCmdFifo(struct pinItem * item)
 {
   struct fifoCmd command;
-  //command.startTime = (item->startTime * 75000);
-  command.startTime = 0;
+  command.startTime = (item->startTime * 75000);
   command.controller = (uint8_t)item->pin;
 
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
