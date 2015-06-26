@@ -229,7 +229,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -1372,6 +1372,16 @@ void pushToCmdFifo(struct pinItem * item)
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+
+      command.startTime = 0; 
+      command.controller = 0xFF;
+      command.addr = 0xFF;  //reset time when writing to this address :)
+      command.data = 0x00;   
+      putInFifo(&command);
+
+      command.startTime = (item->startTime * 75000);
+      command.controller = (uint8_t)item->pin;
+
       command.addr = 0x01;  //NCO low
       command.data = (uint32_t)item->nocCounter;
       putInFifo(&command);

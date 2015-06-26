@@ -61,7 +61,6 @@ ADDR_GLOBAL_CMD = 0,
 
 
 localparam
-  CMD_SQUARE_WAVE = 1,
   CMD_CONST = 2,
   CMD_INPUT_STREAM = 3,
   CMD_RESET = 5;
