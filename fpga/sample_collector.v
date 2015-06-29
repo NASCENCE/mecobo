@@ -6,8 +6,12 @@
   * the collection_channels register will be updated with this unit and it will
   * be included in the collection state machine.
   * 
+  * A read from the unit is forwarded directly to the sample FIFO.
+  *
   * When reading from this unit, a sample will be collected. If no reading is done,
   * the unit will simply keep filling the memory until it is full.
+  *
+  *
   */
 
   module mem (
@@ -15,9 +19,9 @@
     input rst,
 
     //EBI configuration interface
-    input [18:0] addr,
-    input [15:0] ebi_data_in,
-    output reg [15:0] ebi_data_out,
+    input [15:0] addr,
+    input [31:0] ebi_data_in,
+    output [15:0] sample_data_out,  //straight to ebi 
     input cs,
     input re,
     input wr,
@@ -51,9 +55,7 @@ CMD_RESET = 5;
 reg [7:0] collection_channels[0:15];
 reg [3:0] num_units = 0;
 
-reg [18:0] num_samples = 0;
-reg [18:0] memory_top_addr = 0;
-reg [18:0] memory_bottom_addr = 0;
+//reg [18:0] num_samples = 0;
 
 reg [15:0] command;
 //will start out as 0.
@@ -64,12 +66,11 @@ wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
-reg [15:0] ebi_captured_data;
+reg [31:0] ebi_captured_data;
 
 //EBI capture
 always @ (posedge clk) begin
   if(rst) begin
-    ebi_data_out <= 0;
     ebi_captured_data <= 0;
   end else begin
     if (res_cmd_reg) 
@@ -91,10 +92,12 @@ always @ (posedge clk) begin
     Every time we read from this register, there should be a new
     sample ready.
   */
-    if (controller_enable & re) begin
+ if (controller_enable & re) begin
+      /*
       if ((addr[7:0] == ADDR_NEXT_SAMPLE)) begin
         ebi_data_out <= ram_data_out;
       end      
+      */
       if (addr[7:0] == ADDR_NUM_SAMPLES) begin
         ebi_data_out <= num_samples;
       end
@@ -107,9 +110,6 @@ always @ (posedge clk) begin
         ebi_data_out <= 16'hBAAB;
       end
 
-      if (addr[7:0] == ADDR_READ_ADDR) begin
-        ebi_data_out <= memory_bottom_addr;
-      end
 
     end //if re end
     else begin
@@ -156,7 +156,7 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 //memory automatically such that it is available when the next read request comes.
 
 //state machine that runs across all collection_channels and fetches a sample,
-//and then stores it at memory_top_addr.
+//and then stores it in a fifo
 
 parameter idle = 5'b00001;
 parameter store = 5'b00010;
@@ -167,8 +167,7 @@ reg [4:0] state;
 
 /* control path signals */
 reg inc_curr_id_idx;
-reg inc_num_samples;
-reg ram_write_enable;
+reg fifo_write_enable;
 reg en_read;
 reg res_cmd_reg;
 reg res_sampling;
@@ -193,8 +192,7 @@ reg [3:0] current_id_idx = 0;
 always @ (posedge clk) begin
   if (rst) begin
     inc_curr_id_idx <= 1'b0;
-    inc_num_samples <= 1'b0;
-    ram_write_enable <= 1'b0;
+    fifo_write_enable <= 1'b0;
     en_read <= 1'b0;
     res_cmd_reg <= 1'b1;
     res_sampling <= 1'b1;
@@ -208,8 +206,7 @@ always @ (posedge clk) begin
       output_sample <= 1'b0;
       capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
@@ -230,8 +227,7 @@ always @ (posedge clk) begin
       output_sample <= 1'b1;
       capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
@@ -244,8 +240,7 @@ always @ (posedge clk) begin
       output_sample <= 1'b1;
       capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
@@ -253,13 +248,12 @@ always @ (posedge clk) begin
       state <= store;
     end
 
-    //capture newly set up sample data
+    //instruct fifo to take up 
     store: begin
       output_sample <= 1'b0;
       capture_sample_data <= 1'b1;
       inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
@@ -268,24 +262,22 @@ always @ (posedge clk) begin
       state <= increment; 
     end
 
-    //increment index counters
+    //increment index counters for fetching from more units.
     increment: begin
       output_sample <= 1'b0;
       capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b1;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b1;
       res_cmd_reg <= 1'b0;
       res_sampling <= 1'b0;
 
       if (last_fetched[current_id_idx] != sample_data_reg[current_id_idx]) begin
-        ram_write_enable <= 1'b1;
-      	inc_num_samples <= 1'b1;
+        fifo_write_enable <= 1'b1;
       end
 
       if(command == CMD_RESET)  begin
-	res_sampling <= 1'b1;
+	      res_sampling <= 1'b1;
         res_cmd_reg <= 1'b1;
         state <= idle;
       end else if (command == CMD_STOP_SAMPLING) begin
@@ -299,8 +291,7 @@ always @ (posedge clk) begin
       output_sample <= 1'b0;
       capture_sample_data <= 1'b0;
       inc_curr_id_idx <= 1'b0;
-      inc_num_samples <= 1'b0;
-      ram_write_enable <= 1'b0;
+      fifo_write_enable <= 1'b0;
       en_read <= 1'b0;
       res_cmd_reg <= 1'b1;
       res_sampling <= 1'b1;
@@ -323,8 +314,6 @@ always @ (posedge clk) begin
   if(res_sampling == 1'b1) begin
     num_samples <= 0;
     num_units <= 0;
-    memory_top_addr <= 0;
-    memory_bottom_addr <= 0;
     current_id_idx <= 0;
 
     for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
@@ -334,29 +323,17 @@ always @ (posedge clk) begin
     end
  
   end else begin
-    if (inc_num_samples) begin
-      if (num_samples < MAX_SAMPLES) begin
-        num_samples <= num_samples + 1;
-        memory_top_addr <= memory_top_addr + 1;
-      end
-    end
 
     if (wr_transaction_done & (addr[7:0] == ADDR_NEW_UNIT)) begin
       collection_channels[num_units] <= ebi_captured_data[7:0];
       num_units <= num_units + 1;
     end
 
-    //Only increment if we have seen a falling edge on read signal.
-    if (rd_transaction_done & (addr[7:0] == ADDR_NEXT_SAMPLE)) begin
-      if(memory_bottom_addr < MAX_SAMPLES)
-        memory_bottom_addr <= memory_bottom_addr + 1;
-    end 
-
     if(capture_sample_data) begin
       sample_data_reg[current_id_idx] <= sample_data;
     end
   
-   if(ram_write_enable) begin
+   if(fifo_write_enable) begin
      last_fetched[current_id_idx] <= sample_data_reg[current_id_idx];
    end
 	 
@@ -373,21 +350,36 @@ end
 
 
 wire [15:0] ram_data_out;
-wire [15:0] ram_data_in;
+wire [15:0] fifo_data_in;
 
-assign ram_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
+assign fifo_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
+
+
+sample_fifo sample_fifo_0 (
+	.clk(sys_clk),
+	.rst(mecobo_reset),
+	.din(fifo_data_in),
+	.wr_en(fifo_write_enable),
+	.full(),
+	.almost_full(),
+	.empty(),
+	.almost_empty(),
+	.valid(),
+	.dout(sample_data_out),
+	.rd_en(),
+	.wr_ack()
+);
+
 
 //in stead of writing to SRAM, we write to a FIFO, and the microcontroller
 //will just keep pushing that data back asap zulu honolulu
 /*
 dp_ram sample_ram(
   .clk(clk),
-  .ena(ram_write_enable),
+  .ena(fifo_write_enable),
   .enb(en_read),
-  .wea(ram_write_enable),
-  .addra(memory_top_addr),
-  .addrb(memory_bottom_addr),
-  .dia(ram_data_in),
+  .wea(fifo_write_enable),
+  .dia(fifo_data_in),
   .doa(),
   .dob(ram_data_out)
 );

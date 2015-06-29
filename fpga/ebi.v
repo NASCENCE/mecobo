@@ -16,11 +16,11 @@ module ebi(	input clk,
 		input  		cmd_fifo_empty,
 		//Interace from SAMPLE DATA fifo
 		input 	[15:0] 	sample_fifo_data_out,   //data FROM sample fifo
-		output reg	sample_fifo_rd_en,
-		input 		sample_fifo_almost_full,
-		input		sample_fifo_full,
-		input 		sample_fifo_almost_empty,
-		input		sample_fifo_empty,
+		output reg	    sample_fifo_rd_en,
+		input 		      sample_fifo_almost_full,
+		input		        sample_fifo_full,
+		input 		      sample_fifo_almost_empty,
+		input		        sample_fifo_empty,
 		//TODO: DAC buffers.
 		output          reg irq
 );	
@@ -40,10 +40,12 @@ reg [15:0] ebi_captured_data[0:5];
 
 
 //Control state machine
-localparam [2:0]	idle 		= 3'b000,
-			fetch		= 3'b001,
-			fifo_load	= 3'b010,
-			trans_over	= 3'b100;
+localparam [4:0]	idle 		= 5'b00000,
+			fetch		            = 5'b00001,
+			fifo_load	          = 5'b00010,
+			trans_over	        = 5'b00100,
+      ebi_read_sample     = 5'b01000,
+      fifo_read_next      = 5'b10000;
 
 reg [2:0] state, nextState;
 
@@ -57,7 +59,11 @@ reg load_capture_reg;
 always @ ( * ) begin
 	nextState = 3'bXXX;
 	load_capture_reg = 1'b0;
-	cmd_fifo_wr_en <= 1'b0;
+	cmd_fifo_wr_en = 1'b0;
+  
+  sample_fifo_rd_en = 1'b0;
+  capture_fifo_data = 1'b0;
+
 	case (state)
 		idle:
 			nextState = fetch;
@@ -66,12 +72,14 @@ always @ ( * ) begin
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
 				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
-			end
+      end else if (cs & rd) begin
+        if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = ebi_read_sample;
+      end
 		end
 
 		fifo_load: begin
 			nextState = trans_over;	
-			cmd_fifo_wr_en <= 1'b1;	
+			cmd_fifo_wr_en = 1'b1;	
 		end
 
 		trans_over: begin
@@ -80,21 +88,40 @@ always @ ( * ) begin
 				nextState = fetch;
 			end
 		end
-	
+
+    /* Output data. State holds until read and cs goes low again */
+    ebi_read_sample: begin
+      if ~(rd | cs) begin
+        nextState = fifo_read_next;
+        sample_fifo_rd_en = 1'b1;
+      end
+    end
+
+    /* Capture new data from the FIFO on the next edge */
+    fifo_read_next: begin
+      nextState = idle;
+      capture_fifo_data = 1'b1;
+    end
+
 	endcase
 
 end
 
-//datapath
-//
-//
 
+/*****************************************************
+/*             DATA PATH                            */
+/****************************************************/
 reg [15:0] status_register = 0;
 reg [15:0] status_register_old = 0;
+reg [15:0] fifo_captured_data = 0;
 
 integer i;
 always @ (posedge clk) begin
-	if (rst) begin
+  if (rst) begin
+    status_register <= 0;
+    status_register_old <= 0;
+    fifo_captured_data <= 0;
+
 		for ( i = 0; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 	end else begin
@@ -115,12 +142,20 @@ always @ (posedge clk) begin
 
 	
 		irq <= (status_register != status_register_old);	
-		//Reading
-		//This will clear the interrupt
-		if (addr == EBI_ADDR_STATUS_REG) begin
-			data_out <= status_register;
-			status_register_old <= status_register;
-		end
+    /* Driving data out */
+    if cs & rd begin
+      if (addr == EBI_ADDR_STATUS_REG) begin
+			  data_out <= status_register;
+			  status_register_old <= status_register;
+      end else if (addr == EBI_ADDR_NEXT_SAMPLE) begin
+        data_out <= fifo_captured_data;
+      end
+    end
+
+    if (capture_fifo_data)  begin
+      fifo_captured_data <= sample_fifo_sata_out;
+    end
+
 	end
 end
 

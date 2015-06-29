@@ -317,8 +317,9 @@ int main(void)
       void * item = NULL;
       fifoGet(&cmdFifo, &item);
       struct pinItem * it = (struct pinItem *)item;
-      printf("SATAN %d\n", it->pin);
+      printf("SATAN %d\n", it->endTime);
       pushToCmdFifo(it);
+      printf("Freed some data: %p\n", it);
     }
   }
 }
@@ -1391,7 +1392,7 @@ void pushToCmdFifo(struct pinItem * item)
       putInFifo(&command);
 
       command.addr = 0x03;  //command register address
-      command.data = 0x01;   
+      command.data = 0x03;   
       putInFifo(&command);
 
       break;
