@@ -27,12 +27,13 @@ module ebi(	input clk,
 
 // ------------- EBI INTERFACE -----------------
 
-localparam EBI_ADDR_STATUS_REG 		= 0;
+localparam EBI_ADDR_STATUS_REG 		  = 0;
 localparam EBI_ADDR_CMD_FIFO_WRD_1 	= 1;
 localparam EBI_ADDR_CMD_FIFO_WRD_2 	= 2;
 localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
 localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
 localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
+localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -73,7 +74,7 @@ always @ ( * ) begin
 				load_capture_reg = 1'b1;
 				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
       end else if (cs & rd) begin
-        if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = ebi_read_sample;
+        if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
 		end
 
@@ -89,9 +90,12 @@ always @ ( * ) begin
 			end
 		end
 
-    /* Output data. State holds until read and cs goes low again */
-    ebi_read_sample: begin
-      if ~(rd | cs) begin
+    /* Output data. State holds until read goes low again, indicating
+    * that the reader has captured data happily, and we can get some more
+    * data from the FIFO for the next transaction */
+    fifo_read: begin
+      nextState = fifo_read;
+      if rd_transaction_done begin
         nextState = fifo_read_next;
         sample_fifo_rd_en = 1'b1;
       end
@@ -99,7 +103,7 @@ always @ ( * ) begin
 
     /* Capture new data from the FIFO on the next edge */
     fifo_read_next: begin
-      nextState = idle;
+      nextState = fetch;
       capture_fifo_data = 1'b1;
     end
 
@@ -165,5 +169,43 @@ genvar j;
 for (j = 0; j < 5; j = j + 1) begin : blu
 	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[4-j];
 end
+
+
+
+
+//-----------------------------------------------------------------------------------
+//rd falling edge detection to see if a transaction has finished
+
+wire rd_transaction_done;
+wire wr_transaction_done;
+
+reg rd_d = 0;
+reg rd_dd = 0;
+reg wr_d = 0;
+reg wr_dd = 0;
+
+always @ (posedge clk) begin
+  if(rst) begin
+    rd_d <= 1'b0;
+    wr_d <= 1'b0;
+    rd_dd <= 1'b0;
+    wr_dd <= 1'b0;
+  end else begin
+    rd_d <= re & controller_enable;
+    rd_dd <= rd_d;
+    wr_d <= wr & controller_enable;
+    wr_dd <= wr_d;
+  end 
+end
+
+//if r_dd is high and rd_d is low, we have seen a falling edge.
+assign rd_transaction_done = (~rd_d) & (rd_dd);
+assign wr_transaction_done = (~wr_d) & (wr_dd);
+
+
+//-----------------------------------------------------------------------------------
+
+
+
 
 endmodule			

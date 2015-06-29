@@ -14,23 +14,27 @@
   *
   */
 
-  module mem (
+  module sample_collector (
     input clk,
     input rst,
 
-    //EBI configuration interface
+    //command bus
     input [15:0] addr,
-    input [31:0] ebi_data_in,
-    output [15:0] sample_data_out,  //straight to ebi 
+    input [31:0] cmd_data_in,
     input cs,
     input re,
     input wr,
+    
 
     output reg output_sample,
     output [7:0] channel_select,
 
     //Memory writing interface exposed to the mem-subsystem of the controllers.
     input [31:0] sample_data
+    
+    //This interface is exposed to allow reading out data from FIFO
+    input sample_fifo_rd_en,
+    output [15:0] sample_data_out,
 );
 
 parameter POSITION = 242;
@@ -59,96 +63,34 @@ reg [3:0] num_units = 0;
 
 reg [15:0] command;
 //will start out as 0.
-wire rd_transaction_done;
-wire wr_transaction_done;
 
 wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
-reg [31:0] ebi_captured_data;
+reg [31:0] cmd_captured_data;
 
 //EBI capture
 always @ (posedge clk) begin
   if(rst) begin
-    ebi_captured_data <= 0;
+    cmd_captured_data <= 0;
   end else begin
-    if (res_cmd_reg) 
+    if (res_cmd_reg) begin
       command <= 0;
-    else begin
+    end else begin
       if (controller_enable & wr) begin
         if (addr[7:0] == ADDR_NEW_UNIT) begin
-          ebi_captured_data <= ebi_data_in;
-	end
- 
+          cmd_captured_data <= cmd_data_in;
+        end
+
         if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
-          command <= ebi_data_in;
+          command <= cmd_data_in;
         end
 
       end       
-    end //if res_cmd_reg end
-  
-  /*
-    Every time we read from this register, there should be a new
-    sample ready.
-  */
- if (controller_enable & re) begin
-      /*
-      if ((addr[7:0] == ADDR_NEXT_SAMPLE)) begin
-        ebi_data_out <= ram_data_out;
-      end      
-      */
-      if (addr[7:0] == ADDR_NUM_SAMPLES) begin
-        ebi_data_out <= num_samples;
-      end
-
-      if (addr[7:0] == ADDR_NUM_UNITS) begin
-        ebi_data_out <= num_units;
-      end
-
-      if (addr[7:0] == ADDR_DEBUG) begin
-        ebi_data_out <= 16'hBAAB;
-      end
-
-
-    end //if re end
-    else begin
-      ebi_data_out <= 0;
-    end
-  end //rst end
+    end /*if res_cmd_reg end */
+  end /*rst end*/
 end
-
-//
-
-//-----------------------------------------------------------------------------------
-//rd falling edge detection to see if a transaction has finished
-
-
-reg rd_d = 0;
-reg rd_dd = 0;
-reg wr_d = 0;
-reg wr_dd = 0;
-
-always @ (posedge clk) begin
-  if(rst) begin
-    rd_d <= 1'b0;
-    wr_d <= 1'b0;
-    rd_dd <= 1'b0;
-    wr_dd <= 1'b0;
-  end else begin
-    rd_d <= re & controller_enable;
-    rd_dd <= rd_d;
-    wr_d <= wr & controller_enable;
-    wr_dd <= wr_d;
-  end 
-end
-
-//if r_dd is high and rd_d is low, we have seen a falling edge.
-assign rd_transaction_done = (~rd_d) & (rd_dd);
-assign wr_transaction_done = (~wr_d) & (wr_dd);
-
-
-//-----------------------------------------------------------------------------------
 
 
 //When a read to the special read register is done,
@@ -304,8 +246,8 @@ end
 
 assign channel_select = collection_channels[current_id_idx];
 
-reg [15:0] debugcounter = 0;
 
+/* DATA PATH */
 
 integer mj;
 always @ (posedge clk) begin
@@ -317,26 +259,26 @@ always @ (posedge clk) begin
     current_id_idx <= 0;
 
     for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
-      collection_channels[mj] <= 255; //no such channel: special.
+      collection_channels[mj] <= 255; /* no such channel: special. */
       last_fetched[mj] <= 0;
       sample_data_reg[mj] <= 0;
     end
- 
+
   end else begin
 
-    if (wr_transaction_done & (addr[7:0] == ADDR_NEW_UNIT)) begin
-      collection_channels[num_units] <= ebi_captured_data[7:0];
+    if (addr[7:0] == ADDR_NEW_UNIT) begin
+      collection_channels[num_units] <= cmd_captured_data[7:0];
       num_units <= num_units + 1;
     end
 
     if(capture_sample_data) begin
       sample_data_reg[current_id_idx] <= sample_data;
     end
-  
-   if(fifo_write_enable) begin
-     last_fetched[current_id_idx] <= sample_data_reg[current_id_idx];
-   end
-	 
+
+    if(fifo_write_enable) begin
+      last_fetched[current_id_idx] <= sample_data_reg[current_id_idx];
+    end
+
     //only increment mod num_units-1 (0-indexed)
     if (inc_curr_id_idx) begin
       if(current_id_idx == (num_units-1)) 
@@ -349,41 +291,25 @@ always @ (posedge clk) begin
 end
 
 
-wire [15:0] ram_data_out;
 wire [15:0] fifo_data_in;
 
 assign fifo_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
-
 
 sample_fifo sample_fifo_0 (
 	.clk(sys_clk),
 	.rst(mecobo_reset),
 	.din(fifo_data_in),
 	.wr_en(fifo_write_enable),
+	.rd_e(sample_fifo_rd_en),
+	.dout(sample_data_out),
 	.full(),
 	.almost_full(),
+  .wr_ack(),
+  .overflow(),
+  .underflow(),
 	.empty(),
 	.almost_empty(),
 	.valid(),
-	.dout(sample_data_out),
-	.rd_en(),
-	.wr_ack()
 );
-
-
-//in stead of writing to SRAM, we write to a FIFO, and the microcontroller
-//will just keep pushing that data back asap zulu honolulu
-/*
-dp_ram sample_ram(
-  .clk(clk),
-  .ena(fifo_write_enable),
-  .enb(en_read),
-  .wea(fifo_write_enable),
-  .dia(fifo_data_in),
-  .doa(),
-  .dob(ram_data_out)
-);
-*/
-
 
 endmodule

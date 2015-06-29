@@ -166,6 +166,8 @@ ebi ebi_if(
 	.cmd_fifo_full(ebi_fifo_full),
 	.cmd_fifo_almost_empty(ebi_fifo_almost_empty),
 	.cmd_fifo_empty(ebi_fifo_empty),
+  .sample_fifo_data_out(sample_collector_data),
+  .sample_fifo_rd_en(sample_collector_rd_en),
 	.irq(ebi_irq)
 );
 
@@ -321,18 +323,18 @@ xbar_control #(.POSITION(200))
   `endif
     endgenerate
 
-      mem mem0(
+      sample_collector sample_collector0(
       .clk(sys_clk),
       .rst(mecobo_reset),
       .addr(ebi_addr),
       .ebi_data_in(data_in),
-      .ebi_data_out(data_out),
+      .sample_data_out(sample_),
       .cs(chip_select),
       .re(read_enable),
       .wr(write_enable),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
-      .sample_data(sample_data_bus)
+      .sample_data_out(sample_collector_data)
     );
 
 
