@@ -67,9 +67,7 @@ wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
-reg [31:0] cmd_captured_data;
-
-//EBI capture
+//Command bus  incoming!
 always @ (posedge clk) begin
   if(rst) begin
     cmd_captured_data <= 0;
@@ -79,7 +77,7 @@ always @ (posedge clk) begin
     end else begin
       if (controller_enable & wr) begin
         if (addr[7:0] == ADDR_NEW_UNIT) begin
-          cmd_captured_data <= cmd_data_in;
+          collection_channels[num_units] <= cmd_data_in[7:0];
         end
 
         if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
@@ -264,8 +262,7 @@ always @ (posedge clk) begin
 
   end else begin
 
-    if (addr[7:0] == ADDR_NEW_UNIT) begin
-      collection_channels[num_units] <= cmd_captured_data[7:0];
+    if wr_transaction_done & (addr[7:0] == ADDR_NEW_UNIT) begin
       num_units <= num_units + 1;
     end
 
@@ -288,6 +285,30 @@ always @ (posedge clk) begin
   end
 end
 
+
+/* EDGE DETECT */
+
+wire wr_transaction_done;
+
+reg wr_d = 0;
+reg wr_dd = 0;
+
+always @ (posedge clk) begin
+  if(rst) begin
+    wr_d <= 1'b0;
+    wr_dd <= 1'b0;
+  end else begin
+    wr_d <= wr & controller_enable;
+    wr_dd <= wr_d;
+  end 
+end
+
+//if r_dd is high and rd_d is low, we have seen a falling edge.
+assign wr_transaction_done = (~wr_d) & (wr_dd);
+
+
+
+/* FIFO */
 
 wire [15:0] fifo_data_in;
 
