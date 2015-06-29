@@ -262,7 +262,7 @@ always @ (posedge clk) begin
 
   end else begin
 
-    if wr_transaction_done & (addr[7:0] == ADDR_NEW_UNIT) begin
+    if (addr[7:0] == ADDR_NEW_UNIT) begin
       num_units <= num_units + 1;
     end
 
