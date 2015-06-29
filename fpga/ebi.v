@@ -45,7 +45,7 @@ localparam [4:0]	idle 		= 5'b00000,
 			fetch		            = 5'b00001,
 			fifo_load	          = 5'b00010,
 			trans_over	        = 5'b00100,
-      ebi_read_sample     = 5'b01000,
+      fifo_read     = 5'b01000,
       fifo_read_next      = 5'b10000;
 
 reg [2:0] state, nextState;
@@ -56,6 +56,7 @@ always @ (posedge clk) begin
 end
 
 reg load_capture_reg;
+reg capture_fifo_data;
 
 always @ ( * ) begin
 	nextState = 3'bXXX;
@@ -95,7 +96,7 @@ always @ ( * ) begin
     * data from the FIFO for the next transaction */
     fifo_read: begin
       nextState = fifo_read;
-      if rd_transaction_done begin
+      if (rd_transaction_done) begin
         nextState = fifo_read_next;
         sample_fifo_rd_en = 1'b1;
       end
@@ -113,8 +114,8 @@ end
 
 
 /*****************************************************
-/*             DATA PATH                            */
-/****************************************************/
+             DATA PATH                            
+ ***************************************************/
 reg [15:0] status_register = 0;
 reg [15:0] status_register_old = 0;
 reg [15:0] fifo_captured_data = 0;
@@ -147,7 +148,7 @@ always @ (posedge clk) begin
 	
 		irq <= (status_register != status_register_old);	
     /* Driving data out */
-    if cs & rd begin
+    if (cs & rd) begin
       if (addr == EBI_ADDR_STATUS_REG) begin
 			  data_out <= status_register;
 			  status_register_old <= status_register;
@@ -157,7 +158,7 @@ always @ (posedge clk) begin
     end
 
     if (capture_fifo_data)  begin
-      fifo_captured_data <= sample_fifo_sata_out;
+      fifo_captured_data <= sample_fifo_data_out;
     end
 
 	end
@@ -191,9 +192,9 @@ always @ (posedge clk) begin
     rd_dd <= 1'b0;
     wr_dd <= 1'b0;
   end else begin
-    rd_d <= re & controller_enable;
+    rd_d <= rd & cs;
     rd_dd <= rd_d;
-    wr_d <= wr & controller_enable;
+    wr_d <= wr & cs;
     wr_dd <= wr_d;
   end 
 end

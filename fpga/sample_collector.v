@@ -22,7 +22,6 @@
     input [15:0] addr,
     input [31:0] cmd_data_in,
     input cs,
-    input re,
     input wr,
     
 
@@ -30,11 +29,11 @@
     output [7:0] channel_select,
 
     //Memory writing interface exposed to the mem-subsystem of the controllers.
-    input [31:0] sample_data
+    input [31:0] sample_data,
     
     //This interface is exposed to allow reading out data from FIFO
     input sample_fifo_rd_en,
-    output [15:0] sample_data_out,
+    output [15:0] sample_data_out
 );
 
 parameter POSITION = 242;
@@ -254,7 +253,6 @@ always @ (posedge clk) begin
 
 
   if(res_sampling == 1'b1) begin
-    num_samples <= 0;
     num_units <= 0;
     current_id_idx <= 0;
 
@@ -300,16 +298,16 @@ sample_fifo sample_fifo_0 (
 	.rst(mecobo_reset),
 	.din(fifo_data_in),
 	.wr_en(fifo_write_enable),
-	.rd_e(sample_fifo_rd_en),
+	.rd_en(sample_fifo_rd_en),
 	.dout(sample_data_out),
 	.full(),
 	.almost_full(),
-  .wr_ack(),
-  .overflow(),
-  .underflow(),
+  	.wr_ack(),
+  	.overflow(),
+  	.underflow(),
 	.empty(),
 	.almost_empty(),
-	.valid(),
+	.valid()
 );
 
 endmodule

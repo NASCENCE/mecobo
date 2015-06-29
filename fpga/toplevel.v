@@ -173,7 +173,7 @@ ebi ebi_if(
 
 
 //FIFOS
-
+wire [15:0] sample_collector_data;
 wire [31:0] cmd_bus_data_in;
 wire [18:0] cmd_bus_addr;
 wire [79:0] sched_fifo_data;
@@ -326,14 +326,15 @@ xbar_control #(.POSITION(200))
       sample_collector sample_collector0(
       .clk(sys_clk),
       .rst(mecobo_reset),
-      .addr(ebi_addr),
-      .ebi_data_in(data_in),
-      .sample_data_out(sample_),
-      .cs(chip_select),
-      .re(read_enable),
-      .wr(write_enable),
+      .addr(cmd_bus_addr),
+      .cmd_data_in(cmd_bus_data_in),
+      .cs(cmd_bus_en),
+      .wr(cmd_bus_wr),
+      .sample_data(sample_data_bus),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
+
+      .sample_fifo_rd_en(sample_collector_rd_en),
       .sample_data_out(sample_collector_data)
     );
 
