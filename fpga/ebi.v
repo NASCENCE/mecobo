@@ -48,7 +48,7 @@ localparam [4:0]	idle 		= 5'b00000,
       fifo_read     = 5'b01000,
       fifo_read_next      = 5'b10000;
 
-reg [2:0] state, nextState;
+reg [4:0] state, nextState;
 
 always @ (posedge clk) begin
 	if (rst) state <= idle;
@@ -118,14 +118,14 @@ end
  ***************************************************/
 reg [15:0] status_register = 0;
 reg [15:0] status_register_old = 0;
-reg [15:0] fifo_captured_data = 0;
+reg [15:0] fifo_captured_data = 16'hDEAD;
 
 integer i;
 always @ (posedge clk) begin
   if (rst) begin
     status_register <= 0;
     status_register_old <= 0;
-    fifo_captured_data <= 0;
+    fifo_captured_data <= 16'hDEAD;
 
 		for ( i = 0; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;

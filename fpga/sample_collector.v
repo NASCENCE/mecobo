@@ -67,29 +67,6 @@ wire controller_enable;
 assign controller_enable = (cs & (addr[15:8] == POSITION));
 
 
-//Command bus  incoming!
-always @ (posedge clk) begin
-  if(rst) begin
-    cmd_captured_data <= 0;
-  end else begin
-    if (res_cmd_reg) begin
-      command <= 0;
-    end else begin
-      if (controller_enable & wr) begin
-        if (addr[7:0] == ADDR_NEW_UNIT) begin
-          collection_channels[num_units] <= cmd_data_in[7:0];
-        end
-
-        if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
-          command <= cmd_data_in;
-        end
-
-      end       
-    end /*if res_cmd_reg end */
-  end /*rst end*/
-end
-
-
 //When a read to the special read register is done,
 //memory_bottom_addr is incremented and the next value is fetched from
 //memory automatically such that it is available when the next read request comes.
@@ -249,8 +226,16 @@ assign channel_select = collection_channels[current_id_idx];
 integer mj;
 always @ (posedge clk) begin
 
+  if (rst) begin
+    for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
+      collection_channels[mj] <= 255; /* no such channel: special. */
+      last_fetched[mj] <= 0;
+      sample_data_reg[mj] <= 0;
+    end
+    command <= 0;
+    num_units <= 0;
 
-  if(res_sampling == 1'b1) begin
+  end else if(res_sampling == 1'b1) begin
     num_units <= 0;
     current_id_idx <= 0;
 
@@ -262,9 +247,20 @@ always @ (posedge clk) begin
 
   end else begin
 
-    if (addr[7:0] == ADDR_NEW_UNIT) begin
-      num_units <= num_units + 1;
-    end
+    if (res_cmd_reg) begin
+      command <= 0;
+    end else begin
+      if (controller_enable & wr) begin
+        if (addr[7:0] == ADDR_NEW_UNIT) begin
+          collection_channels[num_units] <= cmd_data_in[7:0];
+          num_units <= num_units + 1;
+        end
+
+        if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
+          command <= cmd_data_in;
+        end
+      end       
+    end /*if res_cmd_reg end */
 
     if(capture_sample_data) begin
       sample_data_reg[current_id_idx] <= sample_data;
@@ -315,8 +311,8 @@ wire [15:0] fifo_data_in;
 assign fifo_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; //last_fetched[current_id_idx][15:0];
 
 sample_fifo sample_fifo_0 (
-	.clk(sys_clk),
-	.rst(mecobo_reset),
+	.clk(clk),
+	.rst(rst),
 	.din(fifo_data_in),
 	.wr_en(fifo_write_enable),
 	.rd_en(sample_fifo_rd_en),
