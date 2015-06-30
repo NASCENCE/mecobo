@@ -187,6 +187,9 @@ always @ (posedge clk) begin
       end else if (command == CMD_CONST) begin
         state <= const;
         res_cmd_reg <= 1'b1;
+      end else if (command == CMD_RESET) begin
+        state <= idle;
+        res_cmd_reg <= 1'b1;
       end
     end
 
@@ -255,6 +258,7 @@ always @ (posedge clk) begin
       unless reset is called.
         */
        if (command == CMD_RESET)
+         res_cmd_reg <= 1'b1;
          state <= idle;
        else
          state <= input_stream;

@@ -538,14 +538,14 @@ inline void execute(struct pinItem * item)
       uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
       if(DEBUG_PRINTING) printf("  %d DIGITAL: Digital C:%d, nocCounter: %u, ad: %p\n", timeMs, item->pin, item->nocCounter, addr);
 
-      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
-      while(addr[10] != CMD_RESET) addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
+      while(addr[10] != CMD_RESET) addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
       addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       while(addr[10] != nocLow) addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
       while(addr[10] != nocHigh) addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
-      addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
-      while(addr[10] != CMD_START_OUTPUT) addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
+      while(addr[10] != CMD_START_OUTPUT) addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
@@ -553,10 +553,10 @@ inline void execute(struct pinItem * item)
       if(DEBUG_PRINTING) printf("  %d DIGITAL CONST: Digital C:%d, constant: %u, ad: %p\n", timeMs, item->pin, item->constantValue, addr);
       if(item->constantValue == 1) {
         if(DEBUG_PRINTING) printf( "    const high\n");
-        addr[PINCONFIG_LOCAL_CMD] = CMD_CONST_HIGH;
+        addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_CONST_HIGH;
       } else {
         if(DEBUG_PRINTING) printf( "    const low\n");
-        addr[PINCONFIG_LOCAL_CMD] = CMD_CONST_LOW;
+        addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_CONST_LOW;
       }
       break;
 
@@ -579,7 +579,7 @@ inline void execute(struct pinItem * item)
       //addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
       //addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
       //addr[PINCONFIG_RUN_INF]        = 1;
-      //addr[PINCONFIG_LOCAL_CMD] = CMD_START_OUTPUT;
+      //addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_DAC_CONST:
@@ -613,11 +613,11 @@ void killItem(struct pinItem * item)
       if(DEBUG_PRINTING) printf("  KILL %d : DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
       //addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
       //addr[PINCONFIG_ANTIDUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
-      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
       break;
     case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
       //addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
-      addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
       break;
     case PINCONFIG_DATA_TYPE_DAC_CONST:
       setVoltage(item->pin, 128);
@@ -647,7 +647,9 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  command(0, 242, 4, channel);
+  command(0, 242, 5, 5);  //reset sample collector
+
+  command(0, 242, 4, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
@@ -723,14 +725,14 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   else {
     uint16_t * a = addr + PINCONFIG_STATUS_REG;
     if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
-    command(0, channel, PINCONFIG_LOCAL_CMD, CMD_RESET);
-    command(0, channel, PINCONFIG_SAMPLE_RATE, overflow);
-    command(0, channel, PINCONFIG_LOCAL_CMD, CMD_INPUT_STREAM);
+    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_RESET);
+    command(0, channel, PINCONTROL_SAMPLE_RATE, overflow);
+    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
-    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+    addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
     addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)overflow;
-    addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
+    addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_INPUT_STREAM;
     */
   }
 
@@ -742,8 +744,10 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 inline void startInput()
 {
   if(!samplingStarted) {
-    uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-    memctrl[5] = 1;
+    printf("Starting sampling\n");
+    command(0, 242, 5, 1);  //this sends STAT SAMPLING COMMAND
+    //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
+    //memctrl[5] = 1;
     samplingStarted = 1;
   }
 }
@@ -949,7 +953,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
 
-    uint16_t * memctrl = getChannelAddress(0);
+    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
 
     //Send back the whole sending buffer.
     //Data contains the number of samples to xfer.
@@ -961,7 +965,7 @@ void execCurrentPack()
      // uint16_t data = memctrl[1];
       //Read status register
       //if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
-      if (!sampleFifoEmpty) {
+      //if (!sampleFifoEmpty) {
         uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
         uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
         //if(DEBUG_PRINTING)
@@ -976,7 +980,7 @@ void execCurrentPack()
         samples[i].value = data;
 
         i++;
-      }
+      //}
     }
 
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)samples);
@@ -1038,7 +1042,7 @@ void resetAllPins()
   printf("Reseting all digital pin controllers\n");
   for(int j = 0; j < 50; j++) {
     uint16_t * addr = (getChannelAddress((j)));
-    addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
+    addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
   }
   printf("OK\n");
 }
@@ -1428,14 +1432,14 @@ void pushToCmdFifo(struct pinItem * item)
       putInFifo(&cmd);
 
       cmd.addr = 0x03;  //cmd register address
-      cmd.data = 0x03;   
+      cmd.data = PINCONTROL_CMD_START_OUTPUT;   
       putInFifo(&cmd);
 
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
-      command(0, 242, 5, 1);
+      startInput();
       break; 
 
     default:

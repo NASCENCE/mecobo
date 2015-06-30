@@ -25,6 +25,7 @@ Mecobo::Mecobo (bool daughterboard)
     std::cout << "Mecobo initialized without daughterboard" << std::endl;
   }
 
+  hasDaughterboard = false;
 }
 
 Mecobo::~Mecobo ()
@@ -390,7 +391,7 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin[0];  //Note that pin is a list, but always pick the first. 
+    channel = (FPGA_IO_Pins_TypeDef)pin[0];  //Note that pin is a list, but always pick the first element.
   }
 
 
