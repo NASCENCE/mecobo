@@ -647,7 +647,6 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  command(0, 242, 5, 5);  //reset sample collector
 
   command(0, 242, 4, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
@@ -726,7 +725,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
     uint16_t * a = addr + PINCONFIG_STATUS_REG;
     if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
     command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_RESET);
-    command(0, channel, PINCONTROL_SAMPLE_RATE, overflow);
+    command(0, channel, PINCONTROL_SAMPLE_RATE, 10);
     command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
@@ -877,8 +876,7 @@ void execCurrentPack()
     mecoboStatus = MECOBO_STATUS_BUSY;
 
     fpgaTableIndex = 0;
-    uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-    memctrl[5] = 5; //reset
+    command(0, 242, 5, 5);  //reset sample collector
 
     runItems = 0;
     fpgaNumSamples = 0;
@@ -967,6 +965,7 @@ void execCurrentPack()
       //if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
       //if (!sampleFifoEmpty) {
         uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
+        printf("m: %x\n", memctrl[0]);
         uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
         //if(DEBUG_PRINTING)
         //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
@@ -1343,11 +1342,15 @@ void fpgaIrqHandler(uint8_t pin) {
     feedCmdFifo = 0;
   }
 
-  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
-    printf("FIFO almost empty\n");
+  if (statusReg & STATUS_REG_CMD_FIFO_EMPTY) {
+    printf("CMD FIFO empty\n");
     feedCmdFifo = 1;
   }
 
+  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
+    printf("CMD FIFO almost empty\n");
+    feedCmdFifo = 1;
+  }
   if (statusReg & STATUS_REG_SAMPLE_FIFO_ALMOST_EMPTY) {
     printf("SAMPLE FIFO almost empty\n");
   }

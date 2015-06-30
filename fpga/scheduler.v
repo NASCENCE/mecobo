@@ -86,7 +86,7 @@ always @ ( * ) begin
 
 		exec: begin
 			nextState = exec;
-			if (current_time >= command[TIME_H:TIME_L]) begin
+			if ((command[TIME_H:TIME_L] == 0) | (current_time >= command[TIME_H:TIME_L])) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
 				resetCommandReg = 1'b1;
