@@ -93,6 +93,7 @@ static int sendInProgress = 0;
 static int executeInProgress = 0;
 
 static int feedCmdFifo = 0;
+static int sampleFifoEmpty = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
@@ -959,13 +960,14 @@ void execCurrentPack()
     for(unsigned int i = 0; i < *txSamples;) {
      // uint16_t data = memctrl[1];
       //Read status register
-      if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
+      //if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
+      if (!sampleFifoEmpty) {
         uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
         uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
         //if(DEBUG_PRINTING)
         //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-        if(i < 10)  {
+        if(i < 50)  {
           if(DEBUG_PRINTING) printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
         }
 
@@ -1340,6 +1342,15 @@ void fpgaIrqHandler(uint8_t pin) {
   if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
     printf("FIFO almost empty\n");
     feedCmdFifo = 1;
+  }
+
+  if (statusReg & STATUS_REG_SAMPLE_FIFO_ALMOST_EMPTY) {
+    printf("SAMPLE FIFO almost empty\n");
+  }
+
+  if (statusReg & STATUS_REG_SAMPLE_FIFO_EMPTY) {
+    printf("SAMPLE FIFO empty\n");
+    sampleFifoEmpty = 1;
   }
 
 }

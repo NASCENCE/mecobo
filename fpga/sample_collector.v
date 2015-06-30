@@ -315,6 +315,7 @@
 
         wire [15:0] fifo_data_in;
 
+        /* 3 bits of ID, 13 bits of sample data*/
         assign fifo_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; /*last_fetched[current_id_idx][15:0]; */
 
         sample_fifo sample_fifo_0 (

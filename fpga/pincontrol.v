@@ -34,7 +34,7 @@ output reg [31:0] sample_data;
 
 
 reg sample_register = 0;
-reg [14:0] sample_cnt = 14'h0000;
+reg [15:0] sample_cnt = 16'h0000;
 reg [31:0] nco_counter = 32'h00000000;
 reg [31:0] nco_pa = 0;
 reg [31:0] end_time = 0;
