@@ -94,11 +94,11 @@ reg res_cmd_reg;
 reg res_sampling;
 
 reg [31:0] last_fetched [0:15];
-reg [31:0] sample_data_reg [0:15];
 
 integer mi;
 initial begin 
   state = idle;
+  nextState = idle;
   for (mi = 0; mi < MAX_COLLECTION_UNITS; mi = mi + 1)  begin
     collection_channels[mi] = 255;
     last_fetched[mi] = 0;
@@ -126,13 +126,13 @@ always @ (*) begin
     idle: begin
       if(command == CMD_START_SAMPLING) begin
         res_cmd_reg = 1'b1;
-        state = fetch;
+        nextState = fetch;
       end else if (command == CMD_RESET) begin
         res_cmd_reg = 1'b1;
         res_sampling = 1'b1;
-        state = idle;
+        nextState = idle;
       end else
-        state = idle;
+        nextState = idle;
     end
 
     /*instruct adc to output new sample data */
@@ -188,7 +188,6 @@ always @ (posedge clk) begin
     for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
       collection_channels[mj] <= 255; /* no such channel: special. */
       last_fetched[mj] <= 0;
-      sample_data_reg[mj] <= 0;
     end
     command <= 0;
     num_units <= 0;
@@ -200,7 +199,6 @@ always @ (posedge clk) begin
     for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
       collection_channels[mj] <= 255; /* no such channel: special. */
       last_fetched[mj] <= 0;
-      sample_data_reg[mj] <= 0;
     end
 
   end else begin
@@ -245,7 +243,7 @@ end
 wire [15:0] fifo_data_in;
 
 /* 3 bits of ID, 13 bits of sample data*/
-assign fifo_data_in = {current_id_idx[2:0], sample_data_reg[current_id_idx][12:0]}; /*last_fetched[current_id_idx][15:0]; */
+assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[current_id_idx][15:0]; */
 
 sample_fifo sample_fifo_0 (
   .clk(clk),
