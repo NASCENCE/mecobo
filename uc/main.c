@@ -625,7 +625,7 @@ void killItem(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       if(DEBUG_PRINTING) printf("  %d K R: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-      for(int i = 0; i < numInputChannels; i++) {
+    for(int i = 0; i < numInputChannels; i++) {
         if (inputChannels[i] == item->pin) {
           if(DEBUG_PRINTING) printf("Rec stop: %d\n", item->pin);
           for(int j = i; j < numInputChannels; j++){
@@ -956,20 +956,25 @@ void execCurrentPack()
     int bytes = sizeof(struct sampleValue) * *txSamples;
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
 
-    for(unsigned int i = 0; i < *txSamples; i++) {
+    for(unsigned int i = 0; i < *txSamples;) {
      // uint16_t data = memctrl[1];
-      uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
-      uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
-      //if(DEBUG_PRINTING)
-      //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
+      //Read status register
+      if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
+        uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
+        uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
+        //if(DEBUG_PRINTING)
+        //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
 
-      if(i < 10)  {
-        if(DEBUG_PRINTING) printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
+        if(i < 10)  {
+          if(DEBUG_PRINTING) printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
+        }
+
+        samples[i].sampleNum = i;
+        samples[i].channel = fpgaTableToChannel[tableIndex];
+        samples[i].value = data;
+
+        i++;
       }
-
-      samples[i].sampleNum = i;
-      samples[i].channel = fpgaTableToChannel[tableIndex];
-      samples[i].value = data;
     }
 
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)samples);
@@ -1323,12 +1328,6 @@ int NORError() {
 }
 */
 
-
-#define STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT 	0x8000
-#define STATUS_REG_CMD_FIFO_FULL_BIT 		0x4000
-#define STATUS_REG_CMD_FIFO_ALMOST_EMPTY	0x2000
-#define STATUS_REG_CMD_FIFO_EMPTY               0x1000
-
 void fpgaIrqHandler(uint8_t pin) {
   uint16_t statusReg = *getChannelAddress(0);
   printf("Interrupt detected: %x\n", pin);
@@ -1396,36 +1395,36 @@ inline struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_
 
 void pushToCmdFifo(struct pinItem * item)
 {
-  struct fifoCmd command = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
+  struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
-  printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
+  printf("FIFO i %u, ctrl %u\n", (unsigned int)cmd.startTime, (unsigned int)cmd.controller);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
       //why do i do this here...
-      command = makeCommand(0, 0xFF, 0xFF, 0x00);
-      putInFifo(&command);
+      cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
+      putInFifo(&cmd);
 
-      command.startTime = (item->startTime * 75000);
-      command.controller = (uint8_t)item->pin;
+      cmd.startTime = (item->startTime * 75000);
+      cmd.controller = (uint8_t)item->pin;
 
-      command.addr = 0x01;  //NCO low
-      command.data = (uint32_t)item->nocCounter;
-      putInFifo(&command);
+      cmd.addr = 0x01;  //NCO low
+      cmd.data = (uint32_t)item->nocCounter;
+      putInFifo(&cmd);
      
-      command.addr = 0x02;  //end time for item
-      command.data = (uint32_t)(item->endTime * 75000);
-      putInFifo(&command);
+      cmd.addr = 0x02;  //end time for item
+      cmd.data = (uint32_t)(item->endTime * 75000);
+      putInFifo(&cmd);
 
-      command.addr = 0x03;  //command register address
-      command.data = 0x03;   
-      putInFifo(&command);
+      cmd.addr = 0x03;  //cmd register address
+      cmd.data = 0x03;   
+      putInFifo(&cmd);
 
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
-      //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
+      command(0, 242, 5, 1);
       break; 
 
     default:

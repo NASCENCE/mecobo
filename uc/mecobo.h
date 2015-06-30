@@ -71,6 +71,17 @@
 #define CMD_CONST  6
 
 
+//FPGA status register
+#define STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT 0x8000
+#define STATUS_REG_CMD_FIFO_FULL_BIT 		    0x4000
+#define STATUS_REG_CMD_FIFO_ALMOST_EMPTY	  0x2000
+#define STATUS_REG_CMD_FIFO_EMPTY           0x1000
+#define STATUS_REG_SAMPLE_FIFO_ALMOST_FULL  0x0800
+#define STATUS_REG_SAMPLE_FIFO_FULL         0x0400
+#define STATUS_REG_SAMPLE_FIFO_EMPTY        0x0200
+#define STATUS_REG_SAMPLE_FIFO_ALMOST_EMPTY 0x0100
+
+
 struct pinConfig {
   uint32_t fpgaPin;
   uint32_t pinType;
