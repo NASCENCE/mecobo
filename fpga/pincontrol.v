@@ -257,11 +257,12 @@ always @ (posedge clk) begin
       at a certain rate, and will never leave this state
       unless reset is called.
         */
-       if (command == CMD_RESET)
+       if (command == CMD_RESET) begin
          res_cmd_reg <= 1'b1;
          state <= idle;
-       else
+       end else begin
          state <= input_stream;
+       end
     end 
 
     default: begin
