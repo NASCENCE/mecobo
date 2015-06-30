@@ -209,8 +209,9 @@ always @ (posedge clk) begin
       if (command == CMD_RESET) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
-      end else if (current_time >= end_time) 
+      end else if ((current_time >= end_time) & (end_time != 0)) begin
         state <= idle;
+      end
     end
 
     const: begin
