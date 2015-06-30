@@ -181,6 +181,8 @@ int NORToggling();
 void putInFifo(struct fifoCmd * cmd);
 void pushToCmdFifo(struct pinItem * item);
 //void parseNORFileTable(int * numEntries, struct NORFileTableEntry ** entries);
+struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data);
+void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data);
 
 #endif //__MECOBO_H_
 

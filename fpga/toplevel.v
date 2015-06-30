@@ -169,6 +169,10 @@ ebi ebi_if(
 	.cmd_fifo_empty(ebi_fifo_empty),
   .sample_fifo_data_out(sample_collector_data),
   .sample_fifo_rd_en(sample_collector_rd_en),
+  .sample_fifo_empty(sample_fifo_empty),
+  .sample_fifo_almost_empty(sample_fifo_almost_empty),
+  .sample_fifo_full(sample_fifo_full),
+  .sample_fifo_almost_full(sample_fifo_almost_full),
 	.irq(ebi_irq)
 );
 
@@ -335,7 +339,11 @@ xbar_control #(.POSITION(200))
       .channel_select(sample_channel_select),
 
       .sample_fifo_rd_en(sample_collector_rd_en),
-      .sample_data_out(sample_collector_data)
+      .sample_data_out(sample_collector_data),
+      .sample_fifo_empty(sample_fifo_empty),
+      .sample_fifo_almost_empty(sample_fifo_almost_empty),
+      .sample_fifo_full(sample_fifo_full),
+      .sample_fifo_almost_full(sample_fifo_almost_full)
     );
 
 

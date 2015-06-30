@@ -646,8 +646,9 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-  memctrl[4] = channel;
+  command(0, 242, 4, channel);
+  //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
+  //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
   if(DEBUG_PRINTING) printf("Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
 
@@ -721,9 +722,15 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   else {
     uint16_t * a = addr + PINCONFIG_STATUS_REG;
     if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
+    command(0, channel, PINCONFIG_LOCAL_CMD, CMD_RESET);
+    command(0, channel, PINCONFIG_SAMPLE_RATE, overflow);
+    command(0, channel, PINCONFIG_LOCAL_CMD, CMD_INPUT_STREAM);
+
+    /*
     addr[PINCONFIG_LOCAL_CMD] = CMD_RESET;
     addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)overflow;
     addr[PINCONFIG_LOCAL_CMD] = CMD_INPUT_STREAM;
+    */
   }
 
   inputChannels[numInputChannels++] = channel;
@@ -941,7 +948,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
 
-    uint16_t * memctrl = getChannelAddress(242);
+    uint16_t * memctrl = getChannelAddress(0);
 
     //Send back the whole sending buffer.
     //Data contains the number of samples to xfer.
@@ -950,7 +957,8 @@ void execCurrentPack()
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
 
     for(unsigned int i = 0; i < *txSamples; i++) {
-      uint16_t data = memctrl[1];
+     // uint16_t data = memctrl[1];
+      uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
       uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
       //if(DEBUG_PRINTING)
       //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
@@ -1364,20 +1372,38 @@ inline void putInFifo(struct fifoCmd * cmd)
   printf("pushing word %u : %x\n", 4, serialCmd[4]);
 }
 
-void pushToCmdFifo(struct pinItem * item)
+
+
+void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
+  struct fifoCmd cmd;
+  cmd.startTime = startTime * 75000;
+  cmd.controller = controller;
+  cmd.addr = reg;
+  cmd.data = data;
+  putInFifo(&cmd);
+}
+
+
+inline struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) 
 {
   struct fifoCmd command;
-  command.startTime = (item->startTime * 75000);
-  command.controller = (uint8_t)item->pin;
+  command.startTime = startTime * 75000;
+  command.controller = controller;
+  command.addr = reg;
+  command.data = data;
+  return command;
+}
+
+void pushToCmdFifo(struct pinItem * item)
+{
+  struct fifoCmd command = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
   printf("FIFO i %u, ctrl %u\n", (unsigned int)command.startTime, (unsigned int)command.controller);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
-      command.startTime = 0; 
-      command.controller = 0xFF;
-      command.addr = 0xFF;  //reset time when writing to this address :)
-      command.data = 0x00;   
+      //why do i do this here...
+      command = makeCommand(0, 0xFF, 0xFF, 0x00);
       putInFifo(&command);
 
       command.startTime = (item->startTime * 75000);
@@ -1396,6 +1422,12 @@ void pushToCmdFifo(struct pinItem * item)
       putInFifo(&command);
 
       break;
+
+    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+    case PINCONFIG_DATA_TYPE_RECORD:
+      //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
+      break; 
+
     default:
       break;
   }
