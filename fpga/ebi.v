@@ -49,7 +49,7 @@ localparam [4:0]	idle 		= 5'b00000,
 			fetch		            = 5'b00001,
 			fifo_load	          = 5'b00010,
 			trans_over	        = 5'b00100,
-      fifo_read     = 5'b01000,
+      fifo_read           = 5'b01000,
       fifo_read_next      = 5'b10000;
 
 reg [4:0] state, nextState;

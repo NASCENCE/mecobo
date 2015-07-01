@@ -111,7 +111,5 @@ always @ (posedge clk) begin
 		end
 end
 
-//Reseting timer
-assign reset_time = (cmd_bus_addr[15:0] == 16'hFFFF) ? 1'b1 : 1'b0;
 
 endmodule

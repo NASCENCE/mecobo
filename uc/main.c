@@ -809,12 +809,14 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
+    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
     if(DEBUG_PRINTING) printf("Starting sequence run.\n");
     runItems = 1;
     timeTick = 0;
     lastTimeTick = 0;
     timeMs = 0;
     itaPos = 0;
+    cmdInterfaceAddr[7] = 0xDEAD; 
   }
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
@@ -1358,8 +1360,7 @@ void fpgaIrqHandler(uint8_t pin) {
 inline void putInFifo(struct fifoCmd * cmd) 
 {
   
-  uint16_t * cmdInterfaceAddr = getChannelAddress(0);
-
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   uint16_t * serialCmd = (uint16_t *)cmd;
   //This will be funked up when splitting the uint32 into 16 bits,
   //because the ordering is different.
@@ -1385,7 +1386,7 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
   struct fifoCmd cmd;
-  cmd.startTime = startTime * 75000000;
+  cmd.startTime = startTime * 75000;
   cmd.controller = controller;
   cmd.addr = reg;
   cmd.data = data;
@@ -1413,7 +1414,7 @@ void pushToCmdFifo(struct pinItem * item)
 
       //why do i do this here...
       //cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
-      command(0, 0xFF, 0xFF, 0);
+      //command(0, 0xFF, 0xFF, 0);
 
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);

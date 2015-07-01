@@ -120,7 +120,7 @@ always @ (*) begin
   fifo_write_enable = 0;
   res_cmd_reg = 0;
   res_sampling = 0;
-  nextState = idle;
+  nextState = 4'bXXXX;
 
   case (state)
     idle: begin
