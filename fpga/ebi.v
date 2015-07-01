@@ -38,6 +38,7 @@ localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
 localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 localparam EBI_ADDR_RESET_TIME 	    = 7;
 localparam EBI_ADDR_RUN_TIME 	      = 8;
+localparam EBI_ADDR_READ_TIME 	      = 9;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 

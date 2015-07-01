@@ -153,6 +153,7 @@ ODDR2 clkout_oddr_da
   .S  (1'b0));
 `endif
 
+wire [31:0] global_clock;
 wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
 //EBI
@@ -165,7 +166,7 @@ ebi ebi_if(
 	.rd(read_enable),
 	.wr(write_enable),
 	.cs(chip_select),
-  .global_clock(global_clock),
+  	.global_clock(global_clock),
 	.cmd_fifo_data_in(ebi_fifo_din),
 	.cmd_fifo_wr_en(ebi_fifo_wr),
 	.cmd_fifo_almost_full(ebi_fifo_almost_full),
