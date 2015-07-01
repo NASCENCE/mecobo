@@ -313,6 +313,7 @@ int main(void)
 
   fifoInit(&cmdFifo, 50, sizeof(struct pinItem));
 
+ 
   for (;;) {
     if (cmdFifo.numElements > 0) {
       void * item = NULL;
@@ -795,7 +796,7 @@ void execCurrentPack()
       fifoInsert(&cmdFifo, &item);
 
       numItemsLeftToExecute++;
-      //if(DEBUG_PRINTING) //printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
+      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
@@ -812,8 +813,8 @@ void execCurrentPack()
     //This starts the clock and initiates the scheduler
     uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
     cmdInterfaceAddr[8] = 0xDEAD; 
+    printf("Clock started, time is %u\n", cmdInterfaceAddr[9]);
 
-    if(DEBUG_PRINTING) printf("Starting sequence run.\n");
     runItems = 1;
     timeTick = 0;
     lastTimeTick = 0;
@@ -1412,9 +1413,9 @@ inline struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_
 
 void pushToCmdFifo(struct pinItem * item)
 {
-  struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
+  //struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
-  printf("FIFO i %u, ctrl %u\n", (unsigned int)cmd.startTime, (unsigned int)cmd.controller);
+  printf("s: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 

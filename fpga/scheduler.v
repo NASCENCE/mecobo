@@ -67,12 +67,12 @@ always @ ( * ) begin
     idle: begin
       nextState = idle; 
       //If time has started running, it's time to start scheduling stuff!
-      if (current_time > 0) 
+      if (current_time != 0) 
 			  nextState = fetch;
 		end
 
 		fetch: begin
-			if (cmd_fifo_empty) begin
+			if (cmd_fifo_empty | (current_time == 0)) begin   //idle while waiting for time to tick or if fifo is empty
 				nextState = fetch;
 			end
 			else begin
