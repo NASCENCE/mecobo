@@ -167,6 +167,8 @@ always @ (posedge clk) begin
 			  status_register_old <= status_register;
       end else if (addr == EBI_ADDR_NEXT_SAMPLE) begin
         data_out <= fifo_captured_data;
+      end else if (addr == EBI_ADDR_READ_TIME) begin
+        data_out <= clock_reg;
       end
     end
 
@@ -222,10 +224,10 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 reg time_running = 0;
 reg [31:0] clock_reg = 0;
 always @ (posedge clk) begin
-  if(rst)
+  if(rst) begin
     clock_reg <= 0; 
     time_running <= 0;
-  else begin
+  end else begin
     if (reset_time)
       clock_reg <= 0; 
     else if (time_running)
