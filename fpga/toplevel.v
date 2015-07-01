@@ -166,7 +166,6 @@ ebi ebi_if(
 	.wr(write_enable),
 	.cs(chip_select),
   .global_clock(global_clock),
-	.reset_time(global_clock_reset),
 	.cmd_fifo_data_in(ebi_fifo_din),
 	.cmd_fifo_wr_en(ebi_fifo_wr),
 	.cmd_fifo_almost_full(ebi_fifo_almost_full),
