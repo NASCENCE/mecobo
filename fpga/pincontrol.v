@@ -33,6 +33,8 @@ input [7:0] channel_select;
 output reg [31:0] sample_data;
 
 
+parameter POSITION = 0;
+
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
 reg [31:0] nco_counter = 32'h00000000;
@@ -41,11 +43,10 @@ reg [31:0] end_time = 0;
 
 
 wire pin_input;
+wire enable_in = (enable & (addr[15:8] == POSITION));
 /*Input, output: PWM, SGEN, CONST */
 
-wire enable_in = (enable & (addr[15:8] == POSITION));
 
-parameter POSITION = 0;
 
 /*These are byte addresses. */
 localparam
@@ -66,6 +67,29 @@ localparam
   CMD_INPUT_STREAM = 4,
   CMD_RESET = 5;
 
+reg [31:0] cmdbus_captured_data;
+reg [31:0] command = 0;
+reg [31:0] sample_rate = 0;
+reg [31:0] cnt_sample_rate = 0;
+
+
+/*outputs from state machine */
+reg res_cmd_reg = 1'b0;
+reg res_sample_counter = 0;
+reg dec_sample_counter = 0;
+reg update_data_out    = 0;
+reg update_sample_cnt = 0;
+reg enable_pin_output = 0;
+reg const_output_null = 0;
+reg const_output_one = 0;
+
+localparam [3:0] 
+                    idle =            4'b0001,
+                    const =           4'b0010,
+                    input_stream =    4'b0100,
+                    enable_out =      4'b1000;
+
+reg [4:0] state = idle;
 
 /* Command bus data output */
 always @ (posedge clk) begin
@@ -98,16 +122,11 @@ end
 
 
 /* Drive output pin from MSB of nco_pa statemachine if output is enabled. */
-  assign pin = (enable_pin_output) ? nco_pa[31] : 1'bZ; /*Z or 0 */
-  assign pin_input = pin;
+assign pin = (enable_pin_output) ? nco_pa[31] : 1'bZ; /*Z or 0 */
+assign pin_input = pin;
 
 
 /* ------------------ CAPTURE FROM COMMAND BUS ---------*/
-reg [31:0] cmdbus_captured_data;
-reg [31:0] command = 0;
-reg [31:0] sample_rate = 0;
-reg [31:0] cnt_sample_rate = 0;
-
 always @ (posedge clk) begin
   if (reset)
     cmdbus_captured_data <= 0;
@@ -137,25 +156,6 @@ end
 
 
 /* CONTROL LOGIC STATE MACHINE */
-
-/*outputs from state machine */
-reg res_cmd_reg = 1'b0;
-reg res_sample_counter = 0;
-reg dec_sample_counter = 0;
-reg update_data_out    = 0;
-reg update_sample_cnt = 0;
-reg enable_pin_output = 0;
-reg const_output_null = 0;
-reg const_output_one = 0;
-
-
-reg [4:0] state = idle;
-
-localparam [3:0] 
-idle =            4'b0001,
-  const =           4'b0010,
-  input_stream =    4'b0100,
-  enable_out =      4'b1000;
 
 always @ (posedge clk) begin
   if (reset)
@@ -210,6 +210,7 @@ always @ (posedge clk) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
       end else if ((current_time >= end_time) & (end_time != 0)) begin
+        res_cmd_reg <= 1'b1;
         state <= idle;
       end
     end
@@ -230,8 +231,10 @@ always @ (posedge clk) begin
       if (command == CMD_RESET) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
-      end else if (current_time >= end_time) 
+      end else if (current_time >= end_time) begin
+        res_cmd_reg <= 1'b1;
         state <= idle;
+      end
     end
 
     /*Stream back data. */

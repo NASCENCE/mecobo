@@ -54,6 +54,7 @@ localparam DATA_L = 16;  //
 localparam ADDR_H = 15;  //5 last nibblets 
 localparam ADDR_L = 0;
 
+reg [79:0] command = 0;
 
 always @ ( * ) begin
 	nextState = 4'bXXXX;
@@ -97,7 +98,6 @@ always @ ( * ) begin
 	endcase
 end
 	
-reg [79:0] command = 0;
 
 //format the address 
 assign cmd_bus_addr[15:0] = command[ADDR_H:ADDR_L];

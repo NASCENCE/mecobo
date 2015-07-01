@@ -48,14 +48,16 @@ output fpga_ready;
 inout [60:1] HW;
 inout [57:1] HN;
 
-assign led[3] =  1'b0;
-assign led[1] =  read_enable;
-//assign led[3] = chip_select;
-
 //Invert control signals
 wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
+
+
+assign led[3] =  1'b0;
+assign led[1] =  read_enable;
+//assign led[3] = chip_select;
+
 
 //(* tristate2logic = "yes" *)
 wor [15:0] data_out;
@@ -71,13 +73,6 @@ assign fpga_ready = ebi_irq;
 //Heartbeat
 reg [26:0] led_heartbeat = 0;
 assign led[0] = led_heartbeat[26] | led_heartbeat[25];
-
-always @ (posedge sys_clk) begin
-  if(mecobo_reset)
-    led_heartbeat <= 0;
-  else
-    led_heartbeat <= led_heartbeat + 1'b1;
-end
 
 wire adc_din;
 wire adc_dout;
@@ -107,6 +102,15 @@ wire mecobo_reset = ~locked & ~reset;
 
 
 //----------------------------------- CLOCKING -------------------------
+/* heartbeat */
+always @ (posedge sys_clk) begin
+  if(mecobo_reset)
+    led_heartbeat <= 0;
+  else
+    led_heartbeat <= led_heartbeat + 1'b1;
+end
+
+
 //DCM instance for clock division
 main_clocks clocks
 (
@@ -197,6 +201,7 @@ command_fifo cmd_fifo (
 );
 
 reg [31:0] global_clock = 0;
+wire global_clock_reset;
 always @ (posedge sys_clk) begin
 	if (global_clock_reset)
 		global_clock <= 0; 

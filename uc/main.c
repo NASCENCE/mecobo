@@ -647,7 +647,6 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-
   command(0, 242, 4, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
@@ -724,8 +723,8 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   else {
     uint16_t * a = addr + PINCONFIG_STATUS_REG;
     if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
-    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_RESET);
-    command(0, channel, PINCONTROL_SAMPLE_RATE, 10);
+    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
+    command(0, channel, PINCONTROL_SAMPLE_RATE, (uint32_t)overflow);
     command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
@@ -1420,23 +1419,12 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
       //why do i do this here...
-      cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
-      putInFifo(&cmd);
+      //cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
+      command(0, 0xFF, 0xFF, 0);
 
-      cmd.startTime = (item->startTime * 75000);
-      cmd.controller = (uint8_t)item->pin;
-
-      cmd.addr = 0x01;  //NCO low
-      cmd.data = (uint32_t)item->nocCounter;
-      putInFifo(&cmd);
-     
-      cmd.addr = 0x02;  //end time for item
-      cmd.data = (uint32_t)(item->endTime * 75000);
-      putInFifo(&cmd);
-
-      cmd.addr = 0x03;  //cmd register address
-      cmd.data = PINCONTROL_CMD_START_OUTPUT;   
-      putInFifo(&cmd);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_NCO_COUNTER, (uint32_t)item->nocCounter);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_END_TIME, (uint32_t)item->endTime);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
       break;
 

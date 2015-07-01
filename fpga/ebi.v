@@ -38,6 +38,7 @@ localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
 reg [15:0] ebi_captured_data[0:5];
+wire rd_transaction_done;
 
 
 //Control state machine
@@ -177,7 +178,6 @@ end
 //-----------------------------------------------------------------------------------
 //rd falling edge detection to see if a transaction has finished
 
-wire rd_transaction_done;
 wire wr_transaction_done;
 
 reg rd_d = 0;

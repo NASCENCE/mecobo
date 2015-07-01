@@ -46,7 +46,7 @@ initial begin
   ebi_wr = 1'b0;
   ebi_cs = 1'b0;
 
-  data_file = $fopen("instructions.txt", "r");
+  data_file = $fopen("/home/lykkebo/mecobo/fpga/build/instructions.txt", "r");
   if (data_file == `NULL) begin
     $display("data_file handle was NULL");
     $finish;
@@ -121,7 +121,7 @@ mecobo mecobo0 (
 .HW(HW_tb)
 );
 
-assign HN_tb[0] = HN_tb[1];
+assign HN_tb[1] = HN_tb[2];
 
 
 endmodule
