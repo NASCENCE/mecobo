@@ -107,6 +107,8 @@ always begin
   #10 clk = ~clk;
 end
 
+wire [60:1] HW_tb;
+wire [57:1] HN_tb;
 mecobo mecobo0 (
 .osc(clk),
 .reset(reset),
@@ -114,6 +116,12 @@ mecobo mecobo0 (
 .ebi_addr(ebi_addr),
 .ebi_wr(~ebi_wr),
 .ebi_rd(~ebi_rd),
-.ebi_cs(~ebi_cs));
+.ebi_cs(~ebi_cs),
+.HN(HN_tb),
+.HW(HW_tb)
+);
+
+assign HN_tb[0] = HN_tb[1];
+
 
 endmodule
