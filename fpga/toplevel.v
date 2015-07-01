@@ -153,7 +153,6 @@ ODDR2 clkout_oddr_da
   .S  (1'b0));
 `endif
 
-wire global_clock_reset;
 wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
 //EBI
@@ -166,6 +165,7 @@ ebi ebi_if(
 	.rd(read_enable),
 	.wr(write_enable),
 	.cs(chip_select),
+  .global_clock(global_clock),
 	.reset_time(global_clock_reset),
 	.cmd_fifo_data_in(ebi_fifo_din),
 	.cmd_fifo_wr_en(ebi_fifo_wr),
@@ -201,14 +201,6 @@ command_fifo cmd_fifo (
 	.rd_en(sched_fifo_rd),
 	.wr_ack()
 );
-
-reg [31:0] global_clock = 0;
-always @ (posedge sys_clk) begin
-	if (global_clock_reset)
-		global_clock <= 0; 
-	else
-		global_clock <= global_clock + 1;
-end
 	
 //SCHEDULER
 

@@ -7,7 +7,7 @@ module ebi(	input clk,
 		input rd,
 		input wr,
 		input cs,
-    output reg reset_time,
+    output reg [31:0] global_clock,
 		//Interface to CMD fifo
 		output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
 		output reg	cmd_fifo_wr_en,
@@ -37,6 +37,7 @@ localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
 localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
 localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 localparam EBI_ADDR_RESET_TIME 	    = 7;
+localparam EBI_ADDR_RUN_TIME 	      = 8;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -61,6 +62,8 @@ end
 
 reg load_capture_reg;
 reg capture_fifo_data;
+reg reset_time;
+reg run_time;
 
 always @ ( * ) begin
 	nextState = 3'bXXX;
@@ -69,6 +72,8 @@ always @ ( * ) begin
   
   sample_fifo_rd_en = 1'b0;
   capture_fifo_data = 1'b0;
+  reset_time = 1'b0;
+  run_time = 1'b0;
   reset_time = 1'b0;
 
 	case (state)
@@ -82,6 +87,7 @@ always @ ( * ) begin
 				load_capture_reg = 1'b1;
 				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
         else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1;
+        else if (addr == EBI_ADDR_RUN_TIME) run_time = 1;
       end else if (cs & rd) begin
         if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
@@ -213,6 +219,21 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 
 //-----------------------------------------------------------------------------------
 
+reg time_running = 0;
+always @ (posedge clk) begin
+  if(rst)
+    global_clock <= 0; 
+  else if (reset_time)
+    global_clock <= 0; 
+  else if (time_running == 1)
+    global_clock <= global_clock + 1;
+
+  //capture state machine decision
+  if (run_time) 
+    time_running <= 1;
+  else 
+    time_running <= 0;
+end
 
 
 

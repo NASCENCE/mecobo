@@ -651,7 +651,7 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  command(0, 242, 4, channel);  //set up the sample collector to this channel
+  command(1, 242, 4, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
@@ -747,7 +747,7 @@ inline void startInput()
 {
   if(!samplingStarted) {
     printf("Starting sampling\n");
-    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
+    command(1, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
     //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
     //memctrl[5] = 1;
     samplingStarted = 1;
@@ -809,14 +809,17 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
+
+    //This starts the clock and initiates the scheduler
     uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[8] = 0xDEAD; 
+
     if(DEBUG_PRINTING) printf("Starting sequence run.\n");
     runItems = 1;
     timeTick = 0;
     lastTimeTick = 0;
     timeMs = 0;
     itaPos = 0;
-    cmdInterfaceAddr[7] = 0xDEAD; 
   }
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
@@ -1386,7 +1389,7 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
   struct fifoCmd cmd;
-  cmd.startTime = startTime * 75000;
+  cmd.startTime = (uint32_t)(startTime * 75000);
   cmd.controller = controller;
   cmd.addr = reg;
   cmd.data = data;

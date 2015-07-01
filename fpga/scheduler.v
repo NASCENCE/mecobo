@@ -64,8 +64,11 @@ always @ ( * ) begin
 	writeCommandReg = 1'b0;
 	resetCommandReg = 1'b0;
 	case (state)
-		idle: begin
-			nextState = fetch;
+    idle: begin
+      nextState = idle; 
+      //If time has started running, it's time to start scheduling stuff!
+      if (current_time > 0) 
+			  nextState = fetch;
 		end
 
 		fetch: begin
