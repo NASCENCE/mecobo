@@ -318,9 +318,8 @@ int main(void)
       void * item = NULL;
       fifoGet(&cmdFifo, &item);
       struct pinItem * it = (struct pinItem *)item;
-      printf("SATAN %d\n", it->endTime);
+      printf("pushing to fifo, endtime %u\n", it->endTime);
       pushToCmdFifo(it);
-      printf("Freed some data: %p\n", it);
     }
   }
 }

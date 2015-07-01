@@ -7,7 +7,7 @@ module ebi(	input clk,
 		input rd,
 		input wr,
 		input cs,
-    output reg [31:0] global_clock,
+    output [31:0] global_clock,
 		//Interface to CMD fifo
 		output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
 		output reg	cmd_fifo_wr_en,
@@ -72,7 +72,6 @@ always @ ( * ) begin
   
   sample_fifo_rd_en = 1'b0;
   capture_fifo_data = 1'b0;
-  reset_time = 1'b0;
   run_time = 1'b0;
   reset_time = 1'b0;
 
@@ -86,8 +85,8 @@ always @ ( * ) begin
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
 				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
-        else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1;
-        else if (addr == EBI_ADDR_RUN_TIME) run_time = 1;
+        else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
+        else if (addr == EBI_ADDR_RUN_TIME) run_time = 1'b1;
       end else if (cs & rd) begin
         if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
@@ -221,15 +220,16 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 // clock controlled by state machine 
 //-----------------------------------------------------------------------------------
 reg time_running = 0;
+reg [31:0] clock_reg = 0;
 always @ (posedge clk) begin
   if(rst)
-    global_clock <= 0; 
-  time_running <= 0;
+    clock_reg <= 0; 
+    time_running <= 0;
   else begin
     if (reset_time)
-      global_clock <= 0; 
+      clock_reg <= 0; 
     else if (time_running)
-      global_clock <= global_clock + 1;
+      clock_reg <= clock_reg + 1;
 
     //capture state machine decision
     if (run_time) 
@@ -238,7 +238,7 @@ always @ (posedge clk) begin
       time_running <= 0;
   end
 end
-
+assign global_clock = clock_reg;
 
 
 endmodule			
