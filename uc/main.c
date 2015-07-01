@@ -528,6 +528,7 @@ inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 inline void execute(struct pinItem * item)
 {
+  /*
   uint16_t * addr = NULL;// = getChannelAddress(item->pin);
   //printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
   int index = 0;
@@ -538,14 +539,14 @@ inline void execute(struct pinItem * item)
       uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
       if(DEBUG_PRINTING) printf("  %d DIGITAL: Digital C:%d, nocCounter: %u, ad: %p\n", timeMs, item->pin, item->nocCounter, addr);
 
-      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
-      while(addr[10] != CMD_RESET) addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
+      addr[PINCONTROL_REG_LOCAL_CMD] = CMD_RESET;
+      while(addr[10] != CMD_RESET) addr[PINCONTROL_REG_LOCAL_CMD] = CMD_RESET;
       addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       while(addr[10] != nocLow) addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
       addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
       while(addr[10] != nocHigh) addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
       addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
-      while(addr[10] != CMD_START_OUTPUT) addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
+      while(addr[10] != CMD_START_OUTPUT) addr[PINCONTROL_REG_LOCAL_CMD] = CMD_START_OUTPUT;
       break;
 
     case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
@@ -553,10 +554,10 @@ inline void execute(struct pinItem * item)
       if(DEBUG_PRINTING) printf("  %d DIGITAL CONST: Digital C:%d, constant: %u, ad: %p\n", timeMs, item->pin, item->constantValue, addr);
       if(item->constantValue == 1) {
         if(DEBUG_PRINTING) printf( "    const high\n");
-        addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_CONST_HIGH;
+        addr[PINCONTROL_REG_LOCAL_CMD] = CMD_CONST_HIGH;
       } else {
         if(DEBUG_PRINTING) printf( "    const low\n");
-        addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_CONST_LOW;
+        addr[PINCONTROL_REG_LOCAL_CMD] = CMD_CONST_LOW;
       }
       break;
 
@@ -602,10 +603,12 @@ inline void execute(struct pinItem * item)
     default:
       break;
   }
+*/
 }
 
 void killItem(struct pinItem * item)
 {
+  /*
   uint16_t * addr = getChannelAddress(item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
@@ -643,6 +646,7 @@ void killItem(struct pinItem * item)
     default:
       break;
   }
+  */
 }
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
@@ -723,9 +727,9 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   else {
     uint16_t * a = addr + PINCONFIG_STATUS_REG;
     if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
-    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
-    command(0, channel, PINCONTROL_SAMPLE_RATE, (uint32_t)overflow);
-    command(0, channel, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
+    command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
+    command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
+    command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
     addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
@@ -743,7 +747,7 @@ inline void startInput()
 {
   if(!samplingStarted) {
     printf("Starting sampling\n");
-    command(0, 242, 5, 1);  //this sends STAT SAMPLING COMMAND
+    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
     //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
     //memctrl[5] = 1;
     samplingStarted = 1;
@@ -791,17 +795,6 @@ void execCurrentPack()
       //itemsToApply[itaHead++] = item;
       fifoInsert(&cmdFifo, &item);
 
-
-      //find lowest first killtime, but ignore -1 endtimes,
-      //they should run forever.
-      if(item.endTime != -1) {
-        if(numItemsLeftToExecute == 0) {
-          nextKillTime = item.endTime;
-        } else if (item.endTime < nextKillTime) {
-          nextKillTime = item.endTime;
-        }
-      }
-
       numItemsLeftToExecute++;
       //if(DEBUG_PRINTING) //printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
@@ -816,8 +809,7 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
-    uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-    if(DEBUG_PRINTING) printf("Starting sequence run, collecting from %u channels\n", memctrl[6]);
+    if(DEBUG_PRINTING) printf("Starting sequence run.\n");
     runItems = 1;
     timeTick = 0;
     lastTimeTick = 0;
@@ -964,7 +956,7 @@ void execCurrentPack()
       //if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
       //if (!sampleFifoEmpty) {
         uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
-        printf("m: %x\n", memctrl[0]);
+        //printf("m: %x\n", memctrl[0]);
         uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
         //if(DEBUG_PRINTING)
         //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
@@ -1039,8 +1031,9 @@ void resetAllPins()
 {
   printf("Reseting all digital pin controllers\n");
   for(int j = 0; j < 50; j++) {
-    uint16_t * addr = (getChannelAddress((j)));
-    addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
+    command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
+    //uint16_t * addr = (getChannelAddress((j)));
+    //addr[PINCONTROL_REG_LOCAL_CMD] = PINCONTROL_CMD_RESET;
   }
   printf("OK\n");
 }
@@ -1392,7 +1385,7 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
   struct fifoCmd cmd;
-  cmd.startTime = startTime * 75000;
+  cmd.startTime = startTime * 75000000;
   cmd.controller = controller;
   cmd.addr = reg;
   cmd.data = data;
@@ -1422,9 +1415,9 @@ void pushToCmdFifo(struct pinItem * item)
       //cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
       command(0, 0xFF, 0xFF, 0);
 
-      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_NCO_COUNTER, (uint32_t)item->nocCounter);
-      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_END_TIME, (uint32_t)item->endTime);
-      command(item->startTime, (uint8_t)item->pin, PINCONTROL_CMD_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
       break;
 

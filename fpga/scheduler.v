@@ -3,7 +3,6 @@ module scheduler (	input 			clk,
 
 			//interface to timer.
 			input 	[31:0]		current_time,
-			output 			reset_time,
 
 			//cmd fifo
 			input [79:0]		cmd_fifo_dout,

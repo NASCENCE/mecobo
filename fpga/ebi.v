@@ -7,6 +7,7 @@ module ebi(	input clk,
 		input rd,
 		input wr,
 		input cs,
+    output reg reset_time,
 		//Interface to CMD fifo
 		output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
 		output reg	cmd_fifo_wr_en,
@@ -23,6 +24,7 @@ module ebi(	input clk,
 		input		        sample_fifo_empty,
 		//TODO: DAC buffers.
 		output          reg irq
+	
 );	
 
 // ------------- EBI INTERFACE -----------------
@@ -34,6 +36,7 @@ localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
 localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
 localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
 localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
+localparam EBI_ADDR_RESET_TIME 	    = 7;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -66,15 +69,19 @@ always @ ( * ) begin
   
   sample_fifo_rd_en = 1'b0;
   capture_fifo_data = 1'b0;
+  reset_time = 1'b0;
 
 	case (state)
-		idle:
+    idle: begin
 			nextState = fetch;
+    end
+
 		fetch: begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
 				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
+        else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1;
       end else if (cs & rd) begin
         if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
