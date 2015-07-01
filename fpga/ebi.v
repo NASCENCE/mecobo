@@ -218,21 +218,25 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 
 
 //-----------------------------------------------------------------------------------
-
+// clock controlled by state machine 
+//-----------------------------------------------------------------------------------
 reg time_running = 0;
 always @ (posedge clk) begin
   if(rst)
     global_clock <= 0; 
-  else if (reset_time)
-    global_clock <= 0; 
-  else if (time_running == 1)
-    global_clock <= global_clock + 1;
+  time_running <= 0;
+  else begin
+    if (reset_time)
+      global_clock <= 0; 
+    else if (time_running)
+      global_clock <= global_clock + 1;
 
-  //capture state machine decision
-  if (run_time) 
-    time_running <= 1;
-  else 
-    time_running <= 0;
+    //capture state machine decision
+    if (run_time) 
+      time_running <= 1;
+    else 
+      time_running <= 0;
+  end
 end
 
 

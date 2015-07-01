@@ -871,6 +871,10 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_RESET_ALL) {
     mecoboStatus = MECOBO_STATUS_BUSY;
 
+    
+    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[7] = 0xDEAD; 
+
     fpgaTableIndex = 0;
     command(0, 242, 5, 5);  //reset sample collector
 
