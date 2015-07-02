@@ -72,6 +72,7 @@ int _write_r(void *reent, int fd, char *ptr, size_t len)
   return len;
 }
 
+int timeStarted = 0; 
 static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
 /*** Typedef's and defines. ***/
@@ -312,8 +313,9 @@ int main(void)
 
 
   fifoInit(&cmdFifo, 50, sizeof(struct pinItem));
-
  
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+
   for (;;) {
     if (cmdFifo.numElements > 0) {
       void * item = NULL;
@@ -321,6 +323,13 @@ int main(void)
       struct pinItem * it = (struct pinItem *)item;
       printf("pushing to fifo, endtime %u\n", it->endTime);
       pushToCmdFifo(it);
+    }
+
+    if(runItems & !timeStarted) {
+      cmdInterfaceAddr[7] = 0xDEAD;   //reset and stop time
+      cmdInterfaceAddr[8] = 0x1234;
+      printf("Clock started, time is %u\n", cmdInterfaceAddr[9]);
+      timeStarted = 1;
     }
   }
 }
@@ -651,7 +660,7 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  command(0, 242, 4, channel);  //set up the sample collector to this channel
+  command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
@@ -744,13 +753,8 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
 inline void startInput()
 {
-  if(!samplingStarted) {
-    printf("Starting sampling\n");
-    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
-    //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
-    //memctrl[5] = 1;
-    samplingStarted = 1;
-  }
+  printf("Starting sampling\n");
+  command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
 }
 
 inline uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef channel)
@@ -808,13 +812,6 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
-
-    //This starts the clock and initiates the scheduler
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xDEAD; 
-    cmdInterfaceAddr[8] = 0xDEAD; 
-    printf("Clock started, time is %u\n", cmdInterfaceAddr[9]);
-
     runItems = 1;
     timeTick = 0;
     lastTimeTick = 0;
@@ -934,11 +931,17 @@ void execCurrentPack()
 
     resetAllPins();
 
+    //make sure clock is running here 
+    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[8] = 0xDEAD;
+    while (!(cmdInterfaceAddr[0] & STATUS_REG_CMD_FIFO_EMPTY));
+    cmdInterfaceAddr[7] = 0xDEAD;
+    timeStarted = 0;
+
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
+  
 
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xDEAD; 
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
@@ -1429,9 +1432,6 @@ void pushToCmdFifo(struct pinItem * item)
 
       uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
       printf("board-time: %x\n", cmdInterfaceAddr[9]);
-      cmdInterfaceAddr[7] = 0xDEAD; 
-      printf("board-time: %x\n", cmdInterfaceAddr[9]);
-      cmdInterfaceAddr[8] = 0xDEAD; 
  
 
       break;
@@ -1439,6 +1439,7 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       startInput();
+      printf("board-time: %x\n", cmdInterfaceAddr[9]);
       break; 
 
     default:

@@ -38,7 +38,8 @@ localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
 localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 localparam EBI_ADDR_RESET_TIME 	    = 7;
 localparam EBI_ADDR_RUN_TIME 	      = 8;
-localparam EBI_ADDR_READ_TIME 	      = 9;
+localparam EBI_ADDR_READ_TIME_L     = 9;
+localparam EBI_ADDR_READ_TIME_H     = 10;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -170,8 +171,10 @@ always @ (posedge clk) begin
 			  status_register_old <= status_register;
       end else if (addr == EBI_ADDR_NEXT_SAMPLE) begin
         data_out <= fifo_captured_data;
-      end else if (addr == EBI_ADDR_READ_TIME) begin
-        data_out <= clock_reg;
+      end else if (addr == EBI_ADDR_READ_TIME_L) begin
+        data_out <= clock_reg[15:0];
+      end else if (addr == EBI_ADDR_READ_TIME_H) begin
+        data_out <= clock_reg[31:16];
       end
     end
 
