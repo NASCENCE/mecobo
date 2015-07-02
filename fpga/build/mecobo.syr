@@ -4,15 +4,15 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.09 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.09 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Reading design: mecobo.prj
@@ -320,7 +320,7 @@ WARNING:Xst:653 - Signal <dac_fifo_rd_en> is used but never assigned. This sourc
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit comparator lessequal for signal <n0006> created at line 92
+    Found 32-bit comparator lessequal for signal <n0009> created at line 92
     Summary:
 	inferred  80 D-type flip-flop(s).
 	inferred   1 Comparator(s).
@@ -397,7 +397,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_73_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_75_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     Summary:
@@ -478,7 +478,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_139_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_141_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     Summary:
@@ -559,7 +559,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_172_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_174_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     Summary:
@@ -640,7 +640,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_205_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_207_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     Summary:
@@ -721,7 +721,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_238_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_240_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     Summary:
@@ -802,7 +802,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_271_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_273_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     Summary:
@@ -883,7 +883,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_304_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_306_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     Summary:
@@ -964,7 +964,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_337_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_339_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     Summary:
@@ -1045,7 +1045,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_370_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_372_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     Summary:
@@ -1126,7 +1126,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0102> created at line 212
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_403_o> created at line 252
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_405_o> created at line 252
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_10>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_10>.
     Summary:
@@ -1757,15 +1757,15 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 6252
+# BELS                             : 6246
 #      GND                         : 1
 #      INV                         : 62
 #      LUT1                        : 209
-#      LUT2                        : 709
-#      LUT3                        : 362
-#      LUT4                        : 1713
-#      LUT5                        : 308
-#      LUT6                        : 776
+#      LUT2                        : 710
+#      LUT3                        : 361
+#      LUT4                        : 1712
+#      LUT5                        : 309
+#      LUT6                        : 770
 #      MUXCY                       : 1106
 #      MUXF7                       : 90
 #      MUXF8                       : 36
@@ -1800,14 +1800,14 @@ Selected Device : 6slx45csg324-3
 
 Slice Logic Utilization: 
  Number of Slice Registers:            3109  out of  54576     5%  
- Number of Slice LUTs:                 4139  out of  27288    15%  
-    Number used as Logic:              4139  out of  27288    15%  
+ Number of Slice LUTs:                 4133  out of  27288    15%  
+    Number used as Logic:              4133  out of  27288    15%  
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   4386
-   Number with an unused Flip Flop:    1277  out of   4386    29%  
-   Number with an unused LUT:           247  out of   4386     5%  
-   Number of fully used LUT-FF pairs:  2862  out of   4386    65%  
+ Number of LUT Flip Flop pairs used:   4380
+   Number with an unused Flip Flop:    1271  out of   4380    29%  
+   Number with an unused LUT:           247  out of   4380     5%  
+   Number of fully used LUT-FF pairs:  2862  out of   4380    65%  
    Number of unique control sets:        53
 
 IO Utilization: 
@@ -1862,7 +1862,7 @@ All values displayed in nanoseconds (ns)
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT0'
   Clock period: 7.097ns (frequency: 140.913MHz)
-  Total number of paths / destination ports: 807462 / 5748
+  Total number of paths / destination ports: 807494 / 5748
 -------------------------------------------------------------------------
 Delay:               7.097ns (Levels of Logic = 9)
   Source:            pinControl[8].pc/reset_clk_DFF_587_2 (FF)
@@ -1916,7 +1916,7 @@ Offset:              8.046ns (Levels of Logic = 7)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 1674 / 120
+  Total number of paths / destination ports: 1706 / 120
 -------------------------------------------------------------------------
 Offset:              7.337ns (Levels of Logic = 9)
   Source:            pinControl[8].pc/reset_clk_DFF_587_2 (FF)
@@ -1978,12 +1978,12 @@ clocks/pll_base_inst/CLKOUT0|    7.097|         |         |         |
 
 
 Total REAL time to Xst completion: 33.00 secs
-Total CPU time to Xst completion: 32.82 secs
+Total CPU time to Xst completion: 32.60 secs
  
 --> 
 
 
-Total memory usage is 413956 kilobytes
+Total memory usage is 413872 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  285 (   0 filtered)
