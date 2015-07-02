@@ -176,6 +176,9 @@ always @ (posedge clk) begin
 
       state <= idle;
       /*Check command register for waiting command. */
+
+      //We don't start doing stuff if the time has not started, but we still
+        //have a command waiting of course.
       if (current_time == 0) begin
         state <= idle;
       end else if (command == CMD_INPUT_STREAM) begin
@@ -209,7 +212,7 @@ always @ (posedge clk) begin
       if (command == CMD_RESET) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
-      end else if ((current_time >= end_time)) begin
+      end else if ((end_time != 0) | (current_time >= end_time)) begin
         res_cmd_reg <= 1'b1;
         state <= idle;
       end
