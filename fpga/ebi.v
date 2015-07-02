@@ -43,7 +43,7 @@ localparam EBI_ADDR_READ_TIME_H     = 10;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
-reg [15:0] ebi_captured_data[0:5];
+reg [15:0] ebi_captured_data[1:5];
 wire rd_transaction_done;
 
 reg time_running = 0;
@@ -88,26 +88,29 @@ always @ ( * ) begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
-				if (addr == EBI_ADDR_CMD_FIFO_WRD_5) nextState = fifo_load;
-        else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
+        if (addr == EBI_ADDR_CMD_FIFO_WRD_5) begin
+          if (wr_transaction_done) begin
+            cmd_fifo_wr_en = 1'b1;
+          end
+        end else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
         else if (addr == EBI_ADDR_RUN_TIME) run_time = 1'b1;
       end else if (cs & rd) begin
         if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
 		end
-
+/*
 		fifo_load: begin
-			nextState = trans_over;	
+			nextState = fetch;	
 			cmd_fifo_wr_en = 1'b1;	
 		end
 
 		trans_over: begin
 			nextState = trans_over;
-			if (!wr & !rd) begin
-				nextState = fetch;
+			if (wr_transaction_done) begin
+				nextState = fifo_load;
 			end
 		end
-
+*/
     /* Output data. State holds until read goes low again, indicating
     * that the reader has captured data happily, and we can get some more
     * data from the FIFO for the next transaction */
@@ -119,7 +122,7 @@ always @ ( * ) begin
       end
     end
 
-    /* Capture new data from the FIFO on the next edge */
+    /* Capture new data from the FIFO on the next edge since it's ready now */
     fifo_read_next: begin
       nextState = fetch;
       capture_fifo_data = 1'b1;
@@ -144,11 +147,11 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( i = 0; i < 6; i = i + 1) 
+		for ( 1 = 0; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 	end else begin
 		if (load_capture_reg) begin
-			ebi_captured_data[addr-1] <= data_in;
+			ebi_captured_data[addr] <= data_in;
 		end
 
 		status_register <= 	{	cmd_fifo_almost_full,
@@ -187,11 +190,17 @@ end
 
 
 
+assign cmd_fifo_data_in[79:64] = ebi_captured_data[5];
+assign cmd_fifo_data_in[63:48] = ebi_captured_data[4];
+assign cmd_fifo_data_in[47:32] = ebi_captured_data[3];
+assign cmd_fifo_data_in[31:16] = ebi_captured_data[2];
+assign cmd_fifo_data_in[15:0] = ebi_captured_data[1];
+/*
 genvar j;
 for (j = 0; j < 5; j = j + 1) begin : blu
 	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[4-j];
 end
-
+*/
 
 
 
