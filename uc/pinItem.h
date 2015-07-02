@@ -11,8 +11,8 @@
 struct pinItem 
 {
     FPGA_IO_Pins_TypeDef pin;
-    int startTime;
-    int endTime;
+    uint32_t startTime;
+    uint32_t endTime;
     int type;
     int constantValue;
     int duty;

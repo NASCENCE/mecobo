@@ -231,7 +231,7 @@ always @ (posedge clk) begin
   end else begin
     if (reset_time) begin
       clock_reg <= 0; 
-      time_running <= 0;
+      time_running <= 0;  //a reset stops time.
     end else if (time_running)
       clock_reg <= clock_reg + 1;
 

@@ -651,7 +651,7 @@ void killItem(struct pinItem * item)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
-  command(1, 242, 4, channel);  //set up the sample collector to this channel
+  command(0, 242, 4, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
@@ -725,8 +725,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
   //Digital channel.
   else {
-    uint16_t * a = addr + PINCONFIG_STATUS_REG;
-    if(DEBUG_PRINTING) printf("Recording from digital channel, addr %p, ctrl: %d\n", addr, *a);
+    if(DEBUG_PRINTING) printf("Recording dig ch: %x\n", channel);
     command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
     command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
     command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
@@ -747,7 +746,7 @@ inline void startInput()
 {
   if(!samplingStarted) {
     printf("Starting sampling\n");
-    command(1, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
+    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
     //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
     //memctrl[5] = 1;
     samplingStarted = 1;
@@ -784,9 +783,9 @@ void execCurrentPack()
       uint32_t * d = (uint32_t *)(currentPack.data);
       item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);  //pin is channel, actually
       item.duty = d[PINCONFIG_DATA_DUTY];
-      item.antiDuty = d[PINCONFIG_DATA_ANTIDUTY];
-      item.startTime = d[PINCONFIG_START_TIME];
-      item.endTime = d[PINCONFIG_END_TIME];
+      item.antiDuty   = d[PINCONFIG_DATA_ANTIDUTY];
+      item.startTime  = 75000*d[PINCONFIG_START_TIME];
+      item.endTime    = 75000*d[PINCONFIG_END_TIME];
       item.constantValue = d[PINCONFIG_DATA_CONST];
       item.type = d[PINCONFIG_DATA_TYPE];
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
@@ -796,13 +795,13 @@ void execCurrentPack()
       fifoInsert(&cmdFifo, &item);
 
       numItemsLeftToExecute++;
-      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %d, ending at %d, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
+      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
     //Recording pins need some setup
     if((item.type == PINCONFIG_DATA_TYPE_RECORD_ANALOGUE) || (item.type == PINCONFIG_DATA_TYPE_RECORD)) {
-      setupInput(item.pin, item.sampleRate, item.endTime-item.startTime);
+      setupInput(item.pin, item.sampleRate, (item.endTime-item.startTime)/75000);
     }
 
   }
@@ -812,6 +811,7 @@ void execCurrentPack()
 
     //This starts the clock and initiates the scheduler
     uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[7] = 0xDEAD; 
     cmdInterfaceAddr[8] = 0xDEAD; 
     printf("Clock started, time is %u\n", cmdInterfaceAddr[9]);
 
@@ -872,10 +872,7 @@ void execCurrentPack()
     mecoboStatus = MECOBO_STATUS_BUSY;
 
     
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xDEAD; 
-
-    fpgaTableIndex = 0;
+       fpgaTableIndex = 0;
     command(0, 242, 5, 5);  //reset sample collector
 
     runItems = 0;
@@ -939,6 +936,9 @@ void execCurrentPack()
 
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
+
+    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[7] = 0xDEAD; 
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
@@ -1393,7 +1393,7 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
   struct fifoCmd cmd;
-  cmd.startTime = (uint32_t)(startTime * 75000);
+  cmd.startTime = (uint32_t)(startTime);
   cmd.controller = controller;
   cmd.addr = reg;
   cmd.data = data;
@@ -1404,7 +1404,7 @@ void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data)
 inline struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) 
 {
   struct fifoCmd command;
-  command.startTime = startTime * 75000;
+  command.startTime = startTime;
   command.controller = controller;
   command.addr = reg;
   command.data = data;
@@ -1426,6 +1426,13 @@ void pushToCmdFifo(struct pinItem * item)
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
+
+      uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+      printf("board-time: %x\n", cmdInterfaceAddr[9]);
+      cmdInterfaceAddr[7] = 0xDEAD; 
+      printf("board-time: %x\n", cmdInterfaceAddr[9]);
+      cmdInterfaceAddr[8] = 0xDEAD; 
+ 
 
       break;
 

@@ -98,7 +98,6 @@ reg [31:0] last_fetched [0:15];
 integer mi;
 initial begin 
   state = idle;
-  nextState = idle;
   for (mi = 0; mi < MAX_COLLECTION_UNITS; mi = mi + 1)  begin
     collection_channels[mi] = 255;
     last_fetched[mi] = 0;
@@ -124,15 +123,14 @@ always @ (*) begin
 
   case (state)
     idle: begin
+      nextState = idle;
       if(command == CMD_START_SAMPLING) begin
         res_cmd_reg = 1'b1;
         nextState = fetch;
       end else if (command == CMD_RESET) begin
         res_cmd_reg = 1'b1;
         res_sampling = 1'b1;
-        nextState = idle;
-      end else
-        nextState = idle;
+      end
     end
 
     /*instruct adc to output new sample data */
@@ -153,7 +151,6 @@ always @ (*) begin
       if (last_fetched[current_id_idx] != sample_data) begin
         fifo_write_enable = 1'b1;
       end
-
       nextState = increment; 
     end
 
@@ -163,6 +160,7 @@ always @ (*) begin
     increment: begin
       inc_curr_id_idx = 1'b1;
 
+      nextState = fetch;
       if(command == CMD_RESET)  begin
         res_sampling = 1'b1;
         res_cmd_reg = 1'b1;
@@ -170,8 +168,7 @@ always @ (*) begin
       end else if (command == CMD_STOP_SAMPLING) begin
         res_cmd_reg = 1'b1;
         nextState = idle;
-      end else
-        nextState = fetch;
+      end
     end
 
   endcase
