@@ -1042,7 +1042,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 void resetAllPins()
 {
   printf("Reseting all digital pin controllers\n");
-  for(int j = 0; j < 50; j++) {
+  for(int j = 0; j < 10; j++) {
     command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
     //uint16_t * addr = (getChannelAddress((j)));
     //addr[PINCONTROL_REG_LOCAL_CMD] = PINCONTROL_CMD_RESET;
@@ -1431,7 +1431,8 @@ void pushToCmdFifo(struct pinItem * item)
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
       uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-      printf("board-time: %x\n", cmdInterfaceAddr[9]);
+      printf("tl: %x\n", cmdInterfaceAddr[9]);
+      printf("th: %x\n", cmdInterfaceAddr[10]);
  
 
       break;
@@ -1439,7 +1440,8 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       startInput();
-      printf("board-time: %x\n", cmdInterfaceAddr[9]);
+      printf("tl: %x\n", cmdInterfaceAddr[9]);
+      printf("th: %x\n", cmdInterfaceAddr[10]);
       break; 
 
     default:

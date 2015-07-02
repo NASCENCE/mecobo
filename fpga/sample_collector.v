@@ -64,7 +64,7 @@ reg [3:0] num_units = 0;
 /*reg [18:0] num_samples = 0; 
 */
 
-reg [15:0] command;
+reg [31:0] command;
 /*will start out as 0. */
 
 wire controller_enable;
