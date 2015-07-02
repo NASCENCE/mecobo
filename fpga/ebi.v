@@ -45,6 +45,8 @@ localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 reg [15:0] ebi_captured_data[0:5];
 wire rd_transaction_done;
 
+reg time_running = 0;
+reg [31:0] clock_reg = 0;
 
 //Control state machine
 localparam [4:0]	idle 		= 5'b00000,
@@ -222,16 +224,15 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 //-----------------------------------------------------------------------------------
 // clock controlled by state machine 
 //-----------------------------------------------------------------------------------
-reg time_running = 0;
-reg [31:0] clock_reg = 0;
 always @ (posedge clk) begin
   if(rst) begin
     clock_reg <= 0; 
     time_running <= 0;
   end else begin
-    if (reset_time)
+    if (reset_time) begin
       clock_reg <= 0; 
-    else if (time_running)
+      time_running <= 0;
+    end else if (time_running)
       clock_reg <= clock_reg + 1;
 
     //capture state machine decision
