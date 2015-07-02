@@ -59,9 +59,7 @@ h 1 1
 w 5 f205
 h 1 1
 
-
-w 7 ffff
-h 1 1
+w 8 dead
 h 10 10
 
 

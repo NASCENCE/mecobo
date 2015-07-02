@@ -237,8 +237,6 @@ always @ (posedge clk) begin
     //capture state machine decision
     if (run_time) 
       time_running <= 1;
-    else 
-      time_running <= 0;
   end
 end
 assign global_clock = clock_reg;
