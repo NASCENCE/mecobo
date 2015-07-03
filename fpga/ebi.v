@@ -36,14 +36,18 @@ localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
 localparam EBI_ADDR_CMD_FIFO_WRD_4 	= 4;
 localparam EBI_ADDR_CMD_FIFO_WRD_5 	= 5;
 localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
-localparam EBI_ADDR_RESET_TIME 	    = 7;
-localparam EBI_ADDR_RUN_TIME 	      = 8;
+localparam EBI_ADDR_TIME_REG 	      = 7;
 localparam EBI_ADDR_READ_TIME_L     = 9;
 localparam EBI_ADDR_READ_TIME_H     = 10;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
-reg [15:0] ebi_captured_data[1:5];
+
+localparam TIME_CMD_RUN   = 16'hDEAD;
+localparam TIME_CMD_RESET = 16'hBEEF;
+
+reg [15:0] ebi_captured_data[0:10];
+
 wire rd_transaction_done;
 wire wr_transaction_done;
 
@@ -57,7 +61,7 @@ localparam [6:0]	idle 		= 6'b000001,
 			trans_over	        = 6'b001000,
       fifo_read           = 6'b010000,
       fifo_read_next      = 6'b100000,
-      time_run            = 6'b000000;
+      time_cmd            = 6'b000000;
 
 reg [5:0] state, nextState;
 
@@ -89,12 +93,10 @@ always @ ( * ) begin
 		fetch: begin
 			nextState = fetch;
 			if (cs & wr) begin
-				load_capture_reg = 1'b1;
         if (addr[7:0] == EBI_ADDR_CMD_FIFO_WRD_5)     nextState = trans_over;
-        else if (addr[7:0] == EBI_ADDR_RESET_TIME)    nextState = time_res; // = 1'b1;
-        else if (addr[7:0] == EBI_ADDR_RUN_TIME)      nextState = time_run; //run_time = 1'b1;
+        else if (addr[7:0] == EBI_ADDR_TIME_REG)      nextState = time_cmd; // = 1'b1;
       end else if (cs & rd) begin
-        if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
+        if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE)        nextState = fifo_read;
       end
     end
 
@@ -123,22 +125,17 @@ always @ ( * ) begin
       capture_fifo_data = 1'b1;
     end
 
-    time_res: begin
-      nextState = time_res;
+    time_cmd: begin
+      nextState = fetch;
       if (wr_transaction_done)  begin
         nextState = fetch;
-        reset_time = 1'b1;
+        if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RESET) begin
+          reset_time = 1'b1;
+        end else if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RUN) begin
+          run_time = 1'b1;
+        end
       end
     end
-
-    time_run: begin
-      nextState = time_run;
-      if (wr_transaction_done)  begin
-        nextState = fetch;
-        run_time = 1'b1;
-      end
-    end
-
 
 	endcase
 
@@ -159,14 +156,16 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( i = 1; i < 6; i = i + 1) 
+		for ( i = 0; i < 10; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 
 	end else begin
 
+    /*
 		if (load_capture_reg) begin
 			ebi_captured_data[addr[7:0]] <= data_in;
 		end
+    */
 
 		status_register <= 	{	cmd_fifo_almost_full,
 						cmd_fifo_full,
@@ -195,9 +194,15 @@ always @ (posedge clk) begin
       end
     end
 
+    //Write to ebi register banks
+    if (cs & wr) begin
+      ebi_captured_data[addr[7:0]] <= data_in;
+    end
+    
     if (capture_fifo_data)  begin
       fifo_captured_data <= sample_fifo_data_out;
     end
+
 
 	end
 end
