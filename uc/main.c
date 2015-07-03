@@ -231,7 +231,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    //programFPGA();
+    programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }

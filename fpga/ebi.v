@@ -193,11 +193,11 @@ end
 
 
 
-assign cmd_fifo_data_in[79:64] = ebi_captured_data[5];
-assign cmd_fifo_data_in[63:48] = ebi_captured_data[4];
+assign cmd_fifo_data_in[79:64] = ebi_captured_data[1];
+assign cmd_fifo_data_in[63:48] = ebi_captured_data[2];
 assign cmd_fifo_data_in[47:32] = ebi_captured_data[3];
-assign cmd_fifo_data_in[31:16] = ebi_captured_data[2];
-assign cmd_fifo_data_in[15:0] = ebi_captured_data[1];
+assign cmd_fifo_data_in[31:16] = ebi_captured_data[4];
+assign cmd_fifo_data_in[15:0] = ebi_captured_data[5];
 /*
 genvar j;
 for (j = 0; j < 5; j = j + 1) begin : blu
