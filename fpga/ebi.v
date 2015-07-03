@@ -70,7 +70,7 @@ reg reset_time;
 reg run_time;
 
 always @ ( * ) begin
-	nextState = 3'bXXX;
+	nextState = 5'bXXXXX;
 	load_capture_reg = 1'b0;
 	cmd_fifo_wr_en = 1'b0;
   
@@ -88,14 +88,14 @@ always @ ( * ) begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
-        if (addr == EBI_ADDR_CMD_FIFO_WRD_5) begin
+        if (addr[7:0] == EBI_ADDR_CMD_FIFO_WRD_5) begin
           if (wr_transaction_done) begin
             cmd_fifo_wr_en = 1'b1;
           end
-        end else if (addr == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
-        else if (addr == EBI_ADDR_RUN_TIME) run_time = 1'b1;
+        end else if (addr[7:0] == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
+        else if (addr[7:0] == EBI_ADDR_RUN_TIME) run_time = 1'b1;
       end else if (cs & rd) begin
-        if (addr == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
+        if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
 		end
 /*
@@ -151,7 +151,7 @@ always @ (posedge clk) begin
 			ebi_captured_data[i] <= 16'h0000;
 	end else begin
 		if (load_capture_reg) begin
-			ebi_captured_data[addr] <= data_in;
+			ebi_captured_data[addr[7:0]] <= data_in;
 		end
 
 		status_register <= 	{	cmd_fifo_almost_full,
@@ -169,14 +169,14 @@ always @ (posedge clk) begin
 		irq <= (status_register != status_register_old);	
     /* Driving data out */
     if (cs & rd) begin
-      if (addr == EBI_ADDR_STATUS_REG) begin
+      if (addr[7:0] == EBI_ADDR_STATUS_REG) begin
 			  data_out <= status_register;
 			  status_register_old <= status_register;
-      end else if (addr == EBI_ADDR_NEXT_SAMPLE) begin
+      end else if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE) begin
         data_out <= fifo_captured_data;
-      end else if (addr == EBI_ADDR_READ_TIME_L) begin
+      end else if (addr[7:0] == EBI_ADDR_READ_TIME_L) begin
         data_out <= clock_reg[15:0];
-      end else if (addr == EBI_ADDR_READ_TIME_H) begin
+      end else if (addr[7:0] == EBI_ADDR_READ_TIME_H) begin
         data_out <= clock_reg[31:16];
       end
     end
