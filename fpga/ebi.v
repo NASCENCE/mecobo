@@ -126,7 +126,7 @@ always @ ( * ) begin
 
     time_cmd: begin
       nextState = fetch;
-      if (wr_transaction_done)  begin
+      if (wr_transaction_done)  begin   //transfer done, data should be captured
         nextState = fetch;
         if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RESET) begin
           reset_time = 1'b1;
@@ -155,7 +155,7 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( i = 0; i < 10; i = i + 1) 
+		for ( i = 0; i < 11; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 
 	end else begin
