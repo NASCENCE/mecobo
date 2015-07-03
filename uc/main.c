@@ -328,7 +328,7 @@ int main(void)
     if(runItems & !timeStarted) {
       cmdInterfaceAddr[7] = 0xDEAD;   //reset and stop time
       cmdInterfaceAddr[8] = 0x1234;
-      printf("Clock started, time is %u\n", cmdInterfaceAddr[9]);
+      printf("Clock started, time is %x\n", cmdInterfaceAddr[9]);
       timeStarted = 1;
     }
   }
@@ -1440,8 +1440,8 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
       startInput();
-      printf("tl: %x\n", cmdInterfaceAddr[9]);
-      printf("th: %x\n", cmdInterfaceAddr[10]);
+      printf("rtl: %x\n", cmdInterfaceAddr[9]);
+      printf("rth: %x\n", cmdInterfaceAddr[10]);
       break; 
 
     default:
