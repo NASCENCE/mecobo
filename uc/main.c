@@ -231,7 +231,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -316,6 +316,11 @@ int main(void)
  
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
 
+     cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
+      cmdInterfaceAddr[7] = 0xDEAD;   //start time
+      printf("Clock started, time is %x\n", cmdInterfaceAddr[9]);
+ 
+
   for (;;) {
     if (cmdFifo.numElements > 0) {
       void * item = NULL;
@@ -326,8 +331,8 @@ int main(void)
     }
 
     if(runItems & !timeStarted) {
-      cmdInterfaceAddr[7] = 0xDEAD;   //reset and stop time
-      cmdInterfaceAddr[8] = 0x1234;
+      cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
+      cmdInterfaceAddr[7] = 0xDEAD;   //start time
       printf("Clock started, time is %x\n", cmdInterfaceAddr[9]);
       timeStarted = 1;
     }
@@ -933,9 +938,9 @@ void execCurrentPack()
 
     //make sure clock is running here 
     uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[8] = 0xDEAD;
-    while (!(cmdInterfaceAddr[0] & STATUS_REG_CMD_FIFO_EMPTY));
     cmdInterfaceAddr[7] = 0xDEAD;
+    //while (!(cmdInterfaceAddr[0] & STATUS_REG_CMD_FIFO_EMPTY));
+    cmdInterfaceAddr[7] = 0xBEEF;
     timeStarted = 0;
 
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
