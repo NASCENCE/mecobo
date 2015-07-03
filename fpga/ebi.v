@@ -147,7 +147,7 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( 1 = 0; i < 6; i = i + 1) 
+		for ( i = 1; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 	end else begin
 		if (load_capture_reg) begin
