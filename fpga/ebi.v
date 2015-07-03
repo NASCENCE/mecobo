@@ -45,6 +45,7 @@ localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
 reg [15:0] ebi_captured_data[1:5];
 wire rd_transaction_done;
+wire wr_transaction_done;
 
 reg time_running = 0;
 reg [31:0] clock_reg = 0;
@@ -88,29 +89,29 @@ always @ ( * ) begin
 			nextState = fetch;
 			if (cs & wr) begin
 				load_capture_reg = 1'b1;
-        if (addr[7:0] == EBI_ADDR_CMD_FIFO_WRD_5) begin
-          if (wr_transaction_done) begin
-            cmd_fifo_wr_en = 1'b1;
-          end
-        end else if (addr[7:0] == EBI_ADDR_RESET_TIME) reset_time = 1'b1;
-        else if (addr[7:0] == EBI_ADDR_RUN_TIME) run_time = 1'b1;
+        if (addr[7:0] == EBI_ADDR_CMD_FIFO_WRD_5)     nextState = trans_over;
+        else if (addr[7:0] == EBI_ADDR_RESET_TIME)    reset_time = 1'b1;
+        else if (addr[7:0] == EBI_ADDR_RUN_TIME)      run_time = 1'b1;
       end else if (cs & rd) begin
         if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE) nextState = fifo_read;
       end
-		end
-/*
+    end
+
+    /*
 		fifo_load: begin
 			nextState = fetch;	
 			cmd_fifo_wr_en = 1'b1;	
 		end
+    */
 
 		trans_over: begin
 			nextState = trans_over;
 			if (wr_transaction_done) begin
-				nextState = fifo_load;
+				nextState = fetch;
+        cmd_fifo_wr_en = 1'b1;
 			end
-		end
-*/
+    end
+
     /* Output data. State holds until read goes low again, indicating
     * that the reader has captured data happily, and we can get some more
     * data from the FIFO for the next transaction */
@@ -149,7 +150,9 @@ always @ (posedge clk) begin
 
 		for ( i = 1; i < 6; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
+
 	end else begin
+
 		if (load_capture_reg) begin
 			ebi_captured_data[addr[7:0]] <= data_in;
 		end
@@ -207,7 +210,6 @@ end
 //-----------------------------------------------------------------------------------
 //rd falling edge detection to see if a transaction has finished
 
-wire wr_transaction_done;
 
 reg rd_d = 0;
 reg rd_dd = 0;

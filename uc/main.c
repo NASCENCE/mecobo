@@ -1338,7 +1338,8 @@ int NORError() {
 */
 
 void fpgaIrqHandler(uint8_t pin) {
-  uint16_t statusReg = *getChannelAddress(0);
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+  uint16_t statusReg = cmdInterfaceAddr[0];
   printf("Interrupt detected: %x\n", pin);
   printf("Status reg: %x\n", statusReg);
   if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
@@ -1379,12 +1380,14 @@ inline void putInFifo(struct fifoCmd * cmd)
   //serialCmd[0] is beef and serialCmd[1] is dead because of little endians.
   //so. we order manually, like so
 
+  printf("s: %x\n", cmdInterfaceAddr[0]);
   cmdInterfaceAddr[1] = serialCmd[1];
   cmdInterfaceAddr[2] = serialCmd[0];
   cmdInterfaceAddr[3] = serialCmd[3];
   cmdInterfaceAddr[4] = serialCmd[2];
   cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that this is OK :-)
 
+  printf("s: %x\n", cmdInterfaceAddr[0]);
   printf("pushing word %u : %x\n", 0, serialCmd[1]);
   printf("pushing word %u : %x\n", 1, serialCmd[0]);
   printf("pushing word %u : %x\n", 2, serialCmd[3]);
@@ -1431,6 +1434,7 @@ void pushToCmdFifo(struct pinItem * item)
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
       uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+      printf("s: %x\n", cmdInterfaceAddr[0]);
       printf("tl: %x\n", cmdInterfaceAddr[9]);
       printf("th: %x\n", cmdInterfaceAddr[10]);
  
