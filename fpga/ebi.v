@@ -51,13 +51,13 @@ reg time_running = 0;
 reg [31:0] clock_reg = 0;
 
 //Control state machine
-localparam [6:0]	idle 		= 6'b000000,
+localparam [6:0]	idle 		= 6'b000001,
 			fetch		            = 6'b000010,
 			time_res	          = 6'b000100,
 			trans_over	        = 6'b001000,
       fifo_read           = 6'b010000,
       fifo_read_next      = 6'b100000,
-      time_run            = 6'b100000;
+      time_run            = 6'b000000;
 
 reg [5:0] state, nextState;
 
