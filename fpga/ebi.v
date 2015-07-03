@@ -56,7 +56,7 @@ localparam [6:0]	idle 		= 6'b000000,
 			time_res	          = 6'b000100,
 			trans_over	        = 6'b001000,
       fifo_read           = 6'b010000,
-      fifo_read_next      = 6'b100000;
+      fifo_read_next      = 6'b100000,
       time_run            = 6'b100000;
 
 reg [5:0] state, nextState;
