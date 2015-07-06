@@ -73,8 +73,6 @@ reg [31:0] cnt_sample_rate = 0;
 
 
 /*outputs from state machine */
-reg reset_rates = 1'b0;
-reg res_cmd_reg = 1'b0;
 reg res_sample_counter = 0;
 reg dec_sample_counter = 0;
 reg update_data_out    = 0;
@@ -132,16 +130,11 @@ always @ (posedge clk) begin
     nco_counter <= 0;
     sample_rate <= 0;
     end_time <= 0;
-  end else if (res_cmd_reg) begin
     command <= 0;
-  end else if (reset_rates) begin
-    sample_rate <= 0;
-    nco_counter <= 0;
-    end_time <= 0;
   end else begin
     if (enable_in & data_wr) begin
       if (addr[7:0] == ADDR_LOCAL_CMD)
-        command <= data_in;
+        command <= data_in;   //always fetch this.
       else if (addr[7:0] == ADDR_SAMPLE_RATE)
         sample_rate <= data_in;
       else if (addr[7:0] == ADDR_NCO_COUNTER)
@@ -151,6 +144,8 @@ always @ (posedge clk) begin
     end
   end
 end
+
+
 
 
 /* CONTROL LOGIC STATE MACHINE */
@@ -167,12 +162,9 @@ always @ (*) begin
   enable_pin_output = 1'b0;
   dec_sample_counter = 1'b0;
   res_sample_counter = 1'b0;
-  res_cmd_reg = 1'b0;
   update_data_out = 1'b0;
   const_output_null = 1'b0;
   const_output_one = 1'b0;
-
-  reset_rates = 1'b0;
 
   case (state)
     idle: begin
@@ -185,17 +177,11 @@ always @ (*) begin
         nextState = idle;
       end else if (command == CMD_INPUT_STREAM) begin
         nextState = input_stream;
-        res_cmd_reg = 1'b1; /*reset command since this is a single command. */
       end else if (command == CMD_SQUARE_WAVE) begin
         nextState = enable_out;
-        res_cmd_reg = 1'b1; 
       end else if (command == CMD_CONST) begin
         nextState = const;
-        res_cmd_reg = 1'b1;
-      end else if (command == CMD_RESET) begin
-        res_cmd_reg = 1'b1;
-        reset_rates = 1'b1;
-      end
+      end 
     end
 
     enable_out: begin
@@ -203,8 +189,6 @@ always @ (*) begin
       nextState = enable_out;
 
       if (command == CMD_RESET) begin
-        res_cmd_reg = 1'b1;
-        reset_rates = 1'b1;
         nextState = idle;
       end else if ((end_time != 0) & (current_time >= end_time)) begin
         nextState = idle;
@@ -218,11 +202,8 @@ always @ (*) begin
       nextState = const;
 
       if (command == CMD_RESET) begin
-        res_cmd_reg = 1'b1;
-        reset_rates = 1'b1;
         nextState = idle;
       end else if (current_time >= end_time) begin
-        res_cmd_reg = 1'b1;
         nextState = idle;
       end
     end
@@ -244,8 +225,6 @@ always @ (*) begin
       unless reset is called.
         */
        if (command == CMD_RESET) begin
-         res_cmd_reg = 1'b1;
-         reset_rates = 1'b1;
          nextState = idle;
        end
     end 
