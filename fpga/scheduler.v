@@ -23,13 +23,14 @@ module scheduler (	input 			clk,
 );
 
 
-localparam [3:0] 	fetch 		  = 4'b0001,
-			            fifo_wait	  = 4'b0010,
-			            exec		    = 4'b0100,
-			            idle		    = 4'b1000;
+localparam [4:0] 	fetch 		  = 4'b00010,
+			            fifo_wait	  = 4'b00100,
+			            exec		    = 4'b01000,
+			            idle		    = 4'b10000,
+                  exec_wait   = 5'b10000;
 
 //control section state machine.
-reg [3:0] state, nextState;
+reg [4:0] state, nextState;
 
 always @ (posedge clk or posedge rst)
 	if (rst) state <= idle;
@@ -92,15 +93,25 @@ always @ ( * ) begin
 
     //command reg is written and now 
 		exec: begin
-			nextState = exec; 
+			nextState = exec_wait; 
       //time can be 0 here
       if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
 				nextState = fetch;	
 			end
-		end
-	
+    end
+
+		exec_wait: begin
+			nextState = fetch; 
+      //We will keep signals high here to allow capture of data in the 
+      //pincontrol modules AND allow a command-reset.
+      //See also comment in pincontrol.v
+      //Note that we don't write here, 
+      //we just give the machine time to run 1 cycle for an eventual reset.
+    end
+
+
 	endcase
 end
 	

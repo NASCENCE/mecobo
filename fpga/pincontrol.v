@@ -125,13 +125,25 @@ assign pin_input = pin;
 
 /* ------------------ CAPTURE FROM COMMAND BUS ---------*/
 
+reg reset_cmd = 1'b0;
 always @ (posedge clk) begin
   if (reset) begin
     nco_counter <= 0;
     sample_rate <= 0;
     end_time <= 0;
-    command <= 0;
   end else begin
+    /* This is special handling of the command register and it's kinda wonky.
+    *  Problems can happen if two consequtive writes happen close in time 
+    *  so that the state machine is transitioning from an execute state
+    *  to idle state while a new transaction comes in.
+    *
+    *  The resolution is to guarantee a hold time of 1 cycle for the 
+    *  command bus so that the state machine has time to reset the 
+    *  command register AND realize that there is new data available.
+    */
+    if (reset_cmd) 
+      command <= 0;
+    else
     if (enable_in & data_wr) begin
       if (addr[7:0] == ADDR_LOCAL_CMD)
         command <= data_in;   //always fetch this.
@@ -146,10 +158,11 @@ always @ (posedge clk) begin
 end
 
 
+//specil handing of command register
+
 
 
 /* CONTROL LOGIC STATE MACHINE */
-
 
 always @ (posedge clk) begin
   if (reset) state <= idle;
@@ -166,6 +179,8 @@ always @ (*) begin
   const_output_null = 1'b0;
   const_output_one = 1'b0;
 
+  reset_cmd = 1'b0;
+
   case (state)
     idle: begin
       nextState = idle;
@@ -176,10 +191,13 @@ always @ (*) begin
       if (current_time == 0) begin
         nextState = idle;
       end else if (command == CMD_INPUT_STREAM) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = input_stream;
       end else if (command == CMD_SQUARE_WAVE) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = enable_out;
       end else if (command == CMD_CONST) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = const;
       end 
     end
@@ -189,6 +207,7 @@ always @ (*) begin
       nextState = enable_out;
 
       if (command == CMD_RESET) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = idle;
       end else if ((end_time != 0) & (current_time >= end_time)) begin
         nextState = idle;
@@ -202,8 +221,10 @@ always @ (*) begin
       nextState = const;
 
       if (command == CMD_RESET) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = idle;
       end else if (current_time >= end_time) begin
+        reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
         nextState = idle;
       end
     end
@@ -225,6 +246,7 @@ always @ (*) begin
       unless reset is called.
         */
        if (command == CMD_RESET) begin
+        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
          nextState = idle;
        end
     end 
