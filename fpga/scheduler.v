@@ -26,8 +26,7 @@ module scheduler (	input 			clk,
 localparam [3:0] 	fetch 		  = 4'b0000,
 			            fifo_wait	  = 4'b0001,
 			            exec		    = 4'b0010,
-			            idle		    = 4'b0100,
-                  exec_wait   = 4'b1000;
+			            idle		    = 4'b0100;
 
 //control section state machine.
 reg [3:0] state, nextState;
@@ -84,8 +83,11 @@ always @ ( * ) begin
 		end
 
 		fifo_wait: begin
-			nextState = exec;
-			writeCommandReg = 1'b1;   //fetch data on the coming flank.
+			nextState = fifo_wait;
+      if(cmd_fifo_valid) begin
+			  writeCommandReg = 1'b1;   //fetch data on the coming flank.
+        nextState = exec;
+      end
 		end
 
 		exec: begin
@@ -93,16 +95,10 @@ always @ ( * ) begin
 			if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
-				nextState = exec_wait;	
+				nextState = fetch;	
 			end
 		end
 	
-    //State for allowing the pin controllers to capture data.
-    exec_wait: begin
-				resetCommandReg = 1'b1;
-        nextState = fetch;
-    end
-
 	endcase
 end
 	
@@ -115,7 +111,7 @@ always @ (posedge clk) begin
 	if (resetCommandReg) 
 		command <= 0;
 	else
-		if (writeCommandReg & cmd_fifo_valid) begin
+		if (writeCommandReg) begin
 			command <= cmd_fifo_dout;
 		end
 end
