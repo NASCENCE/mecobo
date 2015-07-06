@@ -93,7 +93,7 @@ always @ ( * ) begin
 			if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
-				nextState = exect_wait;	
+				nextState = exec_wait;	
 			end
 		end
 	
