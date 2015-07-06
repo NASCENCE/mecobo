@@ -43,8 +43,8 @@ localparam EBI_ADDR_READ_TIME_H     = 10;
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
 
-localparam TIME_CMD_RUN   = 16'hDEAD;
-localparam TIME_CMD_RESET = 16'hBEEF;
+localparam TIME_CMD_RUN   = 'hDEAD;
+localparam TIME_CMD_RESET = 'hBEEF;
 
 reg [15:0] ebi_captured_data[0:10];
 
@@ -55,12 +55,12 @@ reg time_running = 0;
 reg [31:0] clock_reg = 0;
 
 //Control state machine
-localparam [5:0]	idle 		= 5'b000001,
-			fetch		            = 5'b000010,
-			trans_over	        = 5'b000100,
-      fifo_read           = 5'b001000,
-      fifo_read_next      = 5'b010000,
-      time_cmd            = 5'b000000;
+localparam [5:0]	idle 		= 6'b000001,
+			fetch		            = 6'b000010,
+			trans_over	        = 6'b000100,
+      fifo_read           = 6'b001000,
+      fifo_read_next      = 6'b010000,
+      time_cmd            = 6'b000000;
 
 reg [5:0] state, nextState;
 
@@ -125,9 +125,10 @@ always @ ( * ) begin
     end
 
     time_cmd: begin
-      nextState = fetch;
+      nextState = time_cmd;
       if (wr_transaction_done)  begin
         nextState = fetch;
+        $display("ebi: %x\n", ebi_captured_data[EBI_ADDR_TIME_REG]);
         if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RESET) begin
           reset_time = 1'b1;
         end else if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RUN) begin
@@ -155,7 +156,7 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( i = 0; i < 10; i = i + 1) 
+		for ( i = 0; i < 11; i = i + 1) 
 			ebi_captured_data[i] <= 16'h0000;
 
 	end else begin

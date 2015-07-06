@@ -4,15 +4,15 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.08 secs
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.07 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.08 secs
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.07 secs
  
 --> 
 Reading design: mecobo.prj
@@ -162,7 +162,8 @@ WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 120: Assi
 WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 121: Assignment to da_clk ignored, since the identifier is never used
 
 Elaborating module <ebi>.
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/ebi.v" Line 78: Assignment to load_capture_reg ignored, since the identifier is never used
+"/home/lykkebo/mecobo/fpga/ebi.v" Line 131. $display ebi: 0\n
+WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/ebi.v" Line 77: Assignment to load_capture_reg ignored, since the identifier is never used
 
 Elaborating module <command_fifo>.
 WARNING:HDLCompiler:1499 - "/home/lykkebo/mecobo/fpga/cmd_fifo/command_fifo.v" Line 39: Empty module <command_fifo> remains a black box.
@@ -279,7 +280,7 @@ WARNING:Xst:647 - Input <addr<18:8>> is never used. This port will be preserved 
     Found 16-bit register for signal <status_register>.
     Found 16-bit register for signal <status_register_old>.
     Found 16-bit register for signal <fifo_captured_data>.
-    Found 176-bit register for signal <n0120[175:0]>.
+    Found 176-bit register for signal <n0121[175:0]>.
     Found 1-bit register for signal <irq>.
     Found 16-bit register for signal <data_out>.
     Found 1-bit register for signal <rd_d>.
@@ -289,9 +290,9 @@ WARNING:Xst:647 - Input <addr<18:8>> is never used. This port will be preserved 
     Found 32-bit register for signal <clock_reg>.
     Found 1-bit register for signal <time_running>.
     Found 6-bit register for signal <state>.
-    Found 32-bit adder for signal <clock_reg[31]_GND_22_o_add_73_OUT> created at line 266.
-    Found 16-bit comparator not equal for signal <n0029> created at line 182
-    Found 8-bit comparator lessequal for signal <n0044> created at line 199
+    Found 32-bit adder for signal <clock_reg[31]_GND_22_o_add_74_OUT> created at line 266.
+    Found 16-bit comparator not equal for signal <n0030> created at line 182
+    Found 8-bit comparator lessequal for signal <n0045> created at line 199
     Summary:
 	inferred   1 Adder/Subtractor(s).
 	inferred 284 D-type flip-flop(s).
@@ -397,7 +398,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_55_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_54_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_1>.
     Summary:
@@ -478,7 +479,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_122_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_121_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_2>.
     Summary:
@@ -559,7 +560,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_155_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_154_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_3>.
     Summary:
@@ -640,7 +641,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_188_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_187_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_4>.
     Summary:
@@ -721,7 +722,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_221_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_220_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_5>.
     Summary:
@@ -802,7 +803,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_254_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_253_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_6>.
     Summary:
@@ -883,7 +884,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_287_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_286_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_7>.
     Summary:
@@ -964,7 +965,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_320_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_319_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     Summary:
@@ -1045,7 +1046,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_353_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_352_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_9>.
     Summary:
@@ -1126,7 +1127,7 @@ WARNING:Xst:647 - Input <addr<18:16>> is never used. This port will be preserved
     Found 1-bit tristate buffer for signal <sample_data<0>> created at line 95
     Found 1-bit tristate buffer for signal <pin> created at line 125
     Found 32-bit comparator greater for signal <n0104> created at line 215
-    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_386_o> created at line 254
+    Found 32-bit comparator greater for signal <cnt_sample_rate[31]_INV_385_o> created at line 254
     WARNING:Xst:2404 -  FFs/Latches <const_output_null<0:0>> (without init value) have a constant value of 0 in block <pincontrol_10>.
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_10>.
     Summary:
@@ -1740,7 +1741,7 @@ Optimizing unit <ebi> ...
 Optimizing unit <scheduler> ...
 
 Optimizing unit <sample_collector> ...
-WARNING:Xst:1710 - FF/Latch <ebi_if/state_2> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ebi_if/state_5> (without init value) has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <sample_collector0/last_fetched_15_238> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <sample_collector0/last_fetched_15_236> <sample_collector0/last_fetched_15_234> <sample_collector0/last_fetched_15_229> <sample_collector0/last_fetched_15_228> 
 INFO:Xst:2261 - The FF/Latch <sample_collector0/last_fetched_15_239> in Unit <mecobo> is equivalent to the following 9 FFs/Latches, which will be removed : <sample_collector0/last_fetched_15_237> <sample_collector0/last_fetched_15_235> <sample_collector0/last_fetched_15_233> <sample_collector0/last_fetched_15_232> <sample_collector0/last_fetched_15_231> <sample_collector0/last_fetched_15_230> <sample_collector0/last_fetched_15_227> <sample_collector0/last_fetched_15_226> <sample_collector0/last_fetched_15_225> 
 INFO:Xst:2261 - The FF/Latch <sample_collector0/last_fetched_15_302> in Unit <mecobo> is equivalent to the following 4 FFs/Latches, which will be removed : <sample_collector0/last_fetched_15_300> <sample_collector0/last_fetched_15_298> <sample_collector0/last_fetched_15_293> <sample_collector0/last_fetched_15_292> 
@@ -1816,15 +1817,15 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 6576
+# BELS                             : 6577
 #      GND                         : 1
 #      INV                         : 45
 #      LUT1                        : 209
-#      LUT2                        : 988
-#      LUT3                        : 889
+#      LUT2                        : 989
+#      LUT3                        : 983
 #      LUT4                        : 394
-#      LUT5                        : 425
-#      LUT6                        : 1523
+#      LUT5                        : 328
+#      LUT6                        : 1526
 #      MUXCY                       : 1117
 #      MUXF7                       : 89
 #      MUXF8                       : 36
@@ -1833,10 +1834,10 @@ Primitive and Black Box Usage:
 # FlipFlops/Latches                : 3149
 #      FD                          : 594
 #      FDC                         : 2
-#      FDE                         : 1242
+#      FDE                         : 1146
 #      FDP                         : 1
 #      FDR                         : 388
-#      FDRE                        : 781
+#      FDRE                        : 877
 #      FDS                         : 130
 #      FDSE                        : 11
 # Clock Buffers                    : 5
@@ -1859,14 +1860,14 @@ Selected Device : 6slx45csg324-3
 
 Slice Logic Utilization: 
  Number of Slice Registers:            3149  out of  54576     5%  
- Number of Slice LUTs:                 4473  out of  27288    16%  
-    Number used as Logic:              4473  out of  27288    16%  
+ Number of Slice LUTs:                 4474  out of  27288    16%  
+    Number used as Logic:              4474  out of  27288    16%  
 
 Slice Logic Distribution: 
  Number of LUT Flip Flop pairs used:   4729
    Number with an unused Flip Flop:    1580  out of   4729    33%  
-   Number with an unused LUT:           256  out of   4729     5%  
-   Number of fully used LUT-FF pairs:  2893  out of   4729    61%  
+   Number with an unused LUT:           255  out of   4729     5%  
+   Number of fully used LUT-FF pairs:  2894  out of   4729    61%  
    Number of unique control sets:        59
 
 IO Utilization: 
@@ -1910,9 +1911,9 @@ Timing Summary:
 Speed Grade: -3
 
    Minimum period: 7.876ns (Maximum Frequency: 126.961MHz)
-   Minimum input arrival time before clock: 7.797ns
-   Maximum output required time after clock: 7.352ns
-   Maximum combinational path delay: 5.906ns
+   Minimum input arrival time before clock: 6.963ns
+   Maximum output required time after clock: 7.218ns
+   Maximum combinational path delay: 5.872ns
 
 Timing Details:
 ---------------
@@ -1921,7 +1922,7 @@ All values displayed in nanoseconds (ns)
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clocks/pll_base_inst/CLKOUT0'
   Clock period: 7.876ns (frequency: 126.961MHz)
-  Total number of paths / destination ports: 779669 / 5414
+  Total number of paths / destination ports: 779679 / 5414
 -------------------------------------------------------------------------
 Delay:               7.876ns (Levels of Logic = 10)
   Source:            pinControl[3].pc/reset_clk_DFF_473 (FF)
@@ -1951,9 +1952,9 @@ Delay:               7.876ns (Levels of Logic = 10)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clocks/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 4369 / 2985
+  Total number of paths / destination ports: 4273 / 3081
 -------------------------------------------------------------------------
-Offset:              7.797ns (Levels of Logic = 4)
+Offset:              6.963ns (Levels of Logic = 4)
   Source:            reset (PAD)
   Destination:       pinControl[8].pc/end_time_31 (FF)
   Destination Clock: clocks/pll_base_inst/CLKOUT0 rising
@@ -1962,20 +1963,20 @@ Offset:              7.797ns (Levels of Logic = 4)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           123   1.222   1.938  reset_IBUF (reset_IBUF)
-     LUT2:I1->O          851   0.205   2.400  mecobo_reset1 (mecobo_reset)
-     LUT6:I3->O           32   0.205   1.520  pinControl[8].pc/_n0298_inv1_rstpot (pinControl[8].pc/_n0298_inv1_rstpot)
+     IBUF:I->O            26   1.222   1.207  reset_IBUF (reset_IBUF)
+     LUT2:I1->O          947   0.205   2.299  mecobo_reset1 (mecobo_reset)
+     LUT6:I4->O           32   0.203   1.520  pinControl[8].pc/_n0298_inv1_rstpot (pinControl[8].pc/_n0298_inv1_rstpot)
      LUT3:I0->O            1   0.205   0.000  pinControl[8].pc/sample_rate_0_dpot (pinControl[8].pc/sample_rate_0_dpot)
      FDE:D                     0.102          pinControl[8].pc/sample_rate_0
     ----------------------------------------
-    Total                      7.797ns (1.939ns logic, 5.858ns route)
-                                       (24.9% logic, 75.1% route)
+    Total                      6.963ns (1.937ns logic, 5.026ns route)
+                                       (27.8% logic, 72.2% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clocks/pll_base_inst/CLKOUT0'
   Total number of paths / destination ports: 1708 / 120
 -------------------------------------------------------------------------
-Offset:              7.352ns (Levels of Logic = 9)
+Offset:              7.218ns (Levels of Logic = 9)
   Source:            pinControl[3].pc/reset_clk_DFF_473 (FF)
   Destination:       sample_collector0/sample_fifo_0:wr_en (PAD)
   Source Clock:      clocks/pll_base_inst/CLKOUT0 rising
@@ -1992,18 +1993,18 @@ Offset:              7.352ns (Levels of Logic = 9)
      MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<7> (sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<7>)
      MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<8> (sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<8>)
      MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<9> (sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<9>)
-     MUXCY:CI->O         305   0.019   2.436  sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<10> (sample_collector0/current_id_idx[3]_sample_data[31]_not_equal_8_o)
-     LUT6:I0->O            0   0.203   0.000  sample_collector0/Mmux_fifo_write_enable11 (sample_collector0/fifo_write_enable)
+     MUXCY:CI->O         305   0.019   2.300  sample_collector0/Mcompar_current_id_idx[3]_sample_data[31]_not_equal_8_o_cy<10> (sample_collector0/current_id_idx[3]_sample_data[31]_not_equal_8_o)
+     LUT6:I3->O            0   0.205   0.000  sample_collector0/Mmux_fifo_write_enable11 (sample_collector0/fifo_write_enable)
     sample_fifo:wr_en          0.000          sample_collector0/sample_fifo_0
     ----------------------------------------
-    Total                      7.352ns (1.511ns logic, 5.841ns route)
-                                       (20.6% logic, 79.4% route)
+    Total                      7.218ns (1.513ns logic, 5.705ns route)
+                                       (21.0% logic, 79.0% route)
 
 =========================================================================
 Timing constraint: Default path analysis
   Total number of paths / destination ports: 36 / 20
 -------------------------------------------------------------------------
-Delay:               5.906ns (Levels of Logic = 3)
+Delay:               5.872ns (Levels of Logic = 3)
   Source:            ebi_cs (PAD)
   Destination:       ebi_data<15> (PAD)
 
@@ -2011,12 +2012,12 @@ Delay:               5.906ns (Levels of Logic = 3)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             8   1.222   0.907  ebi_cs_IBUF (ebi_cs_IBUF)
-     LUT2:I0->O           16   0.203   1.004  chip_select_read_enable_AND_1_o_inv1 (chip_select_read_enable_AND_1_o_inv)
+     IBUF:I->O             6   1.222   0.849  ebi_cs_IBUF (ebi_cs_IBUF)
+     LUT2:I0->O           17   0.203   1.027  chip_select_read_enable_AND_1_o_inv1 (chip_select_read_enable_AND_1_o_inv)
      IOBUF:T->IO               2.571          ebi_data_15_IOBUF (ebi_data<15>)
     ----------------------------------------
-    Total                      5.906ns (3.996ns logic, 1.910ns route)
-                                       (67.7% logic, 32.3% route)
+    Total                      5.872ns (3.996ns logic, 1.876ns route)
+                                       (68.1% logic, 31.9% route)
 
 =========================================================================
 
@@ -2035,12 +2036,12 @@ clocks/pll_base_inst/CLKOUT0|    7.876|         |         |         |
 
 
 Total REAL time to Xst completion: 33.00 secs
-Total CPU time to Xst completion: 32.73 secs
+Total CPU time to Xst completion: 32.69 secs
  
 --> 
 
 
-Total memory usage is 414124 kilobytes
+Total memory usage is 414268 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  341 (   0 filtered)
