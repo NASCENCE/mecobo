@@ -15,7 +15,7 @@ module scheduler (	input 			clk,
 			output			dac_fifo_rd_en,
 
 			//External bus interface to all the chippies.
-			output 	[18:0] 		cmd_bus_addr,
+			output 	[15:0] 		cmd_bus_addr,
 			output 	[31:0] 		cmd_bus_data,
 			output	reg		cmd_bus_en,
 			output	reg		cmd_bus_rd,
@@ -93,7 +93,7 @@ always @ ( * ) begin
 			if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
-				nextState = fetch;	
+				nextState = exect_wait;	
 			end
 		end
 	

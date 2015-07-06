@@ -17,7 +17,7 @@ module pincontrol ( clk,
 input clk;
 input reset;
 input enable;
-input [18:0] addr;
+input [15:0] addr;
 input   [31:0] data_in;
 //(* tristate2logic = "yes" *)
 output reg [15:0] data_out;
