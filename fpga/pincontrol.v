@@ -67,13 +67,13 @@ localparam
   CMD_INPUT_STREAM = 4,
   CMD_RESET = 5;
 
-reg [31:0] cmdbus_captured_data;
 reg [31:0] command = 0;
 reg [31:0] sample_rate = 0;
 reg [31:0] cnt_sample_rate = 0;
 
 
 /*outputs from state machine */
+reg reset_rates = 1'b0;
 reg res_cmd_reg = 1'b0;
 reg res_sample_counter = 0;
 reg dec_sample_counter = 0;
@@ -89,7 +89,8 @@ localparam [3:0]
                     input_stream =    4'b0100,
                     enable_out =      4'b1000;
 
-reg [4:0] state = idle;
+reg [3:0] state, nextState;
+
 
 /* Command bus data output */
 always @ (posedge clk) begin
@@ -105,8 +106,6 @@ always @ (posedge clk) begin
         data_out <= sample_cnt;
       else if (addr[7:0] == ADDR_STATUS_REG)
         data_out <= POSITION;
-      else if (addr[7:0] == ADDR_LAST_DATA)
-        data_out <= cmdbus_captured_data[15:0];
       else
         data_out <= 16'b0;
     end else
@@ -127,20 +126,18 @@ assign pin_input = pin;
 
 
 /* ------------------ CAPTURE FROM COMMAND BUS ---------*/
-always @ (posedge clk) begin
-  if (reset)
-    cmdbus_captured_data <= 0;
-  else if (enable_in & data_wr) begin
-    cmdbus_captured_data <= data_in;
-  end
-end
 
 always @ (posedge clk) begin
   if (reset) begin
     nco_counter <= 0;
     sample_rate <= 0;
+    end_time <= 0;
   end else if (res_cmd_reg) begin
     command <= 0;
+  end else if (reset_rates) begin
+    sample_rate <= 0;
+    nco_counter <= 0;
+    end_time <= 0;
   end else begin
     if (enable_in & data_wr) begin
       if (addr[7:0] == ADDR_LOCAL_CMD)
@@ -158,106 +155,88 @@ end
 
 /* CONTROL LOGIC STATE MACHINE */
 
+
 always @ (posedge clk) begin
-  if (reset)
-    state <= idle;
+  if (reset) state <= idle;
+  else state <= nextState;
+end
+
+always @ (*) begin
+
+  nextState = 4'bXXXX;
+  enable_pin_output = 1'b0;
+  dec_sample_counter = 1'b0;
+  res_sample_counter = 1'b0;
+  res_cmd_reg = 1'b0;
+  update_data_out = 1'b0;
+  const_output_null = 1'b0;
+  const_output_one = 1'b0;
+
+  reset_rates = 1'b0;
 
   case (state)
     idle: begin
-      enable_pin_output <= 1'b0;
-
-      dec_sample_counter <= 1'b0;
-      res_sample_counter <= 1'b1;
-
-      res_cmd_reg <= 1'b0;
-      update_data_out <= 1'b0;
-
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b0;
-
-      state <= idle;
-      /*Check command register for waiting command. */
+      nextState = idle;
+      res_sample_counter = 1'b1;
 
       //We don't start doing stuff if the time has not started, but we still
         //have a command waiting of course.
       if (current_time == 0) begin
-        state <= idle;
+        nextState = idle;
       end else if (command == CMD_INPUT_STREAM) begin
-        state <= input_stream;
-        res_cmd_reg <= 1'b1; /*reset command since this is a single command. */
+        nextState = input_stream;
+        res_cmd_reg = 1'b1; /*reset command since this is a single command. */
       end else if (command == CMD_SQUARE_WAVE) begin
-        state <= enable_out;
-        res_cmd_reg <= 1'b1; 
+        nextState = enable_out;
+        res_cmd_reg = 1'b1; 
       end else if (command == CMD_CONST) begin
-        state <= const;
-        res_cmd_reg <= 1'b1;
+        nextState = const;
+        res_cmd_reg = 1'b1;
       end else if (command == CMD_RESET) begin
-        state <= idle;
-        res_cmd_reg <= 1'b1;
+        res_cmd_reg = 1'b1;
+        reset_rates = 1'b1;
       end
     end
 
     enable_out: begin
-      dec_sample_counter <= 1'b0;
-      res_sample_counter <= 1'b0;
-
-      update_data_out <= 1'b0;
-      enable_pin_output <= 1'b1;
-      res_cmd_reg <= 1'b0;
-
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b0;
-
-      state <= enable_out;
+      enable_pin_output = 1'b1;
+      nextState = enable_out;
 
       if (command == CMD_RESET) begin
-        res_cmd_reg <= 1'b1;
-        state <= idle;
+        res_cmd_reg = 1'b1;
+        reset_rates = 1'b1;
+        nextState = idle;
       end else if ((end_time != 0) & (current_time >= end_time)) begin
-        state <= idle;
+        nextState = idle;
       end
     end
 
     const: begin
-      dec_sample_counter <= 1'b0;
-      res_sample_counter <= 1'b0;
+      enable_pin_output = 1'b1;
+      const_output_one = 1'b1;
 
-      update_data_out <= 1'b0;
-      enable_pin_output <= 1'b1;
-      res_cmd_reg <= 1'b0;
-
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b1;
-
-      state <= const;
+      nextState = const;
 
       if (command == CMD_RESET) begin
-        res_cmd_reg <= 1'b1;
-        state <= idle;
+        res_cmd_reg = 1'b1;
+        reset_rates = 1'b1;
+        nextState = idle;
       end else if (current_time >= end_time) begin
-        res_cmd_reg <= 1'b1;
-        state <= idle;
+        res_cmd_reg = 1'b1;
+        nextState = idle;
       end
     end
 
     /*Stream back data. */
     input_stream: begin
-      res_cmd_reg <= 1'b0;
 
-      res_sample_counter <= 1'b0;
-      update_data_out <= 1'b0;
-      enable_pin_output <= 1'b0;
-      dec_sample_counter <= 1'b0;
-
-      const_output_null <= 1'b0;
-      const_output_one <= 1'b0;
-
-      if (cnt_sample_rate <= 1) begin
-        update_data_out <= 1'b1; 
-        res_sample_counter <= 1'b1;
+      nextState = input_stream;
+      if (cnt_sample_rate == 1) begin
+        update_data_out = 1'b1; 
+        res_sample_counter = 1'b1;
       end else begin
-        update_data_out <= 1'b0; 
-        dec_sample_counter <= 1'b1;
+        update_data_out = 1'b0; 
+        dec_sample_counter = 1'b1;
       end
 
       /*We're streaming input back
@@ -265,23 +244,11 @@ always @ (posedge clk) begin
       unless reset is called.
         */
        if (command == CMD_RESET) begin
-         res_cmd_reg <= 1'b1;
-         state <= idle;
-       end else begin
-         state <= input_stream;
+         res_cmd_reg = 1'b1;
+         reset_rates = 1'b1;
+         nextState = idle;
        end
     end 
-
-    default: begin
-       res_cmd_reg <= 1'b0;
-       dec_sample_counter <= 1'b0;
-       res_sample_counter <= 1'b0;
-       update_data_out <= 1'b0;
-       enable_pin_output <= 1'b0;
-
-       const_output_null <= 1'b0;
-       const_output_one <= 1'b0;
-    end
   endcase
 end
 

@@ -104,7 +104,6 @@ uint32_t lastPackSize = 0;
 
 
 //Data stuff for items
-static struct pinItem * itemsToApply;
 int itaFifoSize = 50;
 int itaPos  = 0;
 int itaHead = 0;
@@ -112,7 +111,6 @@ int itaTail = 0;
 
 
 uint16_t numItemsLeftToExecute = 0;
-static struct pinItem ** itemsInFlight;
 uint16_t iifPos  = 0;
 uint16_t numItemsInFlight = 0;
 
@@ -231,7 +229,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -276,10 +274,6 @@ int main(void)
 
 
 
-  itemsToApply = malloc(sizeof(struct pinItem) * itaFifoSize);
-  itemsInFlight = malloc(sizeof(struct pinItem *) * 100);
-  printf("Malloced memory: %p, size %u\n", itemsToApply, sizeof(struct pinItem)*50);
-  printf("Malloced memory: %p, size %u\n", itemsInFlight, sizeof(struct pinItem)*100);
 
   //Default all regs to output 0V
   for(int i = 0; i < NUM_DAC_REGS; i++) {
@@ -312,7 +306,7 @@ int main(void)
   printf("Entering main loop.\n");
 
 
-  fifoInit(&cmdFifo, 50, sizeof(struct pinItem));
+  fifoInit(&cmdFifo, 20, sizeof(struct pinItem));
  
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
 
@@ -800,7 +794,6 @@ void execCurrentPack()
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
-      //itemsToApply[itaHead++] = item;
       fifoInsert(&cmdFifo, &item);
 
       numItemsLeftToExecute++;
