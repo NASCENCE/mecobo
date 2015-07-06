@@ -136,9 +136,10 @@ always @ (posedge clk) begin
 end
 
 always @ (posedge clk) begin
-  if (reset)
+  if (reset) begin
     nco_counter <= 0;
-  else if (res_cmd_reg) begin
+    sample_rate <= 0;
+  end else if (res_cmd_reg) begin
     command <= 0;
   end else begin
     if (enable_in & data_wr) begin
