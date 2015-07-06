@@ -185,7 +185,7 @@ ebi ebi_if(
 
 //FIFOS
 wire [31:0] cmd_bus_data_in;
-wire [18:0] cmd_bus_addr;
+wire [15:0] cmd_bus_addr;
 wire [79:0] sched_fifo_data;
 command_fifo cmd_fifo (
 	.clk(sys_clk),
