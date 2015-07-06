@@ -23,10 +23,10 @@ module scheduler (	input 			clk,
 );
 
 
-localparam [3:0] 	fetch 		  = 4'b0000,
-			            fifo_wait	  = 4'b0001,
-			            exec		    = 4'b0010,
-			            idle		    = 4'b0100;
+localparam [3:0] 	fetch 		  = 4'b0001,
+			            fifo_wait	  = 4'b0010,
+			            exec		    = 4'b0100,
+			            idle		    = 4'b1000;
 
 //control section state machine.
 reg [3:0] state, nextState;
@@ -90,9 +90,11 @@ always @ ( * ) begin
       end
 		end
 
+    //command reg is written and now 
 		exec: begin
-			nextState = exec;
-			if (current_time >= command[TIME_H:TIME_L]) begin
+			nextState = exec; 
+      //time can be 0 here
+      if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
 				nextState = fetch;	
