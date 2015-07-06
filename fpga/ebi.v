@@ -60,7 +60,7 @@ localparam [5:0]	idle 		= 6'b000001,
 			trans_over	        = 6'b000100,
       fifo_read           = 6'b001000,
       fifo_read_next      = 6'b010000,
-      time_cmd            = 6'b000000;
+      time_cmd            = 6'b100000;
 
 reg [5:0] state, nextState;
 
@@ -69,14 +69,12 @@ always @ (posedge clk) begin
 	else state <= nextState;
 end
 
-reg load_capture_reg;
 reg capture_fifo_data;
 reg reset_time;
 reg run_time;
 
 always @ ( * ) begin
-	nextState = 5'bXXXXX;
-	load_capture_reg = 1'b0;
+	nextState = 6'bXXXXX;
 	cmd_fifo_wr_en = 1'b0;
   
   sample_fifo_rd_en = 1'b0;
@@ -160,12 +158,6 @@ always @ (posedge clk) begin
 			ebi_captured_data[i] <= 16'h0000;
 
 	end else begin
-
-    /*
-		if (load_capture_reg) begin
-			ebi_captured_data[addr[7:0]] <= data_in;
-		end
-    */
 
 		status_register <= 	{	cmd_fifo_almost_full,
 						cmd_fifo_full,
