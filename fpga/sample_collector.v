@@ -92,6 +92,7 @@ reg fifo_write_enable;
 reg en_read;
 reg res_cmd_reg;
 reg res_sampling;
+wire wr_transaction_done;
 
 reg [31:0] last_fetched [0:15];
 
@@ -119,7 +120,7 @@ always @ (*) begin
   fifo_write_enable = 0;
   res_cmd_reg = 0;
   res_sampling = 0;
-  nextState = 4'bXXXX;
+  nextState = 5'bXXXXX;
 
   case (state)
     idle: begin
@@ -128,7 +129,6 @@ always @ (*) begin
         res_cmd_reg = 1'b1;
         nextState = fetch;
       end else if (command == CMD_RESET) begin
-        res_cmd_reg = 1'b1;
         res_sampling = 1'b1;
       end
     end
@@ -163,7 +163,6 @@ always @ (*) begin
       nextState = fetch;
       if(command == CMD_RESET)  begin
         res_sampling = 1'b1;
-        res_cmd_reg = 1'b1;
         nextState = idle;
       end else if (command == CMD_STOP_SAMPLING) begin
         res_cmd_reg = 1'b1;
@@ -189,50 +188,48 @@ always @ (posedge clk) begin
     command <= 0;
     num_units <= 0;
 
-  end else if(res_sampling == 1'b1) begin
-    num_units <= 0;
-    current_id_idx <= 0;
-
-    for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
-      collection_channels[mj] <= 255; /* no such channel: special. */
-      last_fetched[mj] <= 0;
-    end
-
   end else begin
 
-    //ebi stuff.
-    if (res_cmd_reg) begin
+    if (res_cmd_reg) begin  //this happens when we're leaving the idle state and are going to do stuff
       command <= 0;
+      //else the res_sampling happens and we should reset everything.
+    end else if (res_sampling) begin
+      command <= 0;
+      for (mj = 0; mj < MAX_COLLECTION_UNITS; mj = mj + 1)  begin
+        collection_channels[mj] <= 255; /* no such channel: special. */
+        last_fetched[mj] <= 0;
+      end
+      command <= 0;
+      num_units <= 0;
+      current_id_idx <= 0;
     end else begin
       if (controller_enable & wr) begin
-        //note this is OK because the command bus shares clock with the rest
-        //of the system, and the write signal is only held for 1 cycle.
         if (addr[7:0] == ADDR_NEW_UNIT) begin
           collection_channels[num_units] <= cmd_data_in[7:0];
-          num_units <= num_units + 1;
         end
 
         if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
           command <= cmd_data_in;
         end
       end       
-    end /*if res_cmd_reg end */
 
-    if(fifo_write_enable) begin
-      last_fetched[current_id_idx] <= sample_data;
-    end
+      //Write to last fetched to compare against old value fetched from same
+      //unit
+      if(fifo_write_enable) last_fetched[current_id_idx] <= sample_data;
+      //Increment number of units when add unit command comes in
+      if (addr[7:0] == ADDR_NEW_UNIT & wr_transaction_done) num_units <= num_units + 1;
 
-    /*only increment mod num_units-1 (0-indexed) */
-    if (inc_curr_id_idx) begin
-      if(current_id_idx == (num_units-1)) 
-        current_id_idx <= 0;
-      else
-        current_id_idx <= (current_id_idx + 1);
-    end
+      /*only increment mod num_units-1 (0-indexed) */
+      if (inc_curr_id_idx) begin
+        if(current_id_idx == (num_units-1)) 
+          current_id_idx <= 0;
+        else
+          current_id_idx <= (current_id_idx + 1);
+      end
+    end 
 
-  end
+  end //res_cmd
 end
-
 
 
 
@@ -258,5 +255,25 @@ sample_fifo sample_fifo_0 (
   .almost_empty(sample_fifo_almost_empty),
   .valid()
 );
+
+//-----------------------------------------------------------------------------------
+//rd falling edge detection to see if a transaction has finished
+
+reg wr_d = 0;
+reg wr_dd = 0;
+
+always @ (posedge clk) begin
+  if(rst) begin
+    wr_d <= 1'b0;
+    wr_dd <= 1'b0;
+  end else begin
+    wr_d <= wr & controller_enable;
+    wr_dd <= wr_d;
+  end 
+end
+
+//if r_dd is high and rd_d is low, we have seen a falling edge.
+assign wr_transaction_done = (~wr_d) & (wr_dd);
+
 
 endmodule
