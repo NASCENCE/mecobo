@@ -229,7 +229,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -735,7 +735,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   else {
     if(DEBUG_PRINTING) printf("Recording dig ch: %x\n", channel);
     command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
-    command(0, channel, PINCONTROL_REG_SAMPLE_RATE, 0xDEAD);
+    command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
     command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
