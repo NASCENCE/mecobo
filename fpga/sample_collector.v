@@ -241,7 +241,7 @@ assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[c
 
 sample_fifo sample_fifo_0 (
   .clk(clk),
-  .rst(rst),
+  .rst(res_sampling | rst),
   .din(fifo_data_in),
   .wr_en(fifo_write_enable),
   .rd_en(sample_fifo_rd_en),
