@@ -13,17 +13,19 @@
 
 //`define WITH_DB
 
-module mecobo   (osc, 
-                reset, 
-                led, 
-                ebi_data, 
-                ebi_addr, 
-                ebi_wr, 
-                ebi_rd, 
-                ebi_cs, 
-                fpga_ready, 
-                HN, 
-                HW);
+module mecobo   
+(               osc, 
+reset, 
+led, 
+ebi_data, 
+ebi_addr, 
+ebi_wr, 
+ebi_rd, 
+ebi_cs, 
+fpga_ready, 
+HN, 
+HW
+);
 
 input osc;
 input reset;
@@ -125,31 +127,31 @@ main_clocks clocks
 
 
 `ifdef WITH_DB
-xbar_clock xbarclocks0(
-  .CLK_IN_5(xbar_predivided),
-  .XBAR_CLK(xbar_clk),
-  .RESET(1'b0),
-  .LOCKED(led[3])
-);
+  xbar_clock xbarclocks0(
+    .CLK_IN_5(xbar_predivided),
+    .XBAR_CLK(xbar_clk),
+    .RESET(1'b0),
+    .LOCKED(led[3])
+  );
 
-ODDR2 clkout_oddr_ad
- (.Q  (HN[4]),
+  ODDR2 clkout_oddr_ad
+  (.Q  (HN[4]),
   .C0 (ad_clk),
   .C1 (~ad_clk),
   .CE (1'b1),
   .D0 (1'b1),
   .D1 (1'b0),
   .R  (1'b0),
-  .S  (1'b0));
+.S  (1'b0));
 
 ODDR2 clkout_oddr_da
- (.Q  (HN[2]),
-  .C0 (da_clk),
-  .C1 (~da_clk),
-  .CE (1'b1),
-  .D0 (1'b1),
-  .D1 (1'b0),
-  .R  (1'b0),
+(.Q  (HN[2]),
+.C0 (da_clk),
+.C1 (~da_clk),
+.CE (1'b1),
+.D0 (1'b1),
+.D1 (1'b0),
+.R  (1'b0),
   .S  (1'b0));
 `endif
 
@@ -158,28 +160,28 @@ wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
 //EBI
 ebi ebi_if(
-	.clk(sys_clk),
-	.rst(mecobo_reset),
-	.data_in(data_in),
-	.data_out(data_out),
-	.addr(ebi_addr),
-	.rd(read_enable),
-	.wr(write_enable),
-	.cs(chip_select),
-  	.global_clock(global_clock),
-	.cmd_fifo_data_in(ebi_fifo_din),
-	.cmd_fifo_wr_en(ebi_fifo_wr),
-	.cmd_fifo_almost_full(ebi_fifo_almost_full),
-	.cmd_fifo_full(ebi_fifo_full),
-	.cmd_fifo_almost_empty(ebi_fifo_almost_empty),
-	.cmd_fifo_empty(ebi_fifo_empty),
+  .clk(sys_clk),
+  .rst(mecobo_reset),
+  .data_in(data_in),
+  .data_out(data_out),
+  .addr(ebi_addr),
+  .rd(read_enable),
+  .wr(write_enable),
+  .cs(chip_select),
+  .global_clock(global_clock),
+  .cmd_fifo_data_in(ebi_fifo_din),
+  .cmd_fifo_wr_en(ebi_fifo_wr),
+  .cmd_fifo_almost_full(ebi_fifo_almost_full),
+  .cmd_fifo_full(ebi_fifo_full),
+  .cmd_fifo_almost_empty(ebi_fifo_almost_empty),
+  .cmd_fifo_empty(ebi_fifo_empty),
   .sample_fifo_data_out(sample_collector_data),
   .sample_fifo_rd_en(sample_collector_rd_en),
   .sample_fifo_empty(sample_fifo_empty),
   .sample_fifo_almost_empty(sample_fifo_almost_empty),
   .sample_fifo_full(sample_fifo_full),
   .sample_fifo_almost_full(sample_fifo_almost_full),
-	.irq(ebi_irq)
+  .irq(ebi_irq)
 );
 
 
@@ -188,35 +190,35 @@ wire [31:0] cmd_bus_data_in;
 wire [15:0] cmd_bus_addr;
 wire [79:0] sched_fifo_data;
 command_fifo cmd_fifo (
-	.clk(sys_clk),
-	.rst(mecobo_reset),
-	.din(ebi_fifo_din),
-	.wr_en(ebi_fifo_wr),
-	.full(ebi_fifo_full),
-	.almost_full(ebi_fifo_almost_full),
-	.empty(ebi_fifo_empty),
-	.almost_empty(ebi_fifo_almost_empty),
-	.valid(sched_fifo_valid),
-	.dout(sched_fifo_data),
-	.rd_en(sched_fifo_rd),
-	.wr_ack()
+  .clk(sys_clk),
+  .rst(mecobo_reset),
+  .din(ebi_fifo_din),
+  .wr_en(ebi_fifo_wr),
+  .full(ebi_fifo_full),
+  .almost_full(ebi_fifo_almost_full),
+  .empty(ebi_fifo_empty),
+  .almost_empty(ebi_fifo_almost_empty),
+  .valid(sched_fifo_valid),
+  .dout(sched_fifo_data),
+  .rd_en(sched_fifo_rd),
+  .wr_ack()
 );
-	
+
 //SCHEDULER
 
 scheduler sched(
-	.clk(sys_clk),
-	.rst(mecobo_reset),
-	.current_time(global_clock),
-	.cmd_fifo_dout(sched_fifo_data),
-	.cmd_fifo_empty(ebi_fifo_empty),
-	.cmd_fifo_valid(sched_fifo_valid),
-	.cmd_fifo_rd_en(sched_fifo_rd),
+  .clk(sys_clk),
+  .rst(mecobo_reset),
+  .current_time(global_clock),
+  .cmd_fifo_dout(sched_fifo_data),
+  .cmd_fifo_empty(ebi_fifo_empty),
+  .cmd_fifo_valid(sched_fifo_valid),
+  .cmd_fifo_rd_en(sched_fifo_rd),
 
-	.cmd_bus_addr(cmd_bus_addr),
-	.cmd_bus_data(cmd_bus_data_in),
-	.cmd_bus_en(cmd_bus_en),
-	.cmd_bus_wr(cmd_bus_wr)
+  .cmd_bus_addr(cmd_bus_addr),
+  .cmd_bus_data(cmd_bus_data_in),
+  .cmd_bus_en(cmd_bus_en),
+  .cmd_bus_wr(cmd_bus_wr)
 );
 
 
@@ -225,132 +227,133 @@ scheduler sched(
 //Standard pin controllers
 genvar i;
 generate
-  `ifdef WITH_DB
+`ifdef WITH_DB
   for (i = 0; i < 16; i = i + 1) begin: pinControl 
-      pincontrol #(.POSITION(i))
-      pc (
-        .clk(sys_clk),
-        .reset(mecobo_reset),
-        .enable(cmd_bus_en),
-        .addr(cmd_bus_addr),
-        .data_wr(cmd_bus_wr),
-        .data_in(cmd_bus_data_in),
-        .data_rd(),
-        .data_out(),
-        .pin(HW[i+1]),
-        .output_sample(sample_enable_output),
-        .channel_select(sample_channel_select),
-        .sample_data(sample_data_bus),
-        .current_time(global_clock)
-      );
+    pincontrol #(.POSITION(i))
+    pc (
+      .clk(sys_clk),
+      .reset(mecobo_reset),
+      .enable(cmd_bus_en),
+      .addr(cmd_bus_addr),
+      .data_wr(cmd_bus_wr),
+      .data_in(cmd_bus_data_in),
+      .data_rd(),
+      .data_out(),
+      .pin(HW[i+1]),
+      .output_sample(sample_enable_output),
+      .channel_select(sample_channel_select),
+      .sample_data(sample_data_bus),
+      .current_time(global_clock)
+    );
     //end
   end //for end
-/*
-adc_control #(.MIN_CHANNEL(100), 
-              .MAX_CHANNEL(107))
-    adc0 (
+
+  adc_control #(
+    .MIN_CHANNEL(100),   //note: these are addresses on the command bus for this unit as well. 
+    .MAX_CHANNEL(107))
+  adc0 (
+    .clk(sys_clk),
+    .sclk(ad_clk),
+    .reset(mecobo_reset),
+    .enable(cmd_bus_en),
+    .re(),
+    .wr(cmd_bus_wr),
+    .addr(cmd_bus_addr),
+    .data_in(cmd_bus_data_in),
+    .data_out(),
+    //interface to the world
+    .cs(HN[48]),
+    .adc_din(HN[32]),
+    .adc_dout(HN[40]),
+    .output_sample(sample_enable_output),
+    .channel_select(sample_channel_select),
+    .sample_data(sample_data_bus)
+  );
+
+  dac_control #(.POSITION(240))
+  dac0 (
+    .ebi_clk(sys_clk),
+    .sclk(da_clk),
+    .reset(mecobo_reset),
+    .addr(cmd_bus_addr),
+    .enable(cmd_bus_en),
+    .re(),
+    .wr(cmd_bus_wr),
+    .data(cmd_bus_data_in),
+    .out_data(),
+    .nLdac(HN[24]),
+    .nSync(HN[16]),
+  .dac_din(HN[8]));
+
+  xbar_control #(.POSITION(241))
+  xbar0 (
+    .ebi_clk(sys_clk),
+    .sclk(xbar_clk),
+    .reset(mecobo_reset),
+    .enable(cmd_bus_en),
+    .re(),
+    .wr(cmd_bus_wr),
+    .data_out(),
+    .data(cmd_bus_data_in),
+    .addr(cmd_bus_addr),
+    .xbar_clock(HN[6]), //clock from xbar and out to device 
+    .pclk(HN[1]),
+  .sin(HN[9]));
+
+  */
+`else
+  for (i = 0; i < 10; i = i + 1) begin: pinControl 
+    pincontrol #(.POSITION(i))
+    pc (
       .clk(sys_clk),
-      .sclk(ad_clk),
       .reset(mecobo_reset),
-      .enable(chip_select),
-      .re(read_enable),
-      .wr(write_enable),
-      .addr(ebi_addr),
-      .data_in(data_in),
-      .data_out(data_out),
-      //interface to the world
-      .cs(HN[48]),
-      .adc_din(HN[32]),
-      .adc_dout(HN[40]),
-      .output_sample(sample_enable_output),
-      .channel_select(sample_channel_select),
-      .sample_data(sample_data_bus)
-    );
-
-dac_control #(.POSITION(50))
-    dac0 (
-      .ebi_clk(sys_clk),
-      .sclk(da_clk),
-      .reset(mecobo_reset),
-      .enable(chip_select),
-      .re(read_enable),
-      .wr(write_enable),
-      .data(data_in),
-      .out_data(data_out),
-      .addr(ebi_addr),
-      .nLdac(HN[24]),
-      .nSync(HN[16]),
-      .dac_din(HN[8]));
-
-xbar_control #(.POSITION(200))
-    xbar0 (
-      .ebi_clk(sys_clk),
-      .sclk(xbar_clk),
-      .reset(mecobo_reset),
-      .enable(chip_select),
-      .re(read_enable),
-      .wr(write_enable),
-      .data_out(data_out),
-      .data(data_in),
-      .addr(ebi_addr),
-      .xbar_clock(HN[6]), //clock from xbar and out to device 
-      .pclk(HN[1]),
-      .sin(HN[9]));
-
-    */
-  `else
-    for (i = 0; i < 10; i = i + 1) begin: pinControl 
-     pincontrol #(.POSITION(i))
-      pc (
-        .clk(sys_clk),
-        .reset(mecobo_reset),
-        .enable(cmd_bus_en),
-        .addr(cmd_bus_addr),
-        .data_wr(cmd_bus_wr),
-        .data_in(cmd_bus_data_in),
-        .data_rd(),
-        .data_out(),
-        .pin(HN[i+1]),
-        .output_sample(sample_enable_output),
-        .channel_select(sample_channel_select),
-        .sample_data(sample_data_bus),
-        .current_time(global_clock)
-      );
-
-
-
-      //end
-    end //for end
-  `endif
-    endgenerate
-
-      sample_collector sample_collector0(
-      .clk(sys_clk),
-      .rst(mecobo_reset),
+      .enable(cmd_bus_en),
       .addr(cmd_bus_addr),
-      .cmd_data_in(cmd_bus_data_in),
-      .cs(cmd_bus_en),
-      .wr(cmd_bus_wr),
-      .sample_data(sample_data_bus),
+      .data_wr(cmd_bus_wr),
+      .data_in(cmd_bus_data_in),
+      .data_rd(),
+      .data_out(),
+      .pin(HN[i+1]),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
-
-      .sample_fifo_rd_en(sample_collector_rd_en),
-      .sample_data_out(sample_collector_data),
-      .sample_fifo_empty(sample_fifo_empty),
-      .sample_fifo_almost_empty(sample_fifo_almost_empty),
-      .sample_fifo_full(sample_fifo_full),
-      .sample_fifo_almost_full(sample_fifo_almost_full)
+      .sample_data(sample_data_bus),
+      .current_time(global_clock)
     );
 
 
-    // ------------------------- SAMPLING ---------------------
-    // Sampling module will access the ADC register at a given sampling rate.
-    // ADC runs at 16MHz, giving 1MHz max sample rate. We have 64Mbit of
-    // sample space, 12 bit samples, so at 1MHz we have about 4 seconds of samples,
-    // with some wasted space.
-    // The ADC will raise an interrupt when it has a new sample available, and 
-    // the sampling module will fetch this and put it into memory.
-    //
+
+    //end
+  end //for end
+`endif
+endgenerate
+
+sample_collector sample_collector0(
+  .clk(sys_clk),
+  .rst(mecobo_reset),
+  .addr(cmd_bus_addr),
+  .cmd_data_in(cmd_bus_data_in),
+  .cs(cmd_bus_en),
+  .wr(cmd_bus_wr),
+  .sample_data(sample_data_bus),
+  .output_sample(sample_enable_output),
+  .channel_select(sample_channel_select),
+
+  .sample_fifo_rd_en(sample_collector_rd_en),
+  .sample_data_out(sample_collector_data),
+  .sample_fifo_empty(sample_fifo_empty),
+  .sample_fifo_almost_empty(sample_fifo_almost_empty),
+  .sample_fifo_full(sample_fifo_full),
+  .sample_fifo_almost_full(sample_fifo_almost_full)
+);
+
+
+// ------------------------- SAMPLING ---------------------
+// Sampling module will access the ADC register at a given sampling rate.
+// ADC runs at 16MHz, giving 1MHz max sample rate. We have 64Mbit of
+// sample space, 12 bit samples, so at 1MHz we have about 4 seconds of samples,
+// with some wasted space.
+// The ADC will raise an interrupt when it has a new sample available, and 
+// the sampling module will fetch this and put it into memory.
+//
 endmodule
 

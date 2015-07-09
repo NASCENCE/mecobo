@@ -91,7 +91,7 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 # Add -Wa,-ahld=$(LST_DIR)/$(@F:.o=.lst) to CFLAGS to produce assembly list files
 #
-override CFLAGS += -D$(DEVICE) -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
+override CFLAGS += -D$(DEVICE) -Wshadow -Wall -Wextra -std=c99 -mcpu=cortex-m3 -mthumb \
 -mfix-cortex-m3-ldrd -ffunction-sections \
 -fdata-sections -fomit-frame-pointer -fwide-exec-charset=UTF-16LE -fshort-wchar -DDEBUG_EFM_USER  \
 $(DEPFLAGS)
@@ -223,6 +223,7 @@ $(EXE_DIR)/$(PROJECTNAME).out: $(OBJS)
 $(EXE_DIR)/$(PROJECTNAME).bin: $(EXE_DIR)/$(PROJECTNAME).out
 	@echo "Creating binary file"
 	$(OBJCOPY) -O binary $(EXE_DIR)/$(PROJECTNAME).out $(EXE_DIR)/$(PROJECTNAME).bin
+	$(OBJCOPY) -O ihex $(EXE_DIR)/$(PROJECTNAME).out $(EXE_DIR)/$(PROJECTNAME).bin
 # Uncomment next line to produce assembly listing of entire program
 #	$(DUMP) -h -S -C $(EXE_DIR)/$(PROJECTNAME).out>$(LST_DIR)/$(PROJECTNAME)out.lst
 
