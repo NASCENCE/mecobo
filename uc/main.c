@@ -272,14 +272,11 @@ int main(void)
 
 
 
-
-
   //Default all regs to output 0V
   for(int i = 0; i < NUM_DAC_REGS; i++) {
-    DACreg[i] = 128;
+    //DACreg[i] = 128;
+    command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 128);
   }
-
-
 
 
   USBD_Init(&initstruct);
@@ -752,25 +749,16 @@ void execCurrentPack()
     return;
     mecoboStatus = MECOBO_STATUS_BUSY;
     if(DEBUG_PRINTING) printf("Configuring XBAR\n");
-    uint16_t * d = (uint16_t*)(currentPack.data);
-    for(int i = 0; i < 32; i++) {
-      xbar[i] = d[i];
-      //printf("XBAR: Word %d: %x\n", i, d[i]); 
+    uint32_t * d = (uint32_t*)(currentPack.data);
+    for(int i = 0; i < 16; i++) {
+      command(0, XBAR_CONTROLLER_ADDR, i, d[i]);
     }
 
-    xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+    command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
+   
+    //We need to wait here until the XBAR is configured. 
+    //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
     USBTIMER_DelayMs(3);
-    int waitCount = 0;
-    while(xbar[0x0A]) {
-      USBTIMER_DelayMs(1);
-      waitCount++;
-      if(waitCount == 100) {
-        printf("WARNING: Timeout. Continuing.\n");
-        xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-        continue;
-      }
-    }
-
 
     if(DEBUG_PRINTING) printf("\nXBAR configured\n");
     mecoboStatus = MECOBO_STATUS_READY;
@@ -1376,6 +1364,13 @@ void pushToCmdFifo(struct pinItem * item)
       printf("rtl: %x\n", cmdInterfaceAddr[9]);
       printf("rth: %x\n", cmdInterfaceAddr[10]);
       break; 
+    
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+      if(DEBUG_PRINTING) printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
+      setVoltage(item->pin, item->constantValue);
+      break;
+ 
+
 
     default:
       break;

@@ -2,12 +2,12 @@ module xbar_control (
 input ebi_clk, //System clock
 input sclk, //XBAR state clock (but not the clock that goes to the XBAR)
 input reset,
-input enable,
+input cmd_bus_enable,
 input re,
-input wr,
-input [15:0] data,
+input cmd_bus_wr,
+input [31:0]cmd_bus_data,
 output reg [15:0] data_out,
-input [15:0] addr,
+input [15:0] cmd_bus_addr,
 //facing the DAC
 output reg xbar_clock, //clock going to xbar
 output reg pclk, //keep low until we're done, single pulse will set transistors in xbar.
@@ -16,21 +16,18 @@ output sin);
 //Controller select logic. 
 parameter POSITION = 0;
 wire cs;
-assign cs = (enable & (addr[15:8] == POSITION));
+assign cs = (cmd_bus_enable & (cmd_bus_addr[15:8] == POSITION));
 
-
-//wire high_addr = (addr[4:0]<<4)+15;
-//wire low_addr = (addr[4:0]<<4);
 
 localparam [7:0] 
-  PROGRAM  = 8'h04,
+  ADDR_CMD_REG = 8'h20,
   OVERFLOW = 8'h01,
   DIVIDE   = 8'h02,
   SAMPLE   = 8'h03,
   ID_REG   = 8'h09,
   BUSY     = 8'h0A;
 
-//EBI data capture
+//EBIcmd_bus_data capture
 reg [31:0] xbar_config_reg [0:15];   //16 * 32 = 512 bits in total to program XBAR
 reg [31:0] command = 0;
 reg reset_cmd_reg;
@@ -50,21 +47,21 @@ begin
     if (reset_cmd_reg) 
       command <= 0;
     else
-    if (cs & wr) begin
-      if (addr[7:5] == 3'b001) begin
-        command <= data;
+    if (cs & cmd_bus_wr) begin
+      if (cmd_bus_addr[7:0] == ADDR_CMD_REG) begin  
+        command <= cmd_bus_data;
       end else begin
-        xbar_config_reg[addr[3:0]] <= data; //offset into ebi big register since we only tx 4 bytes at a time, 2^4 = 16 words of 32 bits
+        xbar_config_reg[cmd_bus_addr[3:0]] <= cmd_bus_data; //offset into ebi big register since we only tx 4 bytes at a time, 2^4 = 16 words of 32 bits
       end
     end
 
     if (cs & re) begin
-      if(addr[7:0] == BUSY) 
-        data_out <= {15'b0,  busy};
-      if(addr[7:0] == ID_REG)
-        data_out <= 16'h7ba2; //kinda looks like 'XbaR'... no?
+      if(cmd_bus_addr[7:0] == BUSY) 
+       data_out <= {15'b0,  busy};
+      if(cmd_bus_addr[7:0] == ID_REG)
+       data_out <= 16'h7ba2; //kinda looks like 'XbaR'... no?
     end else begin
-      data_out <= 0;
+     data_out <= 0;
     end
 
     if (busy) begin
@@ -77,7 +74,7 @@ end
 //Control logic
 //------------------------------------------------------------------------------------
 reg [8:0] counter = 0;  //clock out 511 pulses.
-reg shift_out_enable;
+reg shift_out_cmd_bus_enable;
 reg load_shift_reg;
 reg count_up;
 reg count_res;
@@ -101,7 +98,7 @@ end
 
 //Next state function
 always @ (*) begin
-  shift_out_enable = 1'b0;
+  shift_out_cmd_bus_enable = 1'b0;
   count_up = 1'b0;
   count_res = 1'b1;
   xbar_clock = 1'b0;
@@ -127,7 +124,7 @@ always @ (*) begin
     pulse_xbar_clk: begin
       nextState = pulse_xbar_clk;
 
-      shift_out_enable = 1'b1;  //shift one bit on next flank
+      shift_out_cmd_bus_enable = 1'b1;  //shift one bit on next flank
       count_up = 1'b1; //count up on next flank.
       xbar_clock = 1'b1;  //output, give xbar a flank now, [15] of shift reg is stable.
 
@@ -168,7 +165,7 @@ always @ (posedge sclk) begin
     if (load_shift_reg)
       shift_out_register <= xbar_config_reg[counter[7:4]];  // 2^4 = 16, so we use this index to select which part of big xbar reg to load.
     else
-      if (shift_out_enable)
+      if (shift_out_cmd_bus_enable)
         shift_out_register <= {shift_out_register[14:0], 1'b0};
   end
 end

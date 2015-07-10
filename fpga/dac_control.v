@@ -2,12 +2,12 @@ module dac_control (
   input ebi_clk, //System clock
   input sclk, //Max 30MHz
   input reset,
-  input enable,
+  input cmd_bus_enable,
   input re,
-  input wr,
-  input [31:0] data,
+  input cmd_bus_wr,
+  input [31:0]cmd_bus_data,
   output reg [15:0] out_data,
-  input [15:0] addr,
+  input [15:0] cmd_bus_addr,
   //facing the DAC
   output reg nLdac,
   output reg nSync,
@@ -18,7 +18,7 @@ localparam DAC_CMD_NEW_VALUE = 1;
 
 //Controller select (not to be confused with chip select)
 wire cs;
-assign cs = (enable & (addr[15:8] == POSITION));
+assign cs = (cmd_bus_enable & (cmd_bus_addr[15:8] == POSITION));
 wire busy;
 
 reg [15:0] shift_out_register = 0;
@@ -35,16 +35,16 @@ always @ (posedge ebi_clk) begin
     if (reset_command_bus_data) begin
       command_bus_data <= 0;
     end else
-      if (cs & wr)
-        command_bus_data <= data;
+      if (cs & cmd_bus_wr)
+        command_bus_data <=cmd_bus_data;
 
-      //Driving out data 
+      //Driving outcmd_bus_data 
       if (cs & re) begin
-        if (addr[7:0] == 9) begin
+        if (cmd_bus_addr[7:0] == 9) begin
           out_data <= 16'h0DAC;
         end
         //set the "busy" register.
-        if (addr[7:0] == 10) begin
+        if (cmd_bus_addr[7:0] == 10) begin
           out_data <= {15'b0, busy};
         end     
       end else
@@ -56,7 +56,7 @@ end
 
 //Control logic
 reg [3:0] counter = 0;
-reg shift_out_enable;
+reg shift_out_cmd_bus_enable;
 reg load_shift_reg;
 reg count_up;
 reg count_res;
@@ -85,7 +85,7 @@ end
 always @ (*) begin
   nextState = 3'bXXX;
   load_shift_reg = 1'b0;
-  shift_out_enable = 1'b0;
+  shift_out_cmd_bus_enable = 1'b0;
   reset_command_bus_data = 1'b0;
   count_up = 1'b0;
   nLdac = 1'b1;
@@ -112,7 +112,7 @@ always @ (*) begin
 
       count_up = 1'b1;
       nSync = 1'b0;
-      shift_out_enable = 1'b1;
+      shift_out_cmd_bus_enable = 1'b1;
 
       if (counter == 15) begin
         nextState = pulse;
@@ -131,7 +131,7 @@ always @ (*) begin
 end
 
 
-//Slow data path
+//Slowcmd_bus_data path
 always @ (posedge sclk) begin
   if (reset) 
     shift_out_register <= 0;
@@ -147,7 +147,7 @@ always @ (posedge sclk) begin
       if (load_shift_reg)
         shift_out_register <= command_bus_data;
       else 
-        if (shift_out_enable)   //this should -in theory- empty out the shift register...
+        if (shift_out_cmd_bus_enable)   //this should -in theory- empty out the shift register...
           shift_out_register <= {shift_out_register[14:0], 1'b0};
   end
 end
