@@ -25,6 +25,9 @@ void setupDAC()
 
 void setVoltage(uint16_t channel, uint16_t voltage)
 {
+      
+  command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 128);
+
   uint16_t channelAddr = channel - DA_CHANNELS_START;
   //printf("channelAddr: channel: %u, %x\n",channel, channelAddr);
   

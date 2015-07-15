@@ -110,7 +110,6 @@ int itaHead = 0;
 int itaTail = 0;
 
 
-uint16_t numItemsLeftToExecute = 0;
 uint16_t iifPos  = 0;
 uint16_t numItemsInFlight = 0;
 
@@ -273,14 +272,11 @@ int main(void)
 
 
 
-
-
   //Default all regs to output 0V
   for(int i = 0; i < NUM_DAC_REGS; i++) {
-    DACreg[i] = 128;
+    //DACreg[i] = 128;
+    command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 128);
   }
-
-
 
 
   USBD_Init(&initstruct);
@@ -332,82 +328,6 @@ int main(void)
     }
   }
 }
-/*
-
-  for (;;) {
-    //For all the input pins, collect samples into the big buff!
-    //TODO: Make pinControllers notify uC when it has new data, interrupt?
-    if(runItems) {
-
-      //This is the execution stage.
-      //Special cases are required for items
-      //that should stay in-flight forever.
-      if(numItemsLeftToExecute > 0) {
-
-        //Is it time to start the item at the head of the queue?
-        if (currentItem->startTime <= timeMs) {
-          execute(currentItem);
-          if(numItemsLeftToExecute == 0) {
-            if(DEBUG_PRINTING) printf("WARNING: TRIED TO SUBTRACT FROM 0 OF UNSIGNED NUMITEMS\n");
-          } else {
-            numItemsLeftToExecute--;
-          }
-
-          itemsInFlight[iifPos++] = currentItem;
-          numItemsInFlight++;
-          itaPos++;
-        }
-
-        //See if we should upate the kill time.
-        if ((currentItem->endTime != -1) && currentItem->endTime < nextKillTime) {
-          nextKillTime = currentItem->endTime;
-        }
-      }
-
-
-
-
-      //Certain items in flight needs updating and "re-execution"
-      if (lastTimeTick != timeTick) {
-        for(unsigned int flight = 0; flight < numItemsInFlight; flight++) {
-          //if(itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_PREDEFINED_SINE) {
-          //execute(itemsInFlight[flight]);
-          //}
-          if((itemsInFlight[flight]->type == PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER) && (registersUpdated[itemsInFlight[flight]->constantValue]))  {
-            execute(itemsInFlight[flight]);
-            registersUpdated[itemsInFlight[flight]->constantValue] = 0;
-          }
-        }
-        //update counters.
-        lastTimeTick = timeTick;
-        timeMs = timeTick/10;
-      }
-
-
-      //Kill items that are in flight and whose time has come.
-      //We cannot guarantee the same as we do for starting so we need to check.
-      if(nextKillTime <= timeMs) {
-        if (numItemsInFlight > 0)  {
-          //Iterate array of items in flight, kill whatever needs killing,
-          //mark an empty entry as NULL.
-          for(int i = 0; i < iifPos; i++) {
-            struct pinItem * it = itemsInFlight[i];
-            if(it != NULL) {
-              //-1 is special case: run until reset.
-              if((it->endTime != -1) && (it->endTime <= timeMs)) {
-                if(DEBUG_PRINTING) printf("numItemsinFlight: %u\n", numItemsInFlight);
-                killItem(it);
-                itemsInFlight[i] = NULL;
-                numItemsInFlight--;
-              }
-            }
-          }
-        }
-      }
-    }
-  } //main for loop ends
-}
-*/
 
 
 int UsbHeaderReceived(USB_Status_TypeDef status,
@@ -491,6 +411,7 @@ int UsbDataSent(USB_Status_TypeDef status,
     //don't free the sample buffer
     if(packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE) {
       if(packToSend.data != NULL) {
+        printf("f2\n");
         free(packToSend.data);
       } else {
         if(DEBUG_PRINTING) printf("Tried to free NULL-pointer\n");
@@ -670,14 +591,21 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   //We set it to something that sort of achieves the wished sample rate.
   //If we want for instance 44.1KHz sample rate, the counter is
   //roughly 1701, so actual sample rate is about 44.09
-  float overflow = (75000000)/((float)sampleRate);
+  float overflow = 0;
+  if (sampleRate != 0) {
+    overflow = (75000000)/((float)sampleRate);
+  } else {
+    printf("omg sampleRate is 0. setting cowardly to 1000");
+    overflow = 1000.0;
+  }
   float numSamples = (sampleRate)*((float)duration/(float)1000);
   numSamplesPerFPGATableIndex[fpgaTableIndex] = (int)numSamples;
   fpgaNumSamples += (int)numSamples;
   fpgaTableIndex++;
 
-  if(DEBUG_PRINTING) printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
+  //if(DEBUG_PRINTING) printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
+  printf("agg5\n");
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
   uint16_t * addr = getChannelAddress(channel);
   if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_END))) {
@@ -774,7 +702,7 @@ void execCurrentPack()
     struct mecoboStatus s;
     s.state = (uint8_t)mecoboStatus;
     s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)numItemsLeftToExecute + numItemsInFlight;
+    s.itemsInQueue = (uint16_t)0 + numItemsInFlight;
     //printf("QI: %u\n", numItemsInFlight);
 
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
@@ -796,8 +724,7 @@ void execCurrentPack()
 
       fifoInsert(&cmdFifo, &item);
 
-      numItemsLeftToExecute++;
-      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", numItemsLeftToExecute, item.pin, item.startTime, item.endTime, item.sampleRate);
+      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, item.pin, item.startTime, item.endTime, item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
@@ -822,25 +749,16 @@ void execCurrentPack()
     return;
     mecoboStatus = MECOBO_STATUS_BUSY;
     if(DEBUG_PRINTING) printf("Configuring XBAR\n");
-    uint16_t * d = (uint16_t*)(currentPack.data);
-    for(int i = 0; i < 32; i++) {
-      xbar[i] = d[i];
-      //printf("XBAR: Word %d: %x\n", i, d[i]); 
+    uint32_t * d = (uint32_t*)(currentPack.data);
+    for(int i = 0; i < 16; i++) {
+      command(0, XBAR_CONTROLLER_ADDR, i, d[i]);
     }
 
-    xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+    command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
+   
+    //We need to wait here until the XBAR is configured. 
+    //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
     USBTIMER_DelayMs(3);
-    int waitCount = 0;
-    while(xbar[0x0A]) {
-      USBTIMER_DelayMs(1);
-      waitCount++;
-      if(waitCount == 100) {
-        printf("WARNING: Timeout. Continuing.\n");
-        xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-        continue;
-      }
-    }
-
 
     if(DEBUG_PRINTING) printf("\nXBAR configured\n");
     mecoboStatus = MECOBO_STATUS_READY;
@@ -867,7 +785,11 @@ void execCurrentPack()
     mecoboStatus = MECOBO_STATUS_BUSY;
 
     
-       fpgaTableIndex = 0;
+    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+    cmdInterfaceAddr[7] = 0xBEEF;
+    cmdInterfaceAddr[7] = 0xDEAD;
+    
+    fpgaTableIndex = 0;
     command(0, 242, 5, 5);  //reset sample collector
 
     runItems = 0;
@@ -875,7 +797,6 @@ void execCurrentPack()
     if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
     //Reset state
     itaPos = 0;
-    numItemsLeftToExecute = 0;
     iifPos = 0;
     numItemsInFlight = 0;
     numSamples = 0;
@@ -924,15 +845,11 @@ void execCurrentPack()
           xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
           continue;
         }
-      }; //hang around until command completes.
+      } //hang around until command completes.
     }
 
     resetAllPins();
 
-    //make sure clock is running here 
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xDEAD;
-    //while (!(cmdInterfaceAddr[0] & STATUS_REG_CMD_FIFO_EMPTY));
     cmdInterfaceAddr[7] = 0xBEEF;
     timeStarted = 0;
 
@@ -1010,6 +927,7 @@ void execCurrentPack()
 
     exitEnhancedMode();
     //word offsets
+    printf("f1\n");
     free(currentPack.data);
     printf("Got data, current offset %u\n", (unsigned int)bitfileOffset);
   }
@@ -1419,6 +1337,7 @@ void pushToCmdFifo(struct pinItem * item)
 {
   //struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   printf("s: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
@@ -1431,7 +1350,7 @@ void pushToCmdFifo(struct pinItem * item)
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
-      uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+      cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
       printf("s: %x\n", cmdInterfaceAddr[0]);
       printf("tl: %x\n", cmdInterfaceAddr[9]);
       printf("th: %x\n", cmdInterfaceAddr[10]);
@@ -1445,6 +1364,13 @@ void pushToCmdFifo(struct pinItem * item)
       printf("rtl: %x\n", cmdInterfaceAddr[9]);
       printf("rth: %x\n", cmdInterfaceAddr[10]);
       break; 
+    
+    case PINCONFIG_DATA_TYPE_DAC_CONST:
+      if(DEBUG_PRINTING) printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
+      setVoltage(item->pin, item->constantValue);
+      break;
+ 
+
 
     default:
       break;
