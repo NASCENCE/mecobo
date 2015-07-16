@@ -25,7 +25,7 @@ Mecobo::Mecobo (bool daughterboard)
     std::cout << "Mecobo initialized without daughterboard" << std::endl;
   }
 
-  hasDaughterboard = false;
+  hasDaughterboard = true;
 }
 
 Mecobo::~Mecobo ()

@@ -746,12 +746,11 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
   {
-    return;
     mecoboStatus = MECOBO_STATUS_BUSY;
     if(DEBUG_PRINTING) printf("Configuring XBAR\n");
     uint32_t * d = (uint32_t*)(currentPack.data);
     for(int i = 0; i < 16; i++) {
-      command(0, XBAR_CONTROLLER_ADDR, i, d[i]);
+      command(0, XBAR_CONTROLLER_ADDR, i, 0x10000 | d[i]);
     }
 
     command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
