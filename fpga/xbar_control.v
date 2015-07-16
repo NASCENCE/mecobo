@@ -118,20 +118,21 @@ always @ (*) begin
       if (command != 0) begin
         nextState = pulse_xbar_clk;
         load_shift_reg = 1'b1;
-        reset_cmd_reg = 1'b1;
       end
     end
 
     pulse_xbar_clk: begin
       nextState = pulse_xbar_clk;
+      
 
       shift_out_cmd_bus_enable = 1'b1;  //shift one bit on next flank
       count_up = 1'b1; //count up on next flank.
       xbar_clock = 1'b1;  //output, give xbar a flank now, [15] of shift reg is stable.
 
-      if (counter == 511)
+      if (counter == 511) begin
+        reset_cmd_reg = 1'b1;
         nextState = pulse_pclk;
-      else if (counter[4:0] == 5'h1F)   //2^5 = 32, which is how many bits are clocked in this round 
+      end else if (counter[4:0] == 5'h1F)   //2^5 = 32, which is how many bits are clocked in this round 
         nextState = load_shift;
     end
 
