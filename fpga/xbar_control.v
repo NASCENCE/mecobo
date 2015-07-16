@@ -39,7 +39,7 @@ always @ (posedge ebi_clk)
 begin
   if (reset) begin
     //xbar_config_reg <= 0;
-    for (i = 0; i < 15; i = i + 1) begin
+    for (i = 0; i < 16; i = i + 1) begin
       xbar_config_reg[i] <= 0;
     end
 
@@ -98,9 +98,10 @@ end
 
 //Next state function
 always @ (*) begin
+  nextState = 5'bXXXXX;
   shift_out_cmd_bus_enable = 1'b0;
   count_up = 1'b0;
-  count_res = 1'b1;
+  count_res = 1'b0;
   xbar_clock = 1'b0;
   pclk = 1'b1;
   load_shift_reg = 1'b0;
@@ -130,7 +131,7 @@ always @ (*) begin
 
       if (counter == 511)
         nextState = pulse_pclk;
-      else if (counter[4:0] == 31)   //2^5 = 32, which is how many bits are clocked in this round 
+      else if (counter[4:0] == 5'h1F)   //2^5 = 32, which is how many bits are clocked in this round 
         nextState = load_shift;
     end
 
@@ -150,7 +151,7 @@ end
 
 //Data path, shift register clocked by the slower clock
 //------------------------------------------------------------------------------------
-reg [15:0] shift_out_register = 0;
+reg [31:0] shift_out_register = 0;
 always @ (posedge sclk) begin
   if (reset) 
     shift_out_register <= 0;
@@ -163,13 +164,13 @@ always @ (posedge sclk) begin
         counter <= counter + 1;
 
     if (load_shift_reg)
-      shift_out_register <= xbar_config_reg[counter[7:4]];  // 2^4 = 16, so we use this index to select which part of big xbar reg to load.
+      shift_out_register <= xbar_config_reg[counter[8:5]];  // 2^4 = 16, so we use this index to select which part of big xbar reg to load.
     else
       if (shift_out_cmd_bus_enable)
-        shift_out_register <= {shift_out_register[14:0], 1'b0};
+        shift_out_register <= {shift_out_register[30:0], 1'b0};
   end
 end
 
-assign sin = shift_out_register[15];
+assign sin = shift_out_register[31];
 
 endmodule

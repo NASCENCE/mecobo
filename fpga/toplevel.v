@@ -11,7 +11,7 @@
 
 
 
-//`define WITH_DB
+`define WITH_DB
 
 module mecobo   
 (               osc, 
@@ -55,8 +55,9 @@ wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
 
-
+`ifndef WITH_DB
 assign led[3] =  1'b0;
+`endif
 assign led[1] =  read_enable;
 //assign led[3] = chip_select;
 
@@ -275,11 +276,11 @@ generate
     .ebi_clk(sys_clk),
     .sclk(da_clk),
     .reset(mecobo_reset),
-    .addr(cmd_bus_addr),
-    .enable(cmd_bus_en),
+    .cmd_bus_addr(cmd_bus_addr),
+    .cmd_bus_enable(cmd_bus_en),
     .re(),
-    .wr(cmd_bus_wr),
-    .data(cmd_bus_data_in),
+    .cmd_bus_wr(cmd_bus_wr),
+    .cmd_bus_data(cmd_bus_data_in),
     .out_data(),
     .nLdac(HN[24]),
     .nSync(HN[16]),
@@ -290,17 +291,16 @@ generate
     .ebi_clk(sys_clk),
     .sclk(xbar_clk),
     .reset(mecobo_reset),
-    .enable(cmd_bus_en),
+    .cmd_bus_enable(cmd_bus_en),
     .re(),
-    .wr(cmd_bus_wr),
+    .cmd_bus_wr(cmd_bus_wr),
     .data_out(),
-    .data(cmd_bus_data_in),
-    .addr(cmd_bus_addr),
+    .cmd_bus_data(cmd_bus_data_in),
+    .cmd_bus_addr(cmd_bus_addr),
     .xbar_clock(HN[6]), //clock from xbar and out to device 
     .pclk(HN[1]),
   .sin(HN[9]));
 
-  */
 `else
   for (i = 0; i < 10; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i))
