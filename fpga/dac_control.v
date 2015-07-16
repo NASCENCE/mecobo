@@ -101,7 +101,6 @@ always @ (*) begin
       if (command_bus_data[31:16] == DAC_CMD_NEW_VALUE) begin
         nextState = load;
         load_shift_reg = 1'b1;  
-        reset_command_bus_data = 1'b1;
       end
     end
 
@@ -115,6 +114,7 @@ always @ (*) begin
       shift_out_cmd_bus_enable = 1'b1;
 
       if (counter == 15) begin
+        reset_command_bus_data = 1'b1;
         nextState = pulse;
       end
     end
