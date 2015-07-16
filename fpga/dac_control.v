@@ -145,7 +145,7 @@ always @ (posedge sclk) begin
         counter <= counter + 1;
 
       if (load_shift_reg)
-        shift_out_register <= command_bus_data;
+        shift_out_register <= command_bus_data[15:0];
       else 
         if (shift_out_cmd_bus_enable)   //this should -in theory- empty out the shift register...
           shift_out_register <= {shift_out_register[14:0], 1'b0};

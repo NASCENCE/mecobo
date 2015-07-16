@@ -44,7 +44,6 @@ reg shift_in; //shift into FPGA
 reg copy_to_tmp;
 reg load_shift_out_reg;
 reg reset_current_command;
-reg load_last_executed_command;
 
 //---------------------------------------------
 
@@ -68,14 +67,14 @@ wire [3:0] chan_idx = channel_select-MIN_CHANNEL;
 wire [3:0] int_chan_idx = addr[15:8]-MIN_CHANNEL;
 
 reg [31:0] current_command = 0;
-reg [15:0] last_executed_command = 0;
+reg [31:0] last_executed_command = 0;
 
 //Assumes 8 ADC channels, which is why a lot of these have second indices
 //These registers 
-reg [31:0] clock_divide_register = 0;  //TODO: UNUSED FOR NOW
-reg [31:0] overflow_register [0:7];
-reg [31:0] sequence_number [0:7]; //Holds sequence number.
-reg [31:0] fast_clk_counter[0:7];
+reg [15:0] clock_divide_register = 0;  //TODO: UNUSED FOR NOW
+reg [15:0] overflow_register [0:7];
+reg [15:0] sequence_number [0:7]; //Holds sequence number.
+reg [15:0] fast_clk_counter[0:7];
 
 reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
 reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
@@ -108,6 +107,7 @@ ID_REG   = 4'h9,
 BUSY     = 4'hA,
 LAST     = 4'hB;
 
+localparam ADC_CMD_NEW_VALUE = 1;
 
 //Data capture from EBI
 //--------------------------------------------------------------------
@@ -144,11 +144,11 @@ always @ (posedge clk) begin
         end
         //Data driving
         if (addr[3:0] == OVERFLOW) begin
-          overflow_register[int_chan_idx] <= data_in;
+          overflow_register[int_chan_idx] <= data_in[15:0];
         end
 
         if (addr[3:0] == DIVIDE) begin
-          clock_divide_register <= data_in;
+          clock_divide_register <= data_in[15:0];
         end
       end
     end
@@ -207,15 +207,6 @@ assign busy = (state != get_values);
 //---------------------------- CONTROL LOGIC -----------------------------
 //The slow clocked control logic that controls the shift registers
 //and times when to copy data into the temporary registers.
-//TODO: Split into two state machines? One for shifting in, one for shifting out.
-
-
-//Each state machine is two processes to make things a little more readable.
-//The first process describes the next-state equation,
-//and the second process describes the outputs for each state (it's combinatorial).
-//output equations and stunff.
-//
-//
 
 
 always @ (posedge sclk) begin
@@ -226,7 +217,7 @@ end
 
 always @ (*) begin
 
-  state = 5'bXXXXX;
+  nextState = 5'bXXXXX;
 
   cs = 1'b1;
   shift_in = 1'b0;  //shifts data into ADC
@@ -238,13 +229,13 @@ always @ (*) begin
 
   reset_current_command = 1'b0;
 
-  load_last_executed_command = 1'b0;
 
   case (state)
     init: begin
       res_adc_clocktick_counter = 1'b1;
+      nextState = init;
 
-      if (current_command != last_executed_command) begin
+      if (current_command[31:16] == ADC_CMD_NEW_VALUE) begin
         load_shift_out_reg = 1'b1;
         nextState = program_adc;
       end else begin
@@ -262,7 +253,7 @@ always @ (*) begin
       cs = 1'b0;  //pull low to select ADC.
       shift_in = 1'b1;  //shifts data from ADC
       inc_adc_clocktick_counter = 1'b1;  
-
+      reset_current_command = 1'b1;
       nextState = get_values;
       if(adc_clocktick_counter == 15) begin
         nextState = copy;
@@ -272,13 +263,6 @@ always @ (*) begin
       end
     end
 
-    writeback: begin
-      res_adc_clocktick_counter = 1'b1;
-      reset_current_command = 1'b1;   //should be safe, loaded it last cycle.
-      nextState = init;
-
-    end
-
     program_adc: begin
       cs = 1'b0;
       shift_out = 1'b1; //shifts data out to ADC
@@ -286,8 +270,8 @@ always @ (*) begin
       nextState = program_adc;
 
       if(adc_clocktick_counter == 15) begin
-        load_last_executed_command = 1'b1; //synchronize here
-        nextState = writeback;
+      	res_adc_clocktick_counter = 1'b1;
+        nextState = init;
       end     
     end
   endcase
@@ -328,10 +312,6 @@ end
 always @ (posedge sclk)  begin
   if (~reset) begin
 
-    if (load_last_executed_command) begin
-      last_executed_command <= current_command;
-    end
-
     //ADC clock counter
     if (res_adc_clocktick_counter) 
       adc_clocktick_counter <= 0; 
@@ -345,7 +325,7 @@ always @ (posedge sclk)  begin
     //the fast clock loads the ebi capture reg, the slow clock loads the real shift register in sync
     //with the control state machine.
     if (load_shift_out_reg) 
-      shift_out_register <= current_command;
+      shift_out_register <= current_command[15:0];
     else if (shift_out)
       shift_out_register <= {shift_out_register[14:0], 1'b0};
     else
