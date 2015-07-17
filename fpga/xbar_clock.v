@@ -99,13 +99,13 @@ module xbar_clock
   #(.CLKDV_DIVIDE          (5.000),
     .CLKFX_DIVIDE          (2),
     .CLKFX_MULTIPLY        (4),
-    .CLKIN_DIVIDE_BY_2     ("FALSE"),
+    .CLKIN_DIVIDE_BY_2     (0),
     .CLKIN_PERIOD          (200.0),
     .CLKOUT_PHASE_SHIFT    ("NONE"),
     .CLK_FEEDBACK          ("1X"),
     .DESKEW_ADJUST         ("SYSTEM_SYNCHRONOUS"),
     .PHASE_SHIFT           (0),
-    .STARTUP_WAIT          ("FALSE"))
+    .STARTUP_WAIT          (0))
   dcm_sp_inst
     // Input clock
    (.CLKIN                 (CLK_IN_5),

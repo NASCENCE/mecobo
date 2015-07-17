@@ -88,6 +88,7 @@ always @ (*) begin
   shift_out_cmd_bus_enable = 1'b0;
   reset_command_bus_data = 1'b0;
   count_up = 1'b0;
+  count_res = 1'b0;
   nLdac = 1'b1;
   nSync = 1'b1;
 
@@ -98,6 +99,8 @@ always @ (*) begin
       nextState = init;
       count_res = 1'b1;
 
+      //check for type of command. this avoids having to store the address
+      //of the command bus.
       if (command_bus_data[31:16] == DAC_CMD_NEW_VALUE) begin
         nextState = load;
         load_shift_reg = 1'b1;  
@@ -140,15 +143,14 @@ always @ (posedge sclk) begin
     //Reset counter if aSKED TO.
     if (count_res)
       counter <= 0;
-    else 
-      if (count_up)
-        counter <= counter + 1;
+    else if (count_up)
+      counter <= counter + 1;
 
-      if (load_shift_reg)
-        shift_out_register <= command_bus_data[15:0];
-      else 
-        if (shift_out_cmd_bus_enable)   //this should -in theory- empty out the shift register...
-          shift_out_register <= {shift_out_register[14:0], 1'b0};
+    if (load_shift_reg)
+      shift_out_register <= command_bus_data[15:0];
+    else if (shift_out_cmd_bus_enable)   //this should -in theory- empty out the shift register...
+      shift_out_register <= {shift_out_register[14:0], 1'b0};
+
   end
 end
 assign dac_din = shift_out_register[15];
