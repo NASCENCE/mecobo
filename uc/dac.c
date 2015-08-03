@@ -14,10 +14,6 @@ void setupDAC()
   //note the 1 at the front --- this is a special little thing to notify the controller that it's a new value
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 0x18000);
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 0x1A002);
-  
-  for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
-    setVoltage(i, 128);
-  }
 }
 
 void setVoltage(uint16_t channel, uint16_t voltage)
@@ -28,9 +24,6 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   //uint16_t * dac = ((uint16_t*)EBI_ADDR_BASE) + (DAC0_POSITION * 0x100);
   uint32_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
   wrd |= 0x10000;
-  //dac[DAC_PROGRAM_REGISTER] = wrd;
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
-  //while(dac[11] != wrd);
-  //printf("   Setup word sent to DAC: %x\n", wrd);
 }
 

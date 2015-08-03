@@ -245,7 +245,7 @@ int main(void)
       printf("Detected daughterboard bitfile (has DAC controller)\n");
     }
 
-    has_daughterboard = 0;
+    has_daughterboard = 1;
     if (has_daughterboard) {
       //Check DAC controllers.
       printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
@@ -255,6 +255,7 @@ int main(void)
       printf("Setting up DAC and ADCs\n");
       setupDAC();
       setupADC();
+      resetXbar();
     }
 
     printf("Response from digital controllers at 0 to 57:\n");
@@ -815,26 +816,29 @@ void execCurrentPack()
 
 
     if(has_daughterboard) {
-      for(int r = 0; r < 4; r++) {
-        adcSequence[r] = 0xE000;
-      }
 
-      for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
-        DACreg[i] = 128;
-        registersUpdated[i] = 0;
-      }
 
-      for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
-        setVoltage(i, 128);
-      }
+      //for(int r = 0; r < 4; r++) {
+      //  adcSequence[r] = 0xE000;
+      //}
 
-      for(int i = 0; i < 32; i++) {
-        xbar[i] = 0;
-      }
+      //for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
+      //  DACreg[i] = 128;
+      //  registersUpdated[i] = 0;
+      //}
 
-      xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-      USBTIMER_DelayMs(3);
-      int waitCount = 0;
+      //for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
+      //  setVoltage(i, 128);
+      //}
+
+      //for(int i = 0; i < 32; i++) {
+      //  xbar[i] = 0;
+      //}
+
+      //xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
+      ///USBTIMER_DelayMs(3);
+      //int waitCount = 0;
+      /*
       while(xbar[0x0A]) { 
         if(DEBUG_PRINTING) printf("Waiting for XBAR\n"); 
         USBTIMER_DelayMs(1);
@@ -845,6 +849,7 @@ void execCurrentPack()
           continue;
         }
       } //hang around until command completes.
+      */
     }
 
     resetAllPins();
@@ -1376,3 +1381,12 @@ void pushToCmdFifo(struct pinItem * item)
   }
 }
 
+
+//XBAR
+void resetXbar()
+{
+  for(int i = 0; i < 16; i++) {
+      command(0, XBAR_CONTROLLER_ADDR, i, 0);
+  }
+  command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
+}

@@ -80,6 +80,7 @@ reg count_up;
 reg count_res;
 
 parameter init =            5'b00001;
+parameter load    =         5'b00010;
 parameter pulse_pclk =      5'b00100;
 parameter pulse_xbar_clk =  5'b01000;
 parameter load_shift =      5'b10000;
@@ -122,7 +123,7 @@ always @ (*) begin
     end
 
     pulse_xbar_clk: begin
-      nextState = pulse_xbar_clk;
+      nextState = load;
       
 
       shift_out_cmd_bus_enable = 1'b1;  //shift one bit on next flank
@@ -134,6 +135,10 @@ always @ (*) begin
         nextState = pulse_pclk;
       end else if (counter[4:0] == 5'h1F)   //2^5 = 32, which is how many bits are clocked in this round 
         nextState = load_shift;
+    end
+
+    load: begin
+      nextState = pulse_xbar_clk;
     end
 
     load_shift: begin
