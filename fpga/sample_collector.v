@@ -92,6 +92,7 @@ reg fifo_write_enable;
 reg en_read;
 reg res_cmd_reg;
 reg res_sampling;
+reg res_fifo;
 wire wr_transaction_done;
 
 reg [31:0] last_fetched [0:15];
@@ -120,6 +121,7 @@ always @ (*) begin
   fifo_write_enable = 0;
   res_cmd_reg = 0;
   res_sampling = 0;
+  res_fifo = 0;
   nextState = 5'bXXXXX;
 
   case (state)
@@ -130,7 +132,9 @@ always @ (*) begin
         nextState = fetch;
       end else if (command == CMD_RESET) begin
         res_sampling = 1'b1;
-      end
+      end else if (command == CMD_RES_SAMPLE_FIFO) begin
+        res_fifo = 1'b1;
+      end 
     end
 
     /*instruct adc to output new sample data */
@@ -241,7 +245,7 @@ assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[c
 
 sample_fifo sample_fifo_0 (
   .clk(clk),
-  .rst(res_sampling | rst),
+  .rst(res_fifo | res_sampling | rst),
   .din(fifo_data_in),
   .wr_en(fifo_write_enable),
   .rd_en(sample_fifo_rd_en),

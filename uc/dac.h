@@ -13,5 +13,6 @@ void setupDAC();
 
 //The analogue outputs are numbered 0 -> 32, 8 channels per daughterboard.
 void setVoltage(uint16_t channel, uint16_t voltage);
+uint32_t getDACword(uint16_t channel, uint16_t voltage);
 
 #endif

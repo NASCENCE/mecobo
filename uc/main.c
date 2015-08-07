@@ -256,7 +256,7 @@ int main(void)
       printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
       printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
       printf("Setting up DAC and ADCs\n");
-      startTime();
+      runTime();
       
       setupDAC();
       setupADC();
@@ -324,14 +324,14 @@ int main(void)
 
     if(xbarProgrammed & runItems & !timeStarted) {
       resetTime();
-      startTime();
+      runTime();
       timeStarted = 1;
     }
   }
 }
 
 
-void startTime()
+void runTime()
 {
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   cmdInterfaceAddr[7] = 0xDEAD;   //start time
@@ -637,7 +637,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       //addr[0x04] = 0xD540; //range register written to +-2.5V on all channels for chans 0 to 4
 
       resetTime();
-      startTime();
+      runTime();
 
       command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
       USBTIMER_DelayMs(100);
@@ -796,7 +796,7 @@ void execCurrentPack()
    
     //We need to wait here until the XBAR is configured. 
     //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
-    startTime();
+    runTime();
     USBTIMER_DelayMs(1);
 
     if(DEBUG_PRINTING) printf("\nXBAR configured\n");
@@ -1405,24 +1405,36 @@ void pushToCmdFifo(struct pinItem * item)
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
 
+      /*
       cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
       printf("s: %x\n", cmdInterfaceAddr[0]);
       printf("tl: %x\n", cmdInterfaceAddr[9]);
       printf("th: %x\n", cmdInterfaceAddr[10]);
- 
+      */
+      
 
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
     case PINCONFIG_DATA_TYPE_RECORD:
-      startInput();
-      printf("rtl: %x\n", cmdInterfaceAddr[9]);
-      printf("rth: %x\n", cmdInterfaceAddr[10]);
+      //startInput();
+      printf("R item in queue!\n");
+      command(item->startTime, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  //this sends STAT SAMPLING COMMAND
+
+      //NOP
+      command(item->startTime, 130, 0, 0);  //this sends STAT SAMPLING COMMAND
+      command(item->startTime, 130, 0, 0);  //this sends STAT SAMPLING COMMAND
+
+      command(item->startTime, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
+      //printf("rtl: %x\n", cmdInterfaceAddr[9]);
+      //printf("rth: %x\n", cmdInterfaceAddr[10]);
       break; 
     
     case PINCONFIG_DATA_TYPE_DAC_CONST:
       if(DEBUG_PRINTING) printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
-      setVoltage(item->pin, item->constantValue);
+      //setVoltage(item->pin, item->constantValue);
+      uint32_t wrd = getDACword(item->pin, item->constantValue);
+      command(item->startTime, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
       break;
  
 
