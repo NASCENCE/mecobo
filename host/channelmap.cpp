@@ -13,10 +13,10 @@ channelMap::channelMap()
 
   numADchannels = 0;
   maxADchannels = 8;
-  
+
   numDAchannels = 0;
   maxDAchannels = 8;
- 
+
   numIOchannels = 0;
   maxIOchannels = 16;
 
@@ -29,7 +29,7 @@ channelMap::channelMap()
   channelToXbar[FPGA_DAC_0_F] = 5;
   channelToXbar[FPGA_DAC_0_G] = 6;
   channelToXbar[FPGA_DAC_0_H] = 7;
-  
+
   channelToXbar[FPGA_ADC_0_A] = 8;
   channelToXbar[FPGA_ADC_0_B] = 9;
   channelToXbar[FPGA_ADC_0_C] = 15;   
@@ -87,12 +87,12 @@ bool channelMap::isADChannel(FPGA_IO_Pins_TypeDef chan)
 void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
   /*
-  if(pinToChannel.count(pin)) {
-      }*/
+     if(pinToChannel.count(pin)) {
+     }*/
   //Check if we record from the same pin twice
 
- //auto chan = pinToChannel[pin];
- 
+  //auto chan = pinToChannel[pin];
+
   std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
   pinToChannel[pin] = channel;
   channelToPin[channel].push_back(pin);
@@ -200,28 +200,28 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
   std::vector<uint16_t> config;
   for(int i = 0; i < 32; i++) {
     uint16_t data = 0;
-   
+
     config.push_back(data);
   }
 
   for(auto pc : pinToChannel) { 
-  //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
+    //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
     //for (auto pin : channelToPin) {
-      FPGA_IO_Pins_TypeDef channel = pc.second;
-    
-      //Skip invalid mappings
-      if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
-        continue;
-      }
+    FPGA_IO_Pins_TypeDef channel = pc.second;
 
-      int pin = pc.first;
-      int configIndex = -1;
+    //Skip invalid mappings
+    if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
+      continue;
+    }
 
-      //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
-      //The next 16 words control the AD/DA-chans.
-      //Since we have mapped the PINs to the Y's of the XBARS,
-      //we have two choices to drive/source one pin.
-      //xbar1, or xbar2. We add 16 to program xbar1.
+    int pin = pc.first;
+    int configIndex = -1;
+
+    //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
+    //The next 16 words control the AD/DA-chans.
+    //Since we have mapped the PINs to the Y's of the XBARS,
+    //we have two choices to drive/source one pin.
+    //xbar1, or xbar2. We add 16 to program xbar1.
 
     if (channel < IO_CHANNELS_END) { //Digital channels
       configIndex = 15 - pin;
@@ -230,14 +230,22 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
       //This is not a digital channel.
       //
     }
-      
-      config[configIndex] |= (1 << (channelToXbar[channel]));
-      std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+
+    config[configIndex] |= (1 << (channelToXbar[channel]));
+    std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
     //}
   }
 
+
+  //Swap all the bytes before transmission because we have worked with
+  //  //little endian stuff so the bytes are the wrong order
+  std::vector<uint16_t> reordered;
+  for (auto w : config) {
+    reordered.push_back(__builtin_bswap16(w));
+  }
+
   std::vector<uint8_t> ret;
-  uint8_t * rawData = (uint8_t*)config.data();
+  uint8_t * rawData = (uint8_t*)reordered.data();
   for (int i = 0; i < 64; i ++) {
     ret.push_back(rawData[i]);;
   }

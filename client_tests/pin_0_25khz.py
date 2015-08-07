@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 sys.path.append('../Thrift interface/gen-py/NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
+import numpy.fft
 
 from bitstring import *
 from thrift import Thrift
@@ -23,33 +24,15 @@ cli.reset()
 cli.clearSequences()
 
 it = emSequenceItem()
-it.pin = [15]
-it.startTime = 0
-it.endTime = 1000
-it.amplitude = 1
-it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
-cli.appendSequenceAction(it)
-
-it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
 it.endTime = 1000
-it.frequency = 44000
-it.operationType = emSequenceOperationType().RECORD   #implies analogue 
+it.frequency = 25000
+it.cycleTime = 50
+it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
-
 
 cli.runSequences()
 cli.joinSequences()
-
-res = []
-for i in cli.getRecording(0).Samples:
-  res.append(i * (5.0/4096.0));
-
-plt.ylim(-6,6)
-plt.plot(res)
-
-plt.draw()
-plt.show()
 
 transport.close()

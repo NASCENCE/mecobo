@@ -508,6 +508,10 @@ Mecobo::runSchedule ()
     }
   }
 
+
+  //Send the current schedule here
+  
+  
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
   sendPacket(&p);

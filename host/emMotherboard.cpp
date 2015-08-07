@@ -7,7 +7,6 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 
-#include "channelmap.h"
 #include "../mecoprot.h"
 #include <map>
 #include <queue>
@@ -45,7 +44,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   int64_t time;
   std::vector<emSequenceItem> seqItems;
   
-  channelMap xbar;
 
   //Keeps recordings of all the recording pins.
   std::map<int, std::vector<uint32_t>> rec;
