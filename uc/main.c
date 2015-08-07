@@ -1,4 +1,4 @@
-//LEDS on front case (left to right):
+////LEDS on front case (left to right):
 //GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1);  //Led 1
 //GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1);  //Led 2
 //GPIO_PinModeSet(gpioPortD, 8, gpioModePushPull, 1);  //Led 3
@@ -72,6 +72,8 @@ int _write_r(void *reent, int fd, char *ptr, size_t len)
   return len;
 }
 
+uint16_t statusReg = 0;
+
 int timeStarted = 0; 
 static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
@@ -81,6 +83,7 @@ static int timeTick = 0; //10,000 per second.
 static int lastTimeTick = 0;
 
 static int has_daughterboard = 0;
+static int xbarProgrammed = 0;
 
 //USB Variables
 
@@ -253,9 +256,13 @@ int main(void)
       printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
       printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
       printf("Setting up DAC and ADCs\n");
+      startTime();
+      
       setupDAC();
       setupADC();
       resetXbar();
+
+      resetTime();
     }
 
     printf("Response from digital controllers at 0 to 57:\n");
@@ -304,32 +311,37 @@ int main(void)
 
 
   fifoInit(&cmdFifo, 20, sizeof(struct pinItem));
- 
-  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
 
-     cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
-      cmdInterfaceAddr[7] = 0xDEAD;   //start time
-      printf("Clock started, time is %x\n", cmdInterfaceAddr[9]);
- 
-
+  resetTime();
   for (;;) {
-    if (cmdFifo.numElements > 0) {
+    if (xbarProgrammed & (cmdFifo.numElements > 0)) {
       void * item = NULL;
       fifoGet(&cmdFifo, &item);
       struct pinItem * it = (struct pinItem *)item;
-      printf("pushing to fifo, endtime %u\n", it->endTime);
+      printf("fifopush, endtime %u\n", it->endTime);
       pushToCmdFifo(it);
     }
 
-    if(runItems & !timeStarted) {
-      cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
-      cmdInterfaceAddr[7] = 0xDEAD;   //start time
-      printf("Clock started, time is %x\n", cmdInterfaceAddr[9]);
+    if(xbarProgrammed & runItems & !timeStarted) {
+      resetTime();
+      startTime();
       timeStarted = 1;
     }
   }
 }
 
+
+void startTime()
+{
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+  cmdInterfaceAddr[7] = 0xDEAD;   //start time
+  printf("t run, tim: %x\n", cmdInterfaceAddr[9]);
+}
+void resetTime()
+{
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+  cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
+}
 
 int UsbHeaderReceived(USB_Status_TypeDef status,
     uint32_t xf,
@@ -599,18 +611,18 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
     printf("omg sampleRate is 0. setting cowardly to 1000");
     overflow = 1000.0;
   }
-  float numSamples = (sampleRate)*((float)duration/(float)1000);
-  numSamplesPerFPGATableIndex[fpgaTableIndex] = (int)numSamples;
-  fpgaNumSamples += (int)numSamples;
+  float nSamples = (sampleRate)*((float)duration/(float)1000);
+  numSamplesPerFPGATableIndex[fpgaTableIndex] = (int)nSamples;
+  fpgaNumSamples += (int)nSamples;
   fpgaTableIndex++;
 
   //if(DEBUG_PRINTING) printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
-  printf("agg5\n");
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
-  uint16_t * addr = getChannelAddress(channel);
+  //uint16_t * addr = getChannelAddress(channel);
   if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_END))) {
 
+    //find the ADC's internal number for the channel to program it.
     uint16_t boardChan = channel - AD_CHANNELS_START;
     //board 0
     if(boardChan < 16) {
@@ -619,43 +631,58 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       if(DEBUG_PRINTING) printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
       //Range register 1
-      addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
-      while(addr[0x0B] != 0xAAA0);
+  //    addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
+   //   while(addr[0x0B] != 0xAAA0);
       //1101 0101 0100 0000 = D reg 1, +/- 2.5 : 
       //addr[0x04] = 0xD540; //range register written to +-2.5V on all channels for chans 0 to 4
 
+      resetTime();
+      startTime();
+
+      command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
+      USBTIMER_DelayMs(100);
+      
       //Range register 2
-      addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
-      while(addr[0xB] != 0xCAA0);
+      //addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
+      //while(addr[0xB] != 0xCAA0);
       //1011 0101 0100 0000
       //while(addr[0x0A]);
       //addr[0x04] = 0xB540; //range register written to +-2.5V on all channels for chans 0 to 4
-
-      //power bits.
-      //addr[0x04] = 0x8014;
+      command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
+      USBTIMER_DelayMs(100);
 
       //setup FPGA AD controller
       //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
       //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
       //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
-      addr[0x01] = (uint16_t)overflow;
-      addr[0x01] = (uint16_t)overflow;
-      for (int i = 0; i < 10; i++);
-      addr[0x02] = 1; //divide
+      
+      command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
+      USBTIMER_DelayMs(100);
+//      addr[0x01] = (uint16_t)overflow;
+ //     addr[0x01] = (uint16_t)overflow;
+      //for (int i = 0; i < 10; i++);
+      //addr[0x02] = 1; //divide
+      command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
       //Sequence register write.
+      USBTIMER_DelayMs(100);
 
       //while(addr[0x0A]);
       //while(addr[0x0A]);
-      addr[0x04] = adcSequence[0];
-      while(addr[0x0B] != adcSequence[0]);
+      //addr[0x04] = adcSequence[0];
+      command(0, channel, AD_REG_PROGRAM, 0x10000|(uint32_t)adcSequence[0]);
+      USBTIMER_DelayMs(100);
+      //while(addr[0x0B] != adcSequence[0]);
 
       //Program the ADC to use this channel as well now. Result in two comp, internal ref.
       //sequencer on.
       //Control register
       //while(addr[0x0A]);
-      addr[0x04] = 0x8014;
-      while(addr[0x0B] != 0x8014);
+      //addr[0x04] = 0x8014;
+      command(0, channel, AD_REG_PROGRAM, 0x18014);
+      //while(addr[0x0B] != 0x8014);
+      USBTIMER_DelayMs(100);
 
+      resetTime();
       if(DEBUG_PRINTING) printf("ADC programmed to new sequences\n");
     }
   }
@@ -749,19 +776,34 @@ void execCurrentPack()
   {
     mecoboStatus = MECOBO_STATUS_BUSY;
     if(DEBUG_PRINTING) printf("Configuring XBAR\n");
-    uint32_t * d = (uint32_t*)(currentPack.data);
+
+    //Data in the buffer is the order we would like the
+    //bytes to be IN the xbar.
+    //since the command function takes a 32 bit 
+    //integer assumed to be stored in Little-Endian,
+    //we'll access the buffer like that, and 
+    //the order that is sent to the FPGA 
+    //is actually correct
+    uint16_t * d = (uint16_t*)(currentPack.data);
+
+    int j = 0;
     for(int i = 0; i < 16; i++) {
-      command(0, XBAR_CONTROLLER_ADDR, i, d[i]);
+      command2x16(0, XBAR_CONTROLLER_ADDR, i, __builtin_bswap16(d[j]), __builtin_bswap16(d[j+1]));
+      j += 2;
     }
 
     command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
    
     //We need to wait here until the XBAR is configured. 
     //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
-    USBTIMER_DelayMs(3);
+    startTime();
+    USBTIMER_DelayMs(1);
 
     if(DEBUG_PRINTING) printf("\nXBAR configured\n");
     mecoboStatus = MECOBO_STATUS_READY;
+
+    xbarProgrammed = 1;
+    resetTime();
   }
 
 
@@ -856,6 +898,7 @@ void execCurrentPack()
 
     cmdInterfaceAddr[7] = 0xBEEF;
     timeStarted = 0;
+    xbarProgrammed = 0;
 
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
@@ -1259,7 +1302,7 @@ int NORError() {
 
 void fpgaIrqHandler(uint8_t pin) {
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-  uint16_t statusReg = cmdInterfaceAddr[0];
+  statusReg = cmdInterfaceAddr[0];
   printf("Interrupt detected: %x\n", pin);
   printf("Status reg: %x\n", statusReg);
   if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
@@ -1300,18 +1343,25 @@ inline void putInFifo(struct fifoCmd * cmd)
   //serialCmd[0] is beef and serialCmd[1] is dead because of little endians.
   //so. we order manually, like so
 
+  //memcpy(cmdInterfaceAddr + 1, serialCmd, 10);
   printf("s: %x\n", cmdInterfaceAddr[0]);
+  
   cmdInterfaceAddr[1] = serialCmd[1];
-  cmdInterfaceAddr[2] = serialCmd[0];
-  cmdInterfaceAddr[3] = serialCmd[3];
-  cmdInterfaceAddr[4] = serialCmd[2];
-  cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that this is OK :-)
+  cmdInterfaceAddr[2] = serialCmd[0];  //flippery to put them in correct order on bus 
+  
+  //cmdInterfaceAddr[1] = 0;
+  //cmdInterfaceAddr[2] = 10;  //flippery to put them in correct order on bus 
+
+  cmdInterfaceAddr[3] = cmd->data[0];  //will be put on bus in network order
+  cmdInterfaceAddr[4] = cmd->data[1];  //will be put on bus in network order
+  
+  cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that the last word of the cmd is first addr, then controller.
 
   printf("s: %x\n", cmdInterfaceAddr[0]);
   printf("pushing word %u : %x\n", 0, serialCmd[1]);
   printf("pushing word %u : %x\n", 1, serialCmd[0]);
-  printf("pushing word %u : %x\n", 2, serialCmd[3]);
-  printf("pushing word %u : %x\n", 3, serialCmd[2]);
+  printf("pushing dword %u : %x\n", 2, cmd->data[0]);
+  printf("pushing dword %u : %x\n", 3, cmd->data[1]);
   printf("pushing word %u : %x\n", 4, serialCmd[4]);
 }
 
@@ -1319,22 +1369,23 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
   struct fifoCmd cmd;
+  uint16_t * data16 = (uint16_t*)(&data);
   cmd.startTime = (uint32_t)(startTime);
-  cmd.controller = controller;
+  cmd.controller = controller; 
   cmd.addr = reg;
-  cmd.data = data;
+  cmd.data[0] = data16[1]; 
+  cmd.data[1] = data16[0]; 
   putInFifo(&cmd);
 }
 
-
-inline struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) 
-{
-  struct fifoCmd command;
-  command.startTime = startTime;
-  command.controller = controller;
-  command.addr = reg;
-  command.data = data;
-  return command;
+void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t data1, uint16_t data2) {
+  struct fifoCmd cmd;
+  cmd.startTime = (uint32_t)(startTime);
+  cmd.controller = controller; 
+  cmd.addr = reg;
+  cmd.data[0] = data1; 
+  cmd.data[1] = data2; 
+  putInFifo(&cmd);
 }
 
 void pushToCmdFifo(struct pinItem * item)

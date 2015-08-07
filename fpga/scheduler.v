@@ -93,12 +93,12 @@ always @ ( * ) begin
 
     //command reg is written and now 
 		exec: begin
-			nextState = exec_wait; 
+			nextState = exec; 
       //time can be 0 here
       if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
-				nextState = fetch;	
+				nextState = exec_wait;	
 			end
     end
 
@@ -109,6 +109,7 @@ always @ ( * ) begin
       //See also comment in pincontrol.v
       //Note that we don't write here, 
       //we just give the machine time to run 1 cycle for an eventual reset.
+      //[we could avoid this, the signals are stable]
     end
 
 

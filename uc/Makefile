@@ -120,6 +120,8 @@ INCLUDEPATHS += \
 -Iefm32/v2/kits/common/drivers \
 -Iefm32/v2/kits/common/bsp \
 -Iefm32/v2/emdrv/gpiointerrupt/inc/ \
+-Iefm32/v2/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
+-Iefm32/v2/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
 -Iconfig
 
 ####################################################################

@@ -93,6 +93,13 @@
 #define DAC_CONTROLLER_ADDR 240
 #define DAC_REG_LOAD_VALUE 0x0
 
+#define AD_CONTROLLER_ADDR 240
+#define AD_REG_PROGRAM 0x4
+#define AD_REG_OVERFLOW 0x1
+#define AD_REG_SAMPLE 0x7
+#define AD_REG_DIVIDE 0x2
+
+
 //FPGA status register
 #define STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT 0x8000
 #define STATUS_REG_CMD_FIFO_FULL_BIT 		    0x4000
@@ -125,9 +132,10 @@ struct pinConfig {
 
 
 
+//ordered like this to avoid alignment issues
 struct fifoCmd {
   uint32_t startTime;
-  uint32_t data;
+  uint16_t data[2];
   uint8_t addr;
   uint8_t controller;
 };
