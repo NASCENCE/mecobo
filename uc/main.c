@@ -1,3 +1,4 @@
+
 ////LEDS on front case (left to right):
 //GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1);  //Led 1
 //GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1);  //Led 2
@@ -60,7 +61,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
 
-#define DEBUG_PRINTING 1
+#define DEBUG_PRINTING 0
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -122,7 +123,6 @@ static int fpgaTableIndex = 0;
 static uint8_t fpgaTableToChannel[8];
 static uint8_t numSamplesPerFPGATableIndex[8];
 static int fpgaNumSamples = 0;
-static int samplingStarted = 0;
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -265,14 +265,6 @@ int main(void)
       resetTime();
     }
 
-    printf("Response from digital controllers at 0 to 57:\n");
-    for(int i = 0; i < 57; i++) {
-      uint16_t * a = getChannelAddress(i) + PINCONFIG_STATUS_REG;
-      uint16_t foo = *a;
-      if (DEBUG_PRINTING) printf("Controller %d says it's position is %d\n", i, foo);
-    }
-
-    printf("FPGA check complete\n");
 
     //testNOR();
     testRam();
@@ -318,7 +310,6 @@ int main(void)
       void * item = NULL;
       fifoGet(&cmdFifo, &item);
       struct pinItem * it = (struct pinItem *)item;
-      printf("fifopush, endtime %u\n", it->endTime);
       pushToCmdFifo(it);
     }
 
@@ -468,129 +459,6 @@ inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
-inline void execute(struct pinItem * item)
-{
-  /*
-  uint16_t * addr = NULL;// = getChannelAddress(item->pin);
-  //printf("Ex C: %d, Tstrt: %d CurT: %d\n", item->pin, item->startTime, timeMs);
-  int index = 0;
-  switch(item->type) {
-    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
-      addr = getChannelAddress(item->pin);
-      uint16_t nocLow = (uint16_t)item->nocCounter;
-      uint16_t nocHigh = (uint16_t)(item->nocCounter >> 16);
-      if(DEBUG_PRINTING) printf("  %d DIGITAL: Digital C:%d, nocCounter: %u, ad: %p\n", timeMs, item->pin, item->nocCounter, addr);
-
-      addr[PINCONTROL_REG_LOCAL_CMD] = CMD_RESET;
-      while(addr[10] != CMD_RESET) addr[PINCONTROL_REG_LOCAL_CMD] = CMD_RESET;
-      addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
-      while(addr[10] != nocLow) addr[PINCONFIG_NCO_COUNTER_LOW]   = nocLow;
-      addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
-      while(addr[10] != nocHigh) addr[PINCONFIG_NCO_COUNTER_HIGH]  = nocHigh;
-      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
-      while(addr[10] != CMD_START_OUTPUT) addr[PINCONTROL_REG_LOCAL_CMD] = CMD_START_OUTPUT;
-      break;
-
-    case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
-      addr = getChannelAddress(item->pin);
-      if(DEBUG_PRINTING) printf("  %d DIGITAL CONST: Digital C:%d, constant: %u, ad: %p\n", timeMs, item->pin, item->constantValue, addr);
-      if(item->constantValue == 1) {
-        if(DEBUG_PRINTING) printf( "    const high\n");
-        addr[PINCONTROL_REG_LOCAL_CMD] = CMD_CONST_HIGH;
-      } else {
-        if(DEBUG_PRINTING) printf( "    const low\n");
-        addr[PINCONTROL_REG_LOCAL_CMD] = CMD_CONST_LOW;
-      }
-      break;
-
-    case PINCONFIG_DATA_TYPE_RECORD:
-      if(DEBUG_PRINTING) printf("  %d RD: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-      startInput();
-      //    startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
-      break;
-
-    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-      if(DEBUG_PRINTING) printf("  %d RA: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-      //startInput(item->pin, item->sampleRate, item->endTime - item->startTime);
-      startInput();
-      break;
-
-    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-      if(DEBUG_PRINTING) printf("  PWM: duty %d, aduty: %d", item->duty, item->antiDuty);
-      if(DEBUG_PRINTING) printf("  NOT IMPLEMENTED :(\n)");
-      //addr[PINCONFIG_DUTY_CYCLE]     = (uint16_t)item->duty;
-      //addr[PINCONFIG_ANTIDUTY_CYCLE] = (uint16_t)item->antiDuty;
-      //addr[PINCONFIG_SAMPLE_RATE]    = (uint16_t)item->sampleRate;
-      //addr[PINCONFIG_RUN_INF]        = 1;
-      //addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_START_OUTPUT;
-      break;
-
-    case PINCONFIG_DATA_TYPE_DAC_CONST:
-      if(DEBUG_PRINTING) printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
-      setVoltage(item->pin, item->constantValue);
-      break;
-
-    case PINCONFIG_DATA_TYPE_PREDEFINED_SINE:
-      //This reeeeally doesn't work all that well. execute happens too slow?
-      index = (item->sampleRate*timeTick)%255;
-      setVoltage(item->pin, sinus[index]);
-      break;
-
-    case PINCONFIG_DATA_TYPE_CONSTANT_FROM_REGISTER:
-      //Note: Index is coded in constantValue
-      if(DEBUG_PRINTING) printf("  %d CONST REGISTER DAC VOLTAGE,channel %d, %u\n", timeMs, item->pin, (unsigned int)DACreg[item->constantValue]);
-      setVoltage(item->pin, DACreg[item->constantValue]);
-      break;
-
-    default:
-      break;
-  }
-*/
-}
-
-void killItem(struct pinItem * item)
-{
-  /*
-  uint16_t * addr = getChannelAddress(item->pin);
-  switch(item->type) {
-    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
-    case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
-      if(DEBUG_PRINTING) printf("  KILL %d : DIGITAL: Digital C:%d, duty: %d, anti: %d ad: %p\n", timeMs, item->pin, item->duty, item->antiDuty, addr);
-      //addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
-      //addr[PINCONFIG_ANTIDUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
-      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
-      break;
-    case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-      //addr[PINCONFIG_DUTY_CYCLE] = 0;  //TODO: FPGA will be updated with a constVal register.
-      addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
-      break;
-    case PINCONFIG_DATA_TYPE_DAC_CONST:
-      setVoltage(item->pin, 128);
-      break;
-
-    case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-    case PINCONFIG_DATA_TYPE_RECORD:
-      if(DEBUG_PRINTING) printf("  %d K R: %d at rate %d\n", timeMs, item->pin, item->sampleRate);
-    for(int i = 0; i < numInputChannels; i++) {
-        if (inputChannels[i] == item->pin) {
-          if(DEBUG_PRINTING) printf("Rec stop: %d\n", item->pin);
-          for(int j = i; j < numInputChannels; j++){
-            inputChannels[j] = inputChannels[j+1];
-          }
-          numInputChannels--;
-          if(numInputChannels == 0) {
-            samplingStarted = 0;
-          }
-          //break;
-        }
-      }
-      break;
-    default:
-      break;
-  }
-  */
-}
-
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
   command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
@@ -632,55 +500,32 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
       //Range register 1
   //    addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
-   //   while(addr[0x0B] != 0xAAA0);
-      //1101 0101 0100 0000 = D reg 1, +/- 2.5 : 
-      //addr[0x04] = 0xD540; //range register written to +-2.5V on all channels for chans 0 to 4
 
       resetTime();
       runTime();
 
       command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
-      USBTIMER_DelayMs(100);
+      USBTIMER_DelayMs(1);
       
       //Range register 2
-      //addr[0x04] = 0xCAA0; //range register written to +-5V on all channels for chans 4 to 7
-      //while(addr[0xB] != 0xCAA0);
-      //1011 0101 0100 0000
-      //while(addr[0x0A]);
-      //addr[0x04] = 0xB540; //range register written to +-2.5V on all channels for chans 0 to 4
       command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
-      USBTIMER_DelayMs(100);
+      USBTIMER_DelayMs(1);
 
-      //setup FPGA AD controller
-      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
-      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
-      //addr[0x01] = (uint16_t)overflow; //overflow register, so this isn't sample rate at all.
-      
       command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
-      USBTIMER_DelayMs(100);
-//      addr[0x01] = (uint16_t)overflow;
- //     addr[0x01] = (uint16_t)overflow;
-      //for (int i = 0; i < 10; i++);
-      //addr[0x02] = 1; //divide
+      USBTIMER_DelayMs(1);
+      
       command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
       //Sequence register write.
-      USBTIMER_DelayMs(100);
+      USBTIMER_DelayMs(1);
 
-      //while(addr[0x0A]);
-      //while(addr[0x0A]);
-      //addr[0x04] = adcSequence[0];
       command(0, channel, AD_REG_PROGRAM, 0x10000|(uint32_t)adcSequence[0]);
-      USBTIMER_DelayMs(100);
-      //while(addr[0x0B] != adcSequence[0]);
+      USBTIMER_DelayMs(1);
 
       //Program the ADC to use this channel as well now. Result in two comp, internal ref.
       //sequencer on.
       //Control register
-      //while(addr[0x0A]);
-      //addr[0x04] = 0x8014;
       command(0, channel, AD_REG_PROGRAM, 0x18014);
-      //while(addr[0x0B] != 0x8014);
-      USBTIMER_DelayMs(100);
+      USBTIMER_DelayMs(1);
 
       resetTime();
       if(DEBUG_PRINTING) printf("ADC programmed to new sequences\n");
@@ -752,7 +597,7 @@ void execCurrentPack()
 
       fifoInsert(&cmdFifo, &item);
 
-      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, item.pin, item.startTime, item.endTime, item.sampleRate);
+      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
@@ -856,43 +701,6 @@ void execCurrentPack()
     }
 
 
-
-    if(has_daughterboard) {
-
-
-      //for(int r = 0; r < 4; r++) {
-      //  adcSequence[r] = 0xE000;
-      //}
-
-      //for(uint32_t i = 0; i < NUM_DAC_REGS; i++ ) {
-      //  DACreg[i] = 128;
-      //  registersUpdated[i] = 0;
-      //}
-
-      //for(unsigned int i = DA_CHANNELS_START; i < DA_CHANNELS_START+8; i++) {
-      //  setVoltage(i, 128);
-      //}
-
-      //for(int i = 0; i < 32; i++) {
-      //  xbar[i] = 0;
-      //}
-
-      //xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-      ///USBTIMER_DelayMs(3);
-      //int waitCount = 0;
-      /*
-      while(xbar[0x0A]) { 
-        if(DEBUG_PRINTING) printf("Waiting for XBAR\n"); 
-        USBTIMER_DelayMs(1);
-        waitCount++;
-        if(waitCount == 100) {
-          printf("WARNING: Timeout. Continuing.\n");
-          xbar[0x20] = 0x1; //whatever written to this register will be interpreted as a cmd.
-          continue;
-        }
-      } //hang around until command completes.
-      */
-    }
 
     resetAllPins();
 
@@ -1392,25 +1200,13 @@ void pushToCmdFifo(struct pinItem * item)
 {
   //struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
-  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   printf("s: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
   switch(item->type) {
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
-      //why do i do this here...
-      //cmd = makeCommand(0, 0xFF, 0xFF, 0x00);
-      //command(0, 0xFF, 0xFF, 0);
-
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
-
-      /*
-      cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-      printf("s: %x\n", cmdInterfaceAddr[0]);
-      printf("tl: %x\n", cmdInterfaceAddr[9]);
-      printf("th: %x\n", cmdInterfaceAddr[10]);
-      */
       
 
       break;
@@ -1419,15 +1215,9 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_RECORD:
       //startInput();
       printf("R item in queue!\n");
-      command(item->startTime, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  //this sends STAT SAMPLING COMMAND
-
-      //NOP
-      command(item->startTime, 130, 0, 0);  //this sends STAT SAMPLING COMMAND
-      command(item->startTime, 130, 0, 0);  //this sends STAT SAMPLING COMMAND
+      command(item->startTime, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RES_SAMPLE_FIFO);  //this sends STAT SAMPLING COMMAND
 
       command(item->startTime, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
-      //printf("rtl: %x\n", cmdInterfaceAddr[9]);
-      //printf("rth: %x\n", cmdInterfaceAddr[10]);
       break; 
     
     case PINCONFIG_DATA_TYPE_DAC_CONST:
