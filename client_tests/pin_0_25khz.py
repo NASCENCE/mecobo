@@ -25,7 +25,7 @@ cli.clearSequences()
 
 it = emSequenceItem()
 it.pin = [0]
-it.startTime = 0
+it.startTime = 500
 it.endTime = 1000
 it.frequency = 25000
 it.cycleTime = 50

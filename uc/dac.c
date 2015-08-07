@@ -27,3 +27,11 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
 }
 
+uint32_t getDACword(uint16_t channel, uint16_t voltage)
+{
+  uint16_t channelAddr = channel - DA_CHANNELS_START;
+  uint32_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
+  wrd |= 0x10000;
+  return wrd;
+}
+

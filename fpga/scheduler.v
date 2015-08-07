@@ -94,7 +94,7 @@ always @ ( * ) begin
     //command reg is written and now 
 		exec: begin
 			nextState = exec; 
-      //time can be 0 here
+      
       if (current_time >= command[TIME_H:TIME_L]) begin
 				cmd_bus_wr = 1'b1;
 				cmd_bus_en = 1'b1;
