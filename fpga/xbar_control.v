@@ -73,7 +73,7 @@ end
 
 //Control logic
 //------------------------------------------------------------------------------------
-reg [8:0] counter = 0;  //clock out 511 pulses.
+reg [8:0] counter = 0;  //clock out 512 pulses.
 reg shift_out_cmd_bus_enable;
 reg load_shift_reg;
 reg count_up;
@@ -117,7 +117,7 @@ always @ (*) begin
       busy = 1'b0;
 
       if (command != 0) begin
-        nextState = pulse_xbar_clk;
+        nextState = load;
         load_shift_reg = 1'b1;
       end
     end
@@ -125,10 +125,9 @@ always @ (*) begin
     pulse_xbar_clk: begin
       nextState = load;
       
-
-      shift_out_cmd_bus_enable = 1'b1;  //shift one bit on next flank
-      count_up = 1'b1; //count up on next flank.
-      xbar_clock = 1'b1;  //output, give xbar a flank now, [15] of shift reg is stable.
+      shift_out_cmd_bus_enable = 1'b1;  //shift next bit next flank
+      count_up = 1'b1; 
+      xbar_clock = 1'b1;  //clock out the current topmost bit.
 
       if (counter == 511) begin
         reset_cmd_reg = 1'b1;
@@ -143,7 +142,7 @@ always @ (*) begin
 
     load_shift: begin
       load_shift_reg = 1'b1;
-      nextState = pulse_xbar_clk;
+      nextState = load;
     end
 
     pulse_pclk: begin

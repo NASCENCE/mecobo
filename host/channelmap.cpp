@@ -205,8 +205,6 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
   }
 
   for(auto pc : pinToChannel) { 
-  //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
-    //for (auto pin : channelToPin) {
       FPGA_IO_Pins_TypeDef channel = pc.second;
     
       //Skip invalid mappings
@@ -226,14 +224,18 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     if (channel < IO_CHANNELS_END) { //Digital channels
       configIndex = 15 - pin;
     } else {
-      configIndex = 31 - pin;
       //This is not a digital channel.
-      //
+      configIndex = 31 - pin;
     }
       
       config[configIndex] |= (1 << (channelToXbar[channel]));
       std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
-    //}
+  }
+
+  //Swap all the bytes before transmission because we have worked with
+  //little endian stuff so the bytes are the wrong order
+  for (auto w : config) {
+    w = __builtin_bswap16(w)
   }
 
   std::vector<uint8_t> ret;

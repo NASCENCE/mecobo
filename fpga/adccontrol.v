@@ -253,20 +253,18 @@ always @ (*) begin
       cs = 1'b0;  //pull low to select ADC.
       shift_in = 1'b1;  //shifts data from ADC
       inc_adc_clocktick_counter = 1'b1;  
-      reset_current_command = 1'b1;
       nextState = get_values;
       if(adc_clocktick_counter == 15) begin
         nextState = copy;
-        cs = 1'b1;
-        copy_to_tmp = 1'b1;
-        shift_in = 1'b0;
+        copy_to_tmp = 1'b1;  //16 ticks have been se..een... next flank, copy.
       end
     end
 
     program_adc: begin
-      cs = 1'b0;
+      cs = 1'b0;  //remember, control signal is /not/ clocked
       shift_out = 1'b1; //shifts data out to ADC
       inc_adc_clocktick_counter = 1'b1;
+      reset_current_command = 1'b1;
       nextState = program_adc;
 
       if(adc_clocktick_counter == 15) begin
