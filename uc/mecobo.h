@@ -85,6 +85,7 @@
 
 #define SAMPLE_COLLECTOR_CMD_START_SAMPLING 1
 #define SAMPLE_COLLECTOR_CMD_STOP_SAMPLING 2
+#define SAMPLE_COLLECTOR_CMD_RES_SAMPLE_FIFO 3
 #define SAMPLE_COLLECTOR_CMD_RESET 5
 
 #define XBAR_CONTROLLER_ADDR 241
@@ -223,7 +224,10 @@ void pushToCmdFifo(struct pinItem * item);
 //void parseNORFileTable(int * numEntries, struct NORFileTableEntry ** entries);
 struct fifoCmd makeCommand(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data);
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data);
+void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t data1, uint16_t data2);
 void resetXbar();
+void runTime();
+void resetTime();
 
 #endif //__MECOBO_H_
 
