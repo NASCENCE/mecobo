@@ -79,9 +79,6 @@ int timeStarted = 0;
 static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
 /*** Typedef's and defines. ***/
-static int timeMs = 0;
-static int timeTick = 0; //10,000 per second.
-static int lastTimeTick = 0;
 
 static int has_daughterboard = 0;
 static int xbarProgrammed = 0;
@@ -106,15 +103,6 @@ uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
 
-
-//Data stuff for items
-int itaFifoSize = 50;
-int itaPos  = 0;
-int itaHead = 0;
-int itaTail = 0;
-
-
-uint16_t iifPos  = 0;
 uint16_t numItemsInFlight = 0;
 
 static int runItems = 0;
@@ -170,7 +158,6 @@ void TIMER1_IRQHandler(void)
 void TIMER2_IRQHandler(void)
 {
   TIMER_IntClear(TIMER2, TIMER_IF_OF);
-  timeTick++;
 }
 
 //"Update DAC tic" == fast clock that ticks. The frequency field of the 
@@ -499,7 +486,6 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
       if(DEBUG_PRINTING) printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
       //Range register 1
-  //    addr[0x04] = 0xAAA0; //range register written to +-5V on all channels for chans 0 to 4
 
       resetTime();
       runTime();
@@ -611,10 +597,6 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
     runItems = 1;
-    timeTick = 0;
-    lastTimeTick = 0;
-    timeMs = 0;
-    itaPos = 0;
   }
 
   if(currentPack.command == USB_CMD_PROGRAM_XBAR)
@@ -683,17 +665,12 @@ void execCurrentPack()
     fpgaNumSamples = 0;
     if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
     //Reset state
-    itaPos = 0;
-    iifPos = 0;
     numItemsInFlight = 0;
     numSamples = 0;
     numInputChannels = 0;
     nextKillTime = 0;
     adcSequence[0] = 0;
 
-    timeTick = 0;
-    lastTimeTick = 0;
-    timeMs = 0;
 
     for(int q = 0; q < 8; q++) {
       numSamplesPerFPGATableIndex[q] = 0;
