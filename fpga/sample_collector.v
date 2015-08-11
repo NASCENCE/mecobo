@@ -53,6 +53,7 @@ localparam ADDR_DEBUG = 10;
 localparam
 CMD_START_SAMPLING = 1,
 CMD_STOP_SAMPLING = 2,
+CMD_RES_SAMPLE_FIFO = 3,
 CMD_RESET = 5;
 
 
