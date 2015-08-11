@@ -268,7 +268,8 @@ generate
     .adc_dout(HN[40]),
     .output_sample(sample_enable_output),
     .channel_select(sample_channel_select),
-    .sample_data(sample_data_bus)
+    .sample_data(sample_data_bus),
+    .current_time(global_clock)
   );
 
   dac_control #(.POSITION(240))

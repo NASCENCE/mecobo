@@ -100,15 +100,13 @@ static int sendPackReady = 0;
 static int sendInProgress = 0;
 static int executeInProgress = 0;
 
-static int feedFpgaCmdFifo = 0;
-static int sampleFifoEmpty = 0;
+static int feedFpgaCmdFifo = 1;
+static int sampleFifoEmpty = 1;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
 uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
-
-
 
 static int runItems = 0;
 
@@ -300,13 +298,13 @@ int main(void)
   /* MAIN LOOP */
   resetTime();
   for (;;) {
+    checkStatusReg();
+
     if (feedFpgaCmdFifo & xbarProgrammed & (ucCmdFifo.numElements > 0)) {
-      while(ucCmdFifo.numElements > 0) {
         void * item = NULL;
         fifoGet(&ucCmdFifo, &item);
         struct pinItem * it = (struct pinItem *)item;
         pushToCmdFifo(it);
-      }
     }
 
     if(xbarProgrammed & runItems & !timeStarted) {
@@ -317,7 +315,8 @@ int main(void)
 
     //Should check the amount of samples in the on-board FIFO here...
     //but that would require a read. and that's the same as 
-    if (runItems & !fifoFull(&ucSampleFifo) & (!sampleFifoEmpty) ) {
+
+    if (timeStarted & runItems & !fifoFull(&ucSampleFifo) & (!sampleFifoEmpty) ) {
       //Push samples into fifo
       
       uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
@@ -481,6 +480,8 @@ inline uint32_t get_bit(uint32_t val, uint32_t bit)
 
 inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
 {
+  mecoboStatus = MECOBO_STATUS_BUSY;
+
   command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
@@ -504,7 +505,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   fpgaNumSamples += (int)nSamples;
   fpgaTableIndex++;
 
-  //if(DEBUG_PRINTING) printf("Estimated %f samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
+  //printf("Estimated %u samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
   //uint16_t * addr = getChannelAddress(channel);
@@ -566,6 +567,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
   }
 
   inputChannels[numInputChannels++] = channel;
+  mecoboStatus = MECOBO_STATUS_READY;
 
 }
 
@@ -1129,10 +1131,16 @@ int NORError() {
 */
 
 void fpgaIrqHandler(uint8_t pin) {
-  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-  statusReg = cmdInterfaceAddr[0];
+
   printf("ir: %x\n", pin);
   printf("sr: %x\n", statusReg);
+  checkStatusReg();
+}
+
+void checkStatusReg() 
+{
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+  statusReg = cmdInterfaceAddr[0];
   if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
     printf("CMD FIFO almost full\n");
     feedFpgaCmdFifo = 0;
@@ -1141,23 +1149,18 @@ void fpgaIrqHandler(uint8_t pin) {
   if (statusReg & STATUS_REG_CMD_FIFO_EMPTY) {
     //printf("CMD FIFO empty\n");
     feedFpgaCmdFifo = 1;
-  } else if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
+  } 
+  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
     //printf("CMD FIFO almost empty\n");
     feedFpgaCmdFifo = 1;
   }
 
-  if (statusReg & STATUS_REG_SAMPLE_FIFO_ALMOST_EMPTY) {
-    //printf("SAMPLE FIFO almost empty\n");
-    sampleFifoEmpty = 1;
-  } else if (statusReg & STATUS_REG_SAMPLE_FIFO_EMPTY) {
-    //printf("SAMPLE FIFO empty\n");
+  if (statusReg & STATUS_REG_SAMPLE_FIFO_EMPTY) {
     sampleFifoEmpty = 1;
   } else {
     sampleFifoEmpty = 0;
   }
-
 }
-
 
 inline void putInFifo(struct fifoCmd * cmd) 
 {

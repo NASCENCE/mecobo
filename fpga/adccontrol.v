@@ -27,7 +27,9 @@ module adc_control (
   //data line into the cip.
   output adc_din,
   //serial data from chip
-  input adc_dout
+  input adc_dout,
+
+  input [31:0] current_time;
 );
 
 
@@ -81,6 +83,7 @@ reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle thi
 
 reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
 reg [15:0] sample_register [0:7];   //Holds the actual samples from each channel
+reg [31:0] end_time [0:7];
 
 wire busy;
 
@@ -101,6 +104,7 @@ localparam [3:0]
 PROGRAM  = 4'h4,
 OVERFLOW = 4'h1,
 DIVIDE   = 4'h2,
+ENDTIME  = 4'h3;
 SAMPLE   = 4'h7,
 SEQUENCE = 4'h8,
 ID_REG   = 4'h9,
@@ -119,12 +123,17 @@ always @ (posedge clk) begin
     sample_data <= 32'hZ;
     for (c = 0; c < 8; c = c+1) begin
       overflow_register[c] <= 0;
+      end_time[c] <= 0;
     end
     current_command <= 0;
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
+      if (end_time[chan_idx] < current_time)
+        sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
+      else
+        sample_data <= 32'hFFFFFFFF;
+
     end else begin
       sample_data <= 32'hZ;
     end
@@ -149,6 +158,10 @@ always @ (posedge clk) begin
 
         if (addr[3:0] == DIVIDE) begin
           clock_divide_register <= data_in[15:0];
+        end
+        
+        if (addr[3:0] == ENDTIME) begin
+          end_time[int_chan_idx] <= data_in;
         end
       end
     end

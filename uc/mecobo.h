@@ -228,6 +228,6 @@ void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t d
 void resetXbar();
 void runTime();
 void resetTime();
-
+void checkStatusReg();
 #endif //__MECOBO_H_
 

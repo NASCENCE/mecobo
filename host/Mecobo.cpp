@@ -521,7 +521,12 @@ Mecobo::runSchedule ()
     sendPacket(&p);
     usbSendQueue.pop();
   }
+    
 
+  //check if we're busy configuring something
+  while(status().state == MECOBO_STATUS_BUSY) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
   //Now start the sequence
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);

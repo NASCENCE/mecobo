@@ -59,8 +59,8 @@ cli.appendSequenceAction(it)
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
-it.endTime = 3000
-it.frequency = 100000
+it.endTime = 30000
+it.frequency = 10000
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)
 

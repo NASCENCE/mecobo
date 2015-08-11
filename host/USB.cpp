@@ -141,12 +141,18 @@ void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
   int bytesRemaining = numBytes;
   int transfered = 0;
   int ret = 0;
+  int maxRetries = 10;
+  int retries = 0;
   while(bytesRemaining > 0) {
     ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5000);
-    if(ret != 0) {
-      printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
-      printf("We're continuing, but this is probably not a good state to be in.\n");
-      break;
+    while((ret != 0) & (retries < maxRetries)) {
+      ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5000);
+      if(ret != 0) {
+        printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
+        printf("We're continuing, but this is probably not a good state to be in.\n");
+        break;
+      }
+      retries++;
     }
     bytesRemaining -= transfered;
   }
