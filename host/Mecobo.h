@@ -10,6 +10,8 @@
 
 #include <map>
 #include <vector>
+#include <queue>
+#include <thread>
 #include "emEvolvableMotherboard.h"
 #include "USB.h"
 #include "../mecoprot.h"
@@ -19,14 +21,22 @@ class Mecobo
 {
 private:
 
+
+
   void createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command);
   void setXbar(std::vector<uint8_t> & bytes);
   bool hasDaughterboard;
+  bool finished;
   USB usb;
   channelMap xbar;
 
   //Recordings will be -5 to 5V.
   std::map<int, std::vector<int32_t>> pinRecordings;
+
+  std::queue<struct mecoPack> usbSendQueue;
+
+  //Just collect samples from FPGA
+  void collectSamples();
 
 public:
   Mecobo (bool daughterboard);
@@ -63,6 +73,8 @@ public:
   void setLed(int a, int b);
   void updateRegister(int index, int value);
 
+
+  void finish();
 
   int getPort();
 

@@ -52,16 +52,22 @@
 
 #include "fifo.h"
 
-struct fifo cmdFifo;
+//Yes, yes I know
+#define min(a,b) ({ a < b ? a : b; })
+
+
+struct fifo ucCmdFifo;
+struct fifo ucSampleFifo;
 
 #define MAGIC_FPGA_BITFILE_CONSTANT 0x4242
+#define USB_MAX_SAMPLES 64000/sizeof(struct sampleValue)
 
 char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
 
-#define DEBUG_PRINTING 0
+#define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -94,7 +100,7 @@ static int sendPackReady = 0;
 static int sendInProgress = 0;
 static int executeInProgress = 0;
 
-static int feedCmdFifo = 0;
+static int feedFpgaCmdFifo = 0;
 static int sampleFifoEmpty = 0;
 
 //Are we programming the FPGA
@@ -103,7 +109,6 @@ uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
 
-uint16_t numItemsInFlight = 0;
 
 static int runItems = 0;
 
@@ -124,7 +129,7 @@ static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
 static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
 //Such a waste of space, should use hash map.
 
-int numSamples = 0;
+uint32_t numSamples = 0;
 
 int inputChannels[MAX_INPUT_CHANNELS];
 int numInputChannels = 0;
@@ -289,21 +294,44 @@ int main(void)
   printf("Entering main loop.\n");
 
 
-  fifoInit(&cmdFifo, 20, sizeof(struct pinItem));
+  fifoInit(&ucCmdFifo, 1000, sizeof(struct pinItem), NULL);
+  fifoInit(&ucSampleFifo, 10000, sizeof(struct sampleValue), (uint8_t *)SRAM2_START);
 
+  /* MAIN LOOP */
   resetTime();
   for (;;) {
-    if (xbarProgrammed & (cmdFifo.numElements > 0)) {
-      void * item = NULL;
-      fifoGet(&cmdFifo, &item);
-      struct pinItem * it = (struct pinItem *)item;
-      pushToCmdFifo(it);
+    if (feedFpgaCmdFifo & xbarProgrammed & (ucCmdFifo.numElements > 0)) {
+      while(ucCmdFifo.numElements > 0) {
+        void * item = NULL;
+        fifoGet(&ucCmdFifo, &item);
+        struct pinItem * it = (struct pinItem *)item;
+        pushToCmdFifo(it);
+      }
     }
 
     if(xbarProgrammed & runItems & !timeStarted) {
       resetTime();
       runTime();
       timeStarted = 1;
+    }
+
+    //Should check the amount of samples in the on-board FIFO here...
+    //but that would require a read. and that's the same as 
+    if (runItems & !fifoFull(&ucSampleFifo) & (!sampleFifoEmpty) ) {
+      //Push samples into fifo
+      
+      uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
+      uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
+      uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
+
+      struct sampleValue sample; 
+      sample.sampleNum = numSamples++;
+      sample.channel = fpgaTableToChannel[tableIndex];
+      sample.value = data;
+
+      //printf("getting sample %x, c %x, v %x\n", sample.sampleNum, sample.channel, sample.value);
+      fifoInsert(&ucSampleFifo, &sample);
+
     }
   }
 }
@@ -374,6 +402,8 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
   return USB_STATUS_OK;
 }
 
+
+//Set up callback to always wait for a new pack of 8 bytes
 int UsbDataReceived(USB_Status_TypeDef status,
     uint32_t xf,
     uint32_t remaining) 
@@ -390,6 +420,9 @@ int UsbDataReceived(USB_Status_TypeDef status,
   return USB_STATUS_OK;
 }
 
+
+
+
 int UsbDataSent(USB_Status_TypeDef status,
     uint32_t xf,
     uint32_t remaining)
@@ -402,7 +435,6 @@ int UsbDataSent(USB_Status_TypeDef status,
     //don't free the sample buffer
     if(packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE) {
       if(packToSend.data != NULL) {
-        printf("f2\n");
         free(packToSend.data);
       } else {
         if(DEBUG_PRINTING) printf("Tried to free NULL-pointer\n");
@@ -420,7 +452,7 @@ int UsbDataSent(USB_Status_TypeDef status,
 
   return USB_STATUS_OK;
 }
-
+/*
 void DmaUsbTxDone(unsigned int channel, int primary, void *user)
 {
   (void) channel;
@@ -430,6 +462,7 @@ void DmaUsbTxDone(unsigned int channel, int primary, void *user)
   INT_Disable();
   INT_Enable();
 }
+*/
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
@@ -558,11 +591,11 @@ void execCurrentPack()
 {
   executeInProgress = 1;
   if(currentPack.command == USB_CMD_STATUS) {
+
     struct mecoboStatus s;
     s.state = (uint8_t)mecoboStatus;
     s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)0 + numItemsInFlight;
-    //printf("QI: %u\n", numItemsInFlight);
+    s.itemsInQueue = (uint16_t)ucCmdFifo.numElements;
 
     sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
   }
@@ -581,13 +614,13 @@ void execCurrentPack()
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
-      fifoInsert(&cmdFifo, &item);
+      fifoInsert(&ucCmdFifo, &item);
 
       if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
-    //Recording pins need some setup
+    //Recording pins need some setup as well.
     if((item.type == PINCONFIG_DATA_TYPE_RECORD_ANALOGUE) || (item.type == PINCONFIG_DATA_TYPE_RECORD)) {
       setupInput(item.pin, item.sampleRate, (item.endTime-item.startTime)/75000);
     }
@@ -665,19 +698,20 @@ void execCurrentPack()
     fpgaNumSamples = 0;
     if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
     //Reset state
-    numItemsInFlight = 0;
     numSamples = 0;
     numInputChannels = 0;
     nextKillTime = 0;
     adcSequence[0] = 0;
 
 
+    fifoReset(&ucCmdFifo);
+    fifoReset(&ucSampleFifo);
+
+
     for(int q = 0; q < 8; q++) {
       numSamplesPerFPGATableIndex[q] = 0;
       fpgaTableToChannel[q] = 0;
     }
-
-
 
     resetAllPins();
 
@@ -693,15 +727,17 @@ void execCurrentPack()
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
     //printf("SHIPPING numSamples: %d\n", numSamples);
-    if(DEBUG_PRINTING) printf("Sending %u samples back\n", fpgaNumSamples);
+   
+    //TODO: is this variable alive? naaah
+    uint32_t retSamples = min(ucSampleFifo.numElements, USB_MAX_SAMPLES);
 
-    sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&fpgaNumSamples);
-
+    if(DEBUG_PRINTING) printf("Sending %u samples back\n", (unsigned int)retSamples);
+    sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)(&retSamples));
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
 
-    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
+//    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
 
     //Send back the whole sending buffer.
     //Data contains the number of samples to xfer.
@@ -709,6 +745,12 @@ void execCurrentPack()
     int bytes = sizeof(struct sampleValue) * *txSamples;
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
 
+    for(unsigned int i = 0; i < *txSamples; i++) {
+      struct sampleValue * sv;
+      fifoGet(&ucSampleFifo, (void*)&sv);
+      samples[i] = *sv;
+    }
+    /*
     for(unsigned int i = 0; i < *txSamples;) {
      // uint16_t data = memctrl[1];
       //Read status register
@@ -731,6 +773,7 @@ void execCurrentPack()
         i++;
       //}
     }
+    */
 
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)samples);
 
@@ -1088,29 +1131,29 @@ int NORError() {
 void fpgaIrqHandler(uint8_t pin) {
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   statusReg = cmdInterfaceAddr[0];
-  printf("Interrupt detected: %x\n", pin);
-  printf("Status reg: %x\n", statusReg);
+  printf("ir: %x\n", pin);
+  printf("sr: %x\n", statusReg);
   if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
-    printf("FIFO almost full\n");
-    feedCmdFifo = 0;
+    printf("CMD FIFO almost full\n");
+    feedFpgaCmdFifo = 0;
   }
 
   if (statusReg & STATUS_REG_CMD_FIFO_EMPTY) {
-    printf("CMD FIFO empty\n");
-    feedCmdFifo = 1;
+    //printf("CMD FIFO empty\n");
+    feedFpgaCmdFifo = 1;
+  } else if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
+    //printf("CMD FIFO almost empty\n");
+    feedFpgaCmdFifo = 1;
   }
 
-  if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
-    printf("CMD FIFO almost empty\n");
-    feedCmdFifo = 1;
-  }
   if (statusReg & STATUS_REG_SAMPLE_FIFO_ALMOST_EMPTY) {
-    printf("SAMPLE FIFO almost empty\n");
-  }
-
-  if (statusReg & STATUS_REG_SAMPLE_FIFO_EMPTY) {
-    printf("SAMPLE FIFO empty\n");
+    //printf("SAMPLE FIFO almost empty\n");
     sampleFifoEmpty = 1;
+  } else if (statusReg & STATUS_REG_SAMPLE_FIFO_EMPTY) {
+    //printf("SAMPLE FIFO empty\n");
+    sampleFifoEmpty = 1;
+  } else {
+    sampleFifoEmpty = 0;
   }
 
 }
@@ -1126,28 +1169,29 @@ inline void putInFifo(struct fifoCmd * cmd)
   //To get the value 0xdeadbeef into the 32 bit reg (BE on meco), 
   //we must first write 0xdead and then 0xbeef. However,
   //serialCmd[0] is beef and serialCmd[1] is dead because of little endians.
-  //so. we order manually, like so
+  //so. we order manually.
+  //
+  //The FPGA cmdInterface is ordered from MSB to LSB. There's 5
+  //words of 2 bytes each.
 
-  //memcpy(cmdInterfaceAddr + 1, serialCmd, 10);
   printf("s: %x\n", cmdInterfaceAddr[0]);
   
   cmdInterfaceAddr[1] = serialCmd[1];
   cmdInterfaceAddr[2] = serialCmd[0];  //flippery to put them in correct order on bus 
   
-  //cmdInterfaceAddr[1] = 0;
-  //cmdInterfaceAddr[2] = 10;  //flippery to put them in correct order on bus 
-
-  cmdInterfaceAddr[3] = cmd->data[0];  //will be put on bus in network order
+   cmdInterfaceAddr[3] = cmd->data[0];  //will be put on bus in network order
   cmdInterfaceAddr[4] = cmd->data[1];  //will be put on bus in network order
   
   cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that the last word of the cmd is first addr, then controller.
 
+  /*
   printf("s: %x\n", cmdInterfaceAddr[0]);
   printf("pushing word %u : %x\n", 0, serialCmd[1]);
   printf("pushing word %u : %x\n", 1, serialCmd[0]);
   printf("pushing dword %u : %x\n", 2, cmd->data[0]);
   printf("pushing dword %u : %x\n", 3, cmd->data[1]);
   printf("pushing word %u : %x\n", 4, serialCmd[4]);
+  */
 }
 
 

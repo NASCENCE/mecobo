@@ -55,7 +55,7 @@ void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, 
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  this->usbSendQueue.push(p);
   std::cout << "ITEM SCHEDULED ON MECOBO" << std::endl;
 }
 
@@ -82,7 +82,7 @@ void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  this->usbSendQueue.push(p);
   std::cout << "CONSTANT_FROM_REGISTER SCHEDULED ON MECOBO" << std::endl;
 }
 
@@ -109,7 +109,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  this->usbSendQueue.push(p);
 }
 
 
@@ -234,7 +234,12 @@ void Mecobo::programFPGA(const char * filename)
 
 std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 {
+  return pinRecordings[materialPin];
+}
 
+void Mecobo::collectSamples()
+/* This simply retrieves the current sample buffer */
+{
   //This holds all the samples.
   std::vector<sampleValue> samples;
 
@@ -255,7 +260,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
     std::cout << "WARNING: No samples collected. Something might be wrong, but there might just be no new samples as well." << std::endl;
-    return pinRecordings[materialPin];
+    return;
   }
 
   //max tx size is 64k
@@ -300,16 +305,12 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
 
     sampleValue * casted = (sampleValue *)collectedSamples;
     for(int i = 0; i < (int)thisTxSamples; i++) {
+    //  std::cout << "I am a bear" << casted[i].channel << "\n";
       samples.push_back(casted[i]);
     }
 
     delete[] collectedSamples;
   }
-
-  //TODO: Sort the samples here, we could have a wrapped-around buffer.
-  //Assumtion is that the sequence numbers from the FPGA are always
-  //increasing, which can also be false, so this is "best effort"
-  //to recreate the wave, but the general trend exists of course.
   
   //The samples we get back are associated with a certain channel,
   //we need to convert it to pins to see what the user actually
@@ -323,14 +324,13 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
         //std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
         //Cast from 13 bit to 32 bit two's complement int.
         int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-        //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+  //      std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
         pinRecordings[(int)p].push_back(v);
       }
     } else {
       pinRecordings[s.channel].push_back(s.value);
     }
   }
-  return pinRecordings[materialPin];
 }
 
 void Mecobo::discharge()
@@ -346,11 +346,16 @@ void Mecobo::discharge()
 
 void Mecobo::reset()
 {
+  this->finished = false;
   if (hasDaughterboard) {
     std::cout << "Reseting XBAR..."; 
     xbar.reset();
     std::cout << "DONE." << std::endl;
   }
+
+  //clear queue because reset, just in case
+  std::queue<struct mecoPack> empty;
+  std::swap(usbSendQueue, empty);
 
   pinRecordings.clear();
   struct mecoPack p;
@@ -406,7 +411,8 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  //sendPacket(&p);
+  this->usbSendQueue.push(p);
 }
 
 
@@ -454,7 +460,7 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  this->usbSendQueue.push(p);
 
 }
 
@@ -492,7 +498,7 @@ Mecobo::scheduleSine (std::vector<int> pin, int start, int end, int frequency, i
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  sendPacket(&p);
+  this->usbSendQueue.push(p);
 }
 
 void
@@ -508,19 +514,35 @@ Mecobo::runSchedule ()
     }
   }
 
+  //Send the first part of the schedule here (up until a certain point in time?)
+  while(!usbSendQueue.empty()) {
+    struct mecoPack p = usbSendQueue.front();
+    std::cout << "pushing " << p.size << " bytes. data:" << p.data[0] << std::endl;
+    sendPacket(&p);
+    usbSendQueue.pop();
+  }
 
-  //Send the current schedule here
-  
-  
+  //Now start the sequence
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
   sendPacket(&p);
+
+  //Else, we'll just keep getting buffer data here until we're done somehow.
+
+  while(!this->finished) {
+    //TODO: If we have more stuff in the usbSendQueue, keep feeding the board 
+    //Collect samples.
+    collectSamples();
+    //TODO: Calculate how often we need to poll to keep up with stuff here.
+    std::this_thread::sleep_for(std::chrono::milliseconds(20)); 
+  }
 }
 
 void
 Mecobo::setXbar(std::vector<uint8_t> & bytes)
 {
   if(hasDaughterboard) {
+    std::cout << "Sending bytes to program xbar\n";
     struct mecoPack p;
     createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
     sendPacket(&p);
@@ -558,4 +580,10 @@ int
 Mecobo::getPort()
 {
   return 9090 + this->usb.getUsbAddress();
+}
+
+void 
+Mecobo::finish()
+{
+  this->finished = true;
 }

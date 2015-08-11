@@ -33,6 +33,8 @@ using std::chrono::steady_clock;
 class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
 
+  std::thread * runScheduleThread;
+
   int port;
   int boardAddr;
 
@@ -115,11 +117,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     
     emException err;
     //Reset board?
-    mecobo->reset();
+    //mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Scheduling sequences on board." << std::endl;
-    if (seqItems.size() > 100) {
-      err.Reason = "No more than 100 items please!";
+    if (seqItems.size() > 1000) {
+      err.Reason = "No more than 1000 items please!";
       err.Source = "runSequences()";
       throw err;
     }
@@ -138,7 +140,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }
 
     std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
-    mecobo->runSchedule();
+    this->runScheduleThread = new std::thread(&Mecobo::runSchedule, mecobo);
     sequenceRunStart = steady_clock::now();
   } 
 
@@ -165,7 +167,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
         std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
         break;
       }
+      std::cout << "Oh emm gee why are we not done\n";
     }
+    //this is just weird and backwards
+    mecobo->finish();  //why are we doing this here. we should count the time in runSchedule and just hang around here UNTIL this flag is set, not set the flag from here.
+    runScheduleThread->join();
   }
 
   void appendSequenceAction(const emSequenceItem& Item) {

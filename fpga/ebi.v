@@ -1,30 +1,30 @@
 module ebi(	input clk,
-		input rst,
-		//External interface to the world
-		input [15:0] data_in,
-		output reg [15:0] data_out,
-		input [18:0] addr,
-		input rd,
-		input wr,
-		input cs,
-    output [31:0] global_clock,
-		//Interface to CMD fifo
-		output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
-		output reg	cmd_fifo_wr_en,
-		input  		cmd_fifo_almost_full, 
-		input  		cmd_fifo_full,
-		input  		cmd_fifo_almost_empty,
-		input  		cmd_fifo_empty,
-		//Interace from SAMPLE DATA fifo
-		input 	[15:0] 	sample_fifo_data_out,   //data FROM sample fifo
-		output reg	    sample_fifo_rd_en,
-		input 		      sample_fifo_almost_full,
-		input		        sample_fifo_full,
-		input 		      sample_fifo_almost_empty,
-		input		        sample_fifo_empty,
-		//TODO: DAC buffers.
-		output          reg irq
-	
+input rst,
+//External interface to the world
+input [15:0] data_in,
+output reg [15:0] data_out,
+input [18:0] addr,
+input rd,
+input wr,
+input cs,
+output [31:0] global_clock,
+//Interface to CMD fifo
+output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
+output reg	cmd_fifo_wr_en,
+input  		cmd_fifo_almost_full, 
+input  		cmd_fifo_full,
+input  		cmd_fifo_almost_empty,
+input  		cmd_fifo_empty,
+//Interace from SAMPLE DATA fifo
+input 	[15:0] 	sample_fifo_data_out,   //data FROM sample fifo
+output reg	    sample_fifo_rd_en,
+input 		      sample_fifo_almost_full,
+input		        sample_fifo_full,
+input 		      sample_fifo_almost_empty,
+input		        sample_fifo_empty,
+//TODO: DAC buffers.
+output          reg irq
+
 );	
 
 // ------------- EBI INTERFACE -----------------
@@ -56,17 +56,17 @@ reg [31:0] clock_reg = 0;
 
 //Control state machine
 localparam [5:0]	idle 		= 6'b000001,
-			fetch		            = 6'b000010,
-			trans_over	        = 6'b000100,
-      fifo_read           = 6'b001000,
-      fifo_read_next      = 6'b010000,
-      time_cmd            = 6'b100000;
+fetch		            = 6'b000010,
+trans_over	        = 6'b000100,
+fifo_read           = 6'b001000,
+fifo_read_next      = 6'b010000,
+time_cmd            = 6'b100000;
 
 reg [5:0] state, nextState;
 
 always @ (posedge clk) begin
-	if (rst) state <= idle;
-	else state <= nextState;
+  if (rst) state <= idle;
+  else state <= nextState;
 end
 
 reg capture_fifo_data;
@@ -74,22 +74,22 @@ reg reset_time;
 reg run_time;
 
 always @ ( * ) begin
-	nextState = 6'bXXXXX;
-	cmd_fifo_wr_en = 1'b0;
-  
+  nextState = 6'bXXXXX;
+  cmd_fifo_wr_en = 1'b0;
+
   sample_fifo_rd_en = 1'b0;
   capture_fifo_data = 1'b0;
   run_time = 1'b0;
   reset_time = 1'b0;
 
-	case (state)
+  case (state)
     idle: begin
-			nextState = fetch;
+      nextState = fetch;
     end
 
-		fetch: begin
-			nextState = fetch;
-			if (cs & wr) begin
+    fetch: begin
+      nextState = fetch;
+      if (cs & wr) begin
         if (addr[7:0] == EBI_ADDR_CMD_FIFO_WRD_5)     nextState = trans_over;
         else if (addr[7:0] == EBI_ADDR_TIME_REG)      nextState = time_cmd; // = 1'b1;
       end else if (cs & rd) begin
@@ -97,12 +97,12 @@ always @ ( * ) begin
       end
     end
 
-		trans_over: begin
-			nextState = trans_over;
-			if (wr_transaction_done) begin
-				nextState = fetch;
+    trans_over: begin
+      nextState = trans_over;
+      if (wr_transaction_done) begin
+        nextState = fetch;
         cmd_fifo_wr_en = 1'b1;
-			end
+      end
     end
 
     /* Output data. State holds until read goes low again, indicating
@@ -135,14 +135,14 @@ always @ ( * ) begin
       end
     end
 
-	endcase
+  endcase
 
 end
 
 
 /*****************************************************
-             DATA PATH                            
- ***************************************************/
+DATA PATH                            
+***************************************************/
 reg [15:0] status_register = 0;
 reg [15:0] status_register_old = 0;
 reg [15:0] fifo_captured_data = 16'hDEAD;
@@ -154,29 +154,33 @@ always @ (posedge clk) begin
     status_register_old <= 0;
     fifo_captured_data <= 16'hDEAD;
 
-		for ( i = 0; i < 11; i = i + 1) 
-			ebi_captured_data[i] <= 16'h0000;
+    for ( i = 0; i < 11; i = i + 1) 
+      ebi_captured_data[i] <= 16'h0000;
 
-	end else begin
+  end else begin
 
-		status_register <= 	{	cmd_fifo_almost_full,
-						cmd_fifo_full,
-						cmd_fifo_almost_empty,
-						cmd_fifo_empty,
-						sample_fifo_almost_full,
-						sample_fifo_full,
-						sample_fifo_empty,
-						sample_fifo_almost_empty,
-						8'h00
-					};
+    status_register <= 	{	cmd_fifo_almost_full, //15
+    cmd_fifo_full, //14
+    cmd_fifo_almost_empty, //13
+    cmd_fifo_empty,  //12
+    sample_fifo_almost_full, //11
+    sample_fifo_full,  //10
+    sample_fifo_empty,  //9
+    sample_fifo_almost_empty,  //8
+    8'h00
+    };
 
-	
-		irq <= (status_register != status_register_old);	
+
+    irq <= ((status_register[14] != status_register_old[14]) |
+            (status_register[12] != status_register_old[12]) |
+            (status_register[10] != status_register_old[10]) |
+            (status_register[9] != status_register_old[9]) )
+
     /* Driving data out */
     if (cs & rd) begin
       if (addr[7:0] == EBI_ADDR_STATUS_REG) begin
-			  data_out <= status_register;
-			  status_register_old <= status_register;
+        data_out <= status_register;
+        status_register_old <= status_register;
       end else if (addr[7:0] == EBI_ADDR_NEXT_SAMPLE) begin
         data_out <= fifo_captured_data;
       end else if (addr[7:0] == EBI_ADDR_READ_TIME_L) begin
@@ -190,13 +194,13 @@ always @ (posedge clk) begin
     if (cs & wr) begin
       ebi_captured_data[addr[7:0]] <= data_in;
     end
-    
+
     if (capture_fifo_data)  begin
       fifo_captured_data <= sample_fifo_data_out;
     end
 
 
-	end
+  end
 end
 
 
@@ -209,7 +213,7 @@ assign cmd_fifo_data_in[15:0] = ebi_captured_data[5];
 /*
 genvar j;
 for (j = 0; j < 5; j = j + 1) begin : blu
-	assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[4-j];
+assign cmd_fifo_data_in[((j+1) * 16)-1:(j) * 16] =  ebi_captured_data[4-j];
 end
 */
 
