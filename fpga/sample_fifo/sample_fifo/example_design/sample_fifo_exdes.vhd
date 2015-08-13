@@ -74,6 +74,7 @@ use unisim.vcomponents.all;
 entity sample_fifo_exdes is
    PORT (
            CLK                       : IN  std_logic;
+     	   DATA_COUNT                : OUT std_logic_vector(16-1 DOWNTO 0);
            WR_ACK                    : OUT std_logic;
            VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;
@@ -101,6 +102,7 @@ architecture xilinx of sample_fifo_exdes is
   component sample_fifo is
    PORT (
            CLK                       : IN  std_logic;
+     	   DATA_COUNT                : OUT std_logic_vector(16-1 DOWNTO 0);
            WR_ACK                    : OUT std_logic;
            VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;
@@ -130,6 +132,7 @@ begin
   exdes_inst : sample_fifo 
     PORT MAP (
            CLK                       => clk_i,
+           DATA_COUNT                => data_count,
            WR_ACK                    => wr_ack,
            VALID                     => valid,
            ALMOST_FULL               => almost_full,

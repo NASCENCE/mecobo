@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xilinx="http://www.xilinx.com" >
    <spirit:vendor>xilinx.com</spirit:vendor>
-   <spirit:library>CoreGen</spirit:library>
+   <spirit:library>project</spirit:library>
    <spirit:name>coregen</spirit:name>
    <spirit:version>1.0</spirit:version>
    <spirit:componentInstances>
@@ -40,7 +40,7 @@
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.INJECT_SBIT_ERROR">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.INJECT_DBIT_ERROR">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.USE_EXTRA_LOGIC">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DATA_COUNT">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DATA_COUNT">true</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DATA_COUNT_WIDTH">16</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.WRITE_DATA_COUNT">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.WRITE_DATA_COUNT_WIDTH">16</spirit:configurableElementValue>
@@ -184,7 +184,7 @@
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_FULL_FLAGS_RST_VAL">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_ALMOST_EMPTY">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_ALMOST_FULL">1</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_DATA_COUNT">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_DATA_COUNT">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_INT_CLK">0</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_OVERFLOW">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_RD_DATA_COUNT">0</spirit:configurableElementValue>
@@ -347,7 +347,7 @@
             <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_REG_SLICE_MODE_AXIS">0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
          <spirit:vendorExtensions>
-            <xilinx:instanceProperties>
+            <xilinx:instanceProperties xmlns:xilinx="http://www.xilinx.com">
                <xilinx:projectOptions>
                   <xilinx:projectName>coregen</xilinx:projectName>
                   <xilinx:outputDirectory>./</xilinx:outputDirectory>
@@ -382,9 +382,6 @@
             </xilinx:instanceProperties>
             <xilinx:generationHistory>
                <xilinx:fileSet>
-                  <xilinx:name>apply_current_project_options_generator</xilinx:name>
-               </xilinx:fileSet>
-               <xilinx:fileSet>
                   <xilinx:name>customization_generator</xilinx:name>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -395,8 +392,8 @@
                   <xilinx:file>
                      <xilinx:name>./sample_fifo.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:01 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0x3D42D7B4</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:42 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0xB23BFA42</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -425,7 +422,7 @@
                      <xilinx:name>./sample_fifo/example_design/sample_fifo_exdes.ucf</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>ucf</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x81CE16D2</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -433,15 +430,15 @@
                      <xilinx:name>./sample_fifo/example_design/sample_fifo_exdes.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0xE326400E</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x4B2168C2</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./sample_fifo/implement/implement.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xC0BAAC65</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -449,7 +446,7 @@
                      <xilinx:name>./sample_fifo/implement/implement.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xE544C882</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -457,7 +454,7 @@
                      <xilinx:name>./sample_fifo/implement/implement_synplify.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xFB6E8197</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -465,7 +462,7 @@
                      <xilinx:name>./sample_fifo/implement/implement_synplify.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x5026A573</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -473,7 +470,7 @@
                      <xilinx:name>./sample_fifo/implement/planAhead_ise.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xDA9EEDF7</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -481,7 +478,7 @@
                      <xilinx:name>./sample_fifo/implement/planAhead_ise.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x9880C419</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -489,7 +486,7 @@
                      <xilinx:name>./sample_fifo/implement/planAhead_ise.tcl</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xF99E8433</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -497,7 +494,7 @@
                      <xilinx:name>./sample_fifo/implement/xst.prj</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x92199C47</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -505,7 +502,7 @@
                      <xilinx:name>./sample_fifo/implement/xst.scr</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x981DBD29</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -513,7 +510,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_isim.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x5B34A78B</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -521,7 +518,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_isim.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x74E734D1</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -529,7 +526,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_mti.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x0C3CDB0C</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -537,7 +534,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_mti.do</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xA0D730E4</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -545,7 +542,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_mti.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x5FDBD750</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -553,7 +550,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_ncsim.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x36546AFC</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -561,7 +558,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/simulate_vcs.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x82ED5008</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -569,7 +566,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/ucli_commands.key</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xDB7C6E1C</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -577,7 +574,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/vcs_session.tcl</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x0479CF71</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -585,7 +582,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/wave_isim.tcl</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xC255F429</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -593,7 +590,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/wave_mti.do</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xDA42232F</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -601,7 +598,7 @@
                      <xilinx:name>./sample_fifo/simulation/functional/wave_ncsim.sv</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x36BD4DA5</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -609,7 +606,7 @@
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_dgen.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xB3BE21EC</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -617,7 +614,7 @@
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_dverif.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xA78EF4E8</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -625,7 +622,7 @@
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_pctrl.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xD5E81EB1</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -633,15 +630,15 @@
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_pkg.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0xAC3F0A7F</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x6029107D</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_rng.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xC48FACA0</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -649,15 +646,15 @@
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_synth.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0xC9537BD6</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x399D90D9</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./sample_fifo/simulation/sample_fifo_tb.vhd</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x4DE2D5FB</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -665,7 +662,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_isim.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xA88B4AA2</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -673,7 +670,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_isim.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xD798D652</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -681,7 +678,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_mti.bat</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x0C3CDB0C</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -689,7 +686,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_mti.do</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:43 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x06CEFB4B</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -697,7 +694,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_mti.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x5FDBD750</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -705,7 +702,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_ncsim.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x6CB01E90</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -713,7 +710,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/simulate_vcs.sh</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xFED2E2FD</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -721,7 +718,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/ucli_commands.key</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xDB7C6E1C</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -729,7 +726,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/vcs_session.tcl</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x7C398E9B</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -737,7 +734,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/wave_isim.tcl</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xC255F429</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -745,7 +742,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/wave_mti.do</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xDA42232F</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -753,7 +750,7 @@
                      <xilinx:name>./sample_fifo/simulation/timing/wave_ncsim.sv</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:46:02 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:31:44 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x36BD4DA5</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -763,8 +760,8 @@
                   <xilinx:file>
                      <xilinx:name>./sample_fifo.ngc</xilinx:name>
                      <xilinx:userFileType>ngc</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:46 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0x39DE6DFF</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0xE6000BA8</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -779,8 +776,8 @@
                   <xilinx:file>
                      <xilinx:name>./sample_fifo.veo</xilinx:name>
                      <xilinx:userFileType>veo</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:47 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0xBC9D62EB</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x371B58F7</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -789,8 +786,8 @@
                   <xilinx:file>
                      <xilinx:name>./sample_fifo.v</xilinx:name>
                      <xilinx:userFileType>verilog</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:47 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0x52583598</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0xBBA34761</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -800,7 +797,7 @@
                      <xilinx:name>./sample_fifo/doc/fifo_generator_v9_3_readme.txt</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:47 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x4A0AA28D</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -808,7 +805,7 @@
                      <xilinx:name>./sample_fifo/doc/fifo_generator_v9_3_vinfo.html</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:47 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x9B56C5A6</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -816,21 +813,29 @@
                      <xilinx:name>./sample_fifo/doc/pg057-fifo-generator.pdf</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>pdf</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:47 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:29 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x90F23916</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>readme_documents_generator</xilinx:name>
+                  <xilinx:file>
+                     <xilinx:name>./sample_fifo/doc/fifo_generator_v9_3_readme.txt</xilinx:name>
+                     <xilinx:userFileType>ignore</xilinx:userFileType>
+                     <xilinx:userFileType>txt</xilinx:userFileType>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:30 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x4A0AA28D</xilinx:checkSum>
+                     <xilinx:generationId>generationID_1879581046</xilinx:generationId>
+                  </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>asy_generator</xilinx:name>
                   <xilinx:file>
                      <xilinx:name>./sample_fifo.asy</xilinx:name>
                      <xilinx:userFileType>asy</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:53 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0x479D2023</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:35 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x7FFF7D15</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -840,7 +845,7 @@
                      <xilinx:name>./sample_fifo_xmdf.tcl</xilinx:name>
                      <xilinx:userFileType>tclXmdf</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:53 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:35 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0xE63F2F61</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -851,7 +856,7 @@
                      <xilinx:name>./sample_fifo.gise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>gise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:58 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:42 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x89DFA3CA</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -859,8 +864,8 @@
                      <xilinx:name>./sample_fifo.xise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>xise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:48:58 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0x586995D5</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:42 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x3ADFD8FB</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -870,7 +875,7 @@
                      <xilinx:name>./sample_fifo.gise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>gise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:49:03 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:47 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x3ED990D9</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
@@ -878,8 +883,8 @@
                      <xilinx:name>./sample_fifo.xise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>xise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:49:03 GMT 2015</xilinx:timeStamp>
-                     <xilinx:checkSum>0xFE67E12E</xilinx:checkSum>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:47 GMT 2015</xilinx:timeStamp>
+                     <xilinx:checkSum>0x41ADEE4B</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -893,7 +898,7 @@
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txtFlist</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Jun 29 10:49:03 GMT 2015</xilinx:timeStamp>
+                     <xilinx:timeStamp>Wed Aug 12 09:34:47 GMT 2015</xilinx:timeStamp>
                      <xilinx:checkSum>0x654DD339</xilinx:checkSum>
                      <xilinx:generationId>generationID_1879581046</xilinx:generationId>
                   </xilinx:file>

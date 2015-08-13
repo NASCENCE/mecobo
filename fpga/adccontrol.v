@@ -29,7 +29,7 @@ module adc_control (
   //serial data from chip
   input adc_dout,
 
-  input [31:0] current_time;
+  input [31:0] current_time
 );
 
 
@@ -104,7 +104,7 @@ localparam [3:0]
 PROGRAM  = 4'h4,
 OVERFLOW = 4'h1,
 DIVIDE   = 4'h2,
-ENDTIME  = 4'h3;
+ENDTIME  = 4'h3,
 SAMPLE   = 4'h7,
 SEQUENCE = 4'h8,
 ID_REG   = 4'h9,

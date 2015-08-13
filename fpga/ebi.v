@@ -22,6 +22,7 @@ input 		      sample_fifo_almost_full,
 input		        sample_fifo_full,
 input 		      sample_fifo_almost_empty,
 input		        sample_fifo_empty,
+input	[15:0]	sample_fifo_data_count,
 //TODO: DAC buffers.
 output          reg irq
 
@@ -39,6 +40,7 @@ localparam EBI_ADDR_NEXT_SAMPLE 	  = 6;
 localparam EBI_ADDR_TIME_REG 	      = 7;
 localparam EBI_ADDR_READ_TIME_L     = 9;
 localparam EBI_ADDR_READ_TIME_H     = 10;
+localparam EBI_ADDR_READ_SAMPLE_FIFO_DATA_COUNT = 11;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -170,11 +172,7 @@ always @ (posedge clk) begin
     8'h00
     };
 
-
-    irq <= ((status_register[14] != status_register_old[14]) |
-            (status_register[12] != status_register_old[12]) |
-            (status_register[10] != status_register_old[10]) |
-            (status_register[9] != status_register_old[9]) )
+    irq <= status_register[14] | status_register[10];
 
     /* Driving data out */
     if (cs & rd) begin
@@ -187,7 +185,10 @@ always @ (posedge clk) begin
         data_out <= clock_reg[15:0];
       end else if (addr[7:0] == EBI_ADDR_READ_TIME_H) begin
         data_out <= clock_reg[31:16];
+      end else if (addr[7:0] == EBI_ADDR_READ_SAMPLE_FIFO_DATA_COUNT) begin
+        data_out <= sample_fifo_data_count;
       end
+
     end
 
     //Write to ebi register banks

@@ -198,6 +198,7 @@ PACKAGE sample_fifo_pkg IS
  COMPONENT sample_fifo_exdes IS
    PORT (
            CLK                       : IN  std_logic;
+     	   DATA_COUNT                : OUT std_logic_vector(16-1 DOWNTO 0);
            WR_ACK                    : OUT std_logic;
            VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;

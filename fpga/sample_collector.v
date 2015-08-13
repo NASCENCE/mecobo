@@ -36,7 +36,8 @@ module sample_collector (
   output sample_fifo_empty,
   output sample_fifo_almost_empty,
   output sample_fifo_full,
-  output sample_fifo_almost_full
+  output sample_fifo_almost_full,
+  output [15:0] sample_fifo_data_count
 );
 
 parameter POSITION = 242;
@@ -258,7 +259,8 @@ sample_fifo sample_fifo_0 (
   .underflow(),
   .empty(sample_fifo_empty),
   .almost_empty(sample_fifo_almost_empty),
-  .valid()
+  .valid(),
+  .data_count(sample_fifo_data_count)
 );
 
 //-----------------------------------------------------------------------------------
