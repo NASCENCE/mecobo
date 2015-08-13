@@ -71,7 +71,8 @@ sample_fifo your_instance_name (
   .empty(empty), // output empty
   .almost_empty(almost_empty), // output almost_empty
   .valid(valid), // output valid
-  .underflow(underflow) // output underflow
+  .underflow(underflow), // output underflow
+  .data_count(data_count) // output [15 : 0] data_count
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 

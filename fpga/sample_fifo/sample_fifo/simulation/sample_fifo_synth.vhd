@@ -95,6 +95,7 @@ ARCHITECTURE simulation_arch OF sample_fifo_synth IS
 
     -- FIFO interface signal declarations
     SIGNAL clk_i	                  :   STD_LOGIC;
+    SIGNAL data_count                     :   STD_LOGIC_VECTOR(16-1 DOWNTO 0);
     SIGNAL wr_ack                         :   STD_LOGIC;
     SIGNAL valid                          :   STD_LOGIC;
     SIGNAL almost_full                    :   STD_LOGIC;
@@ -260,6 +261,7 @@ ARCHITECTURE simulation_arch OF sample_fifo_synth IS
   sample_fifo_inst : sample_fifo_exdes 
     PORT MAP (
            CLK                       => clk_i,
+           DATA_COUNT                => data_count,
            WR_ACK                    => wr_ack,
            VALID                     => valid,
            ALMOST_FULL               => almost_full,

@@ -50,7 +50,8 @@ module sample_fifo(
   empty,
   almost_empty,
   valid,
-  underflow
+  underflow,
+  data_count
 );
 
 input clk;
@@ -67,6 +68,7 @@ output empty;
 output almost_empty;
 output valid;
 output underflow;
+output [15 : 0] data_count;
 
 // synthesis translate_off
 
@@ -136,7 +138,7 @@ output underflow;
     .C_HAS_AXIS_TSTRB(0),
     .C_HAS_AXIS_TUSER(0),
     .C_HAS_BACKUP(0),
-    .C_HAS_DATA_COUNT(0),
+    .C_HAS_DATA_COUNT(1),
     .C_HAS_DATA_COUNTS_AXIS(0),
     .C_HAS_DATA_COUNTS_RACH(0),
     .C_HAS_DATA_COUNTS_RDCH(0),
@@ -276,6 +278,7 @@ output underflow;
     .ALMOST_EMPTY(almost_empty),
     .VALID(valid),
     .UNDERFLOW(underflow),
+    .DATA_COUNT(data_count),
     .BACKUP(),
     .BACKUP_MARKER(),
     .SRST(),
@@ -292,7 +295,6 @@ output underflow;
     .INT_CLK(),
     .INJECTDBITERR(),
     .INJECTSBITERR(),
-    .DATA_COUNT(),
     .RD_DATA_COUNT(),
     .WR_DATA_COUNT(),
     .PROG_FULL(),

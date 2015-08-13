@@ -285,6 +285,8 @@ always @ (posedge clk) begin
       nco_pa <= 0;
     else if (const_output_one) 
       nco_pa <= 32'hFFFFFFFF;
+    else if (reset_cmd) 
+    	nco_pa <= 0;
     else
       nco_pa <= nco_pa + nco_counter;
   end

@@ -29,7 +29,7 @@ module adc_control (
   //serial data from chip
   input adc_dout,
 
-  input [31:0] current_time;
+  input [31:0] current_time
 );
 
 
@@ -104,7 +104,7 @@ localparam [3:0]
 PROGRAM  = 4'h4,
 OVERFLOW = 4'h1,
 DIVIDE   = 4'h2,
-ENDTIME  = 4'h3;
+ENDTIME  = 4'h3,
 SAMPLE   = 4'h7,
 SEQUENCE = 4'h8,
 ID_REG   = 4'h9,
@@ -129,7 +129,7 @@ always @ (posedge clk) begin
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if (end_time[chan_idx] < current_time)
+      if (end_time[chan_idx] > current_time)
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
         sample_data <= 32'hFFFFFFFF;

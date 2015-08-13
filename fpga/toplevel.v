@@ -159,6 +159,7 @@ ODDR2 clkout_oddr_da
 wire [31:0] global_clock;
 wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
+wire [15:0] sample_fifo_data_count;
 //EBI
 ebi ebi_if(
   .clk(sys_clk),
@@ -182,6 +183,7 @@ ebi ebi_if(
   .sample_fifo_almost_empty(sample_fifo_almost_empty),
   .sample_fifo_full(sample_fifo_full),
   .sample_fifo_almost_full(sample_fifo_almost_full),
+  .sample_fifo_data_count(sample_fifo_data_count),
   .irq(ebi_irq)
 );
 
@@ -344,7 +346,8 @@ sample_collector sample_collector0(
   .sample_fifo_empty(sample_fifo_empty),
   .sample_fifo_almost_empty(sample_fifo_almost_empty),
   .sample_fifo_full(sample_fifo_full),
-  .sample_fifo_almost_full(sample_fifo_almost_full)
+  .sample_fifo_almost_full(sample_fifo_almost_full),
+  .sample_fifo_data_count(sample_fifo_data_count)
 );
 
 
