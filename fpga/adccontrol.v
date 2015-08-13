@@ -129,7 +129,7 @@ always @ (posedge clk) begin
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if (end_time[chan_idx] < current_time)
+      if (end_time[chan_idx] > current_time)
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
         sample_data <= 32'hFFFFFFFF;

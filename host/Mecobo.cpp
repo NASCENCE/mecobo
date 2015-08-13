@@ -26,6 +26,7 @@ Mecobo::Mecobo (bool daughterboard)
   }
 
   hasDaughterboard = true;
+  this->lastSequenceItemEnd = 0;
 }
 
 Mecobo::~Mecobo ()
@@ -35,6 +36,12 @@ Mecobo::~Mecobo ()
 
 void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, int amplitude)
 {
+
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
@@ -62,6 +69,12 @@ void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, 
 
 void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start, int end, int reg)
 {
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
+
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
@@ -88,6 +101,13 @@ void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start
 
 void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int frequency)
 {
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
+
+  //std::cout << "well: " << this->lastSequenceItemEnd << std::endl;
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
@@ -244,9 +264,20 @@ void Mecobo::collectSamples()
   std::vector<sampleValue> samples;
 
   //Send request for buffer size
+  std::cout << "Checking how many samples we can collect\n";
+
+  while(status().state == MECOBO_STATUS_BUSY) {
+      std::cout << "Mecobo claims to be busy\n";
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+      std::cout << "Sleep over!\n";
+  }
+
+  std::cout << "Mecobo is not busy so we ask\n";
   struct mecoPack pack;
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
+  
+  std::cout << "WE ASKEDk\n";
 
   //Retrieve bytes.
   uint32_t nSamples = 0;
@@ -265,7 +296,7 @@ void Mecobo::collectSamples()
 
   //max tx size is 64k
   usbTransfers = nSamples/maxSamplesPerTx;
-  remainderSamples = nSamples%maxSamplesPerTx;
+  remainderSamples = nSamples%maxSamplesPerTx;   //this will be the "remainder if usbTransfers is < 1)
   std::cout << "Splitting in "<< usbTransfers << " transfers and " << remainderSamples << " remainder" << std::endl;
   //additional transfer for the remainder
   if (remainderSamples > 0) {
@@ -303,9 +334,9 @@ void Mecobo::collectSamples()
 
     usb.getBytesDefaultEndpoint((uint8_t*)collectedSamples, thisTxBytes);
 
+    std::cout << "Bytes received!" << std::endl;
     sampleValue * casted = (sampleValue *)collectedSamples;
     for(int i = 0; i < (int)thisTxSamples; i++) {
-    //  std::cout << "I am a bear" << casted[i].channel << "\n";
       samples.push_back(casted[i]);
     }
 
@@ -378,18 +409,30 @@ Mecobo::isFpgaConfigured ()
 mecoboStatus
 Mecobo::status()
 {
+  std::cout << "We're asking for STATUS?! NOW?\n";
   struct mecoPack p;
   createMecoPack(&p, 0, 0, USB_CMD_STATUS);
   sendPacket(&p);
+  std::cout << "Send a packet, now waiting for incoming data\n";
+
   mecoboStatus status;
   usb.getBytesDefaultEndpoint((uint8_t*)&status, sizeof(mecoboStatus));
 
+  std::cout << "MECOBO STATUS: " << (int)status.state << std::endl;
   return status;
 }
 
 void
 Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int frequency)
 {
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
+
+
+
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
 
@@ -420,6 +463,14 @@ void
 Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int frequency,
 			       int dutyCycle)
 {
+
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
+
+
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
   //Find a channel (or it might throw an error).
 
@@ -475,6 +526,12 @@ void
 Mecobo::scheduleSine (std::vector<int> pin, int start, int end, int frequency, int amplitude,
 		      int phase)
 {
+  if(end != -1) {
+    this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
+  } else {
+    this->lastSequenceItemEnd = -1;
+  }
+
 
   //TODO: Support phase.
 
@@ -510,7 +567,7 @@ Mecobo::runSchedule ()
     std::vector<uint8_t> test = xbar.getXbarConfigBytes();
     this->setXbar(test);
     while(status().state == MECOBO_STATUS_BUSY) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
 
@@ -525,22 +582,49 @@ Mecobo::runSchedule ()
 
   //check if we're busy configuring something
   while(status().state == MECOBO_STATUS_BUSY) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+
   //Now start the sequence
+
+  std::cout << "Starting sequence run last item" << this->lastSequenceItemEnd << std::endl;
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
   sendPacket(&p);
 
   //Else, we'll just keep getting buffer data here until we're done somehow.
+  std::chrono::time_point<std::chrono::system_clock> start;
+  start = std::chrono::system_clock::now();
 
+  int delta;
   while(!this->finished) {
-    //TODO: If we have more stuff in the usbSendQueue, keep feeding the board 
+  
+    if(this->lastSequenceItemEnd != -1) {
+      delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
+      if(delta >= this->lastSequenceItemEnd) {
+        if (status().samplesInBuffer == 0)
+          this->finished = true;
+      }
+
+    } 
+
+    //If we have more stuff in the usbSendQueue, keep feeding the board 
+    while(!usbSendQueue.empty()) {
+      struct mecoPack p = usbSendQueue.front();
+      std::cout << "pushing " << p.size << " bytes. data:" << p.data[0] << std::endl;
+      sendPacket(&p);
+      usbSendQueue.pop();
+    }
+
     //Collect samples.
+    printf("Collecting samples, current time %d\n", delta);
     collectSamples();
     //TODO: Calculate how often we need to poll to keep up with stuff here.
-    std::this_thread::sleep_for(std::chrono::milliseconds(20)); 
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
   }
+  std::cout << "Scheduled run complete\n";
+  return;
 }
 
 void

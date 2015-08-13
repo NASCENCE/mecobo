@@ -102,6 +102,7 @@ static int executeInProgress = 0;
 
 static int feedFpgaCmdFifo = 1;
 static int sampleFifoEmpty = 1;
+static uint16_t samplesToGet = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
@@ -112,8 +113,6 @@ static int runItems = 0;
 
 static int fpgaTableIndex = 0;
 static uint8_t fpgaTableToChannel[8];
-static uint8_t numSamplesPerFPGATableIndex[8];
-static int fpgaNumSamples = 0;
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -297,9 +296,13 @@ int main(void)
 
   /* MAIN LOOP */
   resetTime();
-  for (;;) {
-    checkStatusReg();
 
+  samplesToGet = sampleFifoDataCount();
+
+  for (;;) {
+    //checkStatusReg();
+
+    //We want to be able to feed the fifo even if the sequenc run is not started, so no check for runItems here.
     if (feedFpgaCmdFifo & xbarProgrammed & (ucCmdFifo.numElements > 0)) {
         void * item = NULL;
         fifoGet(&ucCmdFifo, &item);
@@ -313,10 +316,15 @@ int main(void)
       timeStarted = 1;
     }
 
-    //Should check the amount of samples in the on-board FIFO here...
-    //but that would require a read. and that's the same as 
+    //Check how many samples are in the FIFO, we have to get them anyway
+    //so no need to check until we've gotten them anyway.
+    
+    if(timeStarted & runItems & (samplesToGet == 0)) {
+      samplesToGet = sampleFifoDataCount();
+    }
 
-    if (timeStarted & runItems & !fifoFull(&ucSampleFifo) & (!sampleFifoEmpty) ) {
+    //sampleFifoDataCount();
+    if ((samplesToGet>0) & timeStarted & runItems & !fifoFull(&ucSampleFifo)) {
       //Push samples into fifo
       
       uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
@@ -330,6 +338,8 @@ int main(void)
 
       //printf("getting sample %x, c %x, v %x\n", sample.sampleNum, sample.channel, sample.value);
       fifoInsert(&ucSampleFifo, &sample);
+
+      samplesToGet--;
 
     }
   }
@@ -428,26 +438,23 @@ int UsbDataSent(USB_Status_TypeDef status,
 {
   (void) remaining;
 
-
   if ((status == USB_STATUS_OK) && (xf > 0)) {
     //we probably sent some data :-)
-    //don't free the sample buffer
-    if(packToSend.command != USB_CMD_GET_INPUT_BUFFER_SIZE) {
+    //don't free this command it just sends back a status
+//    if(packToSend.command != USB_CMD_STATUS) {
       if(packToSend.data != NULL) {
         free(packToSend.data);
       } else {
         if(DEBUG_PRINTING) printf("Tried to free NULL-pointer\n");
       }
-    }
+ //   }
 
     //Reset sample counter now.
     if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
       numSamples = 0;
-      fpgaNumSamples = 0;
     }
   }
   sendInProgress = 0;
-  //printf("USB DATA SENT HURRA\n");
 
   return USB_STATUS_OK;
 }
@@ -478,7 +485,7 @@ inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
-inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duration)
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t endtime)
 {
   mecoboStatus = MECOBO_STATUS_BUSY;
 
@@ -500,11 +507,7 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
     printf("omg sampleRate is 0. setting cowardly to 1000");
     overflow = 1000.0;
   }
-  float nSamples = (sampleRate)*((float)duration/(float)1000);
-  numSamplesPerFPGATableIndex[fpgaTableIndex] = (int)nSamples;
-  fpgaNumSamples += (int)nSamples;
   fpgaTableIndex++;
-
   //printf("Estimated %u samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
@@ -533,7 +536,10 @@ inline void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, int duratio
 
       command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
       USBTIMER_DelayMs(1);
-      
+ 
+      command(0, channel, AD_REG_ENDTIME, (uint32_t)endtime);
+      USBTIMER_DelayMs(1);
+     
       command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
       //Sequence register write.
       USBTIMER_DelayMs(1);
@@ -594,12 +600,13 @@ void execCurrentPack()
   executeInProgress = 1;
   if(currentPack.command == USB_CMD_STATUS) {
 
-    struct mecoboStatus s;
-    s.state = (uint8_t)mecoboStatus;
-    s.samplesInBuffer = (uint16_t)numSamples;
-    s.itemsInQueue = (uint16_t)ucCmdFifo.numElements;
+    struct mecoboStatus * s = (struct mecoboStatus *)malloc(sizeof(struct mecoboStatus));
+    s->state = (uint8_t)mecoboStatus;
+    s->foo = 0; //padding
+    s->samplesInBuffer = (uint16_t)sampleFifoDataCount(); //check if the sample fifo is empty yet...
+    s->itemsInQueue = (uint16_t)ucCmdFifo.numElements;
 
-    sendPacket(sizeof(struct mecoboStatus), USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)&s);
+    sendPacket(sizeof(struct mecoboStatus), USB_CMD_STATUS, (uint8_t*)s);
   }
 
   else if(currentPack.command == USB_CMD_CONFIG_PIN) {
@@ -624,13 +631,14 @@ void execCurrentPack()
     }
     //Recording pins need some setup as well.
     if((item.type == PINCONFIG_DATA_TYPE_RECORD_ANALOGUE) || (item.type == PINCONFIG_DATA_TYPE_RECORD)) {
-      setupInput(item.pin, item.sampleRate, (item.endTime-item.startTime)/75000);
+      setupInput(item.pin, item.sampleRate, item.endTime);
     }
 
   }
 
   if(currentPack.command == USB_CMD_RUN_SEQ)
   {
+    printf("---- SEQUENCE RUN STARTED -----\n");
     runItems = 1;
   }
 
@@ -662,10 +670,10 @@ void execCurrentPack()
     USBTIMER_DelayMs(1);
 
     if(DEBUG_PRINTING) printf("\nXBAR configured\n");
-    mecoboStatus = MECOBO_STATUS_READY;
 
     xbarProgrammed = 1;
     resetTime();
+    mecoboStatus = MECOBO_STATUS_READY;
   }
 
 
@@ -697,7 +705,6 @@ void execCurrentPack()
     command(0, 242, 5, 5);  //reset sample collector
 
     runItems = 0;
-    fpgaNumSamples = 0;
     if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
     //Reset state
     numSamples = 0;
@@ -705,13 +712,14 @@ void execCurrentPack()
     nextKillTime = 0;
     adcSequence[0] = 0;
 
+    samplesToGet = 0;
+
 
     fifoReset(&ucCmdFifo);
     fifoReset(&ucSampleFifo);
 
 
     for(int q = 0; q < 8; q++) {
-      numSamplesPerFPGATableIndex[q] = 0;
       fpgaTableToChannel[q] = 0;
     }
 
@@ -720,6 +728,10 @@ void execCurrentPack()
     cmdInterfaceAddr[7] = 0xBEEF;
     timeStarted = 0;
     xbarProgrammed = 0;
+
+    feedFpgaCmdFifo = 1;
+    sampleFifoEmpty = 1;
+
 
     printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
     mecoboStatus = MECOBO_STATUS_READY;
@@ -730,11 +742,12 @@ void execCurrentPack()
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER_SIZE) {
     //printf("SHIPPING numSamples: %d\n", numSamples);
    
-    //TODO: is this variable alive? naaah
-    uint32_t retSamples = min(ucSampleFifo.numElements, USB_MAX_SAMPLES);
+    uint32_t * retSamples = (uint32_t*)malloc(4);
 
-    if(DEBUG_PRINTING) printf("Sending %u samples back\n", (unsigned int)retSamples);
-    sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)(&retSamples));
+    *retSamples = min(ucSampleFifo.numElements, USB_MAX_SAMPLES);
+    
+    if(DEBUG_PRINTING) printf("We have %u samples ready\n", (unsigned int)*retSamples);
+    sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)(retSamples));
   }
 
   if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
@@ -746,37 +759,14 @@ void execCurrentPack()
     uint32_t * txSamples = (uint32_t *)(currentPack.data);
     int bytes = sizeof(struct sampleValue) * *txSamples;
     struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
+    printf("Shipping %d bytes\n", bytes);
 
     for(unsigned int i = 0; i < *txSamples; i++) {
       struct sampleValue * sv;
       fifoGet(&ucSampleFifo, (void*)&sv);
       samples[i] = *sv;
     }
-    /*
-    for(unsigned int i = 0; i < *txSamples;) {
-     // uint16_t data = memctrl[1];
-      //Read status register
-      //if (!(memctrl[0] & STATUS_REG_SAMPLE_FIFO_EMPTY)) {
-      //if (!sampleFifoEmpty) {
-        uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
-        //printf("m: %x\n", memctrl[0]);
-        uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
-        //if(DEBUG_PRINTING)
-        //printf("Got data %x from channel %x\n", data, fpgaTableIndex);
-
-        if(i < 50)  {
-          if(DEBUG_PRINTING) printf("fpga-data: %x chan: %d\n", data, fpgaTableToChannel[tableIndex]);
-        }
-
-        samples[i].sampleNum = i;
-        samples[i].channel = fpgaTableToChannel[tableIndex];
-        samples[i].value = data;
-
-        i++;
-      //}
-    }
-    */
-
+    
     sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)samples);
 
     if(DEBUG_PRINTING) printf("USB has been instructed to send data. Returning to main loop\n");
@@ -1137,6 +1127,15 @@ void fpgaIrqHandler(uint8_t pin) {
   checkStatusReg();
 }
 
+inline uint16_t sampleFifoDataCount()
+{
+  uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+  uint16_t d = cmdInterfaceAddr[EBI_SAMPLE_FIFO_DATA_COUNT];
+  //printf("%u\n", d);
+  return d;
+}
+  
+
 void checkStatusReg() 
 {
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
@@ -1182,7 +1181,7 @@ inline void putInFifo(struct fifoCmd * cmd)
   cmdInterfaceAddr[1] = serialCmd[1];
   cmdInterfaceAddr[2] = serialCmd[0];  //flippery to put them in correct order on bus 
   
-   cmdInterfaceAddr[3] = cmd->data[0];  //will be put on bus in network order
+  cmdInterfaceAddr[3] = cmd->data[0];  //will be put on bus in network order
   cmdInterfaceAddr[4] = cmd->data[1];  //will be put on bus in network order
   
   cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that the last word of the cmd is first addr, then controller.

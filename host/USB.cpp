@@ -122,6 +122,8 @@ void USB::getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * 
  */
 void USB::sendBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
 {
+  //out of scope when function finished
+  std::lock_guard<std::mutex> lock(endpointMutex);
   int remaining = numBytes;
   int transfered = 0;
   while(remaining > 0) {
@@ -137,25 +139,33 @@ void USB::sendBytesDefaultEndpoint(uint8_t * bytes, int numBytes)
 
 void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
 {
+  //Only one thread at a time, please.
+  std::lock_guard<std::mutex> lock(endpointMutex);
+
   //Get data back.
   int bytesRemaining = numBytes;
   int transfered = 0;
   int ret = 0;
   int maxRetries = 10;
   int retries = 0;
+  printf("We're asking USB for %d bytes\n", numBytes);
+  std::cout << std::this_thread::get_id() << std::endl;
+
   while(bytesRemaining > 0) {
-    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5000);
-    while((ret != 0) & (retries < maxRetries)) {
-      ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5000);
-      if(ret != 0) {
+    ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 100);
+    std::cout << "Transferred " << transfered << " bytes but asked for" << numBytes << std::endl;
+    if(ret != 0) {
         printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
-        printf("We're continuing, but this is probably not a good state to be in.\n");
-        break;
-      }
-      retries++;
+        printf("We'll keep trying.\n");
+        //We try again.
+        //ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 5);
+    } else {
+      bytesRemaining -= transfered;
     }
-    bytesRemaining -= transfered;
+    std::cout << "bytes remaining " << bytesRemaining << std::endl;
   }
+  std::cout << "We got them bytes\n";
+  return;
 }
 
 void USB::getBytesDefaultEndpoint(uint8_t * bytes, int numBytes)

@@ -20,9 +20,6 @@
 class Mecobo
 {
 private:
-
-
-
   void createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command);
   void setXbar(std::vector<uint8_t> & bytes);
   bool hasDaughterboard;
@@ -37,6 +34,8 @@ private:
 
   //Just collect samples from FPGA
   void collectSamples();
+
+  int lastSequenceItemEnd;
 
 public:
   Mecobo (bool daughterboard);
