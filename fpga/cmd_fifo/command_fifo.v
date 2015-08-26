@@ -48,7 +48,9 @@ module command_fifo(
   wr_ack,
   empty,
   almost_empty,
-  valid
+  valid,
+  data_count,
+  prog_empty
 );
 
 input clk;
@@ -63,6 +65,8 @@ output wr_ack;
 output empty;
 output almost_empty;
 output valid;
+output [9 : 0] data_count;
+output prog_empty;
 
 // synthesis translate_off
 
@@ -132,7 +136,7 @@ output valid;
     .C_HAS_AXIS_TSTRB(0),
     .C_HAS_AXIS_TUSER(0),
     .C_HAS_BACKUP(0),
-    .C_HAS_DATA_COUNT(0),
+    .C_HAS_DATA_COUNT(1),
     .C_HAS_DATA_COUNTS_AXIS(0),
     .C_HAS_DATA_COUNTS_RACH(0),
     .C_HAS_DATA_COUNTS_RDCH(0),
@@ -176,15 +180,15 @@ output valid;
     .C_PRELOAD_LATENCY(1),
     .C_PRELOAD_REGS(0),
     .C_PRIM_FIFO_TYPE("1kx36"),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL(2),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL(256),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_RDCH(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_WDCH(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH(1022),
-    .C_PROG_EMPTY_THRESH_NEGATE_VAL(3),
-    .C_PROG_EMPTY_TYPE(0),
+    .C_PROG_EMPTY_THRESH_NEGATE_VAL(257),
+    .C_PROG_EMPTY_TYPE(1),
     .C_PROG_EMPTY_TYPE_AXIS(0),
     .C_PROG_EMPTY_TYPE_RACH(0),
     .C_PROG_EMPTY_TYPE_RDCH(0),
@@ -270,6 +274,8 @@ output valid;
     .EMPTY(empty),
     .ALMOST_EMPTY(almost_empty),
     .VALID(valid),
+    .DATA_COUNT(data_count),
+    .PROG_EMPTY(prog_empty),
     .BACKUP(),
     .BACKUP_MARKER(),
     .SRST(),
@@ -288,11 +294,9 @@ output valid;
     .INJECTSBITERR(),
     .OVERFLOW(),
     .UNDERFLOW(),
-    .DATA_COUNT(),
     .RD_DATA_COUNT(),
     .WR_DATA_COUNT(),
     .PROG_FULL(),
-    .PROG_EMPTY(),
     .SBITERR(),
     .DBITERR(),
     .M_ACLK(),

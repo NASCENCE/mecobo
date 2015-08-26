@@ -23,11 +23,11 @@ module scheduler (	input 			clk,
 );
 
 
-localparam [4:0] 	fetch 		  = 4'b00010,
-			            fifo_wait	  = 4'b00100,
-			            exec		    = 4'b01000,
-			            idle		    = 4'b10000,
-                  exec_wait   = 5'b10000;
+localparam [4:0] 	fetch 		  = 5'b00010,
+			            fifo_wait	  = 5'b00100,
+			            exec		    = 5'b01000,
+			            idle		    = 5'b10000,
+                  exec_wait   = 5'b00001;
 
 //control section state machine.
 reg [4:0] state, nextState;

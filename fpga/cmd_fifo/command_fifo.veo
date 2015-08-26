@@ -69,7 +69,9 @@ command_fifo your_instance_name (
   .wr_ack(wr_ack), // output wr_ack
   .empty(empty), // output empty
   .almost_empty(almost_empty), // output almost_empty
-  .valid(valid) // output valid
+  .valid(valid), // output valid
+  .data_count(data_count), // output [9 : 0] data_count
+  .prog_empty(prog_empty) // output prog_empty
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 

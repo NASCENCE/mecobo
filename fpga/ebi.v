@@ -15,6 +15,7 @@ input  		cmd_fifo_almost_full,
 input  		cmd_fifo_full,
 input  		cmd_fifo_almost_empty,
 input  		cmd_fifo_empty,
+input	[9:0]	cmd_fifo_data_count,
 //Interace from SAMPLE DATA fifo
 input 	[15:0] 	sample_fifo_data_out,   //data FROM sample fifo
 output reg	    sample_fifo_rd_en,
@@ -41,6 +42,8 @@ localparam EBI_ADDR_TIME_REG 	      = 7;
 localparam EBI_ADDR_READ_TIME_L     = 9;
 localparam EBI_ADDR_READ_TIME_H     = 10;
 localparam EBI_ADDR_READ_SAMPLE_FIFO_DATA_COUNT = 11;
+localparam EBI_ADDR_READBACK = 12;
+localparam EBI_ADDR_READ_CMD_FIFO_DATA_COUNT = 13;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -49,6 +52,7 @@ localparam TIME_CMD_RUN   = 'hDEAD;
 localparam TIME_CMD_RESET = 'hBEEF;
 
 reg [15:0] ebi_captured_data[0:10];
+reg [15:0] ebi_last_word;
 
 wire rd_transaction_done;
 wire wr_transaction_done;
@@ -187,13 +191,17 @@ always @ (posedge clk) begin
         data_out <= clock_reg[31:16];
       end else if (addr[7:0] == EBI_ADDR_READ_SAMPLE_FIFO_DATA_COUNT) begin
         data_out <= sample_fifo_data_count;
+      end else if (addr[7:0] == EBI_ADDR_READBACK) begin
+	data_out <= ebi_last_word;
+      end else if (addr[7:0] == EBI_ADDR_READ_CMD_FIFO_DATA_COUNT) begin
+	data_out <= {6'h0, cmd_fifo_data_count};
       end
-
     end
 
     //Write to ebi register banks
     if (cs & wr) begin
       ebi_captured_data[addr[7:0]] <= data_in;
+      ebi_last_word <= data_in;
     end
 
     if (capture_fifo_data)  begin

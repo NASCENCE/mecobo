@@ -160,6 +160,7 @@ wire [31:0] global_clock;
 wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
 wire [15:0] sample_fifo_data_count;
+wire [9:0]  cmd_fifo_data_count;
 //EBI
 ebi ebi_if(
   .clk(sys_clk),
@@ -177,6 +178,7 @@ ebi ebi_if(
   .cmd_fifo_full(ebi_fifo_full),
   .cmd_fifo_almost_empty(ebi_fifo_almost_empty),
   .cmd_fifo_empty(ebi_fifo_empty),
+  .cmd_fifo_data_count(cmd_fifo_data_count),
   .sample_fifo_data_out(sample_collector_data),
   .sample_fifo_rd_en(sample_collector_rd_en),
   .sample_fifo_empty(sample_fifo_empty),
@@ -204,7 +206,8 @@ command_fifo cmd_fifo (
   .valid(sched_fifo_valid),
   .dout(sched_fifo_data),
   .rd_en(sched_fifo_rd),
-  .wr_ack()
+  .wr_ack(),
+  .data_count(cmd_fifo_data_count)
 );
 
 //SCHEDULER
