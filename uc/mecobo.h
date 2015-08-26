@@ -101,6 +101,8 @@
 #define AD_REG_ENDTIME 0x3
 
 #define EBI_SAMPLE_FIFO_DATA_COUNT 11
+#define EBI_READBACK_ADDR 12
+#define EBI_CMD_FIFO_DATA_COUNT 13
 
 //FPGA status register
 #define STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT 0x8000
@@ -232,6 +234,7 @@ void runTime();
 void resetTime();
 void checkStatusReg();
 uint16_t sampleFifoDataCount();
+uint16_t cmdFifoDataCount();
 
 #endif //__MECOBO_H_
 

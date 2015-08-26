@@ -31,6 +31,7 @@ private:
   std::map<int, std::vector<int32_t>> pinRecordings;
 
   std::queue<struct mecoPack> usbSendQueue;
+  std::queue<struct mecoPack> usbSetupQueue;
 
   //Just collect samples from FPGA
   void collectSamples();
@@ -58,6 +59,7 @@ public:
   void schedulePWMoutput(std::vector<int> pins, int start, int end, int pwmValue);
   void scheduleSine(std::vector<int> pins, int start, int end, int frequency, int amplitude, int phase);
   void scheduleConstantVoltageFromRegister(std::vector<int> pins, int start, int end, int reg);
+  void scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, int frequency, std::vector<int32_t> waveForm);
   
 
   mecoboStatus status();
@@ -74,6 +76,8 @@ public:
 
 
   void finish();
+
+  void loadSetup();
 
   int getPort();
 

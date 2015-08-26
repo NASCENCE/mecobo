@@ -9,6 +9,8 @@
 #define MECOBO_STATUS_READY 0
 #define MECOBO_STATUS_BUSY 1
 #define MECOBO_STATUS_RUNNING 2
+#define MECOBO_STATUS_SETUP_LOADED 3
+#define MECOBO_STATUS_FIFO_PRELOADED 4
 
 #define USB_CMD_CONFIG_PIN    0x1
 #define USB_CMD_CONFIG_REG    0x3
@@ -24,6 +26,8 @@
 #define USB_CMD_PROGRAM_XBAR 0xE
 #define USB_CMD_UPDATE_REGISTER 0xF
 #define USB_CMD_LOAD_BITFILE 0x10
+#define USB_CMD_SETUP_RECORDING 0x11
+#define USB_CMD_LOAD_SETUP 0x12
 
 #define PINTYPE_OUT     0x0
 #define PINTYPE_IN      0x1
@@ -140,8 +144,8 @@ struct sampleValue {
 struct mecoboStatus {
   uint8_t state;
   uint8_t foo;
-  uint16_t itemsInQueue;
   uint16_t samplesInBuffer;
+  uint16_t roomInCmdFifo;
 };
 
 struct NORFileTableEntry {

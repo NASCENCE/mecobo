@@ -21,13 +21,13 @@ static EBI_Init_TypeDef ebiConfig = {
     0,                /* addr setup cycles */          \
     0,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
-    0,                /* read setup cycles */          \
+    2,                /* read setup cycles */          \
     3,                /* read strobe cycles */         \
     0,                /* read hold cycles */           \
     false,            /* disable page mode */          \
     false,            /* disable prefetch */           \
     false,            /* do not enable half cycle REn strobe */ \
-    0,                /* write setup cycles */         \
+    2,                /* write setup cycles */         \
     3,                /* write strobe cycles */        \
     0,                /* write hold cycles */          \
     false,            /* do not disable the write buffer */ \

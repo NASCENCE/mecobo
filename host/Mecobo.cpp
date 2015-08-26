@@ -99,6 +99,14 @@ void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start
   std::cout << "CONSTANT_FROM_REGISTER SCHEDULED ON MECOBO" << std::endl;
 }
 
+void Mecobo::scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, int rate, std::vector<int32_t> waveForm)
+{
+  for(auto s : waveForm) {
+    //TODO
+  }
+}
+
+
 void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int frequency)
 {
   if(end != -1) {
@@ -130,6 +138,9 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
   this->usbSendQueue.push(p);
+  
+  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
+  this->usbSetupQueue.push(p);
 }
 
 
@@ -264,7 +275,6 @@ void Mecobo::collectSamples()
   std::vector<sampleValue> samples;
 
   //Send request for buffer size
-  std::cout << "Checking how many samples we can collect\n";
 
   while(status().state == MECOBO_STATUS_BUSY) {
       std::cout << "Mecobo claims to be busy\n";
@@ -272,12 +282,10 @@ void Mecobo::collectSamples()
       std::cout << "Sleep over!\n";
   }
 
-  std::cout << "Mecobo is not busy so we ask\n";
   struct mecoPack pack;
   createMecoPack(&pack, 0, 0, USB_CMD_GET_INPUT_BUFFER_SIZE);
   sendPacket(&pack);
   
-  std::cout << "WE ASKEDk\n";
 
   //Retrieve bytes.
   uint32_t nSamples = 0;
@@ -350,9 +358,7 @@ void Mecobo::collectSamples()
     //Since one channel can be on many pins we'll collect them all.
     if(hasDaughterboard) {
       std::vector<int> pin = xbar.getPin((FPGA_IO_Pins_TypeDef)s.channel);
-      //std::cout << "Channel "<< (unsigned int)s.channel << " gotten" << std::endl;
       for (auto p : pin) {
-        //std::cout << "Pin "<< (unsigned int)p << " mapped" << std::endl;
         //Cast from 13 bit to 32 bit two's complement int.
         int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
   //      std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
@@ -378,6 +384,8 @@ void Mecobo::discharge()
 void Mecobo::reset()
 {
   this->finished = false;
+  this->lastSequenceItemEnd = 0;
+
   if (hasDaughterboard) {
     std::cout << "Reseting XBAR..."; 
     xbar.reset();
@@ -387,6 +395,10 @@ void Mecobo::reset()
   //clear queue because reset, just in case
   std::queue<struct mecoPack> empty;
   std::swap(usbSendQueue, empty);
+
+  //clear queue because reset, just in case
+  std::queue<struct mecoPack> empty2;
+  std::swap(usbSetupQueue, empty2);
 
   pinRecordings.clear();
   struct mecoPack p;
@@ -409,16 +421,13 @@ Mecobo::isFpgaConfigured ()
 mecoboStatus
 Mecobo::status()
 {
-  std::cout << "We're asking for STATUS?! NOW?\n";
   struct mecoPack p;
   createMecoPack(&p, 0, 0, USB_CMD_STATUS);
   sendPacket(&p);
-  std::cout << "Send a packet, now waiting for incoming data\n";
 
   mecoboStatus status;
   usb.getBytesDefaultEndpoint((uint8_t*)&status, sizeof(mecoboStatus));
 
-  std::cout << "MECOBO STATUS: " << (int)status.state << std::endl;
   return status;
 }
 
@@ -558,36 +567,66 @@ Mecobo::scheduleSine (std::vector<int> pin, int start, int end, int frequency, i
   this->usbSendQueue.push(p);
 }
 
+
+void Mecobo::loadSetup()
+{
+
+  if(hasDaughterboard){
+    std::cout << "Setting up XBAR" << std::endl;
+    std::vector<uint8_t> xbarBytes = xbar.getXbarConfigBytes();
+    this->setXbar(xbarBytes);
+  }
+
+  while(!usbSetupQueue.empty()) {
+    struct mecoPack pa = usbSetupQueue.front();
+    sendPacket(&pa);
+    usbSetupQueue.pop();
+  }
+
+  struct mecoPack p;
+  createMecoPack(&p, NULL, 0, USB_CMD_LOAD_SETUP);
+  sendPacket(&p);
+
+
+
+  //Wait until a state change to SETUP_LOADED (won't change until we go into running so this is safe to wait for)
+  while(status().state != MECOBO_STATUS_SETUP_LOADED) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+
+  //Now preload the fifo a little 
+  int roomLeftInCmdFifo = status().roomInCmdFifo; 
+  std::cout << "PRELOAD: On-board FIFO has room for " << roomLeftInCmdFifo << " thingies " << std::endl;
+  while(roomLeftInCmdFifo != 0) {
+    if(usbSendQueue.empty()) {
+      break;
+    } else {
+      struct mecoPack p = usbSendQueue.front();
+      sendPacket(&p);
+      usbSendQueue.pop();
+      roomLeftInCmdFifo--;
+    }
+  }
+
+
+  //Send the first part of the schedule here (up until a certain point in time?)
+  //Wait until we're ready to start.
+  std::cout << "Setup loaded and FIFOs primed" << std::endl;
+}
+
+
 void
 Mecobo::runSchedule ()
 {
   //Set up the crossbar for this sequence.
-  if(hasDaughterboard){
-    std::cout << "Setting up XBAR" << std::endl;
-    std::vector<uint8_t> test = xbar.getXbarConfigBytes();
-    this->setXbar(test);
-    while(status().state == MECOBO_STATUS_BUSY) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-  }
 
-  //Send the first part of the schedule here (up until a certain point in time?)
-  while(!usbSendQueue.empty()) {
-    struct mecoPack p = usbSendQueue.front();
-    std::cout << "pushing " << p.size << " bytes. data:" << p.data[0] << std::endl;
-    sendPacket(&p);
-    usbSendQueue.pop();
-  }
-    
 
-  //check if we're busy configuring something
-  while(status().state == MECOBO_STATUS_BUSY) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  }
+
+  this->loadSetup();
+
 
   //Now start the sequence
-
-  std::cout << "Starting sequence run last item" << this->lastSequenceItemEnd << std::endl;
+  std::cout << "::::  Starting sequence run last item ends at: " << this->lastSequenceItemEnd << std::endl;
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
   sendPacket(&p);
@@ -608,19 +647,26 @@ Mecobo::runSchedule ()
 
     } 
 
-    //If we have more stuff in the usbSendQueue, keep feeding the board 
-    while(!usbSendQueue.empty()) {
-      struct mecoPack p = usbSendQueue.front();
-      std::cout << "pushing " << p.size << " bytes. data:" << p.data[0] << std::endl;
-      sendPacket(&p);
-      usbSendQueue.pop();
-    }
+    //If we have more stuff in the usbSendQueue, feed the board until the on-board fifo is full.
+      int spaceLeftInFifo = status().roomInCmdFifo;
+      //while(spaceLeftInFifo != 0) {
+      std::cout << "(run) Space left in uc FIFO: " << spaceLeftInFifo << " items left in queue:"  << usbSendQueue.size() << std::endl;
+      while(!usbSendQueue.empty()) {
+        if(spaceLeftInFifo == 0) {
+          break;
+        } else {
+          struct mecoPack p = usbSendQueue.front();
+          sendPacket(&p);
+          usbSendQueue.pop();
+          spaceLeftInFifo--;
+        }
+      }
 
     //Collect samples.
     printf("Collecting samples, current time %d\n", delta);
     collectSamples();
     //TODO: Calculate how often we need to poll to keep up with stuff here.
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   }
   std::cout << "Scheduled run complete\n";

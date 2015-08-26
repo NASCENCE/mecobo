@@ -119,11 +119,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Scheduling sequences on board." << std::endl;
-    if (seqItems.size() > 1000) {
-      err.Reason = "No more than 1000 items please!";
-      err.Source = "runSequences()";
-      throw err;
-    }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
@@ -315,6 +310,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
             break;
         }
         break;
+
+
+      case emSequenceOperationType::type::ARBITRARY:
+        //Cast from the emWaveform type to something understood by meco
+
+        mecobo->scheduleArbitraryBuffer(item.pin, item.startTime, item.endTime, item.waveForm.Rate, item.waveForm.Samples);
+
       default:
         break;
     }

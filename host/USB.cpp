@@ -148,12 +148,10 @@ void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
   int ret = 0;
   int maxRetries = 10;
   int retries = 0;
-  printf("We're asking USB for %d bytes\n", numBytes);
-  std::cout << std::this_thread::get_id() << std::endl;
+  //std::cout << std::this_thread::get_id() << std::endl;
 
   while(bytesRemaining > 0) {
     ret = libusb_bulk_transfer(mecoboHandle, endpoint, bytes, numBytes, &transfered, 100);
-    std::cout << "Transferred " << transfered << " bytes but asked for" << numBytes << std::endl;
     if(ret != 0) {
         printf("LIBUSB ERROR: %s\n", libusb_error_name(ret));
         printf("We'll keep trying.\n");
@@ -162,9 +160,7 @@ void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
     } else {
       bytesRemaining -= transfered;
     }
-    std::cout << "bytes remaining " << bytesRemaining << std::endl;
   }
-  std::cout << "We got them bytes\n";
   return;
 }
 
