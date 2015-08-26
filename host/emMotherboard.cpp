@@ -41,7 +41,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   std::thread runThread;
 
   steady_clock::time_point sequenceRunStart;
-  int lastSequenceItemEnd;
 
   int64_t time;
   std::vector<emSequenceItem> seqItems;
@@ -120,23 +119,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //mecobo->reset();
     //Sort the sequence before we submit the items to the board.
     std::cout << "Scheduling sequences on board." << std::endl;
-    if (seqItems.size() > 1000) {
-      err.Reason = "No more than 1000 items please!";
-      err.Source = "runSequences()";
-      throw err;
-    }
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
-
-    //Find the last item as well.
-    lastSequenceItemEnd = -1;
     for (auto item : seqItems) {
       setupItem(item);
-
-      if(item.endTime > lastSequenceItemEnd) {
-        lastSequenceItemEnd = item.endTime;
-      }
     }
 
     std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
@@ -152,25 +139,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   void joinSequences() {
     //Hang around until things are done.
     std::cout << "Join called. Blocking until all items have run to completion." << std::endl;
-    std::cout << "Last item ends at " << lastSequenceItemEnd << std::endl;
-    int totalWaitMs = lastSequenceItemEnd;
-    unsigned int items = 0;
-  
-    //Wait for at least the lastSeq endtime.
-    std::this_thread::sleep_for(std::chrono::milliseconds(lastSequenceItemEnd)); 
 
-    while((items = mecobo->status().itemsInQueue) > 0) {
-      //Ask again in 10ms -- should ve very close to done. 
-      std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
-      totalWaitMs += 10;
-      if (totalWaitMs > (lastSequenceItemEnd*2)) {
-        std::cout << "We waited long enough (twice!). Exit timeout. NumItems: " << items << std::endl;
-        break;
-      }
-      std::cout << "Oh emm gee why are we not done\n";
-    }
-    //this is just weird and backwards
-    mecobo->finish();  //why are we doing this here. we should count the time in runSchedule and just hang around here UNTIL this flag is set, not set the flag from here.
     runScheduleThread->join();
   }
 
@@ -341,6 +310,13 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
             break;
         }
         break;
+
+
+      case emSequenceOperationType::type::ARBITRARY:
+        //Cast from the emWaveform type to something understood by meco
+
+        mecobo->scheduleArbitraryBuffer(item.pin, item.startTime, item.endTime, item.waveForm.Rate, item.waveForm.Samples);
+
       default:
         break;
     }

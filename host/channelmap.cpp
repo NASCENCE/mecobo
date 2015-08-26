@@ -58,7 +58,8 @@ channelMap::channelMap()
   channelToXbar[FPGA_DIGI_15] = 15;
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToADChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToDAChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
   }
 }
 
@@ -71,11 +72,13 @@ void channelMap::reset()
   numIOchannels = 0;
   maxIOchannels = 16 * numCards;
 
-  pinToChannel.clear();
+  pinToADChannel.clear();
+  pinToDAChannel.clear();
   channelToPin.clear();
 
   for(int i = 0; i < 16*numCards; i++) {
-    pinToChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToADChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
+    pinToDAChannel[i] = FPGA_IO_Pins_TypeDef::INVALID;
   }
 }
 
@@ -84,7 +87,7 @@ bool channelMap::isADChannel(FPGA_IO_Pins_TypeDef chan)
   return ((AD_CHANNELS_START <= chan) && (chan <= AD_CHANNELS_END));
 }
 
-void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel) 
+void channelMap::mapDAPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
   /*
      if(pinToChannel.count(pin)) {
@@ -93,11 +96,27 @@ void channelMap::mapPin(int pin, FPGA_IO_Pins_TypeDef channel)
 
   //auto chan = pinToChannel[pin];
 
-  std::cout << "Mapped channel " << channel << " to pin " << pin << std::endl;
-  pinToChannel[pin] = channel;
+  std::cout << "Mapped DA/Digital channel " << channel << " to pin " << pin << std::endl;
+  pinToDAChannel[pin] = channel;
   channelToPin[channel].push_back(pin);
   return;
 }
+
+void channelMap::mapADPin(int pin, FPGA_IO_Pins_TypeDef channel) 
+{
+  /*
+     if(pinToChannel.count(pin)) {
+     }*/
+  //Check if we record from the same pin twice
+
+  //auto chan = pinToChannel[pin];
+
+  std::cout << "Mapped AD channel " << channel << " to pin " << pin << std::endl;
+  pinToADChannel[pin] = channel;
+  channelToPin[channel].push_back(pin);
+  return;
+}
+
 
 
 //We allow the same channel to drive multiple pins.
@@ -115,26 +134,26 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
   }
 
   FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
+  //we could get a list of pins to assign to a single channel here
+  //since one channel can be sent to many pins 
   for (auto p: pin) {
-
-    auto chan = pinToChannel[p];
-    if(isADChannel(chan)) {
-      emException e;
-      e.Reason = "Can't record the same pin twice, ignored.";
-      throw e;
-    }
-    //Pin has already been mapped
-    if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
-      return chan;
-    }
-
+    
+    FPGA_IO_Pins_TypeDef chan = FPGA_IO_Pins_TypeDef::INVALID;
 
     switch(pinconfigDataType) {
       case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
 
+        //check if there is a mapping
+        chan = pinToADChannel[p];
+        if(isADChannel(chan)) {
+          emException e;
+          e.Reason = "Can't record the same pin twice, ignored.";
+          throw e;
+        }
+ 
         if (numADchannels < maxADchannels) {
           channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-          mapPin(p, channel);
+          mapADPin(p, channel);
           //or not...
           numADchannels++;
         }
@@ -149,10 +168,17 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
 
       case PINCONFIG_DATA_TYPE_DAC_CONST:
       case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+          //check if there is a mapping
+        chan = pinToDAChannel[p];
+        //Pin has already been mapped
+        if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
+          return chan;
+        }
+
         //Try to map to a analogue pin.
         if (numDAchannels < maxDAchannels) {
           channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
-          mapPin(p, channel);
+          mapDAPin(p, channel);
           numDAchannels++;
         } else {
           std::cout << "All out of DA channels" << std::endl;
@@ -163,26 +189,21 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
         }
         break;
 
-        //By default we give a Digital channel -- these can be both recording and analogue,
-        //depending on the command given.
       default:
-        if (numIOchannels < maxIOchannels) {
-          //TODO Bug? We whould probably return a list of channels here
-          if(pinToChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
-            channel = pinToChannel[pin[0]];
+//      case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
+//     case PINCONFIG_DATA_TYPE_RECORD:
+          if(pinToDAChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
+            channel = pinToDAChannel[pin[0]];
           } else {
             channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
-            mapPin(p, channel);
+            mapDAPin(p, channel);
             numIOchannels++;
           }
-        } else {
-          std::cout << "All out of IO channels" << std::endl;
-          emException e;
-          e.Reason = "All out of IO channels.";
-          e.Source = "channelMap::mapItem()";
-          throw e;
-        }
-        break;
+
+          break;
+
+        //By default we give a Digital channel -- these can be both recording and analogue,
+        //depending on the command given.
     }
   }
   return channel;
@@ -204,7 +225,38 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     config.push_back(data);
   }
 
-  for(auto pc : pinToChannel) { 
+  for(auto pc : pinToDAChannel) { 
+    //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
+    //for (auto pin : channelToPin) {
+    FPGA_IO_Pins_TypeDef channel = pc.second;
+
+    //Skip invalid mappings
+    if(channel == FPGA_IO_Pins_TypeDef::INVALID) {
+      continue;
+    }
+
+    int pin = pc.first;
+    int configIndex = -1;
+
+    //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
+    //The next 16 words control the AD/DA-chans.
+    //Since we have mapped the PINs to the Y's of the XBARS,
+    //we have two choices to drive/source one pin.
+    //xbar1, or xbar2. We add 16 to program xbar1.
+
+    if (channel < IO_CHANNELS_END) { //Digital channels
+      configIndex = 15 - pin;
+    } else {
+      configIndex = 31 - pin;
+      //This is not a digital channel.
+      //
+    }
+
+    config[configIndex] |= (1 << (channelToXbar[channel]));
+    std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+    //}
+  }
+  for(auto pc : pinToADChannel) { 
     //It's actually possible for 2 channels to be on 1 pin. It's odd, but... allowable. <= NO NO NO
     //for (auto pin : channelToPin) {
     FPGA_IO_Pins_TypeDef channel = pc.second;
@@ -258,8 +310,14 @@ std::vector<int> channelMap::getPin(FPGA_IO_Pins_TypeDef channel)
 }
 
 //one pin can only have one channel assigned to it.
-FPGA_IO_Pins_TypeDef channelMap::getChannel(int pin) 
+FPGA_IO_Pins_TypeDef channelMap::getADChannel(int pin) 
 {
-  return pinToChannel[pin];
+  return pinToADChannel[pin];
+}
+
+//one pin can only have one channel assigned to it.
+FPGA_IO_Pins_TypeDef channelMap::getDAChannel(int pin) 
+{
+  return pinToDAChannel[pin];
 }
 

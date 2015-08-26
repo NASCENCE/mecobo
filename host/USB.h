@@ -15,6 +15,8 @@
 #include <string.h>
 #include <vector>
 #include <iostream>
+#include <thread>
+#include <mutex>
 
 #include "../mecoprot.h"
 
@@ -33,6 +35,8 @@ private:
 	int usbAddress;
 
 	void getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * dev, int interfaceNumber);
+
+  std::mutex endpointMutex;
 
 public:
 	USB();
