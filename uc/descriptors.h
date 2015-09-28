@@ -49,7 +49,7 @@ static const USB_DeviceDescriptor_TypeDef deviceDesc __attribute__ ((aligned(4))
   .bDeviceClass       = USB_CLASS_CDC,
   .bDeviceSubClass    = 0,
   .bDeviceProtocol    = 0,
-  .bMaxPacketSize0    = USB_EP0_SIZE,
+  .bMaxPacketSize0    = USB_ENDPOINT_DESCSIZE,
   .idVendor           = 0x2544,
   .idProduct          = 0x0003,
   .bcdDevice          = 0x0000,

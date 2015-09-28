@@ -275,6 +275,7 @@ void eADesigner_Init(void)
   GPIO_IntConfig(gpioPortD, 14, true, false, true);
 
   EBI_Init(&ebiConfig);
+  EBI_Init(&ebiConfigSRAM1);
   EBI_Init(&ebiConfigSRAM2);
   EBI_Init(&ebiConfigNOR);
 }

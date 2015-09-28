@@ -45,7 +45,7 @@
 #define EP_DATA_IN1        0x81  /* Endpoint for USB data transmission.    */
 #define EP_DATA_IN2        0x82  /* Endpoint for USB data transmission.    */
 #define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
-#define BULK_EP_SIZE     USB_MAX_EP_SIZE  /* This is the max. ep size.    */
+#define BULK_EP_SIZE   USB_FS_BULK_EP_MAXSIZE /* This is the max. ep size.    */
 
 
 #define EBI_ADDR_BASE 0x80000000

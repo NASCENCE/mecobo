@@ -24,7 +24,7 @@ LST_DIR = lst
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
 WINDOWSCS  ?= GNU Tools ARM Embedded\4.7 2012q4
-LINUXCS    ?= ./gcc-arm-none-eabi-4_8-2014q1/
+LINUXCS    ?= ./gcc-arm-none-eabi-4_9-2015q3/
 
 RMDIRS     := rm -rf
 RMFILES    := rm -rf
@@ -107,21 +107,21 @@ override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=corte
 # NOTE: The -Wl,--gc-sections,--no-wchar-size-warning flag may interfere with debugging using gdb.
 #
 override LDFLAGS += -Xlinker -Map=$(LST_DIR)/$(PROJECTNAME).map -mcpu=cortex-m3 \
--mthumb -Tefm32/v2/Device/EnergyMicro/EFM32GG/Source/GCC/efm32gg.ld \
+-mthumb -Tefm32/Device/SiliconLabs/EFM32GG/Source/GCC/efm32gg.ld \
  -Wl,--gc-sections,--no-wchar-size-warning
 
 LIBS = -Wl,--start-group -lgcc -lc -lnosys -lm -Wl,--end-group 
 INCLUDEPATHS += \
 -I. \
--Iefm32/v2/CMSIS/Include \
--Iefm32/v2/Device/EnergyMicro/EFM32GG/Include \
--Iefm32/v2/emlib/inc \
--Iefm32/v2/usb/inc \
--Iefm32/v2/kits/common/drivers \
--Iefm32/v2/kits/common/bsp \
--Iefm32/v2/emdrv/gpiointerrupt/inc/ \
--Iefm32/v2/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
--Iefm32/v2/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
+-Iefm32/CMSIS/Include \
+-Iefm32/Device/SiliconLabs/EFM32GG/Include \
+-Iefm32/emlib/inc \
+-Iefm32/usb/inc \
+-Iefm32/kits/common/drivers \
+-Iefm32/kits/common/bsp \
+-Iefm32/emdrv/gpiointerrupt/inc/ \
+-Iefm32/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
+-Iefm32/an/an0032_efm32_ethernet/lwip-1.3.1/src/include/ \
 -Iconfig
 
 ####################################################################
@@ -129,28 +129,28 @@ INCLUDEPATHS += \
 ####################################################################
 
 C_SRC +=  \
-efm32/v2/Device/EnergyMicro/EFM32GG/Source/system_efm32gg.c \
-efm32/v2/kits/common/bsp/bsp_dk_3201.c \
-efm32/v2/kits/common/bsp/bsp_trace.c \
-efm32/v2/kits/common/drivers/dmactrl.c \
-efm32/v2/kits/common/drivers/norflash.c \
-efm32/v2/emlib/src/em_assert.c \
-efm32/v2/emlib/src/em_cmu.c \
-efm32/v2/emlib/src/em_dma.c \
-efm32/v2/emlib/src/em_ebi.c \
-efm32/v2/emlib/src/em_emu.c \
-efm32/v2/emlib/src/em_gpio.c \
-efm32/v2/emlib/src/em_int.c \
-efm32/v2/emlib/src/em_system.c \
-efm32/v2/emlib/src/em_timer.c \
-efm32/v2/emlib/src/em_usart.c \
-efm32/v2/emdrv/gpiointerrupt/src/gpiointerrupt.c \
-efm32/v2/usb/src/em_usbd.c \
-efm32/v2/usb/src/em_usbdch9.c \
-efm32/v2/usb/src/em_usbhal.c \
-efm32/v2/usb/src/em_usbdep.c \
-efm32/v2/usb/src/em_usbdint.c \
-efm32/v2/usb/src/em_usbtimer.c \
+efm32/Device/SiliconLabs/EFM32GG/Source/system_efm32gg.c \
+efm32/kits/common/bsp/bsp_dk_3201.c \
+efm32/kits/common/bsp/bsp_trace.c \
+efm32/kits/common/drivers/dmactrl.c \
+efm32/kits/common/drivers/norflash.c \
+efm32/emlib/src/em_assert.c \
+efm32/emlib/src/em_cmu.c \
+efm32/emlib/src/em_dma.c \
+efm32/emlib/src/em_ebi.c \
+efm32/emlib/src/em_emu.c \
+efm32/emlib/src/em_gpio.c \
+efm32/emlib/src/em_int.c \
+efm32/emlib/src/em_system.c \
+efm32/emlib/src/em_timer.c \
+efm32/emlib/src/em_usart.c \
+efm32/emdrv/gpiointerrupt/src/gpiointerrupt.c \
+efm32/usb/src/em_usbd.c \
+efm32/usb/src/em_usbdch9.c \
+efm32/usb/src/em_usbhal.c \
+efm32/usb/src/em_usbdep.c \
+efm32/usb/src/em_usbdint.c \
+efm32/usb/src/em_usbtimer.c \
 fifo.c\
 pinItem.c\
 dac.c\
@@ -164,7 +164,7 @@ CXX_SRC += \
 s_SRC += 
 
 S_SRC +=  \
-efm32/v2/Device/EnergyMicro/EFM32GG/Source/GCC/startup_efm32gg.S
+efm32/Device/SiliconLabs/EFM32GG/Source/GCC/startup_efm32gg.S
 
 ####################################################################
 # Rules                                                            #

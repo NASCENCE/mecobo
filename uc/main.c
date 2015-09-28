@@ -222,7 +222,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    //programFPGA();
+    programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -1224,7 +1224,6 @@ inline uint16_t cmdFifoDataCount()
 {
   uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
   uint16_t d = cmdInterfaceAddr[EBI_CMD_FIFO_DATA_COUNT];
-  printf("cmd: %u\n", d);
   return d;
 }
  

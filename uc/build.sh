@@ -1,16 +1,17 @@
 #!/bin/bash
 
 #Get dependency ZIPs from Energy Micro
-
-wget http://cdn.energymicro.com/dl/packages/EM_CMSIS_3.20.0.zip
-wget http://cdn.energymicro.com/dl/packages/EM_BSP_COMMON_3.20.0.zip
+if [ ! -f Gecko_SDK.zip ]; then
+    wget http://www.silabs.com/Support%20Documents/Software/Gecko_SDK.zip
+    mkdir -k efm32
+    unzip Gecko_SDK.zip efm32/
+fi
 
 #Get the arm-gcc toolchain (good tip: move this somewhere else)
-wget https://launchpad.net/gcc-arm-embedded/4.8/4.8-2014-q1-update/+download/gcc-arm-none-eabi-4_8-2014q1-20140314-linux.tar.bz2
+if [ ! -f gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2 ]; then
+    wget https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q3-update/+download/gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+    tar jxvf gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+fi
 
-#unzip them in the local directory
-unzip EM_CMSIS_3.20.0.zip
-unzip EM_BSP_COMMON_3.20.0.zip
-tar jxvf gcc-arm-none-eabi-4_8-2014q1-20140314-linux.tar.bz2
 
 make
