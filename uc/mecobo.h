@@ -40,12 +40,12 @@
 #define BOARD_LED_U3 7
 
 /* Define USB endpoint addresses */
-#define EP_DATA_OUT1       0x01  /* Endpoint for USB data reception.       */
-#define EP_DATA_OUT2       0x02  /* Endpoint for USB data reception.       */
-#define EP_DATA_IN1        0x81  /* Endpoint for USB data transmission.    */
-#define EP_DATA_IN2        0x82  /* Endpoint for USB data transmission.    */
-#define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
-#define BULK_EP_SIZE   USB_FS_BULK_EP_MAXSIZE /* This is the max. ep size.    */
+//#define EP_DATA_OUT1       0x01  /* Endpoint for USB data reception.       */
+//#define EP_DATA_OUT2       0x02  /* Endpoint for USB data reception.       */
+//#define EP_DATA_IN1        0x81  /* Endpoint for USB data transmission.    */
+//#define EP_DATA_IN2        0x82  /* Endpoint for USB data transmission.    */
+//#define EP_NOTIFY         0x82  /* The notification endpoint (not used).  */
+//#define BULK_EP_SIZE   USB_FS_BULK_EP_MAXSIZE /* This is the max. ep size.    */
 
 
 #define EBI_ADDR_BASE 0x80000000

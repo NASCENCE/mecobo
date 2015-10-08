@@ -23,6 +23,7 @@ void testRam()
   printf("ram: %x\n", ram[105]);
   printf("ram: %x\n", ram[106]);
 
+  /*
   for(uint16_t i = 0; i < 40000; i++) {
     ram[i] = i;
   }
@@ -30,11 +31,11 @@ void testRam()
 
   for(uint16_t i = 0; i < 40000; i++) {
     if (ram[i] != i) {
-      printf("FAIL at %p got value %x wanted %x\n", &ram[i], ram[i], i);
+      printf("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
     }
   }
 
-
+  */
   ram = (uint16_t*)SRAM2_START;
   printf("SRAM 2 TEST\n");
 
@@ -53,7 +54,8 @@ void testRam()
   printf("ram: %x\n", ram[104]);
   printf("ram: %x\n", ram[105]);
   printf("ram: %x\n", ram[106]);
-
+    
+  /*
   for(uint16_t i = 0; i < 40000; i++) {
     ram[i] = i;
   }
@@ -61,8 +63,8 @@ void testRam()
 
   for(uint16_t i = 0; i < 40000; i++) {
     if (ram[i] != i) {
-      printf("FAIL at %p got value %x wanted %x\n", &ram[i], ram[i], i);
+      printf("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
     }
   }
-
+    */
 }

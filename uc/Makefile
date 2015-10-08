@@ -157,6 +157,7 @@ dac.c\
 adc.c\
 efm32.c\
 startup.c\
+descriptors.c\
 main.c
 
 CXX_SRC += \

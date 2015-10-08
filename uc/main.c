@@ -56,6 +56,29 @@
 #define min(a,b) ({ a < b ? a : b; })
 
 
+/* USB STRUCTS */
+static const USBD_Callbacks_TypeDef callbacks =
+{
+  .usbReset        = NULL,
+  .usbStateChange  = UsbStateChange,
+  .setupCmd        = NULL,
+  .isSelfPowered   = NULL,
+  .sofInt          = NULL
+};
+
+const USBD_Init_TypeDef initstruct =
+{
+  .deviceDescriptor    = &USBDESC_deviceDesc,
+  .configDescriptor    = USBDESC_configDesc,
+  .stringDescriptors   = USBDESC_strings,
+  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .callbacks           = &callbacks,
+  .bufferingMultiplier = USBDESC_bufferingMultiplier,
+  .reserved            = 0
+};
+
+
+
 struct fifo ucCmdFifo;
 struct fifo ucSampleFifo;
 
@@ -222,7 +245,7 @@ int main(void)
   uint16_t foo = *a;
   if (foo != 2) {
     printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
+    //programFPGA();
   } else {
     printf("FPGA responding as expected\n");
   }
@@ -270,6 +293,7 @@ int main(void)
   }
 
 
+  printf("Initializing USB\n");
   USBD_Init(&initstruct);
   printf("USB Initialized.\n");
   USBD_Disconnect();
@@ -422,17 +446,17 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
           if(DEBUG_PRINTING) printf("cmd fifo size %u \n");
         } 
 
-        USBD_Read(EP_DATA_OUT1, currentPack.data, currentPack.size, UsbDataReceived);
+        USBD_Read(CDC_EP_DATA_OUT, currentPack.data, currentPack.size, UsbDataReceived);
       } else {
         //Only header command, so we can parse it, and will not wait for data.
         execCurrentPack();
         //And wait for new header.
         if (USBD_GetUsbState() == USBD_STATE_CONFIGURED) {
-          USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived); //get new header.
+          USBD_Read(CDC_EP_DATA_OUT, inBuffer, 8, UsbHeaderReceived); //get new header.
         }
       }
     } else {
-      USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
+      USBD_Read(CDC_EP_DATA_OUT, inBuffer, 8, UsbHeaderReceived);
     }
   }
 
@@ -452,7 +476,7 @@ int UsbDataReceived(USB_Status_TypeDef status,
 
   //Check that we're still good, and wait for a new header.
   if (USBD_GetUsbState() == USBD_STATE_CONFIGURED) {
-    USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived); //get new header.
+    USBD_Read(CDC_EP_DATA_OUT, inBuffer, 8, UsbHeaderReceived); //get new header.
   }
   return USB_STATUS_OK;
 }
@@ -502,7 +526,7 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
   (void) oldState;
   if (newState == USBD_STATE_CONFIGURED) {
-    USBD_Read(EP_DATA_OUT1, inBuffer, 8, UsbHeaderReceived);
+    USBD_Read(CDC_EP_DATA_OUT, inBuffer, 8, UsbHeaderReceived);
   }
 
 }
@@ -907,7 +931,7 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
   packToSend = pack; //This copies the pack structure.
   //printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
   sendInProgress = 1;
-  USBD_Write(EP_DATA_IN1, packToSend.data, packToSend.size, UsbDataSent);
+  USBD_Write(CDC_EP_DATA_IN, packToSend.data, packToSend.size, UsbDataSent);
 }
 
 void resetAllPins()
@@ -1359,3 +1383,7 @@ void resetXbar()
   }
   command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
 }
+
+
+
+

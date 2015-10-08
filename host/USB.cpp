@@ -24,7 +24,7 @@ USB::USB() {
 	    libusb_device * dev = devs[i];
 	    libusb_device_descriptor desc;
 	    libusb_get_device_descriptor(dev, &desc);
-	    if(desc.idVendor == 0x2544 && desc.idProduct == 0x3) {
+	    if(desc.idVendor == 0xDEAD && desc.idProduct == 0xBEEF) {
 	      std::cout << "Found Mecobo Device." << std::endl;
 	      mecoboBoards.push_back(dev);
 	    }
@@ -52,7 +52,7 @@ USB::USB() {
 	  int err = libusb_open(mecoboBoards[chosen], &mecoboHandle);
 
 	  if(err < 0) {
-	    printf("Could not open device with vid 2544, pid 0003. Exiting.\n");
+	    printf("Could not open device with vid DEAD, pid BEEF. Exiting.\n");
 	    exit(-1);
 	  }
 
@@ -106,12 +106,12 @@ void USB::getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * 
   //printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
   //std::cout << "Selecting interface " << interfaceNumber << std::endl;
   struct libusb_interface_descriptor interface = config->interface[interfaceNumber].altsetting[0];
-  //printf("Interface has %d endpoints\n", interface.bNumEndpoints);
+  printf("Interface has %d endpoints\n", interface.bNumEndpoints);
   for(int ep = 0; ep < interface.bNumEndpoints; ++ep) {
-    if(interface.endpoint[ep].bEndpointAddress & 0x80) {
-      //printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
+    if(interface.endpoint[ep].bEndpointAddress) {
+      printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
     } else {
-      //printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
+      printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
     }
     endpoints.push_back(interface.endpoint[ep].bEndpointAddress);
   }
@@ -134,7 +134,7 @@ void USB::sendBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
 
 void USB::sendBytesDefaultEndpoint(uint8_t * bytes, int numBytes)
 {
-  sendBytes(endpoints[2], bytes, numBytes);
+  sendBytes(endpoints[1], bytes, numBytes);
 }
 
 void USB::getBytes(uint8_t endpoint, uint8_t * bytes, int numBytes)
