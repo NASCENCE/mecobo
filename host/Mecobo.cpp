@@ -25,7 +25,7 @@ Mecobo::Mecobo (bool daughterboard)
     std::cout << "Mecobo initialized without daughterboard" << std::endl;
   }
 
-  hasDaughterboard = true;
+  hasDaughterboard = false;
   this->lastSequenceItemEnd = 0;
 }
 
@@ -122,25 +122,28 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
 
   //int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
   //std::cout << "Divisor found:" << divisor << std::endl;
+ 
+  uint32_t data[USB_PACK_SIZE_BYTES/4];
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
+    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
   } else {
     channel = (FPGA_IO_Pins_TypeDef)pin[0];
+    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
   }
 
-  uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
-  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
   data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
   this->usbSendQueue.push(p);
   
-  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
-  this->usbSetupQueue.push(p);
+  struct mecoPack p2;
+  createMecoPack(&p2, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
+  this->usbSetupQueue.push(p2);
 }
 
 
@@ -361,7 +364,7 @@ void Mecobo::collectSamples()
       for (auto p : pin) {
         //Cast from 13 bit to 32 bit two's complement int.
         int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-  //      std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+        //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
         pinRecordings[(int)p].push_back(v);
       }
     } else {
@@ -452,19 +455,22 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   }
 
 
-  int divisor = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
+  //int divisor = (int)(75000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
 
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)divisor;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
 
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  //sendPacket(&p);
   this->usbSendQueue.push(p);
+ 
+  struct mecoPack p2;
+  createMecoPack(&p2, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
+  this->usbSetupQueue.push(p2);
 }
 
 

@@ -248,7 +248,8 @@ always @ (*) begin
        if (command == CMD_RESET) begin
         reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
          nextState = idle;
-       end
+       end else if ((end_time != 0) & (current_time >= end_time)) begin
+        nextState = idle;
     end 
   endcase
 end

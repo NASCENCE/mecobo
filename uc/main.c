@@ -90,7 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define DEBUG_PRINTING 0
+#define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -386,7 +386,7 @@ int main(void)
       sample.channel = fpgaTableToChannel[tableIndex];
       sample.value = data;
 
-      //printf("getting sample %x, c %x, v %x\n", sample.sampleNum, sample.channel, sample.value);
+  //    printf("getting sample %x, c %x, v %x\n", sample.sampleNum, sample.channel, sample.value);
       fifoInsert(&ucSampleFifo, &sample);
 
       samplesToGet--;
@@ -545,7 +545,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t endtime)
   //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
-  if(DEBUG_PRINTING) printf("Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
+  if(DEBUG_PRINTING) printf("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
 
   //How many samples?
   //The overflow register is what decides this.
@@ -684,6 +684,7 @@ void execCurrentPack()
 
   else if (currentPack.command == USB_CMD_SETUP_RECORDING) 
   {
+    printf("SETUP_RECORDING\n");
     struct pinItem item;
     if(currentPack.data != NULL) {
       uint32_t * d = (uint32_t *)(currentPack.data);
@@ -968,7 +969,7 @@ void led(int l, int mode)
       GPIO_PinModeSet(gpioPortB, 12, gpioModePushPull,mode);  //Led U2
       break;
     case BOARD_LED_U3:
-      GPIO_PinModeSet(gpioPortD, 0, gpioModePushPull,mode);  //Led U3
+      GPIO_PinModeSet(gpioPortD, 5, gpioModePushPull,mode);  //Led U3
       break;
     default:
       break;
