@@ -11,7 +11,7 @@
 
 
 
-`define WITH_DB
+//`define WITH_DB
 
 module mecobo   
 (               osc, 
