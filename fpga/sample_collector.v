@@ -41,7 +41,7 @@ module sample_collector (
 );
 
 parameter POSITION = 242;
-parameter MAX_COLLECTION_UNITS = 16;
+parameter MAX_COLLECTION_UNITS = 32;
 
 localparam ADDR_NEXT_SAMPLE = 1;
 localparam ADDR_NUM_SAMPLES = 2;
@@ -60,8 +60,8 @@ CMD_RESET = 5;
 
 /*The collection unit registers hold the position of the unit to enable.
 */
-reg [7:0] collection_channels[0:15];
-reg [3:0] num_units = 0;
+reg [7:0] collection_channels[0:MAX_COLLECTION_UNITS];
+reg [4:0] num_units = 0;
 
 /*reg [18:0] num_samples = 0; 
 */
@@ -97,7 +97,7 @@ reg res_sampling;
 reg res_fifo;
 wire wr_transaction_done;
 
-reg [31:0] last_fetched [0:15];
+reg [31:0] last_fetched [0:MAX_COLLECTION_UNITS];
 
 integer mi;
 initial begin 

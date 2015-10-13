@@ -33,7 +33,7 @@ input [7:0] channel_select;
 output reg [31:0] sample_data;
 
 
-parameter POSITION = 0;
+parameter [14:0] POSITION = 0;
 
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
@@ -43,7 +43,7 @@ reg [31:0] end_time = 0;
 
 
 wire pin_input;
-wire enable_in = (enable & (addr[15:8] == POSITION));
+wire enable_in = (enable & (addr[15:8] == POSITION[7:0]));
 /*Input, output: PWM, SGEN, CONST */
 
 
@@ -110,7 +110,7 @@ always @ (posedge clk) begin
       data_out <= 16'b0;
 
     if (output_sample & (channel_select == POSITION)) 
-      sample_data <= {sample_cnt, 12'hABC, 3'b111, sample_register};
+      sample_data <= {sample_cnt, POSITION, sample_register};
     else 
       sample_data <= 32'hZ;
 
