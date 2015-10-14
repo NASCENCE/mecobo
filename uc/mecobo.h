@@ -66,6 +66,7 @@
 #define PINCONTROL_REG_NCO_COUNTER 1
 #define PINCONTROL_REG_END_TIME 2
 #define PINCONTROL_REG_LOCAL_CMD 3
+#define PINCONTROL_REG_REC_START_TIME 6
 
 //Possible FPGA commands
 #define CMD_START_OUTPUT  1
@@ -200,7 +201,7 @@ extern "C" {
 void eADesigner_Init(void);
 void startOutput(FPGA_IO_Pins_TypeDef channel);
 void startInput();
-void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t endtime);
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime, uint32_t endtime);
 void getInput(FPGA_IO_Pins_TypeDef channel);
 int fpgaConfigPin(struct pinConfig * p);
 uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef pin);

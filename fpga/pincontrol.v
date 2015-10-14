@@ -250,6 +250,7 @@ always @ (*) begin
          nextState = idle;
        end else if ((end_time != 0) & (current_time >= end_time)) begin
         nextState = idle;
+       end
     end 
   endcase
 end

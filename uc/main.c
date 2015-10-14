@@ -90,7 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define DEBUG_PRINTING 1
+#define DEBUG_PRINTING 0
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -139,8 +139,9 @@ uint32_t lastPackSize = 0;
 
 static int runItems = 0;
 
+#define MAX_INPUT_CHANNELS 50
 static int fpgaTableIndex = 0;
-static uint8_t fpgaTableToChannel[8];
+static uint8_t fpgaTableToChannel[MAX_INPUT_CHANNELS];
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -149,7 +150,6 @@ uint8_t registersUpdated[NUM_DAC_REGS];
 
 //Circular buffer in SRAM1, modulo MAX_SAMPLES
 static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
-#define MAX_INPUT_CHANNELS 10
 #define MAX_CHANNELS 150
 static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
 //Such a waste of space, should use hash map.
@@ -251,6 +251,7 @@ int main(void)
   }
 
 
+  has_daughterboard = 0;
   int skip_boot_tests= 0;
 
   if(!skip_boot_tests) {
@@ -262,7 +263,6 @@ int main(void)
       printf("Detected daughterboard bitfile (has DAC controller)\n");
     }
 
-    has_daughterboard = 1;
     if (has_daughterboard) {
       //Check DAC controllers.
       printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
@@ -326,8 +326,10 @@ int main(void)
   samplesToGet = sampleFifoDataCount();
   //elementsInFpgaCmdFifo = cmdFifoDataCount();
 
-  int cmdSent = 0;
   int roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
+    
+  int tableIndexShift = has_daughterboard ? 13 : 1;
+
   for (;;) {
     //checkStatusReg();
     //feed if fifo is more than half empty
@@ -379,14 +381,15 @@ int main(void)
       
       uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
       uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
-      uint8_t tableIndex = (data >> 13); //top 3 bits of word is index in fpga controller fetch table
+      uint8_t tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
 
       struct sampleValue sample; 
       sample.sampleNum = numSamples++;
-      sample.channel = fpgaTableToChannel[tableIndex];
+      sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
       sample.value = data;
 
-  //    printf("getting sample %x, c %x, v %x\n", sample.sampleNum, sample.channel, sample.value);
+      if (DEBUG_PRINTING)  printf("s %x, ch %x, v %x i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
+
       fifoInsert(&ucSampleFifo, &sample);
 
       samplesToGet--;
@@ -537,7 +540,7 @@ inline uint32_t get_bit(uint32_t val, uint32_t bit)
 }
 
 
-void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t endtime)
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime, uint32_t endtime)
 {
   mecoboStatus = MECOBO_STATUS_BUSY;
 
@@ -613,8 +616,10 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t endtime)
   //Digital channel.
   else {
     if(DEBUG_PRINTING) printf("Recording dig ch: %x\n", channel);
-    command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controllah
+    command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controller to put it in idle
     command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
+    command(0, channel, PINCONTROL_REG_REC_START_TIME, (uint32_t)startTime);
+    command(0, channel, PINCONTROL_REG_END_TIME, (uint32_t)endtime);
     command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 
     /*
@@ -676,6 +681,9 @@ void execCurrentPack()
 
       fifoInsert(&ucCmdFifo, &item);
 
+      //Hack to avoid starting this if time is set to 0.
+      if (item.startTime == 0) item.startTime = 1;
+
       if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
@@ -691,8 +699,9 @@ void execCurrentPack()
       item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);  //pin is channel, actually
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       item.endTime    = 75000*d[PINCONFIG_END_TIME];
+      item.startTime    = (75000*d[PINCONFIG_START_TIME]) + 1;
       item.type = d[PINCONFIG_DATA_TYPE];
-      setupInput(item.pin, item.sampleRate, item.endTime);
+      setupInput(item.pin, item.sampleRate, item.startTime, item.endTime);
       printf("USB_CMD_SETUP_RECORDING pin %u\n", (unsigned int)item.pin);
     }
   }
@@ -782,7 +791,7 @@ void execCurrentPack()
     fifoReset(&ucSampleFifo);
 
     fpgaTableIndex = 0;
-    for(int q = 0; q < 8; q++) {
+    for(int q = 0; q < MAX_INPUT_CHANNELS; q++) {
       fpgaTableToChannel[q] = 0;
     }
 
@@ -938,8 +947,12 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
 void resetAllPins()
 {
   printf("Reseting all digital pin controllers\n");
-  for(int j = 0; j < 10; j++) {
+  for(int j = 0; j < 50; j++) {
     command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
+    command(0, j, PINCONTROL_REG_REC_START_TIME, 0);
+    command(0, j, PINCONTROL_REG_NCO_COUNTER, 0);
+    command(0, j, PINCONTROL_REG_END_TIME, 0);
+    command(0, j, PINCONTROL_REG_SAMPLE_RATE, 0);
   }
 }
 
@@ -1351,6 +1364,7 @@ void pushToCmdFifo(struct pinItem * item)
     case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
+      command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
       break;

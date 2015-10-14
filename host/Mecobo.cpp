@@ -47,7 +47,7 @@ void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, 
   //Find a channel (or it might throw an error).
 
   if(hasDaughterboard) {
-  channel = xbar.getChannelForPins(pins, PINCONFIG_DATA_TYPE_DAC_CONST);
+    channel = xbar.getChannelForPins(pins, PINCONFIG_DATA_TYPE_DAC_CONST);
   } else {
     channel = (FPGA_IO_Pins_TypeDef)pins[0];
   }
@@ -101,9 +101,11 @@ void Mecobo::scheduleConstantVoltageFromRegister(std::vector<int> pin, int start
 
 void Mecobo::scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, int rate, std::vector<int32_t> waveForm)
 {
+    /*
   for(auto s : waveForm) {
     //TODO
   }
+  */
 }
 
 
@@ -647,6 +649,8 @@ Mecobo::runSchedule ()
     if(this->lastSequenceItemEnd != -1) {
       delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
       if(delta >= this->lastSequenceItemEnd) {
+        //If there are no more samples in the buffer to fetch AND
+        //the last time has passed, we should be done...
         if (status().samplesInBuffer == 0)
           this->finished = true;
       }
