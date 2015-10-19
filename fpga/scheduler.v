@@ -68,12 +68,13 @@ always @ (posedge clk or posedge rst)
       idle: begin
         nextState = idle; 
         //If time has started running, it's time to start scheduling stuff!
-        if (current_time != 0) 
+        //if (current_time != 0) 
           nextState = fetch;
       end
 
       fetch: begin
-        if (cmd_fifo_empty | (current_time == 0)) begin   //idle while waiting for time to tick or if fifo is empty
+        //if (cmd_fifo_empty | (current_time == 0)) begin   //idle while waiting for time to tick or if fifo is empty
+        if (cmd_fifo_empty) begin   //idle while waiting for time to tick or if fifo is empty
           nextState = fetch;
         end
         else begin
@@ -95,7 +96,7 @@ always @ (posedge clk or posedge rst)
       exec: begin
         nextState = exec; 
 
-        if (current_time >= command[TIME_H:TIME_L]) begin
+        if ((current_time >= command[TIME_H:TIME_L]) | (command[TIME_H:TIME_L] == 0)) begin
           cmd_bus_wr = 1'b1;
           cmd_bus_en = 1'b1;
           nextState = exec_wait;	

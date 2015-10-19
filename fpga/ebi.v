@@ -1,5 +1,6 @@
 module ebi(	input clk,
 input rst,
+output reg softy_reset,
 //External interface to the world
 input [15:0] data_in,
 output reg [15:0] data_out,
@@ -51,6 +52,8 @@ localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 localparam TIME_CMD_RUN   = 'hDEAD;
 localparam TIME_CMD_RESET = 'hBEEF;
 
+localparam CMD_SOFT_SYSTEM_RESET = 'hD00D;
+
 reg [15:0] ebi_captured_data[0:10];
 reg [15:0] ebi_last_word;
 
@@ -79,6 +82,8 @@ reg capture_fifo_data;
 reg reset_time;
 reg run_time;
 
+
+//EBI INTERFACE
 always @ ( * ) begin
   nextState = 6'bXXXXX;
   cmd_fifo_wr_en = 1'b0;
@@ -87,6 +92,7 @@ always @ ( * ) begin
   capture_fifo_data = 1'b0;
   run_time = 1'b0;
   reset_time = 1'b0;
+  softy_reset = 1'b0;
 
   case (state)
     idle: begin
@@ -137,6 +143,8 @@ always @ ( * ) begin
           reset_time = 1'b1;
         end else if (ebi_captured_data[EBI_ADDR_TIME_REG] == TIME_CMD_RUN) begin
           run_time = 1'b1;
+        end else if (ebi_captured_data[EBI_ADDR_TIME_REG] == CMD_SOFT_SYSTEM_RESET) begin
+	  softy_reset = 1'b1;
         end
       end
     end
