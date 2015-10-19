@@ -1,4 +1,4 @@
-GEN_SRC := emEvolvableMotherboard.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp USB.cpp Mecobo.cpp channelmap.cpp emMotherboard.cpp
+GEN_SRC := emEvolvableMotherboard.cpp emLogServer.cpp shared_constants.cpp emDataApi.cpp  NascenseAPI_v01e_types.cpp NascenseAPI_v01e_constants.cpp USB.cpp Mecobo.cpp channelmap.cpp emMotherboard.cpp
 GEN_OBJ := $(patsubst %.cpp,%.o, $(GEN_SRC))
 
 THRIFT_DIR := /usr/local/include/thrift

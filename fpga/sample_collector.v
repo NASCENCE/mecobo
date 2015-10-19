@@ -241,9 +241,9 @@ end
 /* FIFO */
 wire [15:0] fifo_data_in;
 
-/* 3 bits of ID, 13 bits of sample data*/
 
 `ifdef WITH_DB
+	/* 3 bits of ID, 13 bits of sample data*/
 	assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[current_id_idx][15:0]; */
 `else
 	assign fifo_data_in = sample_data[15:0];

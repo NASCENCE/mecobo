@@ -273,9 +273,13 @@ always @ (*) begin
          reset_sample_registers = 1'b1;
          nextState = idle;
        end else if ((end_time != 0) & (current_time >= end_time)) begin
+<<<<<<< HEAD
          reset_rec_time_register = 1'b1; //set some registers to zero as well.
          reset_sample_registers = 1'b1;
          nextState = idle;
+=======
+        nextState = idle;
+>>>>>>> 1ad1e742203f94a7ab0cf210fabbf06dd1dc51cf
        end
     end 
   endcase
