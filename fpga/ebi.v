@@ -45,6 +45,7 @@ localparam EBI_ADDR_READ_TIME_H     = 10;
 localparam EBI_ADDR_READ_SAMPLE_FIFO_DATA_COUNT = 11;
 localparam EBI_ADDR_READBACK = 12;
 localparam EBI_ADDR_READ_CMD_FIFO_DATA_COUNT = 13;
+localparam EBI_ADDR_DB_PRESENT = 14;
 
 localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
@@ -203,6 +204,12 @@ always @ (posedge clk) begin
 	data_out <= ebi_last_word;
       end else if (addr[7:0] == EBI_ADDR_READ_CMD_FIFO_DATA_COUNT) begin
 	data_out <= {6'h0, cmd_fifo_data_count};
+      end else if (addr[7:0] == EBI_ADDR_DB_PRESENT) begin
+`ifdef WITH_DB
+        data_out <= 1;
+`else   
+        data_out <= 0;
+`endif
       end
     end
 
