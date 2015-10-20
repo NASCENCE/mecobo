@@ -41,7 +41,7 @@ module sample_collector (
 );
 
 parameter POSITION = 242;
-parameter MAX_COLLECTION_UNITS = 16;
+parameter MAX_COLLECTION_UNITS = 64;
 
 localparam ADDR_NEXT_SAMPLE = 1;
 localparam ADDR_NUM_SAMPLES = 2;
@@ -60,8 +60,8 @@ CMD_RESET = 5;
 
 /*The collection unit registers hold the position of the unit to enable.
 */
-reg [7:0] collection_channels[0:15];
-reg [3:0] num_units = 0;
+reg [7:0] collection_channels[0:MAX_COLLECTION_UNITS];
+reg [5:0] num_units = 0;  //6 bits for indexing.
 
 /*reg [18:0] num_samples = 0; 
 */
@@ -97,7 +97,7 @@ reg res_sampling;
 reg res_fifo;
 wire wr_transaction_done;
 
-reg [31:0] last_fetched [0:15];
+reg [31:0] last_fetched [0:MAX_COLLECTION_UNITS];
 
 integer mi;
 initial begin 
@@ -109,7 +109,7 @@ initial begin
 end
 
 
-reg [3:0] current_id_idx = 0;
+reg [5:0] current_id_idx = 0;
 
 
 always @ (posedge clk) begin
@@ -151,8 +151,7 @@ always @ (*) begin
       nextState = store;
     end
 
-    /* now the data has propagated to this module, capture it if the data is
-      * new */
+    /* now the data has propagated to this module, capture it if the data is new */
     store: begin
       if (last_fetched[current_id_idx] != sample_data) begin
         fifo_write_enable = 1'b1;
@@ -242,9 +241,13 @@ end
 /* FIFO */
 wire [15:0] fifo_data_in;
 
-/* 3 bits of ID, 13 bits of sample data*/
-/* This limits the amount of sample channels to 8 :( */
-assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[current_id_idx][15:0]; */
+
+`ifdef WITH_DB
+	/* 3 bits of ID, 13 bits of sample data*/
+	assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[current_id_idx][15:0]; */
+`else
+	assign fifo_data_in = sample_data[15:0];
+`endif
 
 sample_fifo sample_fifo_0 (
   .clk(clk),

@@ -46,6 +46,7 @@ reg shift_in; //shift into FPGA
 reg copy_to_tmp;
 reg load_shift_out_reg;
 reg reset_current_command;
+reg reset_rec_time;
 
 //---------------------------------------------
 
@@ -85,6 +86,8 @@ reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by 
 reg [15:0] sample_register [0:7];   //Holds the actual samples from each channel
 reg [31:0] end_time [0:7];
 
+reg [31:0] rec_start_time [0:7];
+
 wire busy;
 
 integer q;
@@ -109,7 +112,8 @@ SAMPLE   = 4'h7,
 SEQUENCE = 4'h8,
 ID_REG   = 4'h9,
 BUSY     = 4'hA,
-LAST     = 4'hB;
+LAST     = 4'hB,
+REC_START_TIME = 4'hC;
 
 localparam ADC_CMD_NEW_VALUE = 1;
 
@@ -124,12 +128,13 @@ always @ (posedge clk) begin
     for (c = 0; c < 8; c = c+1) begin
       overflow_register[c] <= 0;
       end_time[c] <= 0;
+      rec_start_time[c] <= 0;
     end
     current_command <= 0;
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if (end_time[chan_idx] > current_time)
+      if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (end_time[chan_idx] > current_time))
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
         sample_data <= 32'hFFFFFFFF;
@@ -151,6 +156,28 @@ always @ (posedge clk) begin
         if (addr[3:0] == PROGRAM) begin
           current_command <= data_in;
         end
+      end
+    end
+
+    //recording time is a special register that allows one to 
+    //start recording at some predetermined time.
+    //Since we depart from idle state using this register,
+    //it needs similar logic as a command, which is another 
+    //way of leaving idle.
+    if (reset_rec_time) begin
+      for (c = 0; c < 8; c = c+1) begin
+	rec_start_time[c] <= 0;
+      end
+    end else begin
+      if (controller_enable & wr) begin
+        if (addr[3:0] == REC_START_TIME) begin
+         rec_start_time[int_chan_idx] <= data_in;
+        end
+      end
+    end
+   
+    //The other registers can be written to whenever. 
+    if (controller_enable & wr) begin
         //Data driving
         if (addr[3:0] == OVERFLOW) begin
           overflow_register[int_chan_idx] <= data_in[15:0];
@@ -163,7 +190,6 @@ always @ (posedge clk) begin
         if (addr[3:0] == ENDTIME) begin
           end_time[int_chan_idx] <= data_in;
         end
-      end
     end
 
     //Driving output bus.
@@ -241,6 +267,7 @@ always @ (*) begin
   copy_to_tmp = 1'b0;
 
   reset_current_command = 1'b0;
+  reset_rec_time = 1'b0;
 
 
   case (state)
@@ -259,6 +286,12 @@ always @ (*) begin
     //This nextState shall copy to tmp registers.
     copy: begin
       res_adc_clocktick_counter = 1'b1;
+
+      //we are done, so reset the rec time so that
+      //no new samples are collected
+      if (end_time[chan_idx] <= current_time)
+         reset_rec_time = 1'b1;
+     
       nextState = init;
     end
 

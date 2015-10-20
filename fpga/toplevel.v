@@ -11,7 +11,7 @@
 
 
 
-`define WITH_DB
+//`define WITH_DB
 
 module mecobo   
 (               osc, 
@@ -94,6 +94,7 @@ wire [7:0] sample_channel_select;
 wire [31:0] sample_data_bus;
 
 wire locked;
+wire soft_reset;
 assign led[2] = locked;
 
 //                     locked   reset
@@ -101,7 +102,7 @@ assign led[2] = locked;
 // 1                   0        1
 // 0                   1        1
 // 1                   0        0
-wire mecobo_reset = ~locked & ~reset;
+wire mecobo_reset = (~locked & ~reset) | soft_reset;
 
 
 //----------------------------------- CLOCKING -------------------------
@@ -164,8 +165,9 @@ wire [9:0]  cmd_fifo_data_count;
 //EBI
 ebi ebi_if(
   .clk(sys_clk),
-  .rst(mecobo_reset),
+  .rst(reset),
   .data_in(data_in),
+  .softy_reset(soft_reset),
   .data_out(data_out),
   .addr(ebi_addr),
   .rd(read_enable),
@@ -214,7 +216,7 @@ command_fifo cmd_fifo (
 
 scheduler sched(
   .clk(sys_clk),
-  .rst(mecobo_reset),
+  .rst(reset),
   .current_time(global_clock),
   .cmd_fifo_dout(sched_fifo_data),
   .cmd_fifo_empty(ebi_fifo_empty),
@@ -308,7 +310,7 @@ generate
   .sin(HN[9]));
 
 `else
-  for (i = 0; i < 50; i = i + 1) begin: pinControl 
+  for (i = 0; i < 30; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i))
     pc (
       .clk(sys_clk),

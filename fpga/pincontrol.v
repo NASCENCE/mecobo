@@ -33,17 +33,18 @@ input [7:0] channel_select;
 output reg [31:0] sample_data;
 
 
-parameter POSITION = 0;
+parameter [14:0] POSITION = 0;
 
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
 reg [31:0] nco_counter = 32'h00000000;
 reg [31:0] nco_pa = 0;
 reg [31:0] end_time = 0;
+reg [31:0] rec_start_time = 0;
 
 
 wire pin_input;
-wire enable_in = (enable & (addr[15:8] == POSITION));
+wire enable_in = (enable & (addr[15:8] == POSITION[7:0]));
 /*Input, output: PWM, SGEN, CONST */
 
 
@@ -56,6 +57,7 @@ ADDR_GLOBAL_CMD = 0,
   ADDR_LOCAL_CMD =  3,
   ADDR_SAMPLE_RATE =  4,
   ADDR_SAMPLE_REG =  5,
+  ADDR_REC_START_TIME = 6,
   ADDR_SAMPLE_CNT =  7,
   ADDR_STATUS_REG =  8,
   ADDR_LAST_DATA = 9;
@@ -110,7 +112,7 @@ always @ (posedge clk) begin
       data_out <= 16'b0;
 
     if (output_sample & (channel_select == POSITION)) 
-      sample_data <= {sample_cnt, 12'hABC, 3'b111, sample_register};
+      sample_data <= {sample_cnt, POSITION, sample_register};
     else 
       sample_data <= 32'hZ;
 
@@ -126,11 +128,15 @@ assign pin_input = pin;
 /* ------------------ CAPTURE FROM COMMAND BUS ---------*/
 
 reg reset_cmd = 1'b0;
+reg reset_rec_time_register = 1'b0;
+reg reset_sample_registers = 1'b0;
+
 always @ (posedge clk) begin
   if (reset) begin
     nco_counter <= 0;
     sample_rate <= 0;
     end_time <= 0;
+    rec_start_time <= 0;
   end else begin
     /* This is special handling of the command register and it's kinda wonky.
     *  Problems can happen if two consequtive writes happen close in time 
@@ -141,10 +147,9 @@ always @ (posedge clk) begin
     *  command bus so that the state machine has time to reset the 
     *  command register AND realize that there is new data available.
     */
-    if (reset_cmd) 
+    if (reset_cmd)
       command <= 0;
-    else
-    if (enable_in & data_wr) begin
+    else if (enable_in & data_wr) begin
       if (addr[7:0] == ADDR_LOCAL_CMD)
         command <= data_in;   //always fetch this.
       else if (addr[7:0] == ADDR_SAMPLE_RATE)
@@ -154,6 +159,14 @@ always @ (posedge clk) begin
       else if (addr[7:0] == ADDR_END_TIME)
         end_time[31:0] <= data_in;
     end
+
+    if (reset_rec_time_register)
+      rec_start_time <= 0;
+    else if (enable_in & data_wr) begin
+      if (addr[7:0] == ADDR_REC_START_TIME)
+        rec_start_time[31:0] <= data_in;
+    end
+
   end
 end
 
@@ -178,18 +191,21 @@ always @ (*) begin
   update_data_out = 1'b0;
   const_output_null = 1'b0;
   const_output_one = 1'b0;
-
   reset_cmd = 1'b0;
+  reset_rec_time_register = 1'b0;
+  reset_sample_registers = 1'b0;
 
   case (state)
     idle: begin
       nextState = idle;
       res_sample_counter = 1'b1;
 
-      //We don't start doing stuff if the time has not started, but we still
-        //have a command waiting of course.
+      //We don't start doing stuff if the time has not started.
       if (current_time == 0) begin
         nextState = idle;
+      end 
+      else if ((rec_start_time != 0) & ((rec_start_time < current_time) & (current_time <= end_time))) begin
+        nextState = input_stream;
       end else if (command == CMD_INPUT_STREAM) begin
         reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = input_stream;
@@ -199,8 +215,11 @@ always @ (*) begin
       end else if (command == CMD_CONST) begin
         reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = const;
+      end else if (command == CMD_RESET) begin
+	reset_cmd = 1'b1;
+	nextState = idle;
       end 
-    end
+    end //end idle state
 
     enable_out: begin
       enable_pin_output = 1'b1;
@@ -210,6 +229,8 @@ always @ (*) begin
         reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
         nextState = idle;
       end else if ((end_time != 0) & (current_time >= end_time)) begin
+        reset_cmd = 1'b1; //we are done. no more output.
+	const_output_null = 1'b1;
         nextState = idle;
       end
     end
@@ -225,6 +246,7 @@ always @ (*) begin
         nextState = idle;
       end else if (current_time >= end_time) begin
         reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
+	const_output_null = 1'b1;
         nextState = idle;
       end
     end
@@ -246,33 +268,48 @@ always @ (*) begin
       unless reset is called.
         */
        if (command == CMD_RESET) begin
-        reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+         reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+	 reset_rec_time_register = 1'b1;
+         reset_sample_registers = 1'b1;
          nextState = idle;
        end else if ((end_time != 0) & (current_time >= end_time)) begin
-        nextState = idle;
+         reset_rec_time_register = 1'b1; //set some registers to zero as well.
+         reset_sample_registers = 1'b1;
+         nextState = idle;
        end
     end 
   endcase
 end
 
-/* STATE MACHINE ENDS */
+/* STATE MACHINE END */
 
 
 
 /* COUNTER REGISTERS CONTROLLED BY STATE MACHINE */
-
 always @ (posedge clk) begin
 
-  if (res_sample_counter == 1'b1) 
-    cnt_sample_rate <= sample_rate;
-  else if (dec_sample_counter == 1'b1) 
-    cnt_sample_rate <= (cnt_sample_rate - 1);
+  if(reset) begin
+    	sample_cnt <= 0;
+    	sample_register <= 0;
+    	cnt_sample_rate <= 0;
+  end else begin
+        if (reset_sample_registers)  begin
+	  sample_cnt <= 0;
+	  sample_register <= 0;
+          cnt_sample_rate <= 0;
+        end else begin
 
-  if (update_data_out)  begin
-    sample_register <= pin_input;
-    sample_cnt <= (sample_cnt + 1);
+		if (res_sample_counter == 1'b1) 
+		  cnt_sample_rate <= sample_rate;
+		else if (dec_sample_counter == 1'b1) 
+		  cnt_sample_rate <= (cnt_sample_rate - 1);
+
+		if (update_data_out)  begin
+		  sample_register <= pin_input;
+		  sample_cnt <= (sample_cnt + 1);
+		end
+	end
   end
-
 end
 
 
@@ -287,8 +324,6 @@ always @ (posedge clk) begin
       nco_pa <= 0;
     else if (const_output_one) 
       nco_pa <= 32'hFFFFFFFF;
-    else if (reset_cmd) 
-    	nco_pa <= 0;
     else
       nco_pa <= nco_pa + nco_counter;
   end
