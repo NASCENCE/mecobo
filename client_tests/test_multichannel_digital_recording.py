@@ -24,12 +24,12 @@ cli.clearSequences()
 
 #recChannels = [3, 10, 25, 40, 45]
 #recChannels = [3, 10]
-recChannels = range(1,20)
+recChannels = range(1,8)
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 5
 it.endTime = 100
-it.frequency = 100000
+it.frequency = 10000
 it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
 
@@ -37,8 +37,8 @@ for i in recChannels:
     it = emSequenceItem()
     it.pin = [i]
     it.startTime = 0
-    it.endTime = 1000
-    it.frequency = 2000
+    it.endTime = 150
+    it.frequency = 20000
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD   
     cli.appendSequenceAction(it)

@@ -25,7 +25,8 @@ Mecobo::Mecobo (bool daughterboard)
     std::cout << "Mecobo initialized without daughterboard" << std::endl;
   }
 
-  hasDaughterboard = false;
+  hasRecording = false;
+  hasDaughterboard = true;
   this->lastSequenceItemEnd = 0;
 }
 
@@ -111,6 +112,7 @@ void Mecobo::scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, i
 
 void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int frequency)
 {
+  this->hasRecording = true;
   if(end != -1) {
     this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
   } else {
@@ -386,6 +388,22 @@ void Mecobo::discharge()
   }
 }
 
+
+
+void Mecobo::resetBoard()
+{
+ struct mecoPack p;
+  createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
+  sendPacket(&p);
+  //Wait a while between polling the status to be nice.
+  std::cout << "Waiting for uC to complete reset" << std::endl;
+  while(this->status().state != MECOBO_STATUS_RESET_COMPLETE) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  std::cout << "Reset complete!" << std::endl;
+
+}
+
 void Mecobo::reset()
 {
   this->finished = false;
@@ -406,16 +424,8 @@ void Mecobo::reset()
   std::swap(usbSetupQueue, empty2);
 
   pinRecordings.clear();
-  struct mecoPack p;
-  createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
-  sendPacket(&p);
-  //Wait a while between polling the status to be nice.
-  std::cout << "Waiting for uC to complete reset" << std::endl;
-  while(this->status().state == MECOBO_STATUS_BUSY) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  }
-  std::cout << "Reset complete!" << std::endl;
-}
+  this->resetBoard();
+ }
 
 bool
 Mecobo::isFpgaConfigured ()
@@ -439,6 +449,7 @@ Mecobo::status()
 void
 Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int frequency)
 {
+  this->hasRecording = true;
   if(end != -1) {
     this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
   } else {
@@ -466,9 +477,9 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
   data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
   data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
 
-  struct mecoPack p;
-  createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
-  this->usbSendQueue.push(p);
+  //struct mecoPack p;
+  //createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
+  //this->usbSendQueue.push(p);
  
   struct mecoPack p2;
   createMecoPack(&p2, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
@@ -626,8 +637,7 @@ void Mecobo::loadSetup()
 void
 Mecobo::runSchedule ()
 {
-  //Set up the crossbar for this sequence.
-
+  this->resetBoard();
 
 
   this->loadSetup();
@@ -673,10 +683,10 @@ Mecobo::runSchedule ()
       }
 
     //Collect samples.
-    printf("Collecting samples, current time %d\n", delta);
-    collectSamples();
-    //TODO: Calculate how often we need to poll to keep up with stuff here.
-    //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    //if(this->hasRecording) {
+    //  printf("Collecting samples, current time %d\n", delta);
+      collectSamples();
+    //}
 
   }
   std::cout << "Scheduled run complete\n";
@@ -691,6 +701,7 @@ Mecobo::setXbar(std::vector<uint8_t> & bytes)
     struct mecoPack p;
     createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
     sendPacket(&p);
+    while(status().state != MECOBO_STATUS_XBAR_CONFIGURED);
   } else {
     std::cout << "Tried to set XBAR without daughterboard" << std::endl;
   }
