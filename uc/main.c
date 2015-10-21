@@ -254,7 +254,7 @@ int main(void)
   uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
   has_daughterboard = fpga[14];
 
-  has_daughterboard = 1;
+  has_daughterboard = 0;
   int skip_boot_tests= 0;
 
   if(!skip_boot_tests) {
@@ -776,8 +776,10 @@ void execCurrentPack()
     resetTime();
     softReset();   //This will clear the command fifo, etc.
 
-    setupDAC();
-    setupADC();
+    if(has_daughterboard) {
+        setupDAC();
+        setupADC();
+    }
     
     //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
     runItems = 0;

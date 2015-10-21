@@ -42,7 +42,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   emLogServerSettings logServerSettings;
   
   //log server stuff 
-  emLogServerClient * lsCli = NULL;
+  emLogServerClient * lsCli;
   boost::shared_ptr<TTransport> lsSocket;
   boost::shared_ptr<TTransport> lsTransport;
   boost::shared_ptr<TProtocol> lsProtocol;  
