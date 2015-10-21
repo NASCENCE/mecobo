@@ -24,7 +24,7 @@ USB::USB() {
 	    libusb_device * dev = devs[i];
 	    libusb_device_descriptor desc;
 	    libusb_get_device_descriptor(dev, &desc);
-	    if(desc.idVendor == 0x2544 && desc.idProduct == 0x0003) {
+	    if(desc.idVendor == 0xDEAD && desc.idProduct == 0xBEEF) {
 	      std::cout << "Found Mecobo Device." << std::endl;
 	      mecoboBoards.push_back(dev);
 	    }
@@ -71,12 +71,12 @@ USB::USB() {
 	    exit(-1);
 	  }
 
-    std::cout << "Getting endpoints from USB driver" << std::endl;
+      //std::cout << "Getting endpoints from USB driver" << std::endl;
 	  getEndpoints(endpoints, mecoboBoards[chosen], 1);
 	  getEndpoints(debugEndpoints, mecoboBoards[chosen], 0);
 
 	  usbAddress = addr;
-    std::cout << "USB init done" << std::endl;
+      //std::cout << "USB init done" << std::endl;
 }
 
 USB::~USB() {
@@ -106,12 +106,11 @@ void USB::getEndpoints(std::vector<uint8_t> & endpoints, struct libusb_device * 
   //printf("We have %u interfaces for this configuration\n", config->bNumInterfaces);
   //std::cout << "Selecting interface " << interfaceNumber << std::endl;
   struct libusb_interface_descriptor interface = config->interface[interfaceNumber].altsetting[0];
-  printf("Interface has %d endpoints\n", interface.bNumEndpoints);
   for(int ep = 0; ep < interface.bNumEndpoints; ++ep) {
     if(interface.endpoint[ep].bEndpointAddress) {
-      printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
+      //printf("Found input endpoint with address %x\n", interface.endpoint[ep].bEndpointAddress);
     } else {
-      printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
+      //printf("Found output with address %x\n", interface.endpoint[ep].bEndpointAddress);
     }
     endpoints.push_back(interface.endpoint[ep].bEndpointAddress);
   }

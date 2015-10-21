@@ -254,7 +254,7 @@ int main(void)
   uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
   has_daughterboard = fpga[14];
 
-  has_daughterboard = 0;
+  has_daughterboard = 1;
   int skip_boot_tests= 0;
 
   if(!skip_boot_tests) {
@@ -275,7 +275,6 @@ int main(void)
       setupADC();
       resetXbar();
 
-      resetTime();
     }
 
 
@@ -283,13 +282,6 @@ int main(void)
     testRam();
   }
 
-
-
-  //Default all regs to output 0V
-  for(int i = 0; i < NUM_DAC_REGS; i++) {
-    //DACreg[i] = 128;
-    command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 128);
-  }
 
 
   printf("Initializing USB\n");
@@ -385,7 +377,7 @@ int main(void)
       struct sampleValue sample; 
       sample.sampleNum = numSamples++;
       sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
-      sample.value = data;
+      sample.value = (int16_t)data;
 
       if (DEBUG_PRINTING) printf("s %x, ch %x, v %x i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
 
@@ -601,17 +593,9 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
       USBTIMER_DelayMs(1);
 
       command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
-      USBTIMER_DelayMs(1);
- 
       command(0, channel, AD_REG_ENDTIME, (uint32_t)endtime);
-      USBTIMER_DelayMs(1);
-    
       command(0, channel, AD_REG_REC_START_TIME, (uint32_t)startTime);
-      USBTIMER_DelayMs(1);
-     
       command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
-      //Sequence register write.
-      USBTIMER_DelayMs(1);
 
       command(0, channel, AD_REG_PROGRAM, 0x10000|(uint32_t)adcSequence[0]);
       USBTIMER_DelayMs(1);
@@ -644,7 +628,6 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     */
   }
 
-  mecoboStatus = MECOBO_STATUS_READY;
 
 }
 
@@ -700,7 +683,7 @@ void execCurrentPack()
       fifoInsert(&ucCmdFifo, &item);
 
 
-      if(DEBUG_PRINTING) printf("Item %d added to pin %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
+      if(DEBUG_PRINTING) printf("Item %d added to ucFifo, chan %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
     } else {
       if(DEBUG_PRINTING) printf("Curr data NULL\n");
     }
@@ -738,7 +721,6 @@ void execCurrentPack()
 
   else if(currentPack.command == USB_CMD_PROGRAM_XBAR)
   {
-    mecoboStatus = MECOBO_STATUS_BUSY;
     printf("Configuring XBAR\n");
 
     //Data in the buffer is the order we would like the
@@ -794,7 +776,8 @@ void execCurrentPack()
     resetTime();
     softReset();   //This will clear the command fifo, etc.
 
-
+    setupDAC();
+    setupADC();
     
     //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
     runItems = 0;
@@ -813,6 +796,12 @@ void execCurrentPack()
       fpgaTableToChannel[q] = 0;
     }
 
+    if(has_daughterboard){
+        for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
+            uint32_t wrd = getDACword(i, 128);
+            command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+        }
+    }
     //resetAllPins();
 
     timeStarted = 0;
@@ -908,18 +897,14 @@ void execCurrentPack()
 
     
     while(ucCmdFifo.numElements > 0) {
+        printf("setup item\n");
         void * item = NULL;
         fifoGet(&ucCmdFifo, &item);
         struct pinItem * it = (struct pinItem *)item;
         pushToCmdFifo(it);
     }
 
-    //Start the sample collector!
-
-    //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);
-    startInput();
-
-    //reset the microcontroller ... shouldn't be needed, but hey.
+        //reset the microcontroller ... shouldn't be needed, but hey.
     fifoReset(&ucCmdFifo);
    
 
@@ -930,8 +915,10 @@ void execCurrentPack()
     //starts is to remove any samples in the FIFO.
     //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RES_SAMPLE_FIFO);
 
-    //Hokay, this is a hack... 
+  } else if (currentPack.command == USB_CMD_PRELOAD_FIFO) {
+
     //preload the fifo with commands as well
+    printf("uc cmd fifo preload: %d\n", ucCmdFifo.numElements);
     while(ucCmdFifo.numElements > 0) {
           void * item = NULL;
           fifoGet(&ucCmdFifo, &item);
@@ -940,7 +927,13 @@ void execCurrentPack()
     }
 
 
+    mecoboStatus = MECOBO_STATUS_FIFO_PRELOADED;
     printf("---- SETUP FINISHED -----\n");
+
+    //Start the sample collector!
+    startInput();
+
+
     setupFinished = 1;
   }
 
@@ -1397,7 +1390,7 @@ void pushToCmdFifo(struct pinItem * item)
       break; 
     
     case PINCONFIG_DATA_TYPE_DAC_CONST:
-      if(DEBUG_PRINTING) printf("  CONST DAC VOLTAGE,channel %u, %u\n", item->pin, item->constantValue);
+      if(DEBUG_PRINTING) printf(">> CONST DAC, t%u, ch %u, %u\n", item->startTime, item->pin, item->constantValue);
       //setVoltage(item->pin, item->constantValue);
       uint32_t wrd = getDACword(item->pin, item->constantValue);
       command(item->startTime, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);

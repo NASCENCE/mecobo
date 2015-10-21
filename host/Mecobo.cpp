@@ -26,7 +26,6 @@ Mecobo::Mecobo (bool daughterboard)
   }
 
   hasRecording = false;
-  hasDaughterboard = true;
   this->lastSequenceItemEnd = 0;
 }
 
@@ -130,20 +129,21 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
   uint32_t data[USB_PACK_SIZE_BYTES/4];
   if(hasDaughterboard) {
     channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD_ANALOGUE);
-    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
   } else {
-    channel = (FPGA_IO_Pins_TypeDef)pin[0];
-    data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
+    throw std::runtime_error("Attempted to schedule analog recording without daughterboard.");
   }
 
   data[PINCONFIG_START_TIME] = start;
   data[PINCONFIG_END_TIME] = end;
   data[PINCONFIG_DATA_FPGA_PIN] = channel;
-  data[PINCONFIG_DATA_SAMPLE_RATE] = frequency;
+  data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
+  data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
 
+  /*
   struct mecoPack p;
   createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
   this->usbSendQueue.push(p);
+  */
   
   struct mecoPack p2;
   createMecoPack(&p2, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_SETUP_RECORDING);
@@ -612,7 +612,9 @@ void Mecobo::loadSetup()
   while(status().state != MECOBO_STATUS_SETUP_LOADED) {
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
+}
 
+void Mecobo::preloadCmdFifo() {
   //Now preload the fifo a little 
   int roomLeftInCmdFifo = status().roomInCmdFifo; 
   std::cout << "PRELOAD: On-board FIFO has room for " << roomLeftInCmdFifo << " thingies " << std::endl;
@@ -627,10 +629,16 @@ void Mecobo::loadSetup()
     }
   }
 
+  struct mecoPack p;
+  createMecoPack(&p, NULL, 0, USB_CMD_PRELOAD_FIFO);
+  sendPacket(&p);
 
+  while(status().state != MECOBO_STATUS_FIFO_PRELOADED) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
   //Send the first part of the schedule here (up until a certain point in time?)
   //Wait until we're ready to start.
-  std::cout << "Setup loaded and FIFOs primed" << std::endl;
+  std::cout << "Setup loaded." << std::endl;
 }
 
 
@@ -642,6 +650,7 @@ Mecobo::runSchedule ()
 
   this->loadSetup();
 
+  this->preloadCmdFifo();
 
   //Now start the sequence
   std::cout << "::::  Starting sequence run last item ends at: " << this->lastSequenceItemEnd << std::endl;

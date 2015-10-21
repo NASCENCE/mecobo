@@ -19,77 +19,78 @@
 
 class Mecobo
 {
-private:
-  void createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command);
-  void setXbar(std::vector<uint8_t> & bytes);
-  bool hasDaughterboard;
-  bool hasRecording;
-  bool finished;
-  USB usb;
-  channelMap xbar;
+    private:
+        void createMecoPack(struct mecoPack * packet, uint8_t * data,  uint32_t dataSize, uint32_t command);
+        void setXbar(std::vector<uint8_t> & bytes);
+        bool hasDaughterboard;
+        bool hasRecording;
+        bool finished;
+        USB usb;
+        channelMap xbar;
 
-  //Recordings will be -5 to 5V.
-  std::map<int, std::vector<int32_t>> pinRecordings;
+        //Recordings will be -5 to 5V.
+        std::map<int, std::vector<int32_t>> pinRecordings;
 
-  std::queue<struct mecoPack> usbSendQueue;
-  std::queue<struct mecoPack> usbSetupQueue;
+        std::queue<struct mecoPack> usbSendQueue;
+        std::queue<struct mecoPack> usbSetupQueue;
 
-  //Just collect samples from FPGA
-  void collectSamples();
+        //Just collect samples from FPGA
+        void collectSamples();
 
-  int lastSequenceItemEnd;
+        int lastSequenceItemEnd;
 
-public:
-  Mecobo (bool daughterboard);
-  virtual
-  ~Mecobo ();
+    public:
+        Mecobo (bool daughterboard);
+        virtual
+            ~Mecobo ();
 
-  void sendPacket(struct mecoPack * packet);
-  bool isFpgaConfigured();
-  void programFPGA(const char * filename);
-  //Convenience method for sending the emSequenceItems.
-  //TODO: I don't like to mention emSequenceItem here. Coupling seems to tight. Oh well.
-  //void submitSequenceItem(emInterfaces::emSequenceItem & item);
+        void sendPacket(struct mecoPack * packet);
+        bool isFpgaConfigured();
+        void programFPGA(const char * filename);
+        //Convenience method for sending the emSequenceItems.
+        //TODO: I don't like to mention emSequenceItem here. Coupling seems to tight. Oh well.
+        //void submitSequenceItem(emInterfaces::emSequenceItem & item);
 
-  //Various board capabilities
-  void scheduleConstantVoltage(std::vector<int> pins, int start, int end, int amplitude);
-  void scheduleRecording(std::vector<int> pins, int start, int end, int frequency);
+        //Various board capabilities
+        void scheduleConstantVoltage(std::vector<int> pins, int start, int end, int amplitude);
+        void scheduleRecording(std::vector<int> pins, int start, int end, int frequency);
 
-  void scheduleDigitalRecording(std::vector<int> pins, int start, int end, int frequency);
-  void scheduleDigitalOutput(std::vector<int> pins, int start, int end, int frequency, int dutyCycle);
-  void schedulePWMoutput(std::vector<int> pins, int start, int end, int pwmValue);
-  void scheduleSine(std::vector<int> pins, int start, int end, int frequency, int amplitude, int phase);
-  void scheduleConstantVoltageFromRegister(std::vector<int> pins, int start, int end, int reg);
-  void scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, int frequency, std::vector<int32_t> waveForm);
-  
-
-  mecoboStatus status();
-  void runSchedule();
-  void clearSchedule();
-
-  //Retrieves the sample buffer that's built up currently. This will of course cause a little bit of delay.
-  std::vector<int32_t> getSampleBuffer(int pin);
-
-  void reset();
-  void resetBoard();
-  void discharge();
-  void setLed(int a, int b);
-  void updateRegister(int index, int value);
+        void scheduleDigitalRecording(std::vector<int> pins, int start, int end, int frequency);
+        void scheduleDigitalOutput(std::vector<int> pins, int start, int end, int frequency, int dutyCycle);
+        void schedulePWMoutput(std::vector<int> pins, int start, int end, int pwmValue);
+        void scheduleSine(std::vector<int> pins, int start, int end, int frequency, int amplitude, int phase);
+        void scheduleConstantVoltageFromRegister(std::vector<int> pins, int start, int end, int reg);
+        void scheduleArbitraryBuffer(std::vector<int> pin, int start, int end, int frequency, std::vector<int32_t> waveForm);
 
 
-  void finish();
+        mecoboStatus status();
+        void runSchedule();
+        void clearSchedule();
 
-  void loadSetup();
+        //Retrieves the sample buffer that's built up currently. This will of course cause a little bit of delay.
+        std::vector<int32_t> getSampleBuffer(int pin);
 
-  int getPort();
+        void reset();
+        void resetBoard();
+        void discharge();
+        void setLed(int a, int b);
+        void updateRegister(int index, int value);
+
+
+        void finish();
+
+        void loadSetup();
+        void preloadCmdFifo();
+
+        int getPort();
 
 };
 
-template <typename T, unsigned B>
+    template <typename T, unsigned B>
 inline T signextend(const T x)
 {
     struct {T x:B;} s;
-      return s.x = x;
+    return s.x = x;
 
 }
 

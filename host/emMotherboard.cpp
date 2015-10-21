@@ -374,28 +374,34 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 int main(int argc, char **argv) {
 
 
-  std::cout << "Hi, I'm the evolutionary motherboard." << std::endl;
+  std::cout << std::endl;
+  std::cout << "Hi, I'm the evolutionary motherboard server!" << std::endl;
+  std::cout << "If you have any issues with me, please email lykkebo@idi.ntnu.no" << std::endl;
+  std::cout << std::endl;
   std::cout << "I was built on " << __DATE__ << " at " __TIME__ << std::endl;
+  std::cout << std::endl;
 
 
-  uint32_t forceProgFpga = 1;  //default program fpga.
+  uint32_t forceProgFpga = 0;  //default don't program fpga.
   bool daughterboard = true;
   std::string bitfilename = std::string("mecobo.bin");
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
-        forceProgFpga = 0;
+        std::cout << "Forcing FPGA programming\n";
+        forceProgFpga = 1;
       }
+
       if(strcmp(argv[i], "-b") == 0) {
         forceProgFpga = 1;
         bitfilename = std::string(argv[++i]);
         printf("Programming FPGA with bitfile %s\n", bitfilename.c_str());
       }
 
-      if(strcmp(argv[i], "-n") == 0) {
-        std::cout << "Option -n passed, host assumes no daughterboard" << std::endl;
-        daughterboard = false;
+      if(strcmp(argv[i], "-d") == 0) {
+        std::cout << "Option -d passed, host will run with daughterboard attached code." << std::endl;
+        daughterboard = true;
       
       }
     }

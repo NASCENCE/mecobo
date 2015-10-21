@@ -11,16 +11,16 @@ DriverVer=06/21/2006,6.1.7601.17514
 ;------------------------------------------------------------------------------
 
 [DeviceList]
-%CDCDEVICE%=DriverInstall,USB\VID_2544&PID_0003
+%CDCDEVICE%=DriverInstall,USB\VID_DEAD&PID_BEEF
 
 [DeviceList.NT]
-%CDCDEVICE%=DriverInstall,USB\VID_2544&PID_0003
+%CDCDEVICE%=DriverInstall,USB\VID_DEAD&PID_BEEF
 
 [DeviceList.NTAMD64]
-%CDCDEVICE%=DriverInstall,USB\VID_2544&PID_0003
+%CDCDEVICE%=DriverInstall,USB\VID_DEAD&PID_BEEF
 
 [DeviceList.NTIA64]
-%CDCDEVICE%=DriverInstall,USB\VID_2544&PID_0003
+%CDCDEVICE%=DriverInstall,USB\VID_DEAD&PID_BEEF
 
 ;------------------------------------------------------------------------------
 
@@ -39,6 +39,6 @@ HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
 ;------------------------------------------------------------------------------
 
 [Strings]
-EMAS      = "Energy Micro AS"
-CDCDEVICE = "EFM32 USB CDC Serial port"
-SERVICE   = "USB CDC Serial Port Driver"
+EMAS      = "Whatever"
+CDCDEVICE = ""
+SERVICE   = ""
