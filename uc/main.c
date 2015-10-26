@@ -89,7 +89,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define DEBUG_PRINTING 1
+#define DEBUG_PRINTING 0
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
