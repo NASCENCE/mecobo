@@ -28,6 +28,8 @@ class Mecobo
         USB usb;
         channelMap xbar;
 
+        int estimatedNumberOfSamples;
+
         //Recordings will be -5 to 5V.
         std::map<int, std::vector<int32_t>> pinRecordings;
 
@@ -35,7 +37,7 @@ class Mecobo
         std::queue<struct mecoPack> usbSetupQueue;
 
         //Just collect samples from FPGA
-        void collectSamples();
+        int collectSamples();
 
         int lastSequenceItemEnd;
 

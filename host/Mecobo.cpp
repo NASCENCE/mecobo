@@ -27,6 +27,7 @@ Mecobo::Mecobo (bool daughterboard)
 
   hasRecording = false;
   this->lastSequenceItemEnd = 0;
+  this->estimatedNumberOfSamples = 0;
 }
 
 Mecobo::~Mecobo ()
@@ -118,6 +119,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
     this->lastSequenceItemEnd = -1;
   }
 
+  this->estimatedNumberOfSamples += 1000*(end-start)*frequency;
   //std::cout << "well: " << this->lastSequenceItemEnd << std::endl;
 
   FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
@@ -275,7 +277,7 @@ std::vector<int32_t> Mecobo::getSampleBuffer(int materialPin)
   return pinRecordings[materialPin];
 }
 
-void Mecobo::collectSamples()
+int Mecobo::collectSamples()
 /* This simply retrieves the current sample buffer */
 {
   //This holds all the samples.
@@ -306,7 +308,7 @@ void Mecobo::collectSamples()
   std::cout << "SampleBufferSize available: " << nSamples << std::endl;
   if(nSamples == 0) {
     std::cout << "WARNING: No samples collected. Something might be wrong, but there might just be no new samples as well." << std::endl;
-    return;
+    return 0;
   }
 
   //max tx size is 64k
@@ -375,6 +377,7 @@ void Mecobo::collectSamples()
       pinRecordings[s.channel].push_back(s.value);
     }
   }
+  return (int)nSamples;
 }
 
 void Mecobo::discharge()
@@ -424,6 +427,7 @@ void Mecobo::reset()
   std::swap(usbSetupQueue, empty2);
 
   pinRecordings.clear();
+  this->estimatedNumberOfSamples = 0;
   this->resetBoard();
  }
 
@@ -450,6 +454,10 @@ void
 Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int frequency)
 {
   this->hasRecording = true;
+
+
+  this->estimatedNumberOfSamples += 1000*(end-start)*frequency;
+
   if(end != -1) {
     this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
   } else {
@@ -458,11 +466,11 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
 
 
 
-  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
+  FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)-1;
   //Find a channel (or it might throw an error).
 
   if(hasDaughterboard) {
-    channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_DIGITAL_OUT);
+    channel = xbar.getChannelForPins(pin, PINCONFIG_DATA_TYPE_RECORD);
   } else {
     channel = (FPGA_IO_Pins_TypeDef)pin[0];  //Note that pin is a list, but always pick the first element.
   }
@@ -647,13 +655,13 @@ Mecobo::runSchedule ()
 {
   this->resetBoard();
 
-
   this->loadSetup();
 
   this->preloadCmdFifo();
 
   //Now start the sequence
   std::cout << "::::  Starting sequence run last item ends at: " << this->lastSequenceItemEnd << std::endl;
+  std::cout << "Expected number of samples is " << this->estimatedNumberOfSamples << std::endl;
   struct mecoPack p;
   createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
   sendPacket(&p);
@@ -662,7 +670,8 @@ Mecobo::runSchedule ()
   std::chrono::time_point<std::chrono::system_clock> start;
   start = std::chrono::system_clock::now();
 
-  int delta;
+  int delta = 0;
+  int numSamplesGotten = 0;
   while(!this->finished) {
   
     if(this->lastSequenceItemEnd != -1) {
@@ -679,8 +688,10 @@ Mecobo::runSchedule ()
     //If we have more stuff in the usbSendQueue, feed the board until the on-board fifo is full.
       int spaceLeftInFifo = status().roomInCmdFifo;
       //while(spaceLeftInFifo != 0) {
-      std::cout << "(run) Space left in uc FIFO: " << spaceLeftInFifo << " items left in queue:"  << usbSendQueue.size() << std::endl;
       while(!usbSendQueue.empty()) {
+
+        std::cout << "(run) Space left in uc FIFO: " << spaceLeftInFifo << " items left in queue:"  << usbSendQueue.size() << std::endl;
+
         if(spaceLeftInFifo == 0) {
           break;
         } else {
@@ -694,7 +705,10 @@ Mecobo::runSchedule ()
     //Collect samples.
     //if(this->hasRecording) {
     //  printf("Collecting samples, current time %d\n", delta);
-      collectSamples();
+      numSamplesGotten += collectSamples();
+
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
     //}
 
   }

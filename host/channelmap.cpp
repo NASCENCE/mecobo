@@ -196,6 +196,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
           if(pinToDAChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
             channel = pinToDAChannel[pin[0]];
           } else {
+            std::cout << "IO channel added to DA pin map\n"; 
             channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
             mapDAPin(p, channel);
             numIOchannels++;
@@ -307,6 +308,7 @@ there is a minimum clock rate, specified as 20 kHz.
     //xbar1, or xbar2. We add 16 to program xbar1.
 
     if (channel < IO_CHANNELS_END) { //Digital channels
+      std::cout << "Digital recording channel setup\n";
       configIndexYpinInverse = 15 - pin;
     } else {
       configIndexYpinInverse = 31 - pin;

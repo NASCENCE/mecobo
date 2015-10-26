@@ -25,7 +25,7 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   //printf("channelAddr: channel: %u, %x\n",channel, channelAddr);
   //uint16_t * dac = ((uint16_t*)EBI_ADDR_BASE) + (DAC0_POSITION * 0x100);
   uint32_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
-  wrd |= 0x10000;
+  wrd |= 0x10000; //special magic 1 
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
 }
 

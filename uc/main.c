@@ -1,4 +1,3 @@
-
 ////LEDS on front case (left to right):
 //GPIO_PinModeSet(gpioPortD, 4, gpioModePushPull, 1);  //Led 1
 //GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1);  //Led 2
@@ -239,22 +238,14 @@ int main(void)
   //Make sure NOR has come up.
   for(int norwait = 0; norwait < 10000000; norwait++);
 
-  uint16_t * a;
-  a = getChannelAddress(2) + PINCONFIG_STATUS_REG;
-  uint16_t foo = *a;
-  if (foo != 2) {
-    printf("Got unexpected %x from FPGA. Reprogramming.\n", foo);
-    programFPGA();
-  } else {
-    printf("FPGA responding as expected\n");
-  }
-
+  //Force reprogram
+  //programFPGA();
 
   //register 14 is 1 if the bitfile is the one with db
   uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
   has_daughterboard = fpga[14];
 
-  has_daughterboard = 0;
+  has_daughterboard = 1;
   int skip_boot_tests= 0;
 
   if(!skip_boot_tests) {
@@ -548,7 +539,6 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
   //We are in setup phase. maybe ok.
 
   command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
-  //uint16_t * memctrl = (uint16_t*)getChannelAddress(242);
   //memctrl[4] = channel;
   fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
   if(DEBUG_PRINTING) printf("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
@@ -569,7 +559,6 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
   //printf("Estimated %u samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
   //If it's a ADC channel we set up the ADC here in stead of all this other faff.
-  //uint16_t * addr = getChannelAddress(channel);
   if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_END))) {
 
     //find the ADC's internal number for the channel to program it.
@@ -584,27 +573,30 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
 
       //resetTime();
       //runTime();
-
-      command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
-      USBTIMER_DelayMs(1);
+      //if(!adc_rr_wr)
+      //command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
+      //USBTIMER_DelayMs(1);
       
       //Range register 2
-      command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
-      USBTIMER_DelayMs(1);
+      //command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
+      //USBTIMER_DelayMs(1);
 
       command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
+      command(0, 255, 0, 0);
       command(0, channel, AD_REG_ENDTIME, (uint32_t)endtime);
+      command(0, 255, 0, 0);
       command(0, channel, AD_REG_REC_START_TIME, (uint32_t)startTime);
-      command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
+      command(0, 255, 0, 0);
+      //command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
 
       command(0, channel, AD_REG_PROGRAM, 0x10000|(uint32_t)adcSequence[0]);
-      USBTIMER_DelayMs(1);
+      command(0, 255, 0, 0);
 
       //Program the ADC to use this channel as well now. Result in two comp, internal ref.
       //sequencer on.
       //Control register
       command(0, channel, AD_REG_PROGRAM, 0x18014);
-      USBTIMER_DelayMs(1);
+      command(0, 255, 0, 0);
 
       //resetTime();
       if(DEBUG_PRINTING) printf("ADC programmed to new sequences\n");
@@ -638,16 +630,6 @@ inline void startInput()
   command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
 }
 
-inline uint16_t * getChannelAddress(FPGA_IO_Pins_TypeDef channel)
-{
-
-  if(!has_daughterboard) {
-    return (uint16_t*)(EBI_ADDR_BASE) + (channel * 0x100);
-  }
-  return (uint16_t*)(EBI_ADDR_BASE) + channel*0x100;
-}
-
-
 
 void execCurrentPack()
 {
@@ -656,7 +638,7 @@ void execCurrentPack()
 
     struct mecoboStatus * s = (struct mecoboStatus *)malloc(sizeof(struct mecoboStatus));
     s->state = (uint8_t)mecoboStatus;
-    s->foo = 0; //padding
+    s->foo = (ucCmdFifo.numElements == 0) ? 0 : 1;
     s->samplesInBuffer = (uint16_t)ucSampleFifo.numElements + (uint16_t)sampleFifoDataCount(); //check if the sample fifo is empty yet.
     s->roomInCmdFifo = (uint16_t)((uint16_t)ucCmdFifo.size - (uint16_t)ucCmdFifo.numElements);
 
@@ -677,6 +659,7 @@ void execCurrentPack()
       item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
       item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
+      printf("ADDING A PIN CONFIG PIN %u\n", item.pin);
       //Hack to avoid starting this if time is set to 0.
       if (item.startTime == 0) item.startTime = 1;
       
@@ -781,6 +764,7 @@ void execCurrentPack()
         setupADC();
     }
     
+    startInput();  //start sample collector
     //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
     runItems = 0;
     if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
@@ -907,6 +891,10 @@ void execCurrentPack()
     }
 
         //reset the microcontroller ... shouldn't be needed, but hey.
+        //
+    //Wait until the fpga cmd fifo is empty here so that we know that we are all
+    //out of setup items in the fifo and most things are ready to go. this will
+    //only work if we setup some busy signals.
     fifoReset(&ucCmdFifo);
    
 
@@ -933,7 +921,6 @@ void execCurrentPack()
     printf("---- SETUP FINISHED -----\n");
 
     //Start the sample collector!
-    startInput();
 
 
     setupFinished = 1;
@@ -968,7 +955,9 @@ void resetAllPins()
 {
   printf("Reseting all digital pin controllers\n");
   for(int j = 0; j < 50; j++) {
+    command(0, 255, 0, 0);
     command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
+    command(0, 255, 0, 0);
   }
 }
 
@@ -1377,12 +1366,28 @@ void pushToCmdFifo(struct pinItem * item)
 
   printf("fifo: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
   switch(item->type) {
-    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
 
+    case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
+      if (item->constantValue == 1) {
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_CONST);
+      } else {
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
+        command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
+      }
+      break;
+ 
+ 
+    case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
       command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
+
       break;
 
     case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:

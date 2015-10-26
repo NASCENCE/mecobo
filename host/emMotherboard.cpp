@@ -383,7 +383,7 @@ int main(int argc, char **argv) {
 
 
   uint32_t forceProgFpga = 0;  //default don't program fpga.
-  bool daughterboard = true;
+  bool daughterboard = false;
   std::string bitfilename = std::string("mecobo.bin");
   //Command line arguments
   if (argc > 1) {
