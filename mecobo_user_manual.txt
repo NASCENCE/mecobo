@@ -18,33 +18,94 @@ There is a section below on setting up the thrift server; and you can of course
 recompile and modify it as you see fit-- however the current implementation should
 suffice for simple stuff.
 
-- User Guide -
+
+
+========================================================================================
+- USER GUIDE -
+========================================================================================
+
+Current version of the board only supports the following modes of operation:
+
+1. Digital output square waves with 50% duty cycle:
+
+Example:
+    it = emSequenceItem();
+    it.pin = 0;
+    it.startTime = 1;
+    it.endTime = 1000;
+    it.frequency = 500;
+    it.operationType = emSequenceOperationType::type::DIGITAL;
+
+2. Digital recording of a pin:
+
+Example:
+    rec = emSequenceItem();
+    rec.pin = 10;
+    rec.starttime = 0;
+    rec.endTime = 1000;
+    rec.frequency = 5000;
+    rec.waveformType = emWaveFormType::PWM; //magic line for digital sampling
+    rec.operationType = emSequenceOperationType::type::RECORD;
+
+3. Constant 0 (connect to ground) or 3.3V output on pin
+
+Example:
+    it = emSequenceItem();
+    it.pin = 4;
+    it.starttime = 0;
+    it.endTime = 1000;
+    it.frequency = 1;   //or 0 for grounding
+    it.cycleTime = 100;  //required as well.
+    it.operationType = emSequenceOperationType::type::DIGITAL;
+
+4. Analog recording of a pin:
+
+Example:
+    rec = emSequenceItem();
+    rec.pin = 10;
+    rec.starttime = 0;
+    rec.endTime = 1000;
+    rec.frequency = 5000;  //max total sum of sample rates is 500KHz
+    rec.operationType = emSequenceOperationType::type::RECORD;
+
+5. Analog output of voltage:
+
+Example:
+    it = emSequenceItem();
+    it.pin = 10;
+    it.starttime = 0;
+    it.endTime = 1000;
+    it.amplitude = 242;   //-5 to 5V is scaled between 0 and 255.
+    it.operationType = emSequenceOperationType::type::CONSTANT;
+
+
+
+=======================================================================================
+USER GUIDE WITH MORE WORDS
+=======================================================================================
+
 To start the server, place yourself in the directory of the server binary
 (usually called winHost), and run it from the command line with:
 
-~> winHost.exe -f
-
-The -f causes the server to look for mecobo.bin, which is the FPGA bitfile,
-and program itself with it. 
-
->> NOTE! This is also how you restart the server <<
+~> winHost.exe
 
 Now that the server is running on a computer that has the board connected to
 it, talking to the board consists of calling the functions described in the
-thrift interface description file, NascenseAPI_v01d.thrift. You also need to
+thrift interface description file, NascenseAPI_v01e.thrift. You also need to
 generate the code that talks to the server. This is done with the thrift tool.
 
 As an example, here is how you create a client in python:
 
-oddrune @ crabcatcher:~$ thrift --gen py NascenseAPI_v01d.thrift
+oddrune @ crabcatcher:~$ thrift --gen py NascenseAPI_v01e.thrift
 
-This gives me a directory called gen-py, that again contains a subdirectory NascenseAPI_v01d.
+This gives me a directory called gen-py, that again contains a subdirectory NascenseAPI_v01e.
 My python client looks like this:
 
-oddrune @ crabcatcher:~$ cat client.py
 
+
+--
 import sys
-sys.path.append('gen-py/NascenseAPI_v01d/')
+sys.path.append('gen-py/NascenseAPI_v01e/')
 import emEvolvableMotherboard
 from ttypes import *
 
@@ -81,7 +142,7 @@ it = emSequenceItem()
 it.pin = 12;
 it.startTime = 42;
 it.endTime = 100;
-it.amplitude = 1;
+it.amplitude = 0;
 it.operationType = emSequenceOperationType().CONSTANT;
 client.appendSequenceAction(it)
 ----------------------------------------------------------
@@ -91,6 +152,9 @@ This example creates a sequnce item and appends it to the sequence queue. The ou
 Calling client.runSequences() initiates this sequence, and starts the clock at
 time = 0. All times referred to in the emSequenceItems are relative to this t,
 and time is measured in ms. 
+
+Remember to call client.joinSequences() when you are done so that the board
+blocks until it is done.
 
 Another frequenctly used operationType is RECORD:
 
@@ -130,7 +194,6 @@ it.pin = 0;
 it.startTime = 1;
 it.endTime = 1000;
 it.frequency = 500;
-it.cycleTime = 25;  #PERCENTAGE HIGH
 it.operationType = emSequenceOperationType::type::DIGITAL;
 ----------------------------------------------------------
 
