@@ -13,9 +13,9 @@ void setupDAC()
   //100 xx xx xx x 00 00
   //note the 1 at the front --- this is a special little thing to notify the controller that it's a new value
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 0x18000);
-  USBTIMER_DelayMs(1);
+  command(0, 255, 0, 0);
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, 0x1A002);
-  USBTIMER_DelayMs(1);
+  command(0, 255, 0, 0);
 }
 
 void setVoltage(uint16_t channel, uint16_t voltage)
@@ -27,6 +27,7 @@ void setVoltage(uint16_t channel, uint16_t voltage)
   uint32_t wrd = 0x7FF0 & ((channelAddr << 12) | (voltage << 4));
   wrd |= 0x10000; //special magic 1 
   command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+  command(0, 255, 0, 0);
 }
 
 uint32_t getDACword(uint16_t channel, uint16_t voltage)

@@ -759,15 +759,17 @@ void execCurrentPack()
     resetTime();
     softReset();   //This will clear the command fifo, etc.
 
+    /*
     if(has_daughterboard) {
         setupDAC();
         setupADC();
     }
-    
+    */
+   
+    //USBTIMER_DelayMs(10);
     startInput();  //start sample collector
     //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
     runItems = 0;
-    if(DEBUG_PRINTING) printf("Reset called! Who answers?\n");
     //Reset state
     numSamples = 0;
     adcSequence[0] = 0;
@@ -782,6 +784,7 @@ void execCurrentPack()
       fpgaTableToChannel[q] = 0;
     }
 
+    //Set all DAC outputs to 0V
     if(has_daughterboard){
         for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
             uint32_t wrd = getDACword(i, 128);
