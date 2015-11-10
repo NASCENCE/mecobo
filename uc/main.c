@@ -20,6 +20,8 @@
  * FIFOs are full, empty or any other stuff stuff happens.
  */
 
+#include <stdio.h>
+
 #include "em_dma.h"
 #include "em_gpio.h"
 #include "em_int.h"
@@ -33,7 +35,6 @@
 #include "norflash.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
