@@ -181,9 +181,8 @@ void Mecobo::sendPacket(struct mecoPack * packet)
 }
 
 
-void Mecobo::programFPGA(const char * filename)
+void Mecobo::programNOR(const char * filename)
 {
-    printf("ProgramFPGA\n");
     FILE* bitfile;
 
     int onlyProgram = 0;
@@ -267,6 +266,10 @@ void Mecobo::programFPGA(const char * filename)
         fclose(bitfile);
 
     }
+}
+
+void Mecobo::programFPGA()
+{
     struct mecoPack lol;
     createMecoPack(&lol, NULL, 0, USB_CMD_PROGRAM_FPGA);
     sendPacket(&lol);

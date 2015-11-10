@@ -48,7 +48,8 @@ class Mecobo
 
         void sendPacket(struct mecoPack * packet);
         bool isFpgaConfigured();
-        void programFPGA(const char * filename);
+        void programFPGA();
+        void programNOR(const char * filename);
         //Convenience method for sending the emSequenceItems.
         //TODO: I don't like to mention emSequenceItem here. Coupling seems to tight. Oh well.
         //void submitSequenceItem(emInterfaces::emSequenceItem & item);

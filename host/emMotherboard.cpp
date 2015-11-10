@@ -72,14 +72,20 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
   public:
   Mecobo * mecobo;
   //constructor for this class
-  emEvolvableMotherboardHandler(int force, std::string bitfilename, bool daughterboard) {
+  emEvolvableMotherboardHandler(int programNOR, std::string bitfilename, bool daughterboard, bool programFPGA) {
     // Your initialization goes here
     time = 0;
     std::cout << "Starting USB subsystem." << std::endl;
     mecobo = new Mecobo(daughterboard);
-    if (force)  {
-      mecobo->programFPGA(bitfilename.c_str());
-    }  
+
+    if (programNOR) {
+        mecobo->programNOR(bitfilename.c_str());
+    }
+
+    if (programFPGA)  {
+      mecobo->programFPGA();
+    }
+
   }
 
   ~emEvolvableMotherboardHandler() 
@@ -382,19 +388,21 @@ int main(int argc, char **argv) {
   std::cout << std::endl;
 
 
-  uint32_t forceProgFpga = 0;  //default don't program fpga.
+  uint32_t progNOR = 0; 
+  uint32_t programFPGA = 0;
   bool daughterboard = false;
-  std::string bitfilename = std::string("mecobo.bin");
+
+  std::string bitfilename = std::string("mecobo.bit");
   //Command line arguments
   if (argc > 1) {
     for(int i = 0; i < argc; i++) {
       if(strcmp(argv[i], "-f") == 0) {
-        std::cout << "Forcing FPGA programming\n";
-        forceProgFpga = 1;
+        std::cout << "Programming FPGA.\n";
+        programFPGA = 1;
       }
 
       if(strcmp(argv[i], "-b") == 0) {
-        forceProgFpga = 1;
+        progNOR = 1;
         bitfilename = std::string(argv[++i]);
         printf("Programming FPGA with bitfile %s\n", bitfilename.c_str());
       }
@@ -407,7 +415,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(forceProgFpga, bitfilename, daughterboard));
+  shared_ptr<emEvolvableMotherboardHandler> handler(new emEvolvableMotherboardHandler(progNOR, bitfilename, daughterboard, programFPGA));
   shared_ptr<TProcessor> processor(new emEvolvableMotherboardProcessor(handler));
   shared_ptr<TServerTransport> serverTransport(new TServerSocket(handler->mecobo->getPort()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
