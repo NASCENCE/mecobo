@@ -19,7 +19,6 @@
 #include <queue>
 #include <thread>
 #include <chrono>
-#include <thread>
 
 
 #include "Mecobo.h"
