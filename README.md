@@ -5,6 +5,8 @@ Mecobo is an open source experimental platform made for the EU-funded NASCENCE p
 It consists of a custom produced PCB, communicating with a host computer using
 a USB 2.0 interface. The host computer runs a Thrift Server that exposes the features of the board through a Thrift Interface.
 
+### The most recent branch is Mecobo_v4.1.
+
 What follows is a short description of each of the subfolders.
 
 ## host
