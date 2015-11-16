@@ -25,8 +25,9 @@ recordings = range(8,16)
 voltPins = [0,3,7]
 #0:82,3:168,7:238,8:[0.008544921875
 #0:126,3:164,7:110,8
+#0:224,3:170,7:194,8
 
-for foo in itertools.product(range(63,128),range(82,128),range(55,128)):
+for foo in itertools.product(range(112,128),range(85,128),range(97,128)):
     printStr = ""
 
     cli.reset()
