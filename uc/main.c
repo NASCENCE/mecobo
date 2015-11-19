@@ -154,7 +154,7 @@ static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
 static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
 //Such a waste of space, should use hash map.
 
-uint32_t numSamples = 0;
+//uint32_t numSamples = 0;
 
 
 uint8_t sinus[256];
@@ -245,31 +245,12 @@ int main(void)
 
     //register 14 is 1 if the bitfile is the one with db
     uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
-    has_daughterboard = fpga[14];
+    //has_daughterboard = fpga[14];
 
     has_daughterboard = 0;
     int skip_boot_tests= 0;
 
     if(!skip_boot_tests) {
-
-        //Verify presence of daughterboard bitfile
-        uint16_t * dac = (uint16_t*)(EBI_ADDR_BASE) + (0x100*DAC0_POSITION);
-
-        if (has_daughterboard) {
-            printf("Daughterboard detected\n");
-            //Check DAC controllers.
-            printf("DAC: %x\n", dac[PINCONFIG_STATUS_REG]);
-            uint16_t * adc = (uint16_t*)(EBI_ADDR_BASE) + (0x100*ADC0_POSITION);
-            printf("ADC: %x\n", adc[PINCONFIG_STATUS_REG]);
-            printf("XBAR: %x\n", xbar[PINCONFIG_STATUS_REG]);
-            printf("Setting up DAC and ADCs\n");
-
-            setupDAC();
-            setupADC();
-            resetXbar();
-
-        }
-
 
         //testNOR();
         testRam();
@@ -312,7 +293,11 @@ int main(void)
 
     int roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
 
-    int tableIndexShift = has_daughterboard ? 13 : 1;
+
+    struct sampleValue sample; 
+    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
+    uint8_t tableIndex;
+    uint16_t data;
 
     for (;;) {
         //checkStatusReg();
@@ -362,21 +347,23 @@ int main(void)
         //sampleFifoDataCount();
         if ((samplesToGet>0) & timeStarted & runItems & !fifoFull(&ucSampleFifo)) {
             //Push samples into fifo
+            //sample.sampleNum = numSamples++;
+            //for(int i = 0; i < samplesToGet; i++) {
 
-            uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
-            uint16_t data = memctrl[6]; //get next sample from EBI INTERFACE
-            uint8_t tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
+             //   if(!fifoFull(&ucSampleFifo)) {
+                    data = memctrl[6]; //get next sample from EBI INTERFACE
+                    int tableIndexShift = has_daughterboard ? 13 : 1;
+                    tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
 
-            struct sampleValue sample; 
-            sample.sampleNum = numSamples++;
-            sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
-            sample.value = (int16_t)data;
+                    sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
+                    sample.value = (int16_t)data;
+                    fifoInsert(&ucSampleFifo, &sample);  
+                    samplesToGet--;
+              //  }
+            //}
+            //if (DEBUG_PRINTING) printf("s %x, ch %x, v %d i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
 
-            if (DEBUG_PRINTING) printf("s %x, ch %x, v %d i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
 
-            fifoInsert(&ucSampleFifo, &sample);
-
-            samplesToGet--;
 
         }
     }
@@ -493,12 +480,7 @@ int UsbDataSent(USB_Status_TypeDef status,
         } else {
             if(DEBUG_PRINTING) printf("Tried to free NULL-pointer\n");
         }
-        //   }
 
-        //Reset sample counter now.
-        if(packToSend.command == USB_CMD_GET_INPUT_BUFFER){
-            numSamples = 0;
-        }
     }
     sendInProgress = 0;
 
@@ -795,7 +777,7 @@ void execCurrentPack()
         //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
         runItems = 0;
         //Reset state
-        numSamples = 0;
+        //numSamples = 0;
         adcSequence[0] = 0;
 
         samplesToGet = 0;
