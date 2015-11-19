@@ -112,6 +112,7 @@ static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
 /*** Typedef's and defines. ***/
 
+static int ad_and_da_configured = 0;
 static int has_daughterboard = 0;
 static int xbarProgrammed = 0;
 static int setupFinished = 0;
@@ -759,9 +760,18 @@ void execCurrentPack()
         uint32_t * d = (uint32_t *)(currentPack.data);
         if(d >= 1) {
             has_daughterboard = 1;
+
+            if(!ad_and_da_configured) {
+                setupADC();
+                setupDAC();
+                resetXbar();
+                ad_and_da_configured = 1;
+            }
+
         } else {
             has_daughterboard = 0;
         }
+
 
         printf("----------------- RESETING MECOBO ------------------\n");
         if(has_daughterboard) 
