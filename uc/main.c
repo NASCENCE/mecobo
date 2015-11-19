@@ -141,7 +141,7 @@ static int runItems = 0;
 
 #define MAX_INPUT_CHANNELS 50
 static int fpgaTableIndex = 0;
-static uint8_t fpgaTableToChannel[MAX_INPUT_CHANNELS];
+static uint16_t fpgaTableToChannel[MAX_INPUT_CHANNELS];
 
 uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
 #define NUM_DAC_REGS 4
@@ -266,7 +266,9 @@ int main(void)
     USBD_Connect();
     led(BOARD_LED_U3, 1);
 
-
+    setupADC();
+    setupDAC();
+ 
     printf("Cycling LEDs :-)\n");
     //Cycle leds.
         for(int i = 0; i < 48; i++) {
@@ -296,7 +298,7 @@ int main(void)
 
     struct sampleValue sample; 
     uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
-    uint8_t tableIndex;
+    uint16_t tableIndex;
     uint16_t data;
 
     for (;;) {
@@ -352,7 +354,7 @@ int main(void)
 
              //   if(!fifoFull(&ucSampleFifo)) {
                     data = memctrl[6]; //get next sample from EBI INTERFACE
-                    int tableIndexShift = has_daughterboard ? 13 : 1;
+                    int tableIndexShift = has_daughterboard ? 13 : 1;   //the 1 is for just looking at the controller ID
                     tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
 
                     sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
@@ -524,8 +526,8 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
 
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
     //memctrl[4] = channel;
-    fpgaTableToChannel[fpgaTableIndex] = (uint8_t)channel;
-    if(DEBUG_PRINTING) printf("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint8_t)fpgaTableToChannel[fpgaTableIndex]);
+    fpgaTableToChannel[fpgaTableIndex] = (uint16_t)channel;
+    if(DEBUG_PRINTING) printf("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint16_t)fpgaTableToChannel[fpgaTableIndex]);
 
     //How many samples?
     //The overflow register is what decides this.
