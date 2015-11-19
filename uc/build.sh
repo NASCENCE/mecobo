@@ -4,7 +4,7 @@
 if [ ! -f Gecko_SDK.zip ]; then
     wget http://www.silabs.com/Support%20Documents/Software/Gecko_SDK.zip
     mkdir -k efm32
-    unzip Gecko_SDK.zip efm32/
+    unzip Gecko_SDK.zip -d efm32/
 fi
 
 #Get the arm-gcc toolchain (good tip: move this somewhere else)
