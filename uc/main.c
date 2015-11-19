@@ -758,7 +758,7 @@ void execCurrentPack()
         //mecoboStatus = MECOBO_STATUS_BUSY;
 
         uint32_t * d = (uint32_t *)(currentPack.data);
-        if(d >= 1) {
+        if(*d >= 1) {
             has_daughterboard = 1;
 
             if(!ad_and_da_configured) {
