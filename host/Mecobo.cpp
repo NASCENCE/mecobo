@@ -27,7 +27,7 @@ Mecobo::Mecobo (bool daughterboard)
 
     hasRecording = false;
     this->lastSequenceItemEnd = 0;
-    this->estimatedNumberOfSamples = 0;
+    this->maxSampleRate = 0;
 }
 
 Mecobo::~Mecobo ()
@@ -119,7 +119,9 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
         this->lastSequenceItemEnd = -1;
     }
 
-    this->estimatedNumberOfSamples += 1000*(end-start)*frequency;
+    if(frequency > this->maxSampleRate) {
+        this->maxSampleRate = frequency;
+    }
     //std::cout << "well: " << this->lastSequenceItemEnd << std::endl;
 
     FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
@@ -377,7 +379,7 @@ int Mecobo::collectSamples()
                 pinRecordings[(int)p].push_back(v);
             }
         } else {
-            pinRecordings[s.channel].push_back(s.value);
+            pinRecordings[s.channel].push_back((int32_t)s.value & 0x1);
         }
     }
     return (int)nSamples;
@@ -399,7 +401,13 @@ void Mecobo::discharge()
 void Mecobo::resetBoard()
 {
     struct mecoPack p;
-    createMecoPack(&p, 0, 0, USB_CMD_RESET_ALL);
+    uint8_t data;
+    if(this->hasDaughterboard) {
+        data = 1;
+    } else {
+        data = 0;
+    }
+    createMecoPack(&p, &data, 0, USB_CMD_RESET_ALL);
     sendPacket(&p);
     //Wait a while between polling the status to be nice.
     std::cout << "Waiting for uC to complete reset" << std::endl;
@@ -430,7 +438,7 @@ void Mecobo::reset()
     std::swap(usbSetupQueue, empty2);
 
     pinRecordings.clear();
-    this->estimatedNumberOfSamples = 0;
+    this->maxSampleRate = 0;
     this->resetBoard();
 }
 
@@ -458,8 +466,9 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
 {
     this->hasRecording = true;
 
-
-    this->estimatedNumberOfSamples += 1000*(end-start)*frequency;
+    if(frequency > maxSampleRate) {
+        maxSampleRate = frequency;
+    }
 
     if(end != -1) {
         this->lastSequenceItemEnd = std::max(this->lastSequenceItemEnd, end);
@@ -662,9 +671,10 @@ Mecobo::runSchedule ()
 
     this->preloadCmdFifo();
 
+    int waitMs = 200;
+
     //Now start the sequence
     std::cout << "::::  Starting sequence run last item ends at: " << this->lastSequenceItemEnd << std::endl;
-    std::cout << "Expected number of samples is " << this->estimatedNumberOfSamples << std::endl;
     struct mecoPack p;
     createMecoPack(&p, NULL, 0, USB_CMD_RUN_SEQ);
     sendPacket(&p);
@@ -711,7 +721,7 @@ Mecobo::runSchedule ()
         numSamplesGotten += collectSamples();
 
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(waitMs));
         //}
 
     }

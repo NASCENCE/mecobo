@@ -28,7 +28,7 @@ class Mecobo
         USB usb;
         channelMap xbar;
 
-        int estimatedNumberOfSamples;
+        int maxSampleRate;
 
         //Recordings will be -5 to 5V.
         std::map<int, std::vector<int32_t>> pinRecordings;

@@ -8,7 +8,7 @@
 //A10 : U0
 //A9: U1
 //B12: U2
-//D0: U3
+//D5: U3
 //GPIO_PinModeSet(gpioPortA, 10, gpioModePushPull, 1);  //Led U0
 //GPIO_PinModeSet(gpioPortA, 9, gpioModePushPull, 1);  //Led U1
 //GPIO_PinModeSet(gpioPortB, 12, gpioModePushPull, 1);  //Led U2
@@ -52,7 +52,7 @@
 
 #include "fifo.h"
 
-//Yes, yes I know
+
 #define min(a,b) ({ a < b ? a : b; })
 
 
@@ -90,7 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define DEBUG_PRINTING 0
+#define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -246,7 +246,7 @@ int main(void)
     uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
     has_daughterboard = fpga[14];
 
-    has_daughterboard = 1;
+    has_daughterboard = 0;
     int skip_boot_tests= 0;
 
     if(!skip_boot_tests) {
@@ -371,7 +371,7 @@ int main(void)
             sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
             sample.value = (int16_t)data;
 
-            if (DEBUG_PRINTING) printf("s %x, ch %x, v %x i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
+            if (DEBUG_PRINTING) printf("s %x, ch %x, v %d i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
 
             fifoInsert(&ucSampleFifo, &sample);
 
@@ -756,7 +756,20 @@ void execCurrentPack()
     else if(currentPack.command == USB_CMD_RESET_ALL) {
         //mecoboStatus = MECOBO_STATUS_BUSY;
 
+        uint32_t * d = (uint32_t *)(currentPack.data);
+        if(d >= 1) {
+            has_daughterboard = 1;
+        } else {
+            has_daughterboard = 0;
+        }
+
         printf("----------------- RESETING MECOBO ------------------\n");
+        if(has_daughterboard) 
+        {
+            printf("DAUGHTERBOARD: PRESENT\n");
+        } else {
+            printf("DAUGHTERBOARD: NONE\n");
+        }
         resetTime();
         softReset();   //This will clear the command fifo, etc.
 
@@ -845,10 +858,19 @@ void execCurrentPack()
 
 
     else if(currentPack.command == USB_CMD_LOAD_BITFILE) {
-        if(bitfileOffset == 0) {
+
+
+        //Under configuration
+        int toggle = 1;
+
+        //bitfileoffset magic.
+        if(bitfileOffset == NOR_FLASH_NODB_POS) {
+            eraseNorChip();  //we want to chuck in a new file, kill this.
+            //TODO: fix per-region flash kill
+        }
+        if(bitfileOffset == NOR_FLASH_DB_POS) {
             eraseNorChip();  //we want to chuck in a new file, kill this.
         }
-
         autoSelectNor();
         //resetNor();
         enterEnhancedMode();
@@ -864,7 +886,6 @@ void execCurrentPack()
 
         exitEnhancedMode();
         //word offsets
-        printf("f1\n");
         printf("Got data, current offset %u\n", (unsigned int)bitfileOffset);
     }
 
@@ -1002,6 +1023,9 @@ void led(int l, int mode)
 
 void programFPGA()
 {
+    //Light the beacon!
+    int toggle = 0;
+
     autoSelectNor(); //set NOR in read mode
     printf("Programming FPGA!\n");
     //Start the configuration process.
@@ -1068,12 +1092,14 @@ void programFPGA()
         }
         nb++;
         if((nb%(10*1024)) == 0) {
-            printf("Last byte programmed: %x\n", bait);
+            led(BOARD_LED_U3, toggle);
+            if (DEBUG_PRINTING) printf("Last byte programmed: %x\n", bait);
             if(!GPIO_PinInGet(gpioPortD, 15)) {
                 printf("CRC error during config, INITB went high!\n");
             } else {
                 printf("BYTE OK\n");
             }
+            toggle = !toggle;
         }
     }
 
@@ -1084,6 +1110,7 @@ void programFPGA()
        */
 
     printf("FPGA programming done\n");
+    led(BOARD_LED_U3, 0);
 }
 
 void eraseNorChip()
@@ -1112,6 +1139,7 @@ void NORBusy() {
     uint8_t status = 0;
     uint8_t done = 0;
     int counter = 0;
+    int toggle = 1;
     while(!done) {
         status = nor[0];
         //read once more
@@ -1119,10 +1147,13 @@ void NORBusy() {
             done = 1;
         }
         if (((counter++)%100000) == 0) {
-            printf("NOR busy... %x\n", status);
+            if (DEBUG_PRINTING) printf("NOR busy... %x\n", status);
+            led(BOARD_LED_U2, toggle);
+            toggle = !toggle;
         }
     }
     printf("Final status %x\n", nor[0]);
+    led(BOARD_LED_U2, 0);
 
     return;
 }
