@@ -401,13 +401,13 @@ void Mecobo::discharge()
 void Mecobo::resetBoard()
 {
     struct mecoPack p;
-    uint8_t data;
+    uint32_t data;
     if(this->hasDaughterboard) {
         data = 1;
     } else {
         data = 0;
     }
-    createMecoPack(&p, &data, 0, USB_CMD_RESET_ALL);
+    createMecoPack(&p, (uint8_t*)&data, 4, USB_CMD_RESET_ALL);
     sendPacket(&p);
     //Wait a while between polling the status to be nice.
     std::cout << "Waiting for uC to complete reset" << std::endl;
