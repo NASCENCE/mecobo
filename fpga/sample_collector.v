@@ -24,6 +24,8 @@ module sample_collector (
   input cs,
   input wr,
 
+  input  [31:0] current_time,
+
   output reg output_sample,
   output [7:0] channel_select,
 
@@ -129,14 +131,18 @@ always @ (*) begin
   case (state)
     idle: begin
       nextState = idle;
-      if(command == CMD_START_SAMPLING) begin
-        res_cmd_reg = 1'b1;
-        nextState = fetch;
-      end else if (command == CMD_RESET) begin
-        res_sampling = 1'b1;
-      end else if (command == CMD_RES_SAMPLE_FIFO) begin
-        res_fifo = 1'b1;
-      end 
+      if (current_time == 0) 
+         nextState = idle;
+      else begin
+	      if(command == CMD_START_SAMPLING) begin
+		res_cmd_reg = 1'b1;
+		nextState = fetch;
+	      end else if (command == CMD_RESET) begin
+		res_sampling = 1'b1;
+	      end else if (command == CMD_RES_SAMPLE_FIFO) begin
+		res_fifo = 1'b1;
+	      end 
+	end
     end
 
     /*instruct adc to output new sample data */

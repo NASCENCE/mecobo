@@ -19,7 +19,6 @@ localparam DAC_CMD_NEW_VALUE = 1;
 //Controller select (not to be confused with chip select)
 wire cs;
 assign cs = (cmd_bus_enable & (cmd_bus_addr[15:8] == POSITION));
-wire busy;
 
 reg [15:0] shift_out_register = 0;
 reg [31:0] command_bus_data = 0;
@@ -65,6 +64,7 @@ reg reset_ebi_captured_data;
 reg load_command_bus_data;
 
 reg load_last_executed_command_bus_data;
+reg busy;
 
 
 parameter init =  3'b001;
@@ -91,6 +91,7 @@ always @ (*) begin
   count_res = 1'b0;
   nLdac = 1'b1;
   nSync = 1'b1;
+  busy = 1'b0;
 
   case (state)
 
@@ -112,6 +113,7 @@ always @ (*) begin
     load: begin
       nextState = load;
 
+      busy = 1'b1;
       count_up = 1'b1;
       nSync = 1'b0;
       shift_out_cmd_bus_enable = 1'b1;

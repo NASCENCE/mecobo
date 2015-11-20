@@ -15,22 +15,24 @@ input			dac_fifo_empty,
 output			dac_fifo_rd_en,
 
 //External bus interface to all the chippies.
-output 	[15:0] 		cmd_bus_addr,
+output 	reg [15:0] 	cmd_bus_addr,
 output 	[31:0] 		cmd_bus_data,
+input 	[31:0]		cmd_bus_data_out,
 output	reg		cmd_bus_en,
-output	reg		cmd_bus_rd,
+output	reg		cmd_bus_re,
 output	reg		cmd_bus_wr
 );
 
 
-localparam [4:0] fetch 		= 5'b00010,
-	         fifo_wait	= 5'b00100,
-	         exec		= 5'b01000,
-	         idle		= 5'b10000,
-                 exec_wait   	= 5'b00001;
+localparam [5:0] fetch 		= 6'b000010,
+	         fifo_wait	= 6'b000100,
+	         exec		= 6'b001000,
+	         idle		= 6'b010000,
+                 exec_wait   	= 6'b000001,
+		 cmd_bus_wait   = 6'b100000;  //wait for the unit to become ready
 
 //control section state machine.
-reg [4:0] state, nextState;
+reg [5:0] state, nextState;
 
 always @ (posedge clk or posedge rst)
   if (rst) state <= idle;
@@ -60,8 +62,10 @@ always @ (posedge clk or posedge rst)
     nextState = 4'bXXXX;
     cmd_fifo_rd_en = 1'b0;
     cmd_bus_wr = 1'b0;
-    cmd_bus_rd = 1'b0;
+    cmd_bus_re = 1'b0;
     cmd_bus_en = 1'b0;	
+    cmd_bus_addr = 0;
+    cmd_bus_addr = command[ADDR_H:ADDR_L];
     writeCommandReg = 1'b0;
     resetCommandReg = 1'b0;
     case (state)
@@ -88,7 +92,24 @@ always @ (posedge clk or posedge rst)
         nextState = fifo_wait;
         if(cmd_fifo_valid) begin
           writeCommandReg = 1'b1;   //fetch data on the coming flank.
-          nextState = exec;
+          nextState = cmd_bus_wait;
+          cmd_bus_addr = {command[ADDR_H:ADDR_L+8], 8'hA};  //address the busy register with the unit address (top 8 bits of addr) and busy reg
+	  cmd_bus_re = 1'b1;
+          cmd_bus_en = 1'b1;
+        end
+        
+      end
+
+      cmd_bus_wait: begin
+        //if we read out a 0 we are good to go, if not the unit is busy so we should wait until it is freed up to program it with
+        //the fetched fifo command
+        if(cmd_bus_data_out == 0) 
+  	  nextState = exec;
+        else begin
+          nextState = cmd_bus_wait;
+          cmd_bus_addr = {command[ADDR_H:ADDR_L+8], 8'hA};  //address the busy register with the unit address (top 8 bits of addr) and busy reg
+	  cmd_bus_re = 1'b1;
+          cmd_bus_en = 1'b1;
         end
       end
 
@@ -99,7 +120,7 @@ always @ (posedge clk or posedge rst)
         if ((current_time >= command[TIME_H:TIME_L]) | (command[TIME_H:TIME_L] == 0)) begin
           cmd_bus_wr = 1'b1;
           cmd_bus_en = 1'b1;
-          nextState = exec_wait;	
+          nextState = exec_wait;
         end
       end
 
@@ -119,7 +140,6 @@ always @ (posedge clk or posedge rst)
 
 
   //format the address 
-  assign cmd_bus_addr[15:0] = command[ADDR_H:ADDR_L];
   assign cmd_bus_data = command[DATA_H:DATA_L];
 
   always @ (posedge clk) begin

@@ -33,7 +33,7 @@ input [7:0] channel_select;
 output reg [31:0] sample_data;
 
 
-parameter [14:0] POSITION = 0;
+parameter [7:0] POSITION = 0;
 
 reg sample_register = 0;
 reg [15:0] sample_cnt = 16'h0000;
@@ -60,7 +60,8 @@ ADDR_GLOBAL_CMD = 0,
   ADDR_REC_START_TIME = 6,
   ADDR_SAMPLE_CNT =  7,
   ADDR_STATUS_REG =  8,
-  ADDR_LAST_DATA = 9;
+  ADDR_LAST_DATA = 9,
+  ADDR_BUSY = 10;
 
 
 localparam
@@ -68,6 +69,7 @@ localparam
   CMD_SQUARE_WAVE = 3,
   CMD_INPUT_STREAM = 4,
   CMD_RESET = 5;
+
 
 reg [31:0] command = 0;
 reg [31:0] sample_rate = 0;
@@ -82,6 +84,7 @@ reg update_sample_cnt = 0;
 reg enable_pin_output = 0;
 reg const_output_null = 0;
 reg const_output_one = 0;
+reg busy;
 
 localparam [3:0] 
                     idle =            4'b0001,
@@ -106,13 +109,15 @@ always @ (posedge clk) begin
         data_out <= sample_cnt;
       else if (addr[7:0] == ADDR_STATUS_REG)
         data_out <= POSITION;
+      else if (addr[7:0] == ADDR_BUSY)
+        data_out <= {15'b0, busy};
       else
         data_out <= 16'b0;
     end else
       data_out <= 16'b0;
 
     if (output_sample & (channel_select == POSITION)) 
-      sample_data <= {sample_cnt, POSITION, sample_register};
+      sample_data <= {sample_cnt, POSITION, 7'b1010101, sample_register};
     else 
       sample_data <= 32'hZ;
 
@@ -194,6 +199,7 @@ always @ (*) begin
   reset_cmd = 1'b0;
   reset_rec_time_register = 1'b0;
   reset_sample_registers = 1'b0;
+  busy = 1'b0;
 
   case (state)
     idle: begin

@@ -11,7 +11,7 @@
 
 
 
-//`define WITH_DB
+`define WITH_DB
 
 module mecobo   
 (               osc, 
@@ -194,6 +194,7 @@ ebi ebi_if(
 
 //FIFOS
 wire [31:0] cmd_bus_data_in;
+wor [15:0] cmd_bus_data_out;
 wire [15:0] cmd_bus_addr;
 wire [79:0] sched_fifo_data;
 command_fifo cmd_fifo (
@@ -225,8 +226,10 @@ scheduler sched(
 
   .cmd_bus_addr(cmd_bus_addr),
   .cmd_bus_data(cmd_bus_data_in),
+  .cmd_bus_data_out(cmd_bus_data_out),
   .cmd_bus_en(cmd_bus_en),
-  .cmd_bus_wr(cmd_bus_wr)
+  .cmd_bus_wr(cmd_bus_wr),
+  .cmd_bus_re(cmd_bus_re)
 );
 
 
@@ -245,8 +248,8 @@ generate
       .addr(cmd_bus_addr),
       .data_wr(cmd_bus_wr),
       .data_in(cmd_bus_data_in),
-      .data_rd(),
-      .data_out(),
+      .data_rd(cmd_bus_rd),
+      .data_out(cmd_bus_data_out),
       .pin(HW[i+1]),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
@@ -264,11 +267,11 @@ generate
     .sclk(ad_clk),
     .reset(mecobo_reset),
     .enable(cmd_bus_en),
-    .re(),
+    .re(cmd_bus_re),
     .wr(cmd_bus_wr),
     .addr(cmd_bus_addr),
     .data_in(cmd_bus_data_in),
-    .data_out(),
+    .data_out(cmd_bus_data_out),
     //interface to the world
     .cs(HN[48]),
     .adc_din(HN[32]),
@@ -286,10 +289,10 @@ generate
     .reset(mecobo_reset),
     .cmd_bus_addr(cmd_bus_addr),
     .cmd_bus_enable(cmd_bus_en),
-    .re(),
+    .re(cmd_bus_re),
     .cmd_bus_wr(cmd_bus_wr),
     .cmd_bus_data(cmd_bus_data_in),
-    .out_data(),
+    .out_data(cmd_bus_data_out),
     .nLdac(HN[24]),
     .nSync(HN[16]),
   .dac_din(HN[8]));
@@ -300,9 +303,9 @@ generate
     .sclk(xbar_clk),
     .reset(mecobo_reset),
     .cmd_bus_enable(cmd_bus_en),
-    .re(),
+    .re(cmd_bus_re),
     .cmd_bus_wr(cmd_bus_wr),
-    .data_out(),
+    .data_out(cmd_bus_data_out),
     .cmd_bus_data(cmd_bus_data_in),
     .cmd_bus_addr(cmd_bus_addr),
     .xbar_clock(HN[6]), //clock from xbar and out to device 
@@ -310,7 +313,7 @@ generate
   .sin(HN[9]));
 
 `else
-  for (i = 0; i < 30; i = i + 1) begin: pinControl 
+  for (i = 0; i < 50; i = i + 1) begin: pinControl 
     pincontrol #(.POSITION(i))
     pc (
       .clk(sys_clk),
@@ -319,8 +322,8 @@ generate
       .addr(cmd_bus_addr),
       .data_wr(cmd_bus_wr),
       .data_in(cmd_bus_data_in),
-      .data_rd(),
-      .data_out(),
+      .data_rd(cmd_bus_re),
+      .data_out(cmd_bus_data_out),
       .pin(HN[i+1]),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
@@ -345,6 +348,7 @@ sample_collector sample_collector0(
   .sample_data(sample_data_bus),
   .output_sample(sample_enable_output),
   .channel_select(sample_channel_select),
+  .current_time(global_clock),
 
   .sample_fifo_rd_en(sample_collector_rd_en),
   .sample_data_out(sample_collector_data),

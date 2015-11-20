@@ -44,16 +44,16 @@ reg inc_adc_clocktick_counter;
 reg shift_out; //shift out to ADC
 reg shift_in; //shift into FPGA
 reg copy_to_tmp;
+reg busy;
 reg load_shift_out_reg;
 reg reset_current_command;
-reg reset_rec_time;
 
 //---------------------------------------------
 
 //                          |offset                | channel| command
 //Address layout: [18,17,16,15,14,13,12 | 11,10,9,8| 7,6,5,4,3,2,1,0]
-parameter MIN_CHANNEL = 0;
-parameter MAX_CHANNEL = 1;
+parameter MIN_CHANNEL = 100;
+parameter MAX_CHANNEL = 107; 
 
 wor  controller_enable_ch;
 wor  channels_selected;
@@ -88,7 +88,6 @@ reg [31:0] end_time [0:7];
 
 reg [31:0] rec_start_time [0:7];
 
-wire busy;
 
 integer q;
 initial begin
@@ -117,6 +116,15 @@ REC_START_TIME = 4'hC;
 
 localparam ADC_CMD_NEW_VALUE = 1;
 
+wire record;
+assign record = (rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (current_time < end_time[chan_idx]);
+
+wire record_forever;
+assign record_forever = (rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (end_time[chan_idx] == 0);
+
+
+
+
 //Data capture from EBI
 //--------------------------------------------------------------------
 integer c;
@@ -132,12 +140,11 @@ always @ (posedge clk) begin
     end
     current_command <= 0;
   end else begin
-    if (output_sample & channels_selected) begin
-      //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (end_time[chan_idx] > current_time))
+    if ((current_time != 0) & output_sample & channels_selected) begin
+      if (record | record_forever)
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
-        sample_data <= 32'hFFFFFFFF;
+        sample_data <= 32'hADADADAD;
 
     end else begin
       sample_data <= 32'hZ;
@@ -159,23 +166,6 @@ always @ (posedge clk) begin
       end
     end
 
-    //recording time is a special register that allows one to 
-    //start recording at some predetermined time.
-    //Since we depart from idle state using this register,
-    //it needs similar logic as a command, which is another 
-    //way of leaving idle.
-    if (reset_rec_time) begin
-      for (c = 0; c < 8; c = c+1) begin
-	rec_start_time[c] <= 0;
-      end
-    end else begin
-      if (controller_enable & wr) begin
-        if (addr[3:0] == REC_START_TIME) begin
-         rec_start_time[int_chan_idx] <= data_in;
-        end
-      end
-    end
-   
     //The other registers can be written to whenever. 
     if (controller_enable & wr) begin
         //Data driving
@@ -190,6 +180,11 @@ always @ (posedge clk) begin
         if (addr[3:0] == ENDTIME) begin
           end_time[int_chan_idx] <= data_in;
         end
+
+        if (addr[3:0] == REC_START_TIME) begin
+          rec_start_time[int_chan_idx] <= data_in;
+        end
+ 
     end
 
     //Driving output bus.
@@ -241,8 +236,6 @@ parameter writeback     = 5'b10000;
 
 reg [NUM_STATES - 1:0] state, nextState;
 
-
-assign busy = (state != get_values);
 //---------------------------- CONTROL LOGIC -----------------------------
 //The slow clocked control logic that controls the shift registers
 //and times when to copy data into the temporary registers.
@@ -252,7 +245,6 @@ always @ (posedge sclk) begin
   if (reset) state <= init; 
   else state <= nextState;
 end
-
 
 always @ (*) begin
 
@@ -265,9 +257,9 @@ always @ (*) begin
   inc_adc_clocktick_counter = 1'b0;
   res_adc_clocktick_counter = 1'b0;
   copy_to_tmp = 1'b0;
+  busy = 1'b0;
 
   reset_current_command = 1'b0;
-  reset_rec_time = 1'b0;
 
 
   case (state)
@@ -278,7 +270,7 @@ always @ (*) begin
       if (current_command[31:16] == ADC_CMD_NEW_VALUE) begin
         load_shift_out_reg = 1'b1;
         nextState = program_adc;
-      end else begin
+      end else if (current_time != 0) begin
         nextState = get_values;
       end
     end
@@ -286,12 +278,6 @@ always @ (*) begin
     //This nextState shall copy to tmp registers.
     copy: begin
       res_adc_clocktick_counter = 1'b1;
-
-      //we are done, so reset the rec time so that
-      //no new samples are collected
-      if (end_time[chan_idx] <= current_time)
-         reset_rec_time = 1'b1;
-     
       nextState = init;
     end
 
@@ -307,6 +293,7 @@ always @ (*) begin
     end
 
     program_adc: begin
+      busy = 1'b1;
       cs = 1'b0;  //remember, control signal is /not/ clocked
       shift_out = 1'b1; //shifts data out to ADC
       inc_adc_clocktick_counter = 1'b1;

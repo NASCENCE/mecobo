@@ -106,7 +106,7 @@ always @ (*) begin
   xbar_clock = 1'b0;
   pclk = 1'b1;
   load_shift_reg = 1'b0;
-  busy = 1'b1;
+  busy = 1'b0;
   reset_cmd_reg = 1'b0;
 
   case (state)
@@ -114,7 +114,6 @@ always @ (*) begin
     init: begin
       nextState = init;
       count_res = 1'b1;
-      busy = 1'b0;
 
       if (command != 0) begin
         nextState = load;
@@ -124,7 +123,7 @@ always @ (*) begin
 
     pulse_xbar_clk: begin
       nextState = load;
-      
+      busy = 1'b1; 
       shift_out_cmd_bus_enable = 1'b1;  //shift next bit next flank
       count_up = 1'b1; 
       xbar_clock = 1'b1;  //clock out the current topmost bit.
