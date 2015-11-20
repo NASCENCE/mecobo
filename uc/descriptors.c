@@ -24,8 +24,8 @@ const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc __attribute__ ((aligned(4)
   .bDeviceSubClass    = 0,
   .bDeviceProtocol    = 0,
   .bMaxPacketSize0    = USB_FS_CTRL_EP_MAXSIZE,
-  .idVendor           = 0xDEAD,
-  .idProduct          = 0xBEEF,
+  .idVendor           = 0x2544,
+  .idProduct          = 0x0003,
   .bcdDevice          = 0x0000,
   .iManufacturer      = 1,
   .iProduct           = 2,
@@ -142,13 +142,13 @@ const uint8_t USBDESC_configDesc[] __attribute__ ((aligned(4)))=
 };
 
 STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
-STATIC_CONST_STRING_DESC( iManufacturer, 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','o','r','a','t','o','r','i', \
-                                         'e','s',' ','I','n','c','.' );
-STATIC_CONST_STRING_DESC( iProduct     , 'E','F','M','3','2',' ','U','S','B', \
-                                         ' ','C','D','C',' ','s','e','r','i', \
-                                         'a','l',' ','p','o','r','t',' ','d', \
-                                         'e','v','i','c','e' );
+STATIC_CONST_STRING_DESC( iManufacturer, 'M','e','c','o','b','o',' ',' ','v', \
+                                         '4','.','1',' ',' ',' ',' ',' ',' ', \
+                                         ' ',' ',' ',' ',' ',' ','.' );
+STATIC_CONST_STRING_DESC( iProduct     , 'E','v','o','l','u','t','i','o','n', \
+                                         ' ','a','n','d',' ','p','r','o','s', \
+                                         'p','e','r','i','t','y',' ',' ',' ', \
+                                         ' ',' ',' ',' ',' ' );
 
 const void * const USBDESC_strings[] =
 {

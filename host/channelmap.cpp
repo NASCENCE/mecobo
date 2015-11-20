@@ -180,6 +180,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
           channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
           mapDAPin(p, channel);
           numDAchannels++;
+          std::cout << "Mapped DA pin " << p << " to channel " << channel << std::endl;
         } else {
           std::cout << "All out of DA channels" << std::endl;
           emException e;
@@ -211,9 +212,40 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
 
 std::vector<uint8_t> channelMap::getXbarConfigBytes()
 {
-  //Every 16 bits controls a new pin (Y-axis on the XBAR).
+  //From the DATASHEET:
+  /*Data to control the switches is clocked serially into a 256-bit
+shift register and then transferred in parallel to 256 bits of mem-
+ory. The rising edge of SCLK, the serial clock input, loads data
+into the shift register. The first bit loaded via SIN, the serial
+data input, controls the switch at the intersection of row Y15
+and column X15. The next bits control the remaining columns
+(down to X0) of row Y15, and are followed by the bits for row
+Y14, and so on down to the data for the switch at the intersec-
+tion of row Y0 and column X0. The shift register is dynamic, so
+there is a minimum clock rate, specified as 20 kHz.
+*/
+
+
+
+  //Example: To get dac output on pin 15,
+  //we need to open X0,Y31, which is the XBAR2 Y15.
+  //
+  //Now, the config registers are clocked serially,
+  //so to be able to hit THIS bit in particular, we must send it
+  //in the FIRST word then.
+  //
+  //Every 16 bits controls a new Mecobo pin (Y-axis on the XBAR).
+  //
+  //Y31 is CONTROLLED BY config word 0.
+  //X0 is controlled by the LAST bit of this config word, i.e. bit 15.
+  //
+  //This is a little confusing, but it's how it is.
+  //
+  //Thus what we are looking for, output wise, is config word 0.
+  //
   //There are 32 Y-pins out of the XBARs. 16-bit words 0 to 15 control 
-  //the output from xbar 2, and 16 to 31 control xbar 1.
+  //the output from xbar 2 (analog stuff), and 16 to 31 control xbar 1 (digital
+  //stuff)
   //
   //But take care here: we do NOT want to be able to drive the 
   //same Y out from each crossbar. 
@@ -236,24 +268,23 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     }
 
     int pin = pc.first;
-    int configIndex = -1;
+    int configIndexYpinInverse = -1;
 
-    //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
-    //The next 16 words control the AD/DA-chans.
+    //configIndexYpinInverse is the index into the config stream.
     //Since we have mapped the PINs to the Y's of the XBARS,
     //we have two choices to drive/source one pin.
     //xbar1, or xbar2. We add 16 to program xbar1.
 
     if (channel < IO_CHANNELS_END) { //Digital channels
-      configIndex = 15 - pin;
+      configIndexYpinInverse = 15 - pin;
     } else {
-      configIndex = 31 - pin;
+      configIndexYpinInverse = 31 - pin;
       //This is not a digital channel.
-      //
     }
+    std::cout << "DA channel on pin " << pin << "config word " << configIndexYpinInverse << std::endl;
 
-    config[configIndex] |= (1 << (channelToXbar[channel]));
-    std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+    config[configIndexYpinInverse] |= (1 << (channelToXbar[channel]));
+    std::cout << "Config word " << configIndexYpinInverse << " Y-pin:" << pin + 15 <<", X:" << channelToXbar[channel] << " ::" << config[configIndexYpinInverse] << std::endl;
     //}
   }
   for(auto pc : pinToADChannel) { 
@@ -267,7 +298,7 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     }
 
     int pin = pc.first;
-    int configIndex = -1;
+    int configIndexYpinInverse = -1;
 
     //The first 16 words control the digital channels.  word 0 controls Y15, and so on.
     //The next 16 words control the AD/DA-chans.
@@ -276,21 +307,20 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
     //xbar1, or xbar2. We add 16 to program xbar1.
 
     if (channel < IO_CHANNELS_END) { //Digital channels
-      configIndex = 15 - pin;
+      configIndexYpinInverse = 15 - pin;
     } else {
-      configIndex = 31 - pin;
+      configIndexYpinInverse = 31 - pin;
       //This is not a digital channel.
-      //
     }
 
-    config[configIndex] |= (1 << (channelToXbar[channel]));
-    std::cout << "Config word " << configIndex << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndex] << std::endl;
+    config[configIndexYpinInverse] |= (1 << (channelToXbar[channel]));
+    std::cout << "Config word " << configIndexYpinInverse << " Y:" << pin <<", X:" << channelToXbar[channel] << " ::" << config[configIndexYpinInverse] << std::endl;
     //}
   }
 
 
   //Swap all the bytes before transmission because we have worked with
-  //  //little endian stuff so the bytes are the wrong order
+  //  //little endian stuff so the bytes are the wrong order for xmission
   std::vector<uint16_t> reordered;
   for (auto w : config) {
     reordered.push_back(__builtin_bswap16(w));

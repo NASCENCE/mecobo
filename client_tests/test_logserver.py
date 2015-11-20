@@ -34,8 +34,9 @@ cli.clearSequences()
 
 cli.setLogServer(ls)
 
-recChannels = range(1,50)
-for x in xrange(0,100):
+recChannels = range(1,10)
+
+for x in xrange(0,10000):
     for r in recChannels:
         cli.reset()
         cli.clearSequences()

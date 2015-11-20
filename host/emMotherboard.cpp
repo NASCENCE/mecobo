@@ -82,6 +82,10 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     }  
   }
 
+  ~emEvolvableMotherboardHandler() 
+  {
+    lsTransport->close();
+  }
   int32_t ping() {
     // Your implementation goes here
     printf("ping\n");
@@ -180,7 +184,9 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     _return.SampleCount = r.size();
     _return.Samples = r;
 
-    lsCli->log(logServerSettings, stringRepBuffer(_return), emLogEventType::RESPONSE);
+    if (lsCli) {
+        lsCli->log(logServerSettings, stringRepBuffer(_return), emLogEventType::RESPONSE);
+    }
   }
 
 

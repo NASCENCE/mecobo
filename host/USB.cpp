@@ -24,7 +24,7 @@ USB::USB() {
 	    libusb_device * dev = devs[i];
 	    libusb_device_descriptor desc;
 	    libusb_get_device_descriptor(dev, &desc);
-	    if(desc.idVendor == 0xDEAD && desc.idProduct == 0xBEEF) {
+	    if(desc.idVendor == 0x2544 && desc.idProduct == 0x0003) {
 	      std::cout << "Found Mecobo Device." << std::endl;
 	      mecoboBoards.push_back(dev);
 	    }
