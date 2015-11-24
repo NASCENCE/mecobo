@@ -325,7 +325,11 @@ there is a minimum clock rate, specified as 20 kHz.
   //  //little endian stuff so the bytes are the wrong order for xmission
   std::vector<uint16_t> reordered;
   for (auto w : config) {
-    reordered.push_back(__builtin_bswap16(w));
+    #ifdef WIN32
+        reordered.push_back(_byteswap_ushort(w));
+    #else 
+        reordered.push_back(__builtin_bswap16(w));
+    #endif
   }
 
   std::vector<uint8_t> ret;
