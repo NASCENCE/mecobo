@@ -247,7 +247,7 @@ generate
       .data_in(cmd_bus_data_in),
       .data_rd(),
       .data_out(),
-      .pin(HW[i+1]),
+      .pin(HW[(i*2)+1]),
       .output_sample(sample_enable_output),
       .channel_select(sample_channel_select),
       .sample_data(sample_data_bus),
