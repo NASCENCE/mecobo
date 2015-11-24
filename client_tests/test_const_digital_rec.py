@@ -25,35 +25,20 @@ cli.clearSequences()
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
-it.endTime = 200
-it.frequency = 1
-it.cycleTime = 100
-it.operationType = emSequenceOperationType().DIGITAL
+it.endTime = 50
+it.amplitude = 255
+it.operationType = emSequenceOperationType().CONSTANT
 cli.appendSequenceAction(it)
-
-it = emSequenceItem()
-it.pin = [0]
-it.startTime = 200
-it.endTime = 400
-it.frequency = 0
-it.cycleTime = 100
-it.operationType = emSequenceOperationType().DIGITAL
-cli.appendSequenceAction(it)
-
-it = emSequenceItem()
-it.pin = [0]
-it.startTime = 400
-it.endTime = 1000
-it.frequency = 1
-it.cycleTime = 100
-it.operationType = emSequenceOperationType().DIGITAL
+it.startTime = 50
+it.endTime = 100
+it.amplitude = 0
 cli.appendSequenceAction(it)
 
 it = emSequenceItem()
 it.pin = [15]
 it.startTime = 0
-it.endTime = 1000
-it.frequency = 5000
+it.endTime = 100
+it.frequency = 50000
 it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
 it.operationType = emSequenceOperationType().RECORD   #implies analogue 
 cli.appendSequenceAction(it)

@@ -47,7 +47,8 @@ for r in recChannels:
     sams = cli.getRecording(r).Samples;
     print "len", len(sams)
     for i in sams:
-        res.append(i&1)
+        #res.append(i)
+        print i
 
     plt.plot(res, label=str(r))
 

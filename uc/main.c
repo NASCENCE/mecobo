@@ -90,7 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define DEBUG_PRINTING 0
+#define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -354,6 +354,7 @@ int main(void)
 
              //   if(!fifoFull(&ucSampleFifo)) {
                     data = memctrl[6]; //get next sample from EBI INTERFACE
+
                     int tableIndexShift = has_daughterboard ? 13 : 1;   //the 1 is for just looking at the controller ID
                     tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
 
@@ -363,7 +364,7 @@ int main(void)
                     samplesToGet--;
               //  }
             //}
-            //if (DEBUG_PRINTING) printf("s %x, ch %x, v %d i %u\n", sample.sampleNum, sample.channel, sample.value, tableIndex);
+            if (DEBUG_PRINTING) printf("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
 
 
 
@@ -560,11 +561,13 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             //resetTime();
             //runTime();
             //if(!adc_rr_wr)
-            //command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
+//            command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
+ //           command(0, 255, 0, 0);
             //USBTIMER_DelayMs(1);
 
             //Range register 2
-            //command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
+  //          command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
+   //         command(0, 255, 0, 0);
             //USBTIMER_DelayMs(1);
 
             command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
@@ -593,9 +596,13 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     else {
         if(DEBUG_PRINTING) printf("Recording dig ch: %x\n", channel);
         command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controller to put it in idle
+            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
+            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_END_TIME, (uint32_t)endtime);
+            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_REC_START_TIME, (uint32_t)startTime);
+            command(0, 255, 0, 0);
 
         //command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
 

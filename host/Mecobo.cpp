@@ -375,11 +375,11 @@ int Mecobo::collectSamples()
             for (auto p : pin) {
                 //Cast from 13 bit to 32 bit two's complement int.
                 int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-                //std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+//                std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
                 pinRecordings[(int)p].push_back(v);
             }
         } else {
-            pinRecordings[s.channel].push_back((int32_t)s.value & 0x1);
+            pinRecordings[s.channel].push_back((int32_t)s.value);
         }
     }
     return (int)nSamples;
