@@ -1402,9 +1402,9 @@ void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t d
     cmd.startTime = (uint32_t)(startTime);
     cmd.controller = controller; 
     cmd.addr = reg;
-    cmd.data[0] = data1; 
+    cmd.data[0] = data1; //TODO: Figure out why this is correct.
     cmd.data[1] = data2; 
-    printf("reg: %x F1: %x F2: %x\n", reg, data1, data2);
+    printf("reg: %x F1: %x F2: %x\n", reg, data2, data1);
     putInFifo(&cmd);
 }
 

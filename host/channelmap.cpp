@@ -302,9 +302,9 @@ std::vector<uint8_t> channelMap::getXbarConfigBytes()
         //want to open both.
         int configWord = 0;
         if (channel < IO_CHANNELS_END) {
-            configWord = 31-pin;
-        } else {
             configWord = 15-pin;
+        } else {
+            configWord = 31-pin;
         }
         //channel to XBAR tells us which X-index is associated with this channel.
         config[configWord] |= (0x1 << channelToXbar[channel]);
@@ -346,9 +346,9 @@ for(auto pc : pinToADChannel) {
     */
     int configWord = 0;
     if (channel < IO_CHANNELS_END) {
-        configWord = 31-pin;
-    } else {
         configWord = 15-pin;
+    } else {
+        configWord = 31-pin;
     }
 
     config[configWord] |= (0x1 << channelToXbar[channel]);
