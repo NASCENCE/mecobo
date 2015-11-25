@@ -31,6 +31,11 @@ def teardown():
     print "package teardown()"
     transport.close()
 
+SAMPLE_CLK = 75e6
+def real_sample_freq(f):
+    overflow = np.floor(SAMPLE_CLK / f)
+    return SAMPLE_CLK / overflow
+
 def adc_voltage(a):
     """ Convert binary ADC sample to voltage """
     return a * 5.0 / 4096.0
@@ -67,3 +72,11 @@ def signal_shift(s1, s2, lag):
         s2 = s2[:lag]
 
     return (s1, s2)
+
+def digital_samples(d):
+    # Discard upper bits
+    return d & 1
+
+DIGITAL_THRESHOLD_VOLTAGE = 1.5
+def digital_threshold(a):
+    return (a > DIGITAL_THRESHOLD_VOLTAGE).astype(int)
