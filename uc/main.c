@@ -699,21 +699,18 @@ void execCurrentPack()
     {
         printf("Configuring XBAR\n");
 
-        //Data in the buffer is the order we would like the
-        //bytes to be IN the xbar.
-        //since the command function takes a 32 bit 
-        //integer assumed to be stored in Little-Endian,
-        //we'll access the buffer like that, and 
-        //the order that is sent to the FPGA 
-        //is actually correct
+        //The data that comes in are 32 16-bit words
+        //where we want to send word 0 first, word 1 second, etc...
         uint16_t * d = (uint16_t*)(currentPack.data);
 
+        //the command interface uses 32 bit words for some reason so 
+        //we'll interate in steps of 2 words.
         int j = 0;
         for(int i = 0; i < 16; i++) {
-            command2x16(0, XBAR_CONTROLLER_ADDR, i, __builtin_bswap16(d[j]), __builtin_bswap16(d[j+1]));
+            //command2x16(0, XBAR_CONTROLLER_ADDR, i, __builtin_bswap16(d[j]), __builtin_bswap16(d[j+1]));
+            command2x16(0, XBAR_CONTROLLER_ADDR, i, d[j], d[j+1]);
             j += 2;
         }
-        printf("Sent %d bytes\n", j*2);
 
         command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
 
@@ -1375,6 +1372,20 @@ inline void putInFifo(struct fifoCmd * cmd)
 
 
 
+//The write to the FPGA will make the data into a big endian word.
+//the uc is little endian so the least significant byte of a 32 bit word 
+//is stored first in memory:
+//addr: 0x0 0x1 0x2  0x3
+//byte: 1    2   3   4
+//
+//the fpga wants things the other way around. 
+//
+//this is a little wonky, but the EBI interface will but the bits 
+//in msb to lsb order on the data lines, and we write in 16 bit words. 
+//
+//we thus need to write the highest (in memory addr) two bytes of the 32 bit word FIRST since they
+//are more significant. this happens in cmd.data[0] = data16[1]  -- highest two
+//bytes to FIRST addr.
 void command(uint32_t startTime, uint8_t controller, uint8_t reg, uint32_t data) {
     struct fifoCmd cmd;
     uint16_t * data16 = (uint16_t*)(&data);
@@ -1391,8 +1402,9 @@ void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t d
     cmd.startTime = (uint32_t)(startTime);
     cmd.controller = controller; 
     cmd.addr = reg;
-    cmd.data[0] = data1; 
+    cmd.data[0] = data1; //TODO: Figure out why this is correct.
     cmd.data[1] = data2; 
+    printf("reg: %x F1: %x F2: %x\n", reg, data2, data1);
     putInFifo(&cmd);
 }
 
