@@ -93,7 +93,8 @@ wire sample_enable_output;
 wire [7:0] sample_channel_select;
 wire [31:0] sample_data_bus;
 
-wire locked = global_clock_mmcm_locked & main_clocks_mmcm_locked;
+wire xbar_clk_locked;
+wire locked = xbar_clk_locked & main_clocks_mmcm_locked;
 
 wire soft_reset;
 assign led[2] = locked;
@@ -128,25 +129,16 @@ main_clocks clocks
   .LOCKED(main_clocks_mmcm_locked)
 );
 
-wire global_clock_clk;
-
-global_clock globglob
-(
-    .CLK_IN1(ad_clk),
-    .CL_OUT_1(global_clock_clk),
-    .RESET(1'b0),
-    .LOCKED(global_clock_mmcm_locked)
-);
 
 
-`ifdef WITH_DB
   xbar_clock xbarclocks0(
     .CLK_IN_5(xbar_predivided),
     .XBAR_CLK(xbar_clk),
     .RESET(1'b0),
-    .LOCKED(led[3])
+    .LOCKED(xbar_clk_locked)
   );
 
+`ifdef WITH_DB
   ODDR2 clkout_oddr_ad
   (.Q  (HN[4]),
   .C0 (ad_clk),
@@ -184,7 +176,7 @@ ebi ebi_if(
   .rd(read_enable),
   .wr(write_enable),
   .cs(chip_select),
-  .global_clock_clk(global_clock_clk),
+  .global_clock_clk(xbar_clk),
   .global_clock(global_clock),
   .cmd_fifo_data_in(ebi_fifo_din),
   .cmd_fifo_wr_en(ebi_fifo_wr),
