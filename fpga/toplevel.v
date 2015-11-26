@@ -93,7 +93,8 @@ wire sample_enable_output;
 wire [7:0] sample_channel_select;
 wire [31:0] sample_data_bus;
 
-wire locked;
+wire locked = global_clock_mmcm_locked & main_clocks_mmcm_locked;
+
 wire soft_reset;
 assign led[2] = locked;
 
@@ -118,13 +119,23 @@ end
 //DCM instance for clock division
 main_clocks clocks
 (
-  .CLK_IN_50(osc),
-  .CLK_OUT_75(sys_clk),
+  .CLK_IN1(osc),  //50MHz
+  .CLK_OUT_100(sys_clk),
   .CLK_OUT_5(xbar_predivided),
   .CLK_OUT_10(ad_clk),
   .CLK_OUT_30(da_clk),
   .RESET(1'b0),
-  .LOCKED(locked)
+  .LOCKED(main_clocks_mmcm_locked)
+);
+
+wire global_clock_clk;
+
+global_clock globglob
+(
+    .CLK_IN1(ad_clk),
+    .CL_OUT_1(global_clock_clk),
+    .RESET(1'b0),
+    .LOCKED(global_clock_mmcm_locked)
 );
 
 
@@ -173,6 +184,7 @@ ebi ebi_if(
   .rd(read_enable),
   .wr(write_enable),
   .cs(chip_select),
+  .global_clock_clk(global_clock_clk),
   .global_clock(global_clock),
   .cmd_fifo_data_in(ebi_fifo_din),
   .cmd_fifo_wr_en(ebi_fifo_wr),

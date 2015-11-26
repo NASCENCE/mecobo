@@ -8,6 +8,7 @@ input [18:0] addr,
 input rd,
 input wr,
 input cs,
+input global_clock_clk,
 output [31:0] global_clock,
 //Interface to CMD fifo
 output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
@@ -274,7 +275,7 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 //-----------------------------------------------------------------------------------
 // clock controlled by state machine 
 //-----------------------------------------------------------------------------------
-always @ (posedge clk) begin
+always @ (posedge global_clock_clk) begin
   if(rst) begin
     clock_reg <= 0; 
     time_running <= 0;
@@ -290,6 +291,7 @@ always @ (posedge clk) begin
       time_running <= 1;
   end
 end
+
 assign global_clock = clock_reg;
 
 
