@@ -123,7 +123,7 @@ reg[31:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
   if (reset)  begin
     data_out <= 0;
-    sample_data <= 32'hZ;
+    sample_data <= 32'hE5E6E7E8;
     for (c = 0; c < 8; c = c+1) begin
       overflow_register[c] <= 0;
       end_time[c] <= 0;
@@ -139,7 +139,7 @@ always @ (posedge clk) begin
         sample_data <= 32'hDEADBEEF;
 
     end else begin
-      sample_data <= 32'hZ;
+        sample_data <= 32'hE5E6E7E8;
     end
 
 

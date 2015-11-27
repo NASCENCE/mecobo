@@ -532,7 +532,8 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
        int duty = std::min(65500, int(period * ((double)dutyCycle/100.0)));
        */
     //2^32/75*10^6 = 57.26623061333333333333
-    double magic = 42.94967296000000000000;
+    double magic = 57.26623061333333333333;
+    //double magic = 42.94967296000000000000;
 
     int countervalue = (int)(magic * frequency);
 

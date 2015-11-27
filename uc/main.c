@@ -90,7 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
-#define FPGA_SYSTEM_CLK_RATE 100000000  //FPGA runs at 100MHz
+#define FPGA_SYSTEM_CLK_RATE 75000000  //FPGA runs at 100MHz
 #define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
@@ -349,6 +349,7 @@ int main(void)
 
         //sampleFifoDataCount();
         if ((samplesToGet>0) & timeStarted & runItems & !fifoFull(&ucSampleFifo)) {
+            printf("samplesToget: %d\n", samplesToGet);
             //Push samples into fifo
             //sample.sampleNum = numSamples++;
             //for(int i = 0; i < samplesToGet; i++) {
@@ -367,6 +368,7 @@ int main(void)
             //}
             if (DEBUG_PRINTING) printf("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
 
+            //printf("t: %x\n", memctrl[9]);
 
 
         }
@@ -538,10 +540,10 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     //roughly 1701, so actual sample rate is about 44.09
      
     
-    float overflow = 0;
+    double overflow = 0;
     if (sampleRate != 0) {
-        overflow = FPGA_SYSTEM_CLK_RATE/(float)sampleRate;   //this is the period length of the 100MHz sample rate counter clock
-        printf("Overflow register: %x\n", overflow);
+        overflow = (float)FPGA_SYSTEM_CLK_RATE/(float)sampleRate;   //this is the period length of the 100MHz sample rate counter clock
+        printf("Overflow register: %f\n", overflow);
     } else {
         printf("omg sampleRate is 0. setting cowardly to 1000");
         overflow = 1000.0;
