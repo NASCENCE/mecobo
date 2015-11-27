@@ -2,6 +2,7 @@
 NET "osc" LOC = R10;
 #this is actually ebi addr 19...
 NET "reset" LOC = T6;
+PIN "reset" TIG;
 
 NET "led[0]" LOC = N2;
 NET "led[1]" LOC = N1;

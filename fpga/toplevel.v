@@ -110,7 +110,7 @@ end
 main_clocks main_clocks_u
 (
     .CLK_IN1(osc),  //50MHz
-    .CLK_OUT_100(sys_clk),
+    .CLK_OUT_75(sys_clk),
     .CLK_OUT_5(xbar_predivided),
     .CLK_OUT_10(ad_clk),
     .CLK_OUT_30(da_clk),

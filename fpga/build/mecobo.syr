@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.07 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.07 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Reading design: mecobo.prj
@@ -153,7 +153,7 @@ Elaborating module <main_clocks>.
 
 Elaborating module <IBUFG>.
 
-Elaborating module <PLL_BASE(BANDWIDTH="OPTIMIZED",CLK_FEEDBACK="CLKFBOUT",COMPENSATION="SYSTEM_SYNCHRONOUS",DIVCLK_DIVIDE=1,CLKFBOUT_MULT=12,CLKFBOUT_PHASE=0.0,CLKOUT0_DIVIDE=6,CLKOUT0_PHASE=0.0,CLKOUT0_DUTY_CYCLE=0.5,CLKOUT1_DIVIDE=120,CLKOUT1_PHASE=0.0,CLKOUT1_DUTY_CYCLE=0.5,CLKOUT2_DIVIDE=60,CLKOUT2_PHASE=0.0,CLKOUT2_DUTY_CYCLE=0.5,CLKOUT3_DIVIDE=20,CLKOUT3_PHASE=0.0,CLKOUT3_DUTY_CYCLE=0.5,CLKIN_PERIOD=20.0,REF_JITTER=0.01)>.
+Elaborating module <PLL_BASE(BANDWIDTH="OPTIMIZED",CLK_FEEDBACK="CLKFBOUT",COMPENSATION="SYSTEM_SYNCHRONOUS",DIVCLK_DIVIDE=1,CLKFBOUT_MULT=9,CLKFBOUT_PHASE=0.0,CLKOUT0_DIVIDE=6,CLKOUT0_PHASE=0.0,CLKOUT0_DUTY_CYCLE=0.5,CLKOUT1_DIVIDE=90,CLKOUT1_PHASE=0.0,CLKOUT1_DUTY_CYCLE=0.5,CLKOUT2_DIVIDE=45,CLKOUT2_PHASE=0.0,CLKOUT2_DUTY_CYCLE=0.5,CLKOUT3_DIVIDE=15,CLKOUT3_PHASE=0.0,CLKOUT3_DUTY_CYCLE=0.5,CLKIN_PERIOD=20.0,REF_JITTER=0.01)>.
 WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/main_clocks_mmcm/main_clocks.v" Line 131: Assignment to clkout4_unused ignored, since the identifier is never used
 WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/main_clocks_mmcm/main_clocks.v" Line 132: Assignment to clkout5_unused ignored, since the identifier is never used
 
@@ -225,10 +225,8 @@ WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 309: Res
 
 Elaborating module <adc_control(MIN_CHANNEL=100,MAX_CHANNEL=107)>.
 WARNING:HDLCompiler:872 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 73: Using initial value of last_executed_command since it is never assigned
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 124: Assignment to clock_divide_register ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 343: Result of 17-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 345: Result of 17-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 364: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 338: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 359: Result of 5-bit expression is truncated to fit in 4-bit target.
 
 Elaborating module <dac_control(POSITION=240)>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/dac_control.v" Line 147: Result of 5-bit expression is truncated to fit in 4-bit target.
@@ -1645,11 +1643,11 @@ Synthesizing Unit <adc_control>.
         copy = 5'b01000
         writeback = 5'b10000
 WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-    Found 32-bit register for signal <Z_28_o_dff_113_OUT>.
+    Found 32-bit register for signal <Z_28_o_dff_109_OUT>.
     Found 1-bit register for signal <reset_clk_DFF_881>.
-    Found 128-bit register for signal <n1379[127:0]>.
-    Found 256-bit register for signal <n1383[255:0]>.
-    Found 256-bit register for signal <n1384[255:0]>.
+    Found 256-bit register for signal <n1763[255:0]>.
+    Found 256-bit register for signal <n1767[255:0]>.
+    Found 256-bit register for signal <n1768[255:0]>.
     Found 32-bit register for signal <current_command>.
     Found 5-bit register for signal <state>.
     Found 1-bit register for signal <sample_register<0><15>>.
@@ -1684,6 +1682,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<0><2>>.
     Found 1-bit register for signal <sequence_number<0><1>>.
     Found 1-bit register for signal <sequence_number<0><0>>.
+    Found 1-bit register for signal <fast_clk_counter<0><31>>.
+    Found 1-bit register for signal <fast_clk_counter<0><30>>.
+    Found 1-bit register for signal <fast_clk_counter<0><29>>.
+    Found 1-bit register for signal <fast_clk_counter<0><28>>.
+    Found 1-bit register for signal <fast_clk_counter<0><27>>.
+    Found 1-bit register for signal <fast_clk_counter<0><26>>.
+    Found 1-bit register for signal <fast_clk_counter<0><25>>.
+    Found 1-bit register for signal <fast_clk_counter<0><24>>.
+    Found 1-bit register for signal <fast_clk_counter<0><23>>.
+    Found 1-bit register for signal <fast_clk_counter<0><22>>.
+    Found 1-bit register for signal <fast_clk_counter<0><21>>.
+    Found 1-bit register for signal <fast_clk_counter<0><20>>.
+    Found 1-bit register for signal <fast_clk_counter<0><19>>.
+    Found 1-bit register for signal <fast_clk_counter<0><18>>.
+    Found 1-bit register for signal <fast_clk_counter<0><17>>.
+    Found 1-bit register for signal <fast_clk_counter<0><16>>.
     Found 1-bit register for signal <fast_clk_counter<0><15>>.
     Found 1-bit register for signal <fast_clk_counter<0><14>>.
     Found 1-bit register for signal <fast_clk_counter<0><13>>.
@@ -1732,6 +1746,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<1><2>>.
     Found 1-bit register for signal <sequence_number<1><1>>.
     Found 1-bit register for signal <sequence_number<1><0>>.
+    Found 1-bit register for signal <fast_clk_counter<1><31>>.
+    Found 1-bit register for signal <fast_clk_counter<1><30>>.
+    Found 1-bit register for signal <fast_clk_counter<1><29>>.
+    Found 1-bit register for signal <fast_clk_counter<1><28>>.
+    Found 1-bit register for signal <fast_clk_counter<1><27>>.
+    Found 1-bit register for signal <fast_clk_counter<1><26>>.
+    Found 1-bit register for signal <fast_clk_counter<1><25>>.
+    Found 1-bit register for signal <fast_clk_counter<1><24>>.
+    Found 1-bit register for signal <fast_clk_counter<1><23>>.
+    Found 1-bit register for signal <fast_clk_counter<1><22>>.
+    Found 1-bit register for signal <fast_clk_counter<1><21>>.
+    Found 1-bit register for signal <fast_clk_counter<1><20>>.
+    Found 1-bit register for signal <fast_clk_counter<1><19>>.
+    Found 1-bit register for signal <fast_clk_counter<1><18>>.
+    Found 1-bit register for signal <fast_clk_counter<1><17>>.
+    Found 1-bit register for signal <fast_clk_counter<1><16>>.
     Found 1-bit register for signal <fast_clk_counter<1><15>>.
     Found 1-bit register for signal <fast_clk_counter<1><14>>.
     Found 1-bit register for signal <fast_clk_counter<1><13>>.
@@ -1780,6 +1810,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<2><2>>.
     Found 1-bit register for signal <sequence_number<2><1>>.
     Found 1-bit register for signal <sequence_number<2><0>>.
+    Found 1-bit register for signal <fast_clk_counter<2><31>>.
+    Found 1-bit register for signal <fast_clk_counter<2><30>>.
+    Found 1-bit register for signal <fast_clk_counter<2><29>>.
+    Found 1-bit register for signal <fast_clk_counter<2><28>>.
+    Found 1-bit register for signal <fast_clk_counter<2><27>>.
+    Found 1-bit register for signal <fast_clk_counter<2><26>>.
+    Found 1-bit register for signal <fast_clk_counter<2><25>>.
+    Found 1-bit register for signal <fast_clk_counter<2><24>>.
+    Found 1-bit register for signal <fast_clk_counter<2><23>>.
+    Found 1-bit register for signal <fast_clk_counter<2><22>>.
+    Found 1-bit register for signal <fast_clk_counter<2><21>>.
+    Found 1-bit register for signal <fast_clk_counter<2><20>>.
+    Found 1-bit register for signal <fast_clk_counter<2><19>>.
+    Found 1-bit register for signal <fast_clk_counter<2><18>>.
+    Found 1-bit register for signal <fast_clk_counter<2><17>>.
+    Found 1-bit register for signal <fast_clk_counter<2><16>>.
     Found 1-bit register for signal <fast_clk_counter<2><15>>.
     Found 1-bit register for signal <fast_clk_counter<2><14>>.
     Found 1-bit register for signal <fast_clk_counter<2><13>>.
@@ -1828,6 +1874,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<3><2>>.
     Found 1-bit register for signal <sequence_number<3><1>>.
     Found 1-bit register for signal <sequence_number<3><0>>.
+    Found 1-bit register for signal <fast_clk_counter<3><31>>.
+    Found 1-bit register for signal <fast_clk_counter<3><30>>.
+    Found 1-bit register for signal <fast_clk_counter<3><29>>.
+    Found 1-bit register for signal <fast_clk_counter<3><28>>.
+    Found 1-bit register for signal <fast_clk_counter<3><27>>.
+    Found 1-bit register for signal <fast_clk_counter<3><26>>.
+    Found 1-bit register for signal <fast_clk_counter<3><25>>.
+    Found 1-bit register for signal <fast_clk_counter<3><24>>.
+    Found 1-bit register for signal <fast_clk_counter<3><23>>.
+    Found 1-bit register for signal <fast_clk_counter<3><22>>.
+    Found 1-bit register for signal <fast_clk_counter<3><21>>.
+    Found 1-bit register for signal <fast_clk_counter<3><20>>.
+    Found 1-bit register for signal <fast_clk_counter<3><19>>.
+    Found 1-bit register for signal <fast_clk_counter<3><18>>.
+    Found 1-bit register for signal <fast_clk_counter<3><17>>.
+    Found 1-bit register for signal <fast_clk_counter<3><16>>.
     Found 1-bit register for signal <fast_clk_counter<3><15>>.
     Found 1-bit register for signal <fast_clk_counter<3><14>>.
     Found 1-bit register for signal <fast_clk_counter<3><13>>.
@@ -1876,6 +1938,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<4><2>>.
     Found 1-bit register for signal <sequence_number<4><1>>.
     Found 1-bit register for signal <sequence_number<4><0>>.
+    Found 1-bit register for signal <fast_clk_counter<4><31>>.
+    Found 1-bit register for signal <fast_clk_counter<4><30>>.
+    Found 1-bit register for signal <fast_clk_counter<4><29>>.
+    Found 1-bit register for signal <fast_clk_counter<4><28>>.
+    Found 1-bit register for signal <fast_clk_counter<4><27>>.
+    Found 1-bit register for signal <fast_clk_counter<4><26>>.
+    Found 1-bit register for signal <fast_clk_counter<4><25>>.
+    Found 1-bit register for signal <fast_clk_counter<4><24>>.
+    Found 1-bit register for signal <fast_clk_counter<4><23>>.
+    Found 1-bit register for signal <fast_clk_counter<4><22>>.
+    Found 1-bit register for signal <fast_clk_counter<4><21>>.
+    Found 1-bit register for signal <fast_clk_counter<4><20>>.
+    Found 1-bit register for signal <fast_clk_counter<4><19>>.
+    Found 1-bit register for signal <fast_clk_counter<4><18>>.
+    Found 1-bit register for signal <fast_clk_counter<4><17>>.
+    Found 1-bit register for signal <fast_clk_counter<4><16>>.
     Found 1-bit register for signal <fast_clk_counter<4><15>>.
     Found 1-bit register for signal <fast_clk_counter<4><14>>.
     Found 1-bit register for signal <fast_clk_counter<4><13>>.
@@ -1924,6 +2002,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<5><2>>.
     Found 1-bit register for signal <sequence_number<5><1>>.
     Found 1-bit register for signal <sequence_number<5><0>>.
+    Found 1-bit register for signal <fast_clk_counter<5><31>>.
+    Found 1-bit register for signal <fast_clk_counter<5><30>>.
+    Found 1-bit register for signal <fast_clk_counter<5><29>>.
+    Found 1-bit register for signal <fast_clk_counter<5><28>>.
+    Found 1-bit register for signal <fast_clk_counter<5><27>>.
+    Found 1-bit register for signal <fast_clk_counter<5><26>>.
+    Found 1-bit register for signal <fast_clk_counter<5><25>>.
+    Found 1-bit register for signal <fast_clk_counter<5><24>>.
+    Found 1-bit register for signal <fast_clk_counter<5><23>>.
+    Found 1-bit register for signal <fast_clk_counter<5><22>>.
+    Found 1-bit register for signal <fast_clk_counter<5><21>>.
+    Found 1-bit register for signal <fast_clk_counter<5><20>>.
+    Found 1-bit register for signal <fast_clk_counter<5><19>>.
+    Found 1-bit register for signal <fast_clk_counter<5><18>>.
+    Found 1-bit register for signal <fast_clk_counter<5><17>>.
+    Found 1-bit register for signal <fast_clk_counter<5><16>>.
     Found 1-bit register for signal <fast_clk_counter<5><15>>.
     Found 1-bit register for signal <fast_clk_counter<5><14>>.
     Found 1-bit register for signal <fast_clk_counter<5><13>>.
@@ -1972,6 +2066,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<6><2>>.
     Found 1-bit register for signal <sequence_number<6><1>>.
     Found 1-bit register for signal <sequence_number<6><0>>.
+    Found 1-bit register for signal <fast_clk_counter<6><31>>.
+    Found 1-bit register for signal <fast_clk_counter<6><30>>.
+    Found 1-bit register for signal <fast_clk_counter<6><29>>.
+    Found 1-bit register for signal <fast_clk_counter<6><28>>.
+    Found 1-bit register for signal <fast_clk_counter<6><27>>.
+    Found 1-bit register for signal <fast_clk_counter<6><26>>.
+    Found 1-bit register for signal <fast_clk_counter<6><25>>.
+    Found 1-bit register for signal <fast_clk_counter<6><24>>.
+    Found 1-bit register for signal <fast_clk_counter<6><23>>.
+    Found 1-bit register for signal <fast_clk_counter<6><22>>.
+    Found 1-bit register for signal <fast_clk_counter<6><21>>.
+    Found 1-bit register for signal <fast_clk_counter<6><20>>.
+    Found 1-bit register for signal <fast_clk_counter<6><19>>.
+    Found 1-bit register for signal <fast_clk_counter<6><18>>.
+    Found 1-bit register for signal <fast_clk_counter<6><17>>.
+    Found 1-bit register for signal <fast_clk_counter<6><16>>.
     Found 1-bit register for signal <fast_clk_counter<6><15>>.
     Found 1-bit register for signal <fast_clk_counter<6><14>>.
     Found 1-bit register for signal <fast_clk_counter<6><13>>.
@@ -2020,6 +2130,22 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <sequence_number<7><2>>.
     Found 1-bit register for signal <sequence_number<7><1>>.
     Found 1-bit register for signal <sequence_number<7><0>>.
+    Found 1-bit register for signal <fast_clk_counter<7><31>>.
+    Found 1-bit register for signal <fast_clk_counter<7><30>>.
+    Found 1-bit register for signal <fast_clk_counter<7><29>>.
+    Found 1-bit register for signal <fast_clk_counter<7><28>>.
+    Found 1-bit register for signal <fast_clk_counter<7><27>>.
+    Found 1-bit register for signal <fast_clk_counter<7><26>>.
+    Found 1-bit register for signal <fast_clk_counter<7><25>>.
+    Found 1-bit register for signal <fast_clk_counter<7><24>>.
+    Found 1-bit register for signal <fast_clk_counter<7><23>>.
+    Found 1-bit register for signal <fast_clk_counter<7><22>>.
+    Found 1-bit register for signal <fast_clk_counter<7><21>>.
+    Found 1-bit register for signal <fast_clk_counter<7><20>>.
+    Found 1-bit register for signal <fast_clk_counter<7><19>>.
+    Found 1-bit register for signal <fast_clk_counter<7><18>>.
+    Found 1-bit register for signal <fast_clk_counter<7><17>>.
+    Found 1-bit register for signal <fast_clk_counter<7><16>>.
     Found 1-bit register for signal <fast_clk_counter<7><15>>.
     Found 1-bit register for signal <fast_clk_counter<7><14>>.
     Found 1-bit register for signal <fast_clk_counter<7><13>>.
@@ -2038,7 +2164,7 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     Found 1-bit register for signal <fast_clk_counter<7><0>>.
     Found 4-bit register for signal <adc_clocktick_counter>.
     Found 16-bit register for signal <shift_out_register>.
-    Found 128-bit register for signal <n1382[127:0]>.
+    Found 128-bit register for signal <n1766[127:0]>.
     Found 16-bit register for signal <shift_in_register>.
     Found finite state machine <FSM_18> for signal <state>.
     -----------------------------------------------------------------------
@@ -2053,75 +2179,75 @@ WARNING:Xst:647 - Input <addr<7:4>> is never used. This port will be preserved a
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 16-bit adder for signal <sequence_number[0][15]_GND_573_o_add_148_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[0][15]_GND_573_o_add_149_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[1][15]_GND_573_o_add_152_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[1][15]_GND_573_o_add_153_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[2][15]_GND_573_o_add_156_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[2][15]_GND_573_o_add_157_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[3][15]_GND_573_o_add_160_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[3][15]_GND_573_o_add_161_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[4][15]_GND_573_o_add_164_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[4][15]_GND_573_o_add_165_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[5][15]_GND_573_o_add_168_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[5][15]_GND_573_o_add_169_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[6][15]_GND_573_o_add_172_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[6][15]_GND_573_o_add_173_OUT> created at line 345.
-    Found 16-bit adder for signal <sequence_number[7][15]_GND_573_o_add_176_OUT> created at line 343.
-    Found 16-bit adder for signal <fast_clk_counter[7][15]_GND_573_o_add_177_OUT> created at line 345.
-    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_573_o_add_179_OUT> created at line 364.
+    Found 16-bit adder for signal <sequence_number[0][15]_GND_573_o_add_143_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[0][31]_GND_573_o_add_144_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[1][15]_GND_573_o_add_147_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[1][31]_GND_573_o_add_148_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[2][15]_GND_573_o_add_151_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[2][31]_GND_573_o_add_152_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[3][15]_GND_573_o_add_155_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[3][31]_GND_573_o_add_156_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[4][15]_GND_573_o_add_159_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[4][31]_GND_573_o_add_160_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[5][15]_GND_573_o_add_163_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[5][31]_GND_573_o_add_164_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[6][15]_GND_573_o_add_167_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[6][31]_GND_573_o_add_168_OUT> created at line 340.
+    Found 16-bit adder for signal <sequence_number[7][15]_GND_573_o_add_171_OUT> created at line 338.
+    Found 32-bit adder for signal <fast_clk_counter[7][31]_GND_573_o_add_172_OUT> created at line 340.
+    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_573_o_add_174_OUT> created at line 359.
     Found 3-bit subtractor for signal <chan_idx<2:0>> created at line 69.
     Found 4-bit subtractor for signal <int_chan_idx> created at line 70.
-    Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_rec_start_time[7][31]_wide_mux_35_OUT> created at line 137.
-    Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_end_time[7][31]_wide_mux_39_OUT> created at line 137.
-    Found 32-bit 8-to-1 multiplexer for signal <n1515> created at line 140.
-    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 124
-    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 124
-    Found 32-bit comparator greater for signal <chan_idx[2]_current_time[31]_LessThan_39_o> created at line 137
-    Found 32-bit comparator greater for signal <current_time[31]_chan_idx[2]_LessThan_41_o> created at line 137
-    Found 4-bit comparator lessequal for signal <n0051> created at line 183
-    Found 16-bit comparator equal for signal <fast_clk_counter[0][15]_overflow_register[0][15]_equal_148_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[1][15]_overflow_register[1][15]_equal_152_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[2][15]_overflow_register[2][15]_equal_156_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[3][15]_overflow_register[3][15]_equal_160_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[4][15]_overflow_register[4][15]_equal_164_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[5][15]_overflow_register[5][15]_equal_168_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[6][15]_overflow_register[6][15]_equal_172_o> created at line 340
-    Found 16-bit comparator equal for signal <fast_clk_counter[7][15]_overflow_register[7][15]_equal_176_o> created at line 340
+    Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_rec_start_time[7][31]_wide_mux_35_OUT> created at line 136.
+    Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_end_time[7][31]_wide_mux_39_OUT> created at line 136.
+    Found 32-bit 8-to-1 multiplexer for signal <n1899> created at line 139.
+    Found 1-bit tristate buffer for signal <sample_data<31>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<30>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<29>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<28>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<27>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<26>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<25>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<24>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<23>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<22>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<21>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<20>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<19>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<18>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<17>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<16>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<15>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<14>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<13>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<12>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<11>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<10>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<9>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<8>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<7>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<6>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<5>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<4>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<3>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<2>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<1>> created at line 123
+    Found 1-bit tristate buffer for signal <sample_data<0>> created at line 123
+    Found 32-bit comparator greater for signal <chan_idx[2]_current_time[31]_LessThan_39_o> created at line 136
+    Found 32-bit comparator greater for signal <current_time[31]_chan_idx[2]_LessThan_41_o> created at line 136
+    Found 4-bit comparator lessequal for signal <n0051> created at line 182
+    Found 32-bit comparator equal for signal <fast_clk_counter[0][31]_overflow_register[0][31]_equal_143_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[1][31]_overflow_register[1][31]_equal_147_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[2][31]_overflow_register[2][31]_equal_151_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[3][31]_overflow_register[3][31]_equal_155_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[4][31]_overflow_register[4][31]_equal_159_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[5][31]_overflow_register[5][31]_equal_163_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[6][31]_overflow_register[6][31]_equal_167_o> created at line 335
+    Found 32-bit comparator equal for signal <fast_clk_counter[7][31]_overflow_register[7][31]_equal_171_o> created at line 335
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <adc_control>.
     Summary:
 	inferred  19 Adder/Subtractor(s).
-	inferred 1253 D-type flip-flop(s).
+	inferred 1509 D-type flip-flop(s).
 	inferred  11 Comparator(s).
 	inferred  47 Multiplexer(s).
 	inferred  32 Tristate(s).
@@ -4812,10 +4938,10 @@ HDL Synthesis Report
 
 Macro Statistics
 # Adders/Subtractors                                   : 74
- 16-bit adder                                          : 32
+ 16-bit adder                                          : 24
  27-bit adder                                          : 1
  3-bit subtractor                                      : 1
- 32-bit adder                                          : 17
+ 32-bit adder                                          : 25
  32-bit subtractor                                     : 16
  4-bit adder                                           : 2
  4-bit subtractor                                      : 1
@@ -4824,20 +4950,19 @@ Macro Statistics
  9-bit adder                                           : 1
 # Registers                                            : 1053
  1-bit register                                        : 809
- 128-bit register                                      : 2
- 16-bit register                                       : 32
+ 128-bit register                                      : 1
+ 16-bit register                                       : 24
  176-bit register                                      : 1
- 256-bit register                                      : 2
+ 256-bit register                                      : 3
  27-bit register                                       : 1
- 32-bit register                                       : 199
+ 32-bit register                                       : 207
  4-bit register                                        : 2
  512-bit register                                      : 1
  6-bit register                                        : 2
  80-bit register                                       : 1
  9-bit register                                        : 1
 # Comparators                                          : 63
- 16-bit comparator equal                               : 8
- 32-bit comparator equal                               : 1
+ 32-bit comparator equal                               : 9
  32-bit comparator greater                             : 50
  32-bit comparator lessequal                           : 1
  32-bit comparator not equal                           : 1
@@ -4845,9 +4970,9 @@ Macro Statistics
  8-bit comparator lessequal                            : 1
 # Multiplexers                                         : 832
  1-bit 2-to-1 multiplexer                              : 722
- 16-bit 2-to-1 multiplexer                             : 36
+ 16-bit 2-to-1 multiplexer                             : 28
  32-bit 16-to-1 multiplexer                            : 1
- 32-bit 2-to-1 multiplexer                             : 68
+ 32-bit 2-to-1 multiplexer                             : 76
  32-bit 64-to-1 multiplexer                            : 1
  32-bit 8-to-1 multiplexer                             : 3
  8-bit 64-to-1 multiplexer                             : 1
@@ -4924,14 +5049,6 @@ WARNING:Xst:1293 - FF/Latch <status_register_0> has a constant value of 0 in blo
 
 Synthesizing (advanced) Unit <adc_control>.
 The following registers are absorbed into counter <adc_clocktick_counter>: 1 register on signal <adc_clocktick_counter>.
-The following registers are absorbed into counter <sequence_number<0><15:0>>: 1 register on signal <sequence_number<0><15:0>>.
-The following registers are absorbed into counter <sequence_number<1><15:0>>: 1 register on signal <sequence_number<1><15:0>>.
-The following registers are absorbed into counter <sequence_number<3><15:0>>: 1 register on signal <sequence_number<3><15:0>>.
-The following registers are absorbed into counter <sequence_number<2><15:0>>: 1 register on signal <sequence_number<2><15:0>>.
-The following registers are absorbed into counter <sequence_number<4><15:0>>: 1 register on signal <sequence_number<4><15:0>>.
-The following registers are absorbed into counter <sequence_number<6><15:0>>: 1 register on signal <sequence_number<6><15:0>>.
-The following registers are absorbed into counter <sequence_number<5><15:0>>: 1 register on signal <sequence_number<5><15:0>>.
-The following registers are absorbed into counter <sequence_number<7><15:0>>: 1 register on signal <sequence_number<7><15:0>>.
 Unit <adc_control> synthesized (advanced).
 
 Synthesizing (advanced) Unit <dac_control>.
@@ -5135,13 +5252,14 @@ WARNING:Xst:2677 - Node <ebi_captured_data_10_175> of sequential type is unconne
 Advanced HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 11
+# Adders/Subtractors                                   : 19
  16-bit adder                                          : 8
  3-bit subtractor                                      : 1
+ 32-bit adder                                          : 8
  4-bit subtractor                                      : 1
  7-bit subtractor                                      : 1
-# Counters                                             : 47
- 16-bit up counter                                     : 24
+# Counters                                             : 39
+ 16-bit up counter                                     : 16
  27-bit up counter                                     : 1
  32-bit down counter                                   : 16
  32-bit up counter                                     : 1
@@ -5150,24 +5268,22 @@ Macro Statistics
  9-bit up counter                                      : 1
 # Accumulators                                         : 16
  32-bit up loadable accumulator                        : 16
-# Registers                                            : 7705
- Flip-Flops                                            : 7705
+# Registers                                            : 8089
+ Flip-Flops                                            : 8089
 # Comparators                                          : 63
- 16-bit comparator equal                               : 8
- 32-bit comparator equal                               : 1
+ 32-bit comparator equal                               : 9
  32-bit comparator greater                             : 50
  32-bit comparator lessequal                           : 1
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
  8-bit comparator lessequal                            : 1
-# Multiplexers                                         : 2209
+# Multiplexers                                         : 2368
  1-bit 16-to-1 multiplexer                             : 32
- 1-bit 2-to-1 multiplexer                              : 2098
- 1-bit 8-to-1 multiplexer                              : 64
+ 1-bit 2-to-1 multiplexer                              : 2226
+ 1-bit 8-to-1 multiplexer                              : 96
  16-bit 2-to-1 multiplexer                             : 9
  32-bit 2-to-1 multiplexer                             : 3
  32-bit 64-to-1 multiplexer                            : 1
- 32-bit 8-to-1 multiplexer                             : 1
  8-bit 64-to-1 multiplexer                             : 1
 # FSMs                                                 : 22
 
@@ -5675,3 +5791,560 @@ Optimizing unit <ebi> ...
 Optimizing unit <scheduler> ...
 
 Optimizing unit <sample_collector> ...
+
+Optimizing unit <dac_control> ...
+
+Optimizing unit <xbar_control> ...
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_29> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_46> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_61> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_62> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_79> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_93> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_95> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_110> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_111> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_125> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_126> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_127> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_131> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_141> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_151> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_142> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_152> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_143> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_154> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_135> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_145> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_136> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/tmp_register_7_14> <adc0/tmp_register_7_13> 
+INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_31> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_30> 
+INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_47> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_45> 
+INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_78> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_77> 
+
+Mapping all equations...
+Building and optimizing final netlist ...
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_144> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_134> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_147> <adc0/sample_register_137> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_156> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_146> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_153> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_133> 
+Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 60.
+FlipFlop sample_collector0/current_id_idx_0 has been replicated 3 time(s)
+FlipFlop sample_collector0/current_id_idx_1 has been replicated 3 time(s)
+FlipFlop sample_collector0/current_id_idx_2 has been replicated 1 time(s)
+FlipFlop sample_collector0/current_id_idx_3 has been replicated 1 time(s)
+
+Final Macro Processing ...
+
+=========================================================================
+Final Register Report
+
+Macro Statistics
+# Registers                                            : 9221
+ Flip-Flops                                            : 9221
+
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Design Summary                             *
+=========================================================================
+
+Top Level Output File Name         : mecobo.ngc
+
+Primitive and Black Box Usage:
+------------------------------
+# BELS                             : 15070
+#      GND                         : 1
+#      INV                         : 550
+#      LUT1                        : 658
+#      LUT2                        : 456
+#      LUT3                        : 1208
+#      LUT4                        : 1843
+#      LUT5                        : 1474
+#      LUT6                        : 4095
+#      MUXCY                       : 2858
+#      MUXF7                       : 162
+#      MUXF8                       : 32
+#      VCC                         : 1
+#      XORCY                       : 1732
+# FlipFlops/Latches                : 9223
+#      FD                          : 613
+#      FDC                         : 4
+#      FDE                         : 143
+#      FDE_1                       : 16
+#      FDP                         : 1
+#      FDR                         : 1362
+#      FDRE                        : 6549
+#      FDS                         : 10
+#      FDSE                        : 523
+#      ODDR2                       : 2
+# Clock Buffers                    : 7
+#      BUFG                        : 7
+# IO Buffers                       : 61
+#      IBUF                        : 13
+#      IBUFG                       : 1
+#      IOBUF                       : 32
+#      OBUF                        : 15
+# DCMs                             : 1
+#      DCM_SP                      : 1
+# Others                           : 3
+#      command_fifo                : 1
+#      PLL_ADV                     : 1
+#      sample_fifo                 : 1
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 6slx45csg324-3 
+
+
+Slice Logic Utilization: 
+ Number of Slice Registers:            9223  out of  54576    16%  
+ Number of Slice LUTs:                10284  out of  27288    37%  
+    Number used as Logic:             10284  out of  27288    37%  
+
+Slice Logic Distribution: 
+ Number of LUT Flip Flop pairs used:  15324
+   Number with an unused Flip Flop:    6101  out of  15324    39%  
+   Number with an unused LUT:          5040  out of  15324    32%  
+   Number of fully used LUT-FF pairs:  4183  out of  15324    27%  
+   Number of unique control sets:       273
+
+IO Utilization: 
+ Number of IOs:                         162
+ Number of bonded IOBs:                  61  out of    218    27%  
+
+Specific Feature Utilization:
+ Number of BUFG/BUFGCTRL/BUFHCEs:         7  out of     16    43%  
+ Number of PLL_ADVs:                      1  out of      4    25%  
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+Timing Report
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+main_clocks_u/pll_base_inst/CLKOUT0| BUFG                   | 8972  |
+main_clocks_u/pll_base_inst/CLKOUT2| BUFG                   | 151   |
+main_clocks_u/pll_base_inst/CLKOUT3| BUFG                   | 24    |
+main_clocks_u/pll_base_inst/CLKOUT1| DCM_SP:CLKDV           | 78    |
+-----------------------------------+------------------------+-------+
+
+Asynchronous Control Signals Information:
+----------------------------------------
+No asynchronous control signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -3
+
+   Minimum period: 10.481ns (Maximum Frequency: 95.412MHz)
+   Minimum input arrival time before clock: 9.943ns
+   Maximum output required time after clock: 8.167ns
+   Maximum combinational path delay: 7.157ns
+
+Timing Details:
+---------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
+  Clock period: 10.481ns (frequency: 95.412MHz)
+  Total number of paths / destination ports: 24496132 / 23718
+-------------------------------------------------------------------------
+Delay:               10.481ns (Levels of Logic = 24)
+  Source:            sample_collector0/current_id_idx_0_2 (FF)
+  Destination:       adc0/sample_data_31 (FF)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT0 rising
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT0 rising
+
+  Data Path: sample_collector0/current_id_idx_0_2 to adc0/sample_data_31
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDRE:C->Q            15   0.447   1.086  sample_collector0/current_id_idx_0_2 (sample_collector0/current_id_idx_0_2)
+     LUT6:I4->O            1   0.203   0.827  sample_collector0/Mmux_channel_select_121 (sample_collector0/Mmux_channel_select_121)
+     LUT6:I2->O           10   0.203   1.104  sample_collector0/Mmux_channel_select_7 (sample_collector0/Mmux_channel_select_7)
+     LUT6:I2->O            9   0.203   0.934  sample_collector0/current_id_idx<5>351_7 (sample_collector0/current_id_idx<5>351_3)
+     LUT6:I4->O            1   0.203   0.000  adc0/mux896_3 (adc0/mux896_3)
+     MUXF7:I1->O           2   0.140   0.864  adc0/mux896_2_f7 (adc0/chan_idx[2]_end_time[7][31]_wide_mux_39_OUT<0>)
+     LUT4:I0->O            1   0.203   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_lut<0> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_lut<0>)
+     MUXCY:S->O            1   0.172   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<0> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<0>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<1> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<1>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<2> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<2>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<3> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<3>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<4> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<4>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<5> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<5>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<6> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<6>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<7> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<7>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<8> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<8>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<9> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<9>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<10> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<10>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<11> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<11>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<12> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<12>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<13> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<13>)
+     MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<14> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<14>)
+     MUXCY:CI->O         258   0.019   2.067  adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<15> (adc0/Mcompar_current_time[31]_chan_idx[2]_LessThan_41_o_cy<15>)
+     LUT6:I5->O           17   0.205   1.028  adc0/chan_idx[2]_current_time[31]_AND_732_o_inv7_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy (adc0/chan_idx[2]_current_time[31]_AND_732_o_inv)
+     LUT2:I1->O            1   0.205   0.000  adc0/sample_data_31_rstpot (adc0/sample_data_31_rstpot)
+     FD:D                      0.102          adc0/sample_data_31
+    ----------------------------------------
+    Total                     10.481ns (2.571ns logic, 7.910ns route)
+                                       (24.5% logic, 75.5% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT2'
+  Clock period: 8.299ns (frequency: 120.499MHz)
+  Total number of paths / destination ports: 1386 / 299
+-------------------------------------------------------------------------
+Delay:               4.149ns (Levels of Logic = 1)
+  Source:            adc0/state_FSM_FFd2 (FF)
+  Destination:       adc0/shift_in_register_15 (FF)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT2 rising
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT2 falling
+
+  Data Path: adc0/state_FSM_FFd2 to adc0/shift_in_register_15
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDR:C->Q            280   0.447   2.174  adc0/state_FSM_FFd2 (adc0/state_FSM_FFd2)
+     LUT2:I0->O           16   0.203   1.004  adc0/state_shift_in1 (adc0/shift_in)
+     FDE_1:CE                  0.322          adc0/shift_in_register_0
+    ----------------------------------------
+    Total                      4.149ns (0.972ns logic, 3.177ns route)
+                                       (23.4% logic, 76.6% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT1'
+  Clock period: 0.903ns (frequency: 1107.070MHz)
+  Total number of paths / destination ports: 1174 / 128
+-------------------------------------------------------------------------
+Delay:               4.516ns (Levels of Logic = 4)
+  Source:            xbar0/counter_6 (FF)
+  Destination:       xbar0/shift_out_register_31 (FF)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT1 rising 0.2X
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT1 rising 0.2X
+
+  Data Path: xbar0/counter_6 to xbar0/shift_out_register_31
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDRE:C->Q           132   0.447   2.326  xbar0/counter_6 (xbar0/counter_6)
+     LUT6:I0->O            1   0.203   0.000  xbar0/mux513_4 (xbar0/mux513_4)
+     MUXF7:I1->O           1   0.140   0.000  xbar0/mux513_3_f7 (xbar0/mux513_3_f7)
+     MUXF8:I1->O           1   0.152   0.944  xbar0/mux513_2_f8 (xbar0/counter[8]_xbar_config_reg[15][31]_wide_mux_67_OUT<10>)
+     LUT6:I0->O            1   0.203   0.000  xbar0/Mmux_shift_out_register[31]_counter[8]_mux_69_OUT221 (xbar0/shift_out_register[31]_counter[8]_mux_69_OUT<10>)
+     FDRE:D                    0.102          xbar0/shift_out_register_10
+    ----------------------------------------
+    Total                      4.516ns (1.247ns logic, 3.269ns route)
+                                       (27.6% logic, 72.4% route)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT3'
+  Clock period: 3.747ns (frequency: 266.884MHz)
+  Total number of paths / destination ports: 113 / 46
+-------------------------------------------------------------------------
+Delay:               3.747ns (Levels of Logic = 3)
+  Source:            dac0/state_FSM_FFd1 (FF)
+  Destination:       dac0/state_FSM_FFd2 (FF)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT3 rising
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT3 rising
+
+  Data Path: dac0/state_FSM_FFd1 to dac0/state_FSM_FFd2
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q              20   0.447   1.321  dac0/state_FSM_FFd1 (dac0/state_FSM_FFd1)
+     LUT3:I0->O            1   0.205   0.580  dac0/Mmux_shift_out_register[15]_command_bus_data[15]_mux_36_OUT1011 (dac0/Mmux_shift_out_register[15]_command_bus_data[15]_mux_36_OUT101)
+     LUT6:I5->O            1   0.205   0.684  dac0/state_FSM_FFd2-In1 (dac0/state_FSM_FFd2-In)
+     LUT2:I0->O            1   0.203   0.000  dac0/state_FSM_FFd2_rstpot (dac0/state_FSM_FFd2_rstpot)
+     FD:D                      0.102          dac0/state_FSM_FFd2
+    ----------------------------------------
+    Total                      3.747ns (1.162ns logic, 2.585ns route)
+                                       (31.0% logic, 69.0% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
+  Total number of paths / destination ports: 10917 / 9562
+-------------------------------------------------------------------------
+Offset:              9.943ns (Levels of Logic = 3)
+  Source:            reset (PAD)
+  Destination:       sample_collector0/last_fetched_1173 (FF)
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT0 rising
+
+  Data Path: reset to sample_collector0/last_fetched_1173
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           170   1.222   2.391  reset_IBUF (reset_IBUF)
+     LUT6:I0->O         4445   0.203   3.034  mecobo_reset3 (mecobo_reset)
+     LUT4:I3->O         2048   0.205   2.458  sample_collector0/Reset_OR_DriverANDClockEnable20801 (sample_collector0/Reset_OR_DriverANDClockEnable)
+     FDRE:R                    0.430          sample_collector0/last_fetched_0
+    ----------------------------------------
+    Total                      9.943ns (2.060ns logic, 7.883ns route)
+                                       (20.7% logic, 79.3% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT2'
+  Total number of paths / destination ports: 43 / 43
+-------------------------------------------------------------------------
+Offset:              8.734ns (Levels of Logic = 3)
+  Source:            reset (PAD)
+  Destination:       adc0/shift_out_register_15 (FF)
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT2 rising
+
+  Data Path: reset to adc0/shift_out_register_15
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           170   1.222   2.391  reset_IBUF (reset_IBUF)
+     LUT6:I0->O         4445   0.203   3.281  mecobo_reset3 (mecobo_reset)
+     LUT4:I0->O           16   0.203   1.004  adc0/_n30811 (adc0/_n3081)
+     FDRE:R                    0.430          adc0/shift_out_register_0
+    ----------------------------------------
+    Total                      8.734ns (2.058ns logic, 6.676ns route)
+                                       (23.6% logic, 76.4% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT1'
+  Total number of paths / destination ports: 87 / 87
+-------------------------------------------------------------------------
+Offset:              8.542ns (Levels of Logic = 3)
+  Source:            reset (PAD)
+  Destination:       xbar0/counter_8 (FF)
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT1 rising 0.2X
+
+  Data Path: reset to xbar0/counter_8
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           170   1.222   2.391  reset_IBUF (reset_IBUF)
+     LUT6:I0->O         4445   0.203   3.262  mecobo_reset3 (mecobo_reset)
+     LUT3:I0->O            9   0.205   0.829  xbar0/_n01461 (xbar0/_n0146)
+     FDRE:R                    0.430          xbar0/counter_0
+    ----------------------------------------
+    Total                      8.542ns (2.060ns logic, 6.482ns route)
+                                       (24.1% logic, 75.9% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT3'
+  Total number of paths / destination ports: 26 / 26
+-------------------------------------------------------------------------
+Offset:              8.395ns (Levels of Logic = 3)
+  Source:            reset (PAD)
+  Destination:       dac0/counter_3 (FF)
+  Destination Clock: main_clocks_u/pll_base_inst/CLKOUT3 rising
+
+  Data Path: reset to dac0/counter_3
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           170   1.222   2.391  reset_IBUF (reset_IBUF)
+     LUT6:I0->O         4445   0.203   3.262  mecobo_reset3 (mecobo_reset)
+     LUT3:I0->O            4   0.205   0.683  dac0/_n00951 (dac0/_n0095)
+     FDRE:R                    0.430          dac0/counter_0
+    ----------------------------------------
+    Total                      8.395ns (2.060ns logic, 6.335ns route)
+                                       (24.5% logic, 75.5% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
+  Total number of paths / destination ports: 4746 / 137
+-------------------------------------------------------------------------
+Offset:              8.167ns (Levels of Logic = 16)
+  Source:            sample_collector0/current_id_idx_0 (FF)
+  Destination:       sample_collector0/sample_fifo_0:wr_en (PAD)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT0 rising
+
+  Data Path: sample_collector0/current_id_idx_0 to sample_collector0/sample_fifo_0:wr_en
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDRE:C->Q           663   0.447   2.231  sample_collector0/current_id_idx_0 (sample_collector0/current_id_idx_0)
+     LUT6:I4->O            1   0.203   0.827  sample_collector0/Mmux_current_id_idx[5]_last_fetched[63][31]_wide_mux_8_OUT_12134 (sample_collector0/Mmux_current_id_idx[5]_last_fetched[63][31]_wide_mux_8_OUT_12134)
+     LUT6:I2->O            1   0.203   0.827  sample_collector0/Mmux_current_id_idx[5]_last_fetched[63][31]_wide_mux_8_OUT_744 (sample_collector0/Mmux_current_id_idx[5]_last_fetched[63][31]_wide_mux_8_OUT_744)
+     LUT6:I2->O            1   0.203   0.808  sample_collector0/current_id_idx<5>221 (sample_collector0/current_id_idx[5]_last_fetched[63][31]_wide_mux_8_OUT<2>)
+     LUT6:I3->O            1   0.205   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_lut<0> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_lut<0>)
+     MUXCY:S->O            1   0.172   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<0> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<0>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<1> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<1>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<2> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<2>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<3> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<3>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<4> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<4>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<5> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<5>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<6> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<6>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<7> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<7>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<8> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<8>)
+     MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<9> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<9>)
+     MUXCY:CI->O          65   0.019   1.647  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_9_o_cy<10> (sample_collector0/current_id_idx[5]_sample_data[31]_not_equal_9_o)
+     LUT2:I1->O            0   0.205   0.000  sample_collector0/state_fifo_write_enable1 (sample_collector0/fifo_write_enable)
+    sample_fifo:wr_en          0.000          sample_collector0/sample_fifo_0
+    ----------------------------------------
+    Total                      8.167ns (1.828ns logic, 6.339ns route)
+                                       (22.4% logic, 77.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT2'
+  Total number of paths / destination ports: 2 / 2
+-------------------------------------------------------------------------
+Offset:              5.872ns (Levels of Logic = 2)
+  Source:            adc0/state_FSM_FFd1 (FF)
+  Destination:       HN<48> (PAD)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT2 rising
+
+  Data Path: adc0/state_FSM_FFd1 to HN<48>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDR:C->Q            282   0.447   2.069  adc0/state_FSM_FFd1 (adc0/state_FSM_FFd1)
+     INV:I->O              1   0.206   0.579  adc0/_n33491_INV_0 (HN_48_OBUF)
+     OBUF:I->O                 2.571          HN_48_OBUF (HN<48>)
+    ----------------------------------------
+    Total                      5.872ns (3.224ns logic, 2.648ns route)
+                                       (54.9% logic, 45.1% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT3'
+  Total number of paths / destination ports: 3 / 3
+-------------------------------------------------------------------------
+Offset:              4.995ns (Levels of Logic = 2)
+  Source:            dac0/state_FSM_FFd2 (FF)
+  Destination:       HN<16> (PAD)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT3 rising
+
+  Data Path: dac0/state_FSM_FFd2 to HN<16>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q              25   0.447   1.192  dac0/state_FSM_FFd2 (dac0/state_FSM_FFd2)
+     INV:I->O              1   0.206   0.579  dac0/_n00961_INV_0 (HN_16_OBUF)
+     OBUF:I->O                 2.571          HN_16_OBUF (HN<16>)
+    ----------------------------------------
+    Total                      4.995ns (3.224ns logic, 1.771ns route)
+                                       (64.6% logic, 35.4% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT1'
+  Total number of paths / destination ports: 3 / 3
+-------------------------------------------------------------------------
+Offset:              4.453ns (Levels of Logic = 2)
+  Source:            xbar0/state_FSM_FFd3 (FF)
+  Destination:       HN<1> (PAD)
+  Source Clock:      main_clocks_u/pll_base_inst/CLKOUT1 rising 0.2X
+
+  Data Path: xbar0/state_FSM_FFd3 to HN<1>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               3   0.447   0.650  xbar0/state_FSM_FFd3 (xbar0/state_FSM_FFd3)
+     INV:I->O              1   0.206   0.579  xbar0/pclk1_INV_0 (HN_1_OBUF)
+     OBUF:I->O                 2.571          HN_1_OBUF (HN<1>)
+    ----------------------------------------
+    Total                      4.453ns (3.224ns logic, 1.229ns route)
+                                       (72.4% logic, 27.6% route)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 35 / 19
+-------------------------------------------------------------------------
+Delay:               7.157ns (Levels of Logic = 3)
+  Source:            reset (PAD)
+  Destination:       sample_collector0/sample_fifo_0:rst (PAD)
+
+  Data Path: reset to sample_collector0/sample_fifo_0:rst
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           170   1.222   2.391  reset_IBUF (reset_IBUF)
+     LUT6:I0->O         4445   0.203   3.138  mecobo_reset3 (mecobo_reset)
+     LUT6:I4->O            0   0.203   0.000  sample_collector0/res_fifo_rst_OR_193_o (sample_collector0/res_fifo_rst_OR_193_o)
+    sample_fifo:rst            0.000          sample_collector0/sample_fifo_0
+    ----------------------------------------
+    Total                      7.157ns (1.628ns logic, 5.529ns route)
+                                       (22.7% logic, 77.3% route)
+
+=========================================================================
+
+Cross Clock Domains Report:
+--------------------------
+
+Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT0
+-----------------------------------+---------+---------+---------+---------+
+                                   | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+-----------------------------------+---------+---------+---------+---------+
+main_clocks_u/pll_base_inst/CLKOUT0|   10.481|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT1|   12.646|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT2|    5.222|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT3|    4.927|         |         |         |
+-----------------------------------+---------+---------+---------+---------+
+
+Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT1
+-----------------------------------+---------+---------+---------+---------+
+                                   | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+-----------------------------------+---------+---------+---------+---------+
+main_clocks_u/pll_base_inst/CLKOUT0|    8.899|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT1|    4.516|         |         |         |
+-----------------------------------+---------+---------+---------+---------+
+
+Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT2
+-----------------------------------+---------+---------+---------+---------+
+                                   | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+-----------------------------------+---------+---------+---------+---------+
+main_clocks_u/pll_base_inst/CLKOUT0|    7.930|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT2|    5.311|    2.908|    4.149|         |
+-----------------------------------+---------+---------+---------+---------+
+
+Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT3
+-----------------------------------+---------+---------+---------+---------+
+                                   | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+-----------------------------------+---------+---------+---------+---------+
+main_clocks_u/pll_base_inst/CLKOUT0|    7.592|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT3|    3.747|         |         |         |
+-----------------------------------+---------+---------+---------+---------+
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 153.00 secs
+Total CPU time to Xst completion: 151.91 secs
+ 
+--> 
+
+
+Total memory usage is 530060 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :  484 (   0 filtered)
+Number of infos    :   64 (   0 filtered)
+
