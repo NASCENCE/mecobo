@@ -21,15 +21,15 @@ static EBI_Init_TypeDef ebiConfig = {
     0,                /* addr setup cycles */          \
     0,                /* addr hold cycles */           \
     false,            /* do not enable half cycle ALE strobe */ \
-    3,                /* read setup cycles */          \
-    4,                /* read strobe cycles */         \
-    0,                /* read hold cycles */           \
+    2,                /* read setup cycles */          \
+    5,                /* read strobe cycles */         \
+    2,                /* read hold cycles */           \
     false,            /* disable page mode */          \
     false,            /* disable prefetch */           \
     false,            /* do not enable half cycle REn strobe */ \
-    3,                /* write setup cycles */         \
-    4,                /* write strobe cycles */        \
-    0,                /* write hold cycles */          \
+    2,                /* write setup cycles */         \
+    5,                /* write strobe cycles */        \
+    2,                /* write hold cycles */          \
     false,            /* do not disable the write buffer */ \
     false,            /* do not enable halc cycle WEn strobe */ \
     ebiALowA0,        /* ALB - Low bound, address lines */ \

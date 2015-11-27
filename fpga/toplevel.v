@@ -83,7 +83,7 @@ wire xbar_predivided;
 
 wire sample_enable_output;
 wire [7:0] sample_channel_select;
-wire [31:0] sample_data_bus;
+wor [31:0] sample_data_bus;
 
 wire xbar_clk_locked;
 wire global_clock_running;

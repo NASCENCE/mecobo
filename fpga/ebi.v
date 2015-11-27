@@ -280,9 +280,9 @@ always @ (posedge global_clock_clk) begin
     if(rst) begin
         clock_reg <= 0; 
     end else begin
-        if (reset_time) begin
+        if (reset_time)
             clock_reg <= 0; 
-        end else if (time_running)
+        else if (time_running)
             clock_reg <= clock_reg + 1;
     end
 end

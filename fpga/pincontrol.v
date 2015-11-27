@@ -95,7 +95,7 @@ sample_data,
   /* Command bus data output */
   always @ (posedge clk) begin
       if(reset) begin
-          sample_data <= 32'hZ;
+          sample_data <= 32'hAEAEAEAE;
           data_out <= 0;
       end else begin
 
@@ -114,7 +114,7 @@ sample_data,
           if (output_sample & (channel_select == POSITION)) 
               sample_data <= {sample_cnt, POSITION, sample_register};
           else 
-              sample_data <= 32'hZ;
+              sample_data <= 32'hA1A2A3A4;
 
       end
   end
