@@ -90,6 +90,7 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
+#define FPGA_SYSTEM_CLK_RATE 100000000  //FPGA runs at 100MHz
 #define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
@@ -535,9 +536,12 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     //We set it to something that sort of achieves the wished sample rate.
     //If we want for instance 44.1KHz sample rate, the counter is
     //roughly 1701, so actual sample rate is about 44.09
+     
+    
     float overflow = 0;
     if (sampleRate != 0) {
-        overflow = (75000000)/((float)sampleRate);
+        overflow = FPGA_SYSTEM_CLK_RATE/(float)sampleRate;   //this is the period length of the 100MHz sample rate counter clock
+        printf("Overflow register: %x\n", overflow);
     } else {
         printf("omg sampleRate is 0. setting cowardly to 1000");
         overflow = 1000.0;
@@ -645,8 +649,8 @@ void execCurrentPack()
             item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);  //pin is channel, actually
             item.duty = d[PINCONFIG_DATA_DUTY];
             item.antiDuty   = d[PINCONFIG_DATA_ANTIDUTY];
-            item.startTime  = 75000*d[PINCONFIG_START_TIME];
-            item.endTime    = 75000*d[PINCONFIG_END_TIME];
+            item.startTime  = d[PINCONFIG_START_TIME];   //start time is in microseconds
+            item.endTime    = d[PINCONFIG_END_TIME];   //microsecs
             item.constantValue = d[PINCONFIG_DATA_CONST];
             item.type = d[PINCONFIG_DATA_TYPE];
             item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
@@ -673,8 +677,8 @@ void execCurrentPack()
             uint32_t * d = (uint32_t *)(currentPack.data);
             item.pin = (d[PINCONFIG_DATA_FPGA_PIN]);  //pin is channel, actually
             item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
-            item.endTime    = 75000*d[PINCONFIG_END_TIME];
-            item.startTime    = (75000*d[PINCONFIG_START_TIME]);
+            item.endTime    = d[PINCONFIG_END_TIME];
+            item.startTime    = d[PINCONFIG_START_TIME];
             item.type = d[PINCONFIG_DATA_TYPE];
 
             setupInput(item.pin, item.sampleRate, item.startTime, item.endTime);

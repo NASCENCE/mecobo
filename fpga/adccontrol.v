@@ -74,10 +74,9 @@ reg [31:0] last_executed_command = 0;
 
 //Assumes 8 ADC channels, which is why a lot of these have second indices
 //These registers 
-reg [15:0] clock_divide_register = 0;  //TODO: UNUSED FOR NOW
-reg [15:0] overflow_register [0:7];
+reg [31:0] overflow_register [0:7];
 reg [15:0] sequence_number [0:7]; //Holds sequence number.
-reg [15:0] fast_clk_counter[0:7];
+reg [31:0] fast_clk_counter[0:7];
 
 reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
 reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
@@ -137,7 +136,7 @@ always @ (posedge clk) begin
       if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (end_time[chan_idx] > current_time))
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
-        sample_data <= 32'hFFFFFFFF;
+        sample_data <= 32'hDEADBEEF;
 
     end else begin
       sample_data <= 32'hZ;
@@ -180,14 +179,10 @@ always @ (posedge clk) begin
     if (controller_enable & wr) begin
         //Data driving
         if (addr[3:0] == OVERFLOW) begin
-          overflow_register[int_chan_idx] <= data_in[15:0];
+          overflow_register[int_chan_idx] <= data_in;
         end
 
-        if (addr[3:0] == DIVIDE) begin
-          clock_divide_register <= data_in[15:0];
-        end
-        
-        if (addr[3:0] == ENDTIME) begin
+                if (addr[3:0] == ENDTIME) begin
           end_time[int_chan_idx] <= data_in;
         end
     end

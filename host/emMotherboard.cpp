@@ -262,7 +262,6 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     double period; //= 1.0f/(double)s.frequency;
     int32_t duty; // = period * (25*1000000);
     int32_t aduty; // = period * (25*1000000);
-    uint32_t sampleDiv = ((50*1000000)/(double)item.frequency);
     emException err;
 
 
@@ -288,13 +287,11 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
 
         if (item.waveFormType == emWaveFormType::PWM) {
           for(auto p : item.pin) {
-            std::cout << "RECORDING [digital] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
           }
           mecobo->scheduleDigitalRecording(item.pin, item.startTime, item.endTime, item.frequency);
 
         } else {
           for(auto p : item.pin) {
-            std::cout << "RECORDING [analogue] added on pin " << p << ". Start: " << item.startTime << ", End: " << item.endTime <<", Freq: " << item.frequency << " Gives sample divisor [debug]:" << sampleDiv << std::endl;
           }
           mecobo->scheduleRecording(item.pin, item.startTime, item.endTime, item.frequency);
         }

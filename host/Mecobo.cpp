@@ -122,13 +122,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
     if(frequency > this->maxSampleRate) {
         this->maxSampleRate = frequency;
     }
-    //std::cout << "well: " << this->lastSequenceItemEnd << std::endl;
-
     FPGA_IO_Pins_TypeDef channel = (FPGA_IO_Pins_TypeDef)0;
-    //Find a channel (or it might throw an error).
-
-    //int divisor = (int)(60000000/frequency); //(int)pow(2, 17-(frequency/1000.0));
-    //std::cout << "Divisor found:" << divisor << std::endl;
 
     uint32_t data[USB_PACK_SIZE_BYTES/4];
     if(hasDaughterboard) {
@@ -141,7 +135,7 @@ void Mecobo::scheduleRecording(std::vector<int> pin, int start, int end, int fre
     data[PINCONFIG_END_TIME] = end;
     data[PINCONFIG_DATA_FPGA_PIN] = channel;
     data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD_ANALOGUE;
-    data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
+    data[PINCONFIG_DATA_SAMPLE_RATE] = (unsigned int)frequency;
 
     /*
        struct mecoPack p;
@@ -538,7 +532,7 @@ Mecobo::scheduleDigitalOutput (std::vector<int> pin, int start, int end, int fre
        int duty = std::min(65500, int(period * ((double)dutyCycle/100.0)));
        */
     //2^32/75*10^6 = 57.26623061333333333333
-    double magic = 57.26623061333333333333;
+    double magic = 42.94967296000000000000;
 
     int countervalue = (int)(magic * frequency);
 
@@ -688,7 +682,7 @@ Mecobo::runSchedule ()
     while(!this->finished) {
 
         if(this->lastSequenceItemEnd != -1) {
-            delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
+            delta = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start).count();
             if(delta >= this->lastSequenceItemEnd) {
                 //If there are no more samples in the buffer to fetch AND
                 //the last time has passed, we should be done...
