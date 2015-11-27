@@ -11,7 +11,7 @@
 
 
 
-//`define WITH_DB
+`define WITH_DB
 
 module mecobo   
 (               osc, 
@@ -55,13 +55,6 @@ wire read_enable = !ebi_rd;
 wire write_enable = !ebi_wr;
 wire chip_select = !ebi_cs;
 
-`ifndef WITH_DB
-assign led[3] =  1'b0;
-`endif
-assign led[1] =  read_enable;
-//assign led[3] = chip_select;
-
-
 //(* tristate2logic = "yes" *)
 wor [15:0] data_out;
 wire [15:0] data_in;
@@ -75,7 +68,6 @@ assign fpga_ready = ebi_irq;
 
 //Heartbeat
 reg [26:0] led_heartbeat = 0;
-assign led[0] = led_heartbeat[26] | led_heartbeat[25];
 
 wire adc_din;
 wire adc_dout;
@@ -94,17 +86,14 @@ wire [7:0] sample_channel_select;
 wire [31:0] sample_data_bus;
 
 wire xbar_clk_locked;
-wire locked = xbar_clk_locked & main_clocks_mmcm_locked;
+wire global_clock_running;
+assign led[0] = led_heartbeat[26] | led_heartbeat[25];
+assign led[1] =  global_clock_running;
+assign led[2] = xbar_clk_locked & main_clocks_mmcm_locked;
+assign led[3] =  1'b0; //ebi_fifo_full;
 
 wire soft_reset;
-assign led[2] = locked;
-
-//                     locked   reset
-// 0                   1        0 
-// 1                   0        1
-// 0                   1        1
-// 1                   0        0
-wire mecobo_reset = (~locked & ~reset) | soft_reset;
+wire mecobo_reset = reset | soft_reset;
 
 
 //----------------------------------- CLOCKING -------------------------
@@ -118,7 +107,7 @@ end
 
 
 //DCM instance for clock division
-main_clocks clocks
+main_clocks main_clocks_u
 (
   .CLK_IN1(osc),  //50MHz
   .CLK_OUT_100(sys_clk),
@@ -131,12 +120,12 @@ main_clocks clocks
 
 
 
-  xbar_clock xbarclocks0(
+xbar_clock xbarclocks0(
     .CLK_IN_5(xbar_predivided),
     .XBAR_CLK(xbar_clk),
     .RESET(1'b0),
     .LOCKED(xbar_clk_locked)
-  );
+);
 
 `ifdef WITH_DB
   ODDR2 clkout_oddr_ad
@@ -178,6 +167,7 @@ ebi ebi_if(
   .cs(chip_select),
   .global_clock_clk(xbar_clk),
   .global_clock(global_clock),
+  .global_clock_running(global_clock_running),
   .cmd_fifo_data_in(ebi_fifo_din),
   .cmd_fifo_wr_en(ebi_fifo_wr),
   .cmd_fifo_almost_full(ebi_fifo_almost_full),

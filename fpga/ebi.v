@@ -10,6 +10,7 @@ input wr,
 input cs,
 input global_clock_clk,
 output [31:0] global_clock,
+output        global_clock_running,
 //Interface to CMD fifo
 output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
 output reg	cmd_fifo_wr_en,
@@ -278,20 +279,26 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 always @ (posedge global_clock_clk) begin
   if(rst) begin
     clock_reg <= 0; 
-    time_running <= 0;
   end else begin
     if (reset_time) begin
       clock_reg <= 0; 
-      time_running <= 0;  //a reset stops time.
     end else if (time_running)
       clock_reg <= clock_reg + 1;
-
-    //capture state machine decision
-    if (run_time) 
-      time_running <= 1;
   end
 end
 
+always @ (posedge clk) begin
+	if (rst) begin
+		time_running <= 0;
+	end else begin 
+		if (reset_time)
+			time_running <= 0;
+		else if (run_time)
+			time_running <= 1;
+	end
+end
+	
+assign global_clock_running = time_running;
 assign global_clock = clock_reg;
 
 

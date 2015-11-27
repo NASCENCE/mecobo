@@ -57,7 +57,7 @@ always @ (posedge clk or posedge rst)
   reg [79:0] command = 0;
 
   always @ ( * ) begin
-    nextState = 4'bXXXX;
+    nextState = 5'bXXXXX;
     cmd_fifo_rd_en = 1'b0;
     cmd_bus_wr = 1'b0;
     cmd_bus_rd = 1'b0;
@@ -66,14 +66,10 @@ always @ (posedge clk or posedge rst)
     resetCommandReg = 1'b0;
     case (state)
       idle: begin
-        nextState = idle; 
-        //If time has started running, it's time to start scheduling stuff!
-        //if (current_time != 0) 
           nextState = fetch;
       end
 
       fetch: begin
-        //if (cmd_fifo_empty | (current_time == 0)) begin   //idle while waiting for time to tick or if fifo is empty
         if (cmd_fifo_empty) begin   //idle while waiting for time to tick or if fifo is empty
           nextState = fetch;
         end
@@ -95,7 +91,8 @@ always @ (posedge clk or posedge rst)
       //command reg is written and now 
       exec: begin
         nextState = exec; 
-
+	//Command time 0 is a special sentinent value that allows the item to be executed no matter
+	//the current time of the system. It's used for things like setting up recording items, etc.
         if ((current_time >= command[TIME_H:TIME_L]) | (command[TIME_H:TIME_L] == 0)) begin
           cmd_bus_wr = 1'b1;
           cmd_bus_en = 1'b1;
