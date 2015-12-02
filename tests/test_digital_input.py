@@ -320,7 +320,7 @@ def test_digital_input_sample_freq():
 
 @with_setup(setup, teardown)
 def check_digital_input_sample_freq(sample_freq):
-    sample_time = min(1e6, max(10e6 / sample_freq, 1))
+    sample_time = int(min(1e6, max(10e6 / sample_freq, 1)))
     n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
 
     print "sample_freq", sample_freq, "sample_time", sample_time, "n_samples", n_samples

@@ -235,14 +235,8 @@ int main(void)
 
     sendPackReady = 0;
 
-    //resetNor();
-    //autoSelectNor();
-
     //Make sure NOR has come up.
     for(int norwait = 0; norwait < 10000000; norwait++);
-
-    //Force reprogram
-    //programFPGA();
 
     //register 14 is 1 if the bitfile is the one with db
     uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
