@@ -31,7 +31,7 @@ def check_digital_input_digital_constant(bit):
     it.pin = [15]
     it.operationType = emSequenceOperationType().DIGITAL
     it.startTime = 0
-    it.endTime = 10
+    it.endTime = 10000
     it.frequency = bit
     it.cycleTime = 100
     cli.appendSequenceAction(it)
@@ -39,8 +39,8 @@ def check_digital_input_digital_constant(bit):
     # Digital recording at pin 0
     it = emSequenceItem()
     it.pin = [0]
-    it.startTime = 1
-    it.endTime = 10
+    it.startTime = 1000
+    it.endTime = 10000
     it.frequency = 1e3
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD
@@ -73,15 +73,15 @@ def check_digital_input_analog_constant(voltage):
     it.pin = [15]
     it.operationType = emSequenceOperationType().CONSTANT
     it.startTime = 0
-    it.endTime = 10
+    it.endTime = 10000
     it.amplitude = voltage_to_dac(voltage)
     cli.appendSequenceAction(it)
 
     # Digital recording at pin 0
     it = emSequenceItem()
     it.pin = [0]
-    it.startTime = 1
-    it.endTime = 10
+    it.startTime = 1000
+    it.endTime = 10000
     it.frequency = 1e3
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD
@@ -113,14 +113,14 @@ def test_digital_input_digital_freq():
 def check_digital_input_digital_freq(freq):
     # Calculate sample time based on frequency to sample at least 4 periods
     freq = int(freq)
-    sample_time = np.ceil(max(4000.0 / freq, 1))
+    sample_time = np.ceil(max(4e6 / freq, 1))
 
     # Calculate the number of periods expected based on (rounded up) sample time
-    n_periods = sample_time * freq / 1000.0
+    n_periods = sample_time * freq / 1e6
 
     # Aim for 10 samples per period, or maximum 75MHz
     sample_freq = min(freq * 10, 75e6)
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1000.0)
+    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
 
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
@@ -247,11 +247,11 @@ def test_digital_input_analog_random():
 @with_setup(setup, teardown)
 def check_digital_input_analog_signal(signal):
     # Each input signal sample is held for 1ms
-    sample_time = len(signal)
+    sample_time = 1000 * len(signal)
 
     # 10 samples per 1ms
     sample_freq = 10e3
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1000.0)
+    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
 
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
@@ -264,8 +264,8 @@ def check_digital_input_analog_signal(signal):
         it = emSequenceItem()
         it.pin = [15]
         it.operationType = emSequenceOperationType().CONSTANT
-        it.startTime = t
-        it.endTime = t+1
+        it.startTime = t * 1000
+        it.endTime = t * 1000 + 1000
         it.amplitude = voltage_to_dac(s)
         cli.appendSequenceAction(it)
 
@@ -320,8 +320,8 @@ def test_digital_input_sample_freq():
 
 @with_setup(setup, teardown)
 def check_digital_input_sample_freq(sample_freq):
-    sample_time = min(1000, max(10000 / sample_freq, 1))
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1000.0)
+    sample_time = min(1e6, max(10e6 / sample_freq, 1))
+    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
 
     print "sample_freq", sample_freq, "sample_time", sample_time, "n_samples", n_samples
 
