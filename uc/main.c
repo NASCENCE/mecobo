@@ -535,10 +535,6 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
 
     //How many samples?
     //The overflow register is what decides this.
-    //We set it to something that sort of achieves the wished sample rate.
-    //If we want for instance 44.1KHz sample rate, the counter is
-    //roughly 1701, so actual sample rate is about 44.09
-     
     
     double overflow = 0;
     if (sampleRate != 0) {
@@ -609,14 +605,6 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_REC_START_TIME, (uint32_t)startTime);
             command(0, 255, 0, 0);
-
-        //command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_INPUT_STREAM);
-
-        /*
-           addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_RESET;
-           addr[PINCONFIG_SAMPLE_RATE] = (uint16_t)overflow;
-           addr[PINCONTROL_CMD_LOCAL_CMD] = CMD_INPUT_STREAM;
-           */
     }
 
 

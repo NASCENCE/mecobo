@@ -489,7 +489,7 @@ Mecobo::scheduleDigitalRecording (std::vector<int> pin, int start, int end, int 
     data[PINCONFIG_END_TIME] = end;
     data[PINCONFIG_DATA_FPGA_PIN] = channel;
     data[PINCONFIG_DATA_TYPE] = PINCONFIG_DATA_TYPE_RECORD;
-    data[PINCONFIG_DATA_SAMPLE_RATE] = (int)frequency;
+    data[PINCONFIG_DATA_SAMPLE_RATE] = (unsigned int)frequency;
 
     //struct mecoPack p;
     //createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);

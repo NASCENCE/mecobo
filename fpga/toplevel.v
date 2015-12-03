@@ -210,7 +210,7 @@ command_fifo cmd_fifo (
 
 scheduler sched(
     .clk(sys_clk),
-    .rst(reset),
+    .rst(mecobo_reset),
     .current_time(global_clock),
     .cmd_fifo_dout(sched_fifo_data),
     .cmd_fifo_empty(ebi_fifo_empty),
@@ -245,7 +245,8 @@ generate
             .output_sample(sample_enable_output),
             .channel_select(sample_channel_select),
             .sample_data(sample_data_bus),
-            .current_time(global_clock)
+            .current_time(global_clock),
+	    .global_clock_running(global_clock_running)
         );
         //end
     end //for end

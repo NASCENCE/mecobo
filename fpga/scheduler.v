@@ -33,7 +33,7 @@ localparam [4:0] fetch 		= 5'b00010,
 reg [4:0] state, nextState;
 
 always @ (posedge clk or posedge rst)
-  if (rst) state <= idle;
+  if (rst) state <= fetch;
   else state <= nextState;
 
 
@@ -65,10 +65,6 @@ always @ (posedge clk or posedge rst)
     writeCommandReg = 1'b0;
     resetCommandReg = 1'b0;
     case (state)
-      idle: begin
-          nextState = fetch;
-      end
-
       fetch: begin
         if (cmd_fifo_empty) begin   //idle while waiting for time to tick or if fifo is empty
           nextState = fetch;
