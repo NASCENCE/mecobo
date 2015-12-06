@@ -55,10 +55,10 @@
 // "Output    Output      Phase     Duty      Pk-to-Pk        Phase"
 // "Clock    Freq (MHz) (degrees) Cycle (%) Jitter (ps)  Error (ps)"
 //----------------------------------------------------------------------------
-// CLK_OUT1___100.000______0.000______50.0______233.202____213.839
-// CLK_OUT2_____5.000______0.000______50.0______426.583____213.839
-// CLK_OUT3____10.000______0.000______50.0______373.247____213.839
-// CLK_OUT4____30.000______0.000______50.0______299.820____213.839
+// CLK_OUT1____75.000______0.000______50.0______248.869____240.171
+// CLK_OUT2_____5.000______0.000______50.0______430.859____240.171
+// CLK_OUT3____10.000______0.000______50.0______376.111____240.171
+// CLK_OUT4____30.000______0.000______50.0______301.291____240.171
 //
 //----------------------------------------------------------------------------
 // "Input Clock   Freq (MHz)    Input Jitter (UI)"
@@ -72,7 +72,7 @@ module main_clocks
  (// Clock in ports
   input         CLK_IN1,
   // Clock out ports
-  output        CLK_OUT_100,
+  output        CLK_OUT_75,
   output        CLK_OUT_5,
   output        CLK_OUT_10,
   output        CLK_OUT_30,
@@ -105,18 +105,18 @@ module main_clocks
     .CLK_FEEDBACK           ("CLKFBOUT"),
     .COMPENSATION           ("SYSTEM_SYNCHRONOUS"),
     .DIVCLK_DIVIDE          (1),
-    .CLKFBOUT_MULT          (12),
+    .CLKFBOUT_MULT          (9),
     .CLKFBOUT_PHASE         (0.000),
     .CLKOUT0_DIVIDE         (6),
     .CLKOUT0_PHASE          (0.000),
     .CLKOUT0_DUTY_CYCLE     (0.500),
-    .CLKOUT1_DIVIDE         (120),
+    .CLKOUT1_DIVIDE         (90),
     .CLKOUT1_PHASE          (0.000),
     .CLKOUT1_DUTY_CYCLE     (0.500),
-    .CLKOUT2_DIVIDE         (60),
+    .CLKOUT2_DIVIDE         (45),
     .CLKOUT2_PHASE          (0.000),
     .CLKOUT2_DUTY_CYCLE     (0.500),
-    .CLKOUT3_DIVIDE         (20),
+    .CLKOUT3_DIVIDE         (15),
     .CLKOUT3_PHASE          (0.000),
     .CLKOUT3_DUTY_CYCLE     (0.500),
     .CLKIN_PERIOD           (20.000),
@@ -145,7 +145,7 @@ module main_clocks
     .I (clkfbout));
 
   BUFG clkout1_buf
-   (.O   (CLK_OUT_100),
+   (.O   (CLK_OUT_75),
     .I   (clkout0));
 
 

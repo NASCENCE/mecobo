@@ -40,7 +40,7 @@ initial begin
 
   uc_clk = 0;
   clk = 0;
-  reset = 0;
+  reset = 1;
   sample = 1;
   ebi_rd = 1'b0;
   ebi_wr = 1'b0;
@@ -63,6 +63,10 @@ always @(posedge uc_clk) begin
     ebi_cs <= 1'b0;
    
     case(oper)
+    "s": begin
+      $display("RESET set to %x\n", file_ebi_addr);
+      reset <= file_ebi_addr;
+    end
     "r": begin
       $display("READ from %x", file_ebi_addr);
       ebi_addr <= file_ebi_addr;

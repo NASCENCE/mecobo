@@ -10,7 +10,8 @@ pin,
 output_sample,
 channel_select,
 sample_data,
-  current_time);
+  current_time, 
+global_clock_running);
 
 
 
@@ -27,6 +28,7 @@ sample_data,
   input data_rd;
 
   input [31:0] current_time;
+  input global_clock_running;
 
   input output_sample;
   input [7:0] channel_select;
@@ -95,7 +97,7 @@ sample_data,
   /* Command bus data output */
   always @ (posedge clk) begin
       if(reset) begin
-          sample_data <= 32'hAEAEAEAE;
+          sample_data <= 0;
           data_out <= 0;
       end else begin
 
@@ -114,7 +116,7 @@ sample_data,
           if (output_sample & (channel_select == POSITION)) 
               sample_data <= {sample_cnt, POSITION, sample_register};
           else 
-              sample_data <= 32'hA1A2A3A4;
+              sample_data <= 0;
 
       end
   end
@@ -153,7 +155,7 @@ sample_data,
               if (addr[7:0] == ADDR_LOCAL_CMD)
                   command <= data_in;   //always fetch this.
               else if (addr[7:0] == ADDR_SAMPLE_RATE)
-                  sample_rate <= data_in;
+                  sample_rate[31:0] <= data_in;
               else if (addr[7:0] == ADDR_NCO_COUNTER)
                   nco_counter[31:0] <= data_in;
               else if (addr[7:0] == ADDR_END_TIME)
@@ -171,8 +173,8 @@ sample_data,
   end
 
 
-  //specil handing of command register
-
+wire end_condition = current_time > end_time;
+wire start_condition = rec_start_time <= current_time;
 
 
   /* CONTROL LOGIC STATE MACHINE */
@@ -201,10 +203,11 @@ sample_data,
               res_sample_counter = 1'b1;
 
               //We don't start doing stuff if the time has not started.
-              if (current_time == 0) begin
+              if (~global_clock_running) begin
                   nextState = idle;
               end 
-              else if ((rec_start_time != 0) & ((rec_start_time < current_time) & (current_time <= end_time))) begin
+              else if (rec_start_time != 0) begin
+                  reset_cmd = 1'b1;
                   nextState = input_stream;
               end else if (command == CMD_INPUT_STREAM) begin
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
@@ -228,7 +231,7 @@ sample_data,
               if (command == CMD_RESET) begin
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = idle;
-              end else if ((end_time != 0) & (current_time >= end_time)) begin
+              end else if ((end_time != 0) & (end_condition)) begin
                   reset_cmd = 1'b1; //we are done. no more output.
                   const_output_null = 1'b1;
                   nextState = idle;
@@ -244,7 +247,7 @@ sample_data,
               if (command == CMD_RESET) begin
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = idle;
-              end else if (current_time >= end_time) begin
+              end else if (end_condition) begin
                   reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                   const_output_null = 1'b1;
                   nextState = idle;
@@ -255,13 +258,15 @@ sample_data,
           input_stream: begin
 
               nextState = input_stream;
-              if (cnt_sample_rate == 1) begin
-                  update_data_out = 1'b1; 
-                  res_sample_counter = 1'b1;
-              end else begin
-                  update_data_out = 1'b0; 
-                  dec_sample_counter = 1'b1;
-              end
+	      if(start_condition) begin 
+		      if (cnt_sample_rate == 0) begin
+			  update_data_out = 1'b1; 
+			  res_sample_counter = 1'b1;
+		      end else begin
+			  update_data_out = 1'b0; 
+			  dec_sample_counter = 1'b1;
+		      end
+	      end
 
               /*We're streaming input back
               at a certain rate, and will never leave this state
@@ -272,7 +277,7 @@ sample_data,
                   reset_rec_time_register = 1'b1;
                   reset_sample_registers = 1'b1;
                   nextState = idle;
-              end else if ((end_time != 0) & (current_time >= end_time)) begin
+              end else if ((end_time != 0) & end_condition) begin
                   reset_rec_time_register = 1'b1; //set some registers to zero as well.
                   reset_sample_registers = 1'b1;
                   nextState = idle;
@@ -299,9 +304,9 @@ sample_data,
               cnt_sample_rate <= 0;
           end else begin
 
-              if (res_sample_counter == 1'b1) 
+              if (res_sample_counter) 
                   cnt_sample_rate <= sample_rate;
-              else if (dec_sample_counter == 1'b1) 
+              else if (dec_sample_counter) 
                   cnt_sample_rate <= (cnt_sample_rate - 1);
 
               if (update_data_out)  begin

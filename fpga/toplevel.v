@@ -110,7 +110,7 @@ end
 main_clocks main_clocks_u
 (
     .CLK_IN1(osc),  //50MHz
-    .CLK_OUT_100(sys_clk),
+    .CLK_OUT_75(sys_clk),
     .CLK_OUT_5(xbar_predivided),
     .CLK_OUT_10(ad_clk),
     .CLK_OUT_30(da_clk),
@@ -210,7 +210,7 @@ command_fifo cmd_fifo (
 
 scheduler sched(
     .clk(sys_clk),
-    .rst(reset),
+    .rst(mecobo_reset),
     .current_time(global_clock),
     .cmd_fifo_dout(sched_fifo_data),
     .cmd_fifo_empty(ebi_fifo_empty),
@@ -245,7 +245,8 @@ generate
             .output_sample(sample_enable_output),
             .channel_select(sample_channel_select),
             .sample_data(sample_data_bus),
-            .current_time(global_clock)
+            .current_time(global_clock),
+	    .global_clock_running(global_clock_running)
         );
         //end
     end //for end

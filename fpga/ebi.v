@@ -63,32 +63,35 @@ reg [15:0] ebi_last_word;
 wire rd_transaction_done;
 wire wr_transaction_done;
 
-reg time_running = 0;
 reg [31:0] clock_reg = 0;
 
 //Control state machine
 localparam [5:0]	idle 		= 6'b000001,
-fetch		            = 6'b000010,
-trans_over	        = 6'b000100,
-fifo_read           = 6'b001000,
-fifo_read_next      = 6'b010000,
-time_cmd            = 6'b100000;
+fetch		            		= 6'b000010,
+trans_over	        		= 6'b000100,
+fifo_read           			= 6'b001000,
+fifo_read_next      			= 6'b010000,
+time_cmd            			= 6'b100000;
 
 reg [5:0] state, nextState;
 
+initial begin
+	state = fetch;
+end
+
 always @ (posedge clk) begin
-    if (rst) state <= idle;
+    if (rst) state <= fetch;
     else state <= nextState;
 end
 
 reg capture_fifo_data;
-reg reset_time;
 reg run_time;
+reg reset_time;
 
 
 //EBI INTERFACE
 always @ ( * ) begin
-    nextState = 6'bXXXXX;
+    nextState = 6'bXXXXXX;
     cmd_fifo_wr_en = 1'b0;
 
     sample_fifo_rd_en = 1'b0;
@@ -98,10 +101,6 @@ always @ ( * ) begin
     softy_reset = 1'b0;
 
     case (state)
-        idle: begin
-            nextState = fetch;
-        end
-
         fetch: begin
             nextState = fetch;
             if (cs & wr) begin
@@ -276,25 +275,37 @@ assign wr_transaction_done = (~wr_d) & (wr_dd);
 //-----------------------------------------------------------------------------------
 // clock controlled by state machine 
 //-----------------------------------------------------------------------------------
+
+//run_time is a signal from the global state machine 
+//it will be set when the corresponding register is written
+//in the EBI interface. 
+//I did this to keep register assignment out of the state machine. it's simply a matter of 
+//fsm coding style and practice.
+reg time_running = 1'b0;
+reg time_reset = 1'b0;
+
+always @ (posedge clk) begin
+	if (rst) begin
+		time_running <= 1'b0;
+		time_reset <= 1'b0;
+	end else if (reset_time) begin
+		time_running <= 1'b0;
+		time_reset <= 1'b1;
+	end else if (run_time) begin
+		time_running <= 1'b1;
+		time_reset <= 1'b0;
+	end
+end		
+
+//this is the up-counting thing.
 always @ (posedge global_clock_clk) begin
     if(rst) begin
         clock_reg <= 0; 
     end else begin
-        if (reset_time)
-            clock_reg <= 0; 
-        else if (time_running)
-            clock_reg <= clock_reg + 1;
-    end
-end
-
-always @ (posedge clk) begin
-    if (rst) begin
-        time_running <= 0;
-    end else begin 
-        if (reset_time)
-            time_running <= 0;
-        else if (run_time)
-            time_running <= 1;
+	if (time_reset)
+		clock_reg <= 0;
+	else if (time_running)
+        	clock_reg <= clock_reg + 1;
     end
 end
 

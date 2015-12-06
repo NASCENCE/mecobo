@@ -36,7 +36,7 @@ module adc_control (
 
 //---------- State machine control outputs 
 
-reg [3:0] adc_clocktick_counter;
+reg [3:0] adc_clocktick_counter = 0;
 //Control lines from controlling state machine to data path
 reg res_adc_clocktick_counter;
 reg res_outreg;
@@ -75,16 +75,17 @@ reg [31:0] last_executed_command = 0;
 //Assumes 8 ADC channels, which is why a lot of these have second indices
 //These registers 
 reg [31:0] overflow_register [0:7];
+reg [31:0] fast_clk_counter [0:7];
+
 reg [15:0] sequence_number [0:7]; //Holds sequence number.
-reg [31:0] fast_clk_counter[0:7];
 
 reg [15:0] shift_out_register;   //Register that holds the data that is to be shifted into the ADC
 reg [15:0] shift_in_register;    //Data from the ADC. Every 16th clock cycle this will be clocked into tmp_register.
 
 reg [15:0] tmp_register [0:7];   //Holds stored values ready to be harvested by the 'fast' timed state machine
 reg [15:0] sample_register [0:7];   //Holds the actual samples from each channel
-reg [31:0] end_time [0:7];
 
+reg [31:0] end_time [0:7];
 reg [31:0] rec_start_time [0:7];
 
 wire busy;
@@ -103,16 +104,16 @@ end
 
 
 localparam [3:0] 
-PROGRAM  = 4'h4,
-OVERFLOW = 4'h1,
-DIVIDE   = 4'h2,
-ENDTIME  = 4'h3,
-SAMPLE   = 4'h7,
-SEQUENCE = 4'h8,
-ID_REG   = 4'h9,
-BUSY     = 4'hA,
-LAST     = 4'hB,
-REC_START_TIME = 4'hC;
+PROGRAM  = 8'h04,
+DIVIDE   = 8'h02,
+ENDTIME  = 8'h03,
+SAMPLE   = 8'h07,
+SEQUENCE = 8'h08,
+ID_REG   = 8'h09,
+BUSY     = 8'h0A,
+LAST     = 8'h0B,
+REC_START_TIME = 8'hC,
+OVERFLOW = 8'h0D;
 
 localparam ADC_CMD_NEW_VALUE = 1;
 
@@ -123,7 +124,7 @@ reg[31:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
   if (reset)  begin
     data_out <= 0;
-    sample_data <= 32'hE5E6E7E8;
+    sample_data <= 0;
     for (c = 0; c < 8; c = c+1) begin
       overflow_register[c] <= 0;
       end_time[c] <= 0;
@@ -133,13 +134,13 @@ always @ (posedge clk) begin
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] < current_time) & (end_time[chan_idx] > current_time))
+      if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] <= current_time) & (current_time <= end_time[chan_idx]))
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
-        sample_data <= 32'hDEADBEEF;
+        sample_data <= 0;
 
     end else begin
-        sample_data <= 32'hE5E6E7E8;
+        sample_data <= 0;
     end
 
 
@@ -152,7 +153,7 @@ always @ (posedge clk) begin
     else begin 
       if (controller_enable & wr) begin
         //Decode the command field.
-        if (addr[3:0] == PROGRAM) begin
+        if (addr[7:0] == PROGRAM) begin
           current_command <= data_in;
         end
       end
@@ -169,7 +170,7 @@ always @ (posedge clk) begin
       end
     end else begin
       if (controller_enable & wr) begin
-        if (addr[3:0] == REC_START_TIME) begin
+        if (addr[7:0] == REC_START_TIME) begin
          rec_start_time[int_chan_idx] <= data_in;
         end
       end
@@ -178,11 +179,11 @@ always @ (posedge clk) begin
     //The other registers can be written to whenever. 
     if (controller_enable & wr) begin
         //Data driving
-        if (addr[3:0] == OVERFLOW) begin
+        if (addr[7:0] == OVERFLOW) begin
           overflow_register[int_chan_idx] <= data_in;
         end
 
-                if (addr[3:0] == ENDTIME) begin
+        if (addr[7:0] == ENDTIME) begin
           end_time[int_chan_idx] <= data_in;
         end
     end
@@ -190,26 +191,26 @@ always @ (posedge clk) begin
     //Driving output bus.
     if(controller_enable & re) begin
       //Getting sample values.
-      if (addr[3:0] == SAMPLE) begin
+      if (addr[7:0] == SAMPLE) begin
         data_out <= sample_register[int_chan_idx];
       end
 
-      if (addr[3:0] == SEQUENCE) begin
+      if (addr[7:0] == SEQUENCE) begin
         data_out <= sequence_number[int_chan_idx];
       end
 
 
       //Getting sample values.
-      if (addr[3:0] == ID_REG) begin
+      if (addr[7:0] == ID_REG) begin
         data_out <= 16'h0ADC;
       end
 
       //Check if busy.
-      if (addr[3:0] == BUSY) begin
+      if (addr[7:0] == BUSY) begin
         data_out <= {15'h0, busy};
       end
 
-      if (addr[3:0] == LAST) begin
+      if (addr[7:0] == LAST) begin
         data_out <= last_executed_command;
       end
 
@@ -282,9 +283,10 @@ always @ (*) begin
     copy: begin
       res_adc_clocktick_counter = 1'b1;
 
+      copy_to_tmp = 1'b1;  //16 ticks have been se..een... next flank, copy.
       //we are done, so reset the rec time so that
       //no new samples are collected
-      if (end_time[chan_idx] <= current_time)
+      if (end_time[chan_idx] < current_time)
          reset_rec_time = 1'b1;
      
       nextState = init;
@@ -297,7 +299,6 @@ always @ (*) begin
       nextState = get_values;
       if(adc_clocktick_counter == 15) begin
         nextState = copy;
-        copy_to_tmp = 1'b1;  //16 ticks have been se..een... next flank, copy.
       end
     end
 
@@ -332,7 +333,7 @@ for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
       sequence_number[i] <= 0;
       fast_clk_counter[i] <= 1;
     end else
-      if (fast_clk_counter[i] == overflow_register[i]) begin   //fast counter overflows, select sample rate.
+      if (fast_clk_counter[i] >= overflow_register[i]) begin   //fast counter overflows, select sample rate.
         fast_clk_counter[i] <= 1;
         sample_register[i] <= tmp_register[i];
         sequence_number[i] <= sequence_number[i] + 1;
