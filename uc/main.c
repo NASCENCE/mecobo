@@ -53,8 +53,17 @@
 #include "fifo.h"
 
 
-#define min(a,b) ({ a < b ? a : b; })
 
+#define INFO_PRINT 0
+#define CMD_TRACE 1
+#define DEBUG_PRINT 0
+
+#define trace(...) do { if (CMD_TRACE)   fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define infop(...) do { if (INFO_PRINT)  fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define debug(...) do { if (DEBUG_PRINT) fprintf(stdout, ##__VA_ARGS__); } while (0)
+
+
+#define min(a,b) ({ a < b ? a : b; })
 
 /* USB STRUCTS */
 static const USBD_Callbacks_TypeDef callbacks =
@@ -91,7 +100,6 @@ char * BUILD_VERSION = __GIT_COMMIT__;
 int NORPollData(uint16_t writtenWord, uint32_t addr);
 
 #define FPGA_SYSTEM_CLK_RATE 75000000  //FPGA runs at 100MHz
-#define DEBUG_PRINTING 1
 //override newlib function.
 int _write_r(void *reent, int fd, char *ptr, size_t len)
 {
@@ -131,20 +139,20 @@ static int executeInProgress = 0;
 
 static int feedFpgaCmdFifo = 1;
 static int sampleFifoEmpty = 1;
-static uint16_t samplesToGet = 0;
+static int samplesToGet = 0;
 
 //Are we programming the FPGA
 int fpgaConfigured = 0;
 uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
-static int runItems = 0;
 
 #define MAX_INPUT_CHANNELS 50
 static int fpgaTableIndex = 0;
 static uint16_t fpgaTableToChannel[MAX_INPUT_CHANNELS];
 
-uint16_t * xbar = ((uint16_t*)EBI_ADDR_BASE) + (200 * 0x100);
+static uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+
 #define NUM_DAC_REGS 4
 uint16_t DACreg[NUM_DAC_REGS];
 uint8_t registersUpdated[NUM_DAC_REGS];
@@ -152,13 +160,6 @@ uint8_t registersUpdated[NUM_DAC_REGS];
 //Circular buffer in SRAM1, modulo MAX_SAMPLES
 static const int MAX_SAMPLES = 43689; //SRAM1_BYTES/sizeof(struct sampleValue);
 #define MAX_CHANNELS 150
-static const int BUFFERSIZE = 1000;  //We will have 1000 samples per channel.
-//Such a waste of space, should use hash map.
-
-//uint32_t numSamples = 0;
-
-
-uint8_t sinus[256];
 
 //ADC sequencer registers
 uint16_t adcSequence[4] = {0xE000,0xE000,0xE000,0xE000};
@@ -197,13 +198,13 @@ int main(void)
     eADesigner_Init();
 
     setupSWOForPrint();
-    printf("Print output online\n");
+    infop("Print output online\n");
 
     //Small check for endinanness
     uint32_t integer = 0xDEADBABE;
     uint8_t * int8 = (uint8_t*)&integer;
-    if(int8[0] == 0xDE) printf("Arch is BIG ENDIAN\n");
-    if(int8[0] == 0xBE) printf("Arch is LITTLE ENDIAN\n");
+    if(int8[0] == 0xDE) infop("Arch is BIG ENDIAN\n");
+    if(int8[0] == 0xBE) infop("Arch is LITTLE ENDIAN\n");
 
     //Turn on front led 1 to indicate we are setting up the system.
     led(FRONT_LED_0, 1);
@@ -238,9 +239,6 @@ int main(void)
     //Make sure NOR has come up.
     for(int norwait = 0; norwait < 10000000; norwait++);
 
-    //register 14 is 1 if the bitfile is the one with db
-    uint16_t * fpga = (uint16_t*)EBI_ADDR_BASE;
-    //has_daughterboard = fpga[14];
 
     has_daughterboard = 0;
     int skip_boot_tests= 0;
@@ -253,9 +251,9 @@ int main(void)
 
 
 
-    printf("Initializing USB\n");
+    infop("Initializing USB\n");
     USBD_Init(&initstruct);
-    printf("USB Initialized.\n");
+    infop("USB Initialized.\n");
     USBD_Disconnect();
     USBTIMER_DelayMs(100);
     USBD_Connect();
@@ -264,7 +262,7 @@ int main(void)
     setupADC();
     setupDAC();
  
-    printf("Cycling LEDs :-)\n");
+    infop("Cycling LEDs :-)\n");
     //Cycle leds.
         for(int i = 0; i < 48; i++) {
             led(i%8, 1);
@@ -273,10 +271,10 @@ int main(void)
         }
 
 
-    printf("It's just turtles all the way down.\n");
-    printf("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
-    printf("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
-    printf("Entering main loop.\n");
+    infop("It's just turtles all the way down.\n");
+    infop("I'm the mecobo firmware running on the evolutionary motherboard 3.5new.\n");
+    infop("I was built %s, git commit %s\n", __DATE__, BUILD_VERSION);
+    infop("Entering main loop.\n");
 
 
     fifoInit(&ucCmdFifo, UC_CMD_FIFO_SIZE, sizeof(struct pinItem), NULL);
@@ -285,33 +283,20 @@ int main(void)
     /* MAIN LOOP */
     resetTime();
 
-    samplesToGet = sampleFifoDataCount();
-    //elementsInFpgaCmdFifo = cmdFifoDataCount();
-
     int roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
 
 
     struct sampleValue sample; 
-    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
     uint16_t tableIndex;
     uint16_t data;
 
     for (;;) {
-        //checkStatusReg();
+
         //feed if fifo is more than half empty
-        /*
-           if(timeStarted && runItems && (elementsInFpgaCmdFifo < 512)) {
-           elementsInFpgaCmdFifo = cmdFifoDataCount();
-           feedFpgaCmdFifo = 1;
-           printf("start feed fpga cmd fifo (%x)\n", elementsInFpgaCmdFifo);
-           } else {
-           printf("stop feed fpga cmd fifo\n");
-           feedFpgaCmdFifo = 0;
-           }*/
         if(roomInFifo < 200) {
             roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
         }
-        //We want to be able to feed the fifo even if the sequenc run is not started, so no check for runItems here.
+        //We want to be able to feed the fifo even if the sequenc run is not started
         if (setupFinished && (roomInFifo > 0) && (ucCmdFifo.numElements > 0)) {
             //mecoboStatus = MECOBO_STATUS_BUSY;
             // while(ucCmdFifo.numElements > 0) {
@@ -321,35 +306,25 @@ int main(void)
             pushToCmdFifo(it);
 
             roomInFifo--;
-            //}
-            //mecoboStatus = MECOBO_STATUS_READY;
         }
-
-        /*
-           if(xbarProgrammed & runItems & !timeStarted) {
-           resetTime();
-           timeStarted = 1;
-           runTime();
-           }
-           */
 
         //Check how many samples are in the FIFO, we have to get them anyway
         //so no need to check until we've gotten them anyway.
 
-        if(timeStarted & runItems & (samplesToGet == 0)) {
+        if(timeStarted & (samplesToGet <= 0)) {
             samplesToGet = sampleFifoDataCount();
         }
 
 
         //sampleFifoDataCount();
-        if ((samplesToGet>0) & timeStarted & runItems & !fifoFull(&ucSampleFifo)) {
-            printf("samplesToget: %d\n", samplesToGet);
+        if ((samplesToGet>0) & timeStarted & !fifoFull(&ucSampleFifo)) {
+            debug("samplesToget: %d\n", samplesToGet);
             //Push samples into fifo
             //sample.sampleNum = numSamples++;
             //for(int i = 0; i < samplesToGet; i++) {
 
              //   if(!fifoFull(&ucSampleFifo)) {
-                    data = memctrl[6]; //get next sample from EBI INTERFACE
+                    data = ebir(6);
 
                     int tableIndexShift = has_daughterboard ? 13 : 1;   //the 1 is for just looking at the controller ID
                     tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
@@ -360,9 +335,8 @@ int main(void)
                     samplesToGet--;
               //  }
             //}
-            if (DEBUG_PRINTING) printf("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
+            debug("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
 
-            //printf("t: %x\n", memctrl[9]);
 
 
         }
@@ -372,23 +346,21 @@ int main(void)
 
 void softReset()
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xD00D;   //SOFT SYSTEM RESET
-    printf("SOFT SYSTEM RESET, ALL FIFOs CLEARED\n");
-    //USBTIMER_DelayMs(1);
+    ebiw(7, 0xD00D);
+    infop("Soft system reset.\n");
 }
+
 
 void runTime()
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    cmdInterfaceAddr[7] = 0xDEAD;   //start time
-    printf("t run, tim: %x\n", cmdInterfaceAddr[9]);
+    ebiw(7, 0xDEAD);
+    infop("T run, tim: %x\n", cmdInterfaceAddr[9]);
 }
+
 void resetTime()
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    printf("t res, tim: %x\n", cmdInterfaceAddr[9]);
-    cmdInterfaceAddr[7] = 0xBEEF;   //reset and stop time
+    ebiw(7, 0xBEEF);
+    infop("T res, tim: %x\n", cmdInterfaceAddr[9]);
 }
 
 int UsbHeaderReceived(USB_Status_TypeDef status,
@@ -413,7 +385,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
             currentPack.data = NULL;
             gotHeader = 1;
         } else {
-            if(DEBUG_PRINTING) printf("Expected header of size 8, got %u.\n", (unsigned int)xf);
+            debug("Expected header of size 8, got %u.\n", (unsigned int)xf);
         }
     }
 
@@ -424,7 +396,7 @@ int UsbHeaderReceived(USB_Status_TypeDef status,
                 //Go to data collection.
                 currentPack.data = (uint8_t*)malloc(currentPack.size);
                 if(currentPack.data == NULL) {
-                    if(DEBUG_PRINTING) printf("currentPack.data malloc null :( \n");
+                    debug("currentPack.data malloc null :( \n");
                 } 
 
                 USBD_Read(CDC_EP_DATA_OUT, currentPack.data, currentPack.size, UsbDataReceived);
@@ -478,7 +450,7 @@ int UsbDataSent(USB_Status_TypeDef status,
         if(packToSend.data != NULL) {
             free(packToSend.data);
         } else {
-            if(DEBUG_PRINTING) printf("Tried to free NULL-pointer\n");
+            debug("Tried to free NULL-pointer\n");
         }
 
     }
@@ -486,17 +458,6 @@ int UsbDataSent(USB_Status_TypeDef status,
 
     return USB_STATUS_OK;
 }
-/*
-   void DmaUsbTxDone(unsigned int channel, int primary, void *user)
-   {
-   (void) channel;
-   (void) primary;
-   (void) user;
-
-   INT_Disable();
-   INT_Enable();
-   }
-   */
 
 void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
@@ -507,9 +468,15 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 
 }
 
-inline uint32_t get_bit(uint32_t val, uint32_t bit) 
-{
-    return (val >> bit) & 0x1;
+inline void ebiw(uint32_t addr, uint16_t data) {
+    *(cmdInterfaceAddr + addr) = data;
+    trace("w %x %x\n", (uint32_t)(addr), data);
+}
+
+inline uint16_t ebir(uint32_t addr) {
+    uint16_t d = cmdInterfaceAddr[addr];
+    trace("r %x %x\n", addr, d);
+    return d;
 }
 
 
@@ -523,9 +490,8 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     //We are in setup phase. maybe ok.
 
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
-    //memctrl[4] = channel;
     fpgaTableToChannel[fpgaTableIndex] = (uint16_t)channel;
-    if(DEBUG_PRINTING) printf("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint16_t)fpgaTableToChannel[fpgaTableIndex]);
+    debug("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint16_t)fpgaTableToChannel[fpgaTableIndex]);
 
     //How many samples?
     //The overflow register is what decides this.
@@ -537,13 +503,12 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     double overflow = 0;
     if (sampleRate != 0) {
         overflow = (float)FPGA_SYSTEM_CLK_RATE/(float)sampleRate;   //this is the period length of the 100MHz sample rate counter clock
-        printf("Overflow register: %f\n", overflow);
+        infop("Overflow register: %f\n", overflow);
     } else {
-        printf("omg sampleRate is 0. setting cowardly to 1000");
+        debug("SampleRate is 0. Set to 1000\n");
         overflow = 1000.0;
     }
     fpgaTableIndex++;
-    //printf("Estimated %u samples for rate %d, of %f, channel %d, duration %d\n", numSamples, sampleRate, overflow, channel, duration);
 
     //If it's a ADC channel we set up the ADC here in stead of all this other faff.
     if ((AD_CHANNELS_START <= channel) && (channel <= (AD_CHANNELS_END))) {
@@ -554,21 +519,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
         if(boardChan < 16) {
             //Program sequence register with channel.
             adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
-            if(DEBUG_PRINTING) printf("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
-
-            //Range register 1
-
-            //resetTime();
-            //runTime();
-            //if(!adc_rr_wr)
-//            command(0, channel, AD_REG_PROGRAM, 0x1AAA0);
- //           command(0, 255, 0, 0);
-            //USBTIMER_DelayMs(1);
-
-            //Range register 2
-  //          command(0, channel, AD_REG_PROGRAM, 0x1CAA0);
-   //         command(0, 255, 0, 0);
-            //USBTIMER_DelayMs(1);
+            debug("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
             command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
             command(0, 255, 0, 0);
@@ -587,14 +538,13 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             command(0, channel, AD_REG_PROGRAM, 0x18014);
             command(0, 255, 0, 0);
 
-            //resetTime();
-            if(DEBUG_PRINTING) printf("ADC programmed to new sequences\n");
+            debug("ADC programmed to new sequences\n");
         }
     }
 
     //Digital channel.
     else {
-        if(DEBUG_PRINTING) printf("Recording dig ch: %x\n", channel);
+        debug("Recording dig ch: %x\n", channel);
         command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controller to put it in idle
             command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
@@ -619,7 +569,8 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
 
 inline void startInput()
 {
-    printf("Starting sampling\n");
+    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RES_SAMPLE_FIFO);  //this sends STAT SAMPLING COMMAND
+    infop("Starting sampling\n");
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_START_SAMPLING);  //this sends STAT SAMPLING COMMAND
 }
 
@@ -652,22 +603,22 @@ void execCurrentPack()
             item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
             item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
-            printf("ADDING A PIN CONFIG PIN %u\n", item.pin);
+            infop("ADDING A PIN CONFIG PIN %u\n", item.pin);
             //Hack to avoid starting this if time is set to 0.
             if (item.startTime == 0) item.startTime = 1;
 
             fifoInsert(&ucCmdFifo, &item);
 
 
-            if(DEBUG_PRINTING) printf("Item %d added to ucFifo, chan %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
+            debug("Item %d added to ucFifo, chan %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
         } else {
-            if(DEBUG_PRINTING) printf("Curr data NULL\n");
+            debug("Curr data NULL\n");
         }
     }
 
     else if (currentPack.command == USB_CMD_SETUP_RECORDING) 
     {
-        printf("SETUP_RECORDING\n");
+        debug("SETUP_RECORDING\n");
         struct pinItem item;
         if(currentPack.data != NULL) {
             uint32_t * d = (uint32_t *)(currentPack.data);
@@ -678,26 +629,25 @@ void execCurrentPack()
             item.type = d[PINCONFIG_DATA_TYPE];
 
             setupInput(item.pin, item.sampleRate, item.startTime, item.endTime);
-            printf("USB_CMD_SETUP_RECORDING pin %u\n", (unsigned int)item.pin);
+            debug("USB_CMD_SETUP_RECORDING pin %u\n", (unsigned int)item.pin);
         }
     }
 
     else if(currentPack.command == USB_CMD_RUN_SEQ)
     {
         if(!setupFinished) {
-            printf("ERROR: Won't run without setup finished\n");
+            infop("ERROR: Won't run without setup finished\n");
             return;
         } else {
-            printf("---- SEQUENCE RUN STARTED -----\n");
+            infop("---- SEQUENCE RUN STARTED -----\n");
         }
         runTime();
-        runItems = 1;
         timeStarted = 1;
     }
 
     else if(currentPack.command == USB_CMD_PROGRAM_XBAR)
     {
-        printf("Configuring XBAR\n");
+        infop("Configuring XBAR\n");
 
         //The data that comes in are 32 16-bit words
         //where we want to send word 0 first, word 1 second, etc...
@@ -716,10 +666,9 @@ void execCurrentPack()
 
         //We need to wait here until the XBAR is configured. 
         //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
-        //runTime();
         USBTIMER_DelayMs(1);
 
-        printf("\nXBAR configured\n");
+        infop("\nXBAR configured\n");
 
         xbarProgrammed = 1;
         mecoboStatus = MECOBO_STATUS_XBAR_CONFIGURED;
@@ -728,9 +677,9 @@ void execCurrentPack()
 
     else if(currentPack.command == USB_CMD_UPDATE_REGISTER)
     {
-        if(DEBUG_PRINTING) printf("Updating Register\n");
+        debug("Updating Register\n");
         int * d = (int*)(currentPack.data);
-        if(DEBUG_PRINTING) printf("REG %d: %d\n", d[0], d[1]); 
+        debug("REG %d: %d\n", d[0], d[1]); 
         DACreg[d[0]] = d[1];
         registersUpdated[d[0]] = 1;
     }
@@ -761,12 +710,12 @@ void execCurrentPack()
         }
 
 
-        printf("----------------- RESETING MECOBO ------------------\n");
+        infop("----------------- RESETING MECOBO ------------------\n");
         if(has_daughterboard) 
         {
-            printf("DAUGHTERBOARD: PRESENT\n");
+            infop("DAUGHTERBOARD: PRESENT\n");
         } else {
-            printf("DAUGHTERBOARD: NONE\n");
+            infop("DAUGHTERBOARD: NONE\n");
         }
         resetTime();
         softReset();   //This will clear the command fifo, etc.
@@ -781,12 +730,10 @@ void execCurrentPack()
         //USBTIMER_DelayMs(10);
         startInput();  //start sample collector
         //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
-        runItems = 0;
         //Reset state
         //numSamples = 0;
         adcSequence[0] = 0;
 
-        samplesToGet = 0;
 
         fifoReset(&ucCmdFifo);
         fifoReset(&ucSampleFifo);
@@ -803,7 +750,6 @@ void execCurrentPack()
                 command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
             }
         }
-        //resetAllPins();
 
         timeStarted = 0;
         xbarProgrammed = 0;
@@ -812,8 +758,9 @@ void execCurrentPack()
         feedFpgaCmdFifo = 1;
         sampleFifoEmpty = 1;
 
+        samplesToGet = 0;
 
-        printf("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
+        infop("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
         mecoboStatus = MECOBO_STATUS_RESET_COMPLETE;
 
     }
@@ -824,13 +771,12 @@ void execCurrentPack()
 
         *retSamples = min(ucSampleFifo.numElements, USB_MAX_SAMPLES);
 
-        //if(DEBUG_PRINTING) printf("%u smpl uC q\n", (unsigned int)*retSamples);
+        //debug("%u smpl uC q\n", (unsigned int)*retSamples);
         sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)(retSamples));
     }
 
     else if(currentPack.command == USB_CMD_GET_INPUT_BUFFER) {
 
-        //    uint16_t * memctrl = (uint16_t*)EBI_ADDR_BASE;// getChannelAddress(0); //this is the EBI interface
 
         //Send back the whole sending buffer.
         //Data contains the number of samples to xfer.
@@ -838,9 +784,9 @@ void execCurrentPack()
         int bytes = sizeof(struct sampleValue) * *txSamples;
         struct sampleValue * samples = (struct sampleValue *)malloc(bytes);
         if(!samples) {
-            printf("ERROR: MALLOC FAILED. We're probably out of memory!\n");
+            infop("ERROR: MALLOC FAILED. We're probably out of memory!\n");
         }
-        printf("Shipping %d bytes\n", bytes);
+        debug("Shipping %d bytes\n", bytes);
 
         for(unsigned int i = 0; i < *txSamples; i++) {
             struct sampleValue * sv;
@@ -850,16 +796,13 @@ void execCurrentPack()
 
         sendPacket(bytes, USB_CMD_GET_INPUT_BUFFER, (uint8_t*)samples);
 
-        if(DEBUG_PRINTING) printf("USB has been instructed to send data. Returning to main loop\n");
+        debug("USB has been instructed to send data. Returning to main loop\n");
     }
 
 
 
     else if(currentPack.command == USB_CMD_LOAD_BITFILE) {
 
-
-        //Under configuration
-        int toggle = 1;
 
         //bitfileoffset magic.
         if(bitfileOffset == NOR_FLASH_NODB_POS) {
@@ -884,7 +827,7 @@ void execCurrentPack()
 
         exitEnhancedMode();
         //word offsets
-        printf("Got data, current offset %u\n", (unsigned int)bitfileOffset);
+        debug("Got data, current offset %u\n", (unsigned int)bitfileOffset);
     }
 
 
@@ -895,18 +838,12 @@ void execCurrentPack()
 
     //The intention is for this to be run before other items.
     else if (currentPack.command == USB_CMD_LOAD_SETUP) { 
-        printf("USB_CMD_LOAD_SETUP\n");
+        infop("USB_CMD_LOAD_SETUP\n");
 
-        //resetTime();
 
         mecoboStatus = MECOBO_STATUS_BUSY;
-        if (runItems) {
-            printf("ERROR: LOAD SETUP WHILE SCHEDULE IS RUNNING\n");
-        }
-
-
+    
         while(ucCmdFifo.numElements > 0) {
-            printf("setup item\n");
             void * item = NULL;
             fifoGet(&ucCmdFifo, &item);
             struct pinItem * it = (struct pinItem *)item;
@@ -931,7 +868,6 @@ void execCurrentPack()
     } else if (currentPack.command == USB_CMD_PRELOAD_FIFO) {
 
         //preload the fifo with commands as well
-        printf("uc cmd fifo preload: %d\n", ucCmdFifo.numElements);
         while(ucCmdFifo.numElements > 0) {
             void * item = NULL;
             fifoGet(&ucCmdFifo, &item);
@@ -941,10 +877,7 @@ void execCurrentPack()
 
 
         mecoboStatus = MECOBO_STATUS_FIFO_PRELOADED;
-        printf("---- SETUP FINISHED -----\n");
-
-        //Start the sample collector!
-
+        infop("---- SETUP FINISHED -----\n");
 
         setupFinished = 1;
     }
@@ -956,7 +889,7 @@ void execCurrentPack()
         if(currentPack.data != NULL) {
             free(currentPack.data);
         } else {
-            printf("FREE CURRENT PACK NULL\n");
+            infop("ERROR: FREE CURRENT PACK NULL\n");
         }
     }
 }
@@ -969,14 +902,13 @@ void sendPacket(uint32_t size, uint32_t cmd, uint8_t * data)
     pack.data = data;
 
     packToSend = pack; //This copies the pack structure.
-    //printf("Writing back %u bytes over USB.\n", (unsigned int)pack.size);
     sendInProgress = 1;
     USBD_Write(CDC_EP_DATA_IN, packToSend.data, packToSend.size, UsbDataSent);
 }
 
 void resetAllPins()
 {
-    printf("Reseting all digital pin controllers\n");
+    infop("Reseting all digital pin controllers\n");
     for(int j = 0; j < 50; j++) {
         command(0, 255, 0, 0);
         command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
@@ -1025,7 +957,7 @@ void programFPGA()
     int toggle = 0;
 
     autoSelectNor(); //set NOR in read mode
-    printf("Programming FPGA!\n");
+    infop("Programming FPGA!\n");
     //Start the configuration process.
     //set the input pin modes.
     //DONE, active high
@@ -1043,18 +975,18 @@ void programFPGA()
 
     while(GPIO_PinInGet(gpioPortD, 15) ||
             GPIO_PinInGet(gpioPortC, 4)) {
-        if(DEBUG_PRINTING) printf("Waiting for initb and done\n");
+        debug("Waiting for initb and done\n");
     }
 
     while(GPIO_PinInGet(gpioPortD, 15)) {
-        printf("Waiting for INIT_B to go high\n");
+        debug("Waiting for INIT_B to go high\n");
     }
 
     //set prog b high again (activate programming)
     GPIO_PinOutSet(gpioPortC, 3);
     //wait until initB goes high again (fpga ready for data)
     while(!GPIO_PinInGet(gpioPortD, 15)) {
-        printf("Waiting for initb to go high again\n");
+        debug("Waiting for initb to go high again\n");
     }
     //Bring front led 2 on to indicate programming.
 
@@ -1066,18 +998,16 @@ void programFPGA()
 
 
     struct NORFileTableEntry * entries = (struct NORFileTableEntry *)NOR_START;
-    printf("Found a bitfile, size %u\n", (unsigned int)entries[0].size);
+    infop("Found a bitfile, size %u\n", (unsigned int)entries[0].size);
     //TODO: Select which bitfile to use here. For now,
     //assume only 1 bitfile present.
     uint8_t * nor = (uint8_t *)(NOR_START + entries[0].offset); //this is where data starts
-    //printf("Programming with %u bytes\n", (unsigned int)bitfileLength);
-    //  for(int i = 0; i < bitfileLength; i++) {
 
     uint32_t nb = 0;
+    infop("Programming bitfile\n");
     while(nb < entries[0].size) {
         uint8_t bait = nor[nb];
 
-        //printf("wat\n");
         for(int b = 7; b >= 0; b--) {
             GPIO_PinOutClear(gpioPortA, 8); //clk low
             //clock a bit.
@@ -1091,30 +1021,24 @@ void programFPGA()
         nb++;
         if((nb%(10*1024)) == 0) {
             led(BOARD_LED_U3, toggle);
-            if (DEBUG_PRINTING) printf("Last byte programmed: %x\n", bait);
+            debug("Last byte programmed: %x\n", bait);
             if(!GPIO_PinInGet(gpioPortD, 15)) {
-                printf("CRC error during config, INITB went high!\n");
+                infop("CRC error during config, INITB went high!\n");
             } else {
-                printf("BYTE OK\n");
+                debug("BYTE OK\n");
             }
             toggle = !toggle;
         }
     }
 
-    /*
-       while(!GPIO_PinInGet(gpioPortC, 4)) {
-       printf("Waiting for DONE to go high\n");
-       }
-       */
-
-    printf("FPGA programming done\n");
+    infop("FPGA programming done\n");
     led(BOARD_LED_U3, 0);
 }
 
 void eraseNorChip()
 {
     uint16_t * nor = (uint16_t *)NOR_START;
-    printf("Doing chip erase\n");
+    infop("Doing chip erase\n");
     nor[0x555] = 0xCA;
     nor[0x2AA] = 0x35;
     nor[0x555] = 0x80;
@@ -1125,7 +1049,7 @@ void eraseNorChip()
     //while(NORPollData(1, 0));
     NORBusy();
 
-    printf("Done\n");
+    infop("Done\n");
 }
 
 
@@ -1145,12 +1069,12 @@ void NORBusy() {
             done = 1;
         }
         if (((counter++)%100000) == 0) {
-            if (DEBUG_PRINTING) printf("NOR busy... %x\n", status);
+            debug("NOR busy... %x\n", status);
             led(BOARD_LED_U2, toggle);
             toggle = !toggle;
         }
     }
-    printf("Final status %x\n", nor[0]);
+    infop("Final status %x\n", nor[0]);
     led(BOARD_LED_U2, 0);
 
     return;
@@ -1158,7 +1082,7 @@ void NORBusy() {
 
 void resetNor()
 {
-    printf("NOR RESET\n");
+    infop("NOR RESET\n");
     uint16_t * nor = (uint16_t *)NOR_START;
     nor[0x555] = 0xF0;
 }
@@ -1188,7 +1112,7 @@ void autoSelectNor()
 
 void enterEnhancedMode()
 {
-    printf("Entering enhanced mode\n");
+    debug("NOR: Entering enhanced mode\n");
     uint16_t * nor = (uint16_t *)NOR_START;
     //Enter enhanced mode
     nor[0x555] = 0xCA;
@@ -1202,7 +1126,7 @@ void exitEnhancedMode()
     /* Exit enhanced program command */
     nor[0] = 0x90;
     nor[0] = 0x00;
-    printf("Exit enhanced mode\n");
+    debug("NOR: Exit enhanced mode\n");
 }
 
 
@@ -1214,7 +1138,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
     //autoSelectNor();
 
     uint32_t bad = offset & 0xFFFFFF00;
-    printf("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
+    debug("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
 
     //Now start command
     nor[bad] = 0x53;
@@ -1231,7 +1155,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
 
     //NORError();
 
-    printf("Wrote bytes\n");
+    debug("Wrote bytes\n");
 }
 
 
@@ -1243,7 +1167,6 @@ int NORToggling()
     uint16_t b = nor[0];
 
     if ((a & TOGGLE_BIT) != (b & TOGGLE_BIT)) {
-        //printf("TOGGLECHECK: %x and %x\n", a, b);
         return 1;
     }
     return 0;
@@ -1264,61 +1187,43 @@ int NORError() {
     uint16_t * nor = (uint16_t *)NOR_START;
     uint16_t status = nor[0];
     if(status & ERROR_BIT) {
-        printf("Error detected. Status reg: %x\n", status);
+        infop("Error detected. Status reg: %x\n", status);
         return 1;
     }
     else return 0;
 }
-/*
-   void parseNORFileTable(int * numEntries, struct NORFileTableEntry * entries)
-   {
-//printf("Parsing nor file table\n");
-//struct NORFileTableEntry * nte = (struct NORFileTableEntry *)NOR_START;
-//size of 0 indicates invalid entry
-//int entry = 0;
-// entries[entry] = *nte;
-//  printf("Entry size %u, offset %u\n", entries[0].size, entries[0].offset);
-}
-*/
+
 
 void fpgaIrqHandler(uint8_t pin) {
 
-    printf("ir: %x\n", pin);
-    printf("sr: %x\n", statusReg);
+    infop("irq: reg: %x\n", pin);
+    infop("irq: status: %x\n", statusReg);
     checkStatusReg();
 }
 
-inline uint16_t sampleFifoDataCount()
+int sampleFifoDataCount()
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    uint16_t d = cmdInterfaceAddr[EBI_SAMPLE_FIFO_DATA_COUNT];
-    //printf("%u\n", d);
-    return d;
+    return (int)ebir(EBI_SAMPLE_FIFO_DATA_COUNT);
 }
 
 inline uint16_t cmdFifoDataCount()
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
-    uint16_t d = cmdInterfaceAddr[EBI_CMD_FIFO_DATA_COUNT];
-    return d;
+    return (int)ebir(EBI_CMD_FIFO_DATA_COUNT);
 }
 
 
 void checkStatusReg() 
 {
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
     statusReg = cmdInterfaceAddr[0];
     if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_FULL_BIT) {
-        printf("CMD FIFO almost full, no more feeding\n");
+        infop("CMD FIFO almost full, no more feeding\n");
         feedFpgaCmdFifo = 0;
     }
 
     if (statusReg & STATUS_REG_CMD_FIFO_EMPTY) {
-        //printf("CMD FIFO empty\n");
         feedFpgaCmdFifo = 1;
     } 
     if (statusReg & STATUS_REG_CMD_FIFO_ALMOST_EMPTY) {
-        //printf("CMD FIFO almost empty\n");
         feedFpgaCmdFifo = 1;
     }
 
@@ -1332,7 +1237,6 @@ void checkStatusReg()
 inline void putInFifo(struct fifoCmd * cmd) 
 {
 
-    uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
     uint16_t * serialCmd = (uint16_t *)cmd;
     //This will be funked up when splitting the uint32 into 16 bits,
     //because the ordering is different.
@@ -1345,6 +1249,13 @@ inline void putInFifo(struct fifoCmd * cmd)
     //words of 2 bytes each.
 
 
+    ebiw(1, serialCmd[1]);
+    ebiw(2, serialCmd[0]);
+    ebiw(3, cmd->data[0]);
+    ebiw(4, cmd->data[1]);
+    ebiw(5, serialCmd[4]);
+
+    /*
     cmdInterfaceAddr[1] = serialCmd[1];
     //printf("in %x out %x\n", serialCmd[1], cmdInterfaceAddr[12]);
 
@@ -1359,15 +1270,7 @@ inline void putInFifo(struct fifoCmd * cmd)
 
     cmdInterfaceAddr[5] = serialCmd[4];  // I've ordered the struct so that the last word of the cmd is first addr, then controller.
     //printf("in %x out %x\n", serialCmd[4], cmdInterfaceAddr[12]);
-
-    /*
-       printf("s: %x\n", cmdInterfaceAddr[0]);
-       printf("pushing word %u : %x\n", 0, serialCmd[1]);
-       printf("pushing word %u : %x\n", 1, serialCmd[0]);
-       printf("pushing dword %u : %x\n", 2, cmd->data[0]);
-       printf("pushing dword %u : %x\n", 3, cmd->data[1]);
-       printf("pushing word %u : %x\n", 4, serialCmd[4]);
-       */
+    */
 }
 
 
@@ -1404,7 +1307,7 @@ void command2x16(uint32_t startTime, uint8_t controller, uint8_t reg, uint16_t d
     cmd.addr = reg;
     cmd.data[0] = data1; //TODO: Figure out why this is correct.
     cmd.data[1] = data2; 
-    printf("reg: %x F1: %x F2: %x\n", reg, data2, data1);
+    debug("reg: %x F1: %x F2: %x\n", reg, data2, data1);
     putInFifo(&cmd);
 }
 
@@ -1412,7 +1315,7 @@ void pushToCmdFifo(struct pinItem * item)
 {
     //struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
-    printf("fifo: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
+    debug("fifo: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
     switch(item->type) {
 
         case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
@@ -1445,10 +1348,11 @@ void pushToCmdFifo(struct pinItem * item)
             break; 
 
         case PINCONFIG_DATA_TYPE_DAC_CONST:
-            if(DEBUG_PRINTING) printf(">> CONST DAC, t%u, ch %u, %u\n", item->startTime, item->pin, item->constantValue);
+            debug(">> CONST DAC, t%x, ch %x, %x\n", (unsigned int)item->startTime, item->pin, item->constantValue);
             //setVoltage(item->pin, item->constantValue);
             uint32_t wrd = getDACword(item->pin, item->constantValue);
             command(item->startTime, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+            command(0, 255, 0, 0);
             break;
 
 

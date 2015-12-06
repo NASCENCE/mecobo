@@ -666,7 +666,7 @@ Mecobo::runSchedule ()
 
     this->preloadCmdFifo();
 
-    int waitMs = 10;
+    int waitMs = 5;
 
     //Now start the sequence
     std::cout << "::::  Starting sequence run last item ends at: " << this->lastSequenceItemEnd << std::endl;

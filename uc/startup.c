@@ -1,11 +1,11 @@
 #include "mecobo.h"
+#include <stdio.h>
 
 
 void testRam()
 {
 
   uint16_t * ram = (uint16_t*)SRAM1_START;
-  printf("SRAM 1 TEST\n");
 
   ram[100] = 0xff42;
   ram[101] = 0xff43;

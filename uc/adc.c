@@ -15,7 +15,6 @@ void setupADC()
     for(uint32_t i = 0; i < 8; i++) {
         //   //                ad[2:0]
         uint32_t ctrlWord = 0x18014 | (i << 10);
-        printf("MODE CTRL: %x\n", (unsigned int)ctrlWord);
         command(0, AD_CHANNELS_START, AD_REG_PROGRAM, ctrlWord);
         command(0, 255, 0, 0);
     }

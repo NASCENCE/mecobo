@@ -251,8 +251,8 @@ generate
     end //for end
 
     adc_control #(
-        .MIN_CHANNEL(100),   //note: these are addresses on the command bus for this unit as well. 
-        .MAX_CHANNEL(107))
+        .MIN_CHANNEL(64),   //note: these are addresses on the command bus for this unit as well. 
+        .MAX_CHANNEL(71))
         adc0 (
             .clk(sys_clk),
             .sclk(ad_clk),

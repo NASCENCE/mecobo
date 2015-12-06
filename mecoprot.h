@@ -4,6 +4,10 @@
 //This defines the fields and values for the mecobo protocol
 
 #include <stdint.h>
+
+#define MECOBO_RESET_WORD_DB_PRESENT_BIT 0
+#define MECOBO_RESET_WORD_RESET_XBAR_BIT 1
+
 #define USB_BUFFER_SIZE 32
 
 #define MECOBO_STATUS_READY 0
@@ -68,11 +72,11 @@
 #define NOR_FLASH_NODB_POS 0
 #define NOR_FLASH_DB_POS 1024*1024
 
-#define AD_CHANNELS_START 100
-#define AD_CHANNELS_END 199
+#define AD_CHANNELS_START 64
+#define AD_CHANNELS_END 127
 
-#define DA_CHANNELS_START 50
-#define DA_CHANNELS_END 99
+#define DA_CHANNELS_START 128
+#define DA_CHANNELS_END 239
 
 #define IO_CHANNELS_START 0
 #define IO_CHANNELS_END 49
@@ -102,34 +106,25 @@ typedef enum {
   FPGA_DIGI_14 = 14,
   FPGA_DIGI_15 = 15,
   //DAC channels
-  FPGA_DAC_0_A = 50,
-  FPGA_DAC_0_B = 51,
-  FPGA_DAC_0_C = 52,
-  FPGA_DAC_0_D = 53,
-  FPGA_DAC_0_E = 54,
-  FPGA_DAC_0_F = 55,
-  FPGA_DAC_0_G = 56,
-  FPGA_DAC_0_H = 57,
-  
-  FPGA_DAC_1_A = 58,
-  FPGA_DAC_1_B = 59,
-  FPGA_DAC_1_C = 60,
-  FPGA_DAC_1_D = 61,
-  FPGA_DAC_1_E = 62,
-  FPGA_DAC_1_F = 63,
-  FPGA_DAC_1_G = 64,
-  FPGA_DAC_1_H = 65,
+  FPGA_DAC_0_A = 128,
+  FPGA_DAC_0_B = 129,
+  FPGA_DAC_0_C = 130,
+  FPGA_DAC_0_D = 131,
+  FPGA_DAC_0_E = 132,
+  FPGA_DAC_0_F = 133,
+  FPGA_DAC_0_G = 134,
+  FPGA_DAC_0_H = 135,
 
   //ADC channels.
-  FPGA_ADC_0_A = 100,
-  FPGA_ADC_0_B = 101,
-  FPGA_ADC_0_C = 102,
-  FPGA_ADC_0_D = 103,
-  FPGA_ADC_0_E = 104,
-  FPGA_ADC_0_F = 105,
-  FPGA_ADC_0_G = 106,
-  FPGA_ADC_0_H = 107,
-  FPGA_DUMMY_0 = 200  //To remove range compiler warning.
+  FPGA_ADC_0_A = 64,
+  FPGA_ADC_0_B = 65,
+  FPGA_ADC_0_C = 66,
+  FPGA_ADC_0_D = 67,
+  FPGA_ADC_0_E = 68,
+  FPGA_ADC_0_F = 69,
+  FPGA_ADC_0_G = 70,
+  FPGA_ADC_0_H = 71,
+  FPGA_DUMMY_0 = 72  //To remove range compiler warning.
   //Etc...
 } FPGA_IO_Pins_TypeDef;
 
