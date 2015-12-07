@@ -176,8 +176,13 @@ always @ (posedge clk) begin
 end
 
 
+//Say time start is 2, end time is 4. This is a period
+//of 4 - 2 = 2. 
+//Since we test for end time MORE than end time, end condition will happen at 5.
+//but start condition happens at 3. 5-3 = 2. So we have the same period and
+//we're good.
 wire end_condition = current_time > end_time;
-wire start_condition = rec_start_time <= current_time;
+wire start_condition = rec_start_time < current_time;
 
 
 /* CONTROL LOGIC STATE MACHINE */
