@@ -8,18 +8,19 @@ module dac_control (
   input [31:0]cmd_bus_data,
   output reg [15:0] out_data,
   input [15:0] cmd_bus_addr,
+  output reg busy,
   //facing the DAC
   output reg nLdac,
   output reg nSync,
 output dac_din);
 
-parameter POSITION = 240;
+parameter POSITION = 64;
 localparam DAC_CMD_NEW_VALUE = 1;
 
 //Controller select (not to be confused with chip select)
 wire cs;
 assign cs = (cmd_bus_enable & (cmd_bus_addr[15:8] == POSITION));
-wire busy;
+
 
 reg [15:0] shift_out_register = 0;
 reg [31:0] command_bus_data = 0;
@@ -43,10 +44,6 @@ always @ (posedge ebi_clk) begin
         if (cmd_bus_addr[7:0] == 9) begin
           out_data <= 16'h0DAC;
         end
-        //set the "busy" register.
-        if (cmd_bus_addr[7:0] == 10) begin
-          out_data <= {15'b0, busy};
-        end     
       end else
         out_data <= 0;  //make sure to set this in case of troubles.
   end
@@ -91,6 +88,8 @@ always @ (*) begin
   count_res = 1'b0;
   nLdac = 1'b1;
   nSync = 1'b1;
+  
+  busy = 1'b0;
 
   case (state)
 
@@ -102,6 +101,7 @@ always @ (*) begin
       //check for type of command. this avoids having to store the address
       //of the command bus.
       if (command_bus_data[31:16] == DAC_CMD_NEW_VALUE) begin
+        busy = 1'b1;
         nextState = load;
         load_shift_reg = 1'b1;  
       end
@@ -111,6 +111,7 @@ always @ (*) begin
     //shifted out 16 bits
     load: begin
       nextState = load;
+      busy = 1'b1;
 
       count_up = 1'b1;
       nSync = 1'b0;
@@ -125,6 +126,7 @@ always @ (*) begin
     //Give a load pulse to set up the DAC
     pulse: begin
       nextState = init;
+      busy = 1'b1;
 
       nLdac = 1'b0;
       count_res = 1'b1;

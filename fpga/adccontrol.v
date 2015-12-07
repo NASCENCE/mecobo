@@ -17,6 +17,7 @@ module adc_control (
   input re,
   input wr,
   output reg [15:0] data_out,
+  output reg busy,
 
   input output_sample,
   input [7:0] channel_select,
@@ -29,7 +30,8 @@ module adc_control (
   //serial data from chip
   input adc_dout,
 
-  input [31:0] current_time
+  input [31:0] current_time,
+  input time_running
 );
 
 
@@ -88,7 +90,6 @@ reg [15:0] sample_register [0:7];   //Holds the actual samples from each channel
 reg [31:0] end_time [0:7];
 reg [31:0] rec_start_time [0:7];
 
-wire busy;
 
 integer q;
 initial begin
@@ -134,7 +135,7 @@ always @ (posedge clk) begin
   end else begin
     if (output_sample & channels_selected) begin
       //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-      if ((rec_start_time[chan_idx] != 0) & (rec_start_time[chan_idx] <= current_time) & (current_time <= end_time[chan_idx]))
+      if ((rec_start_time[chan_idx] != 0) && (rec_start_time[chan_idx] <= current_time) && (current_time <= end_time[chan_idx]))
         sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
       else
         sample_data <= 0;
@@ -205,11 +206,6 @@ always @ (posedge clk) begin
         data_out <= 16'h0ADC;
       end
 
-      //Check if busy.
-      if (addr[7:0] == BUSY) begin
-        data_out <= {15'h0, busy};
-      end
-
       if (addr[7:0] == LAST) begin
         data_out <= last_executed_command;
       end
@@ -238,7 +234,6 @@ parameter writeback     = 5'b10000;
 reg [NUM_STATES - 1:0] state, nextState;
 
 
-assign busy = (state != get_values);
 //---------------------------- CONTROL LOGIC -----------------------------
 //The slow clocked control logic that controls the shift registers
 //and times when to copy data into the temporary registers.
@@ -261,6 +256,7 @@ always @ (*) begin
   inc_adc_clocktick_counter = 1'b0;
   res_adc_clocktick_counter = 1'b0;
   copy_to_tmp = 1'b0;
+  busy = 1'b0;
 
   reset_current_command = 1'b0;
   reset_rec_time = 1'b0;
@@ -272,6 +268,7 @@ always @ (*) begin
       nextState = init;
 
       if (current_command[31:16] == ADC_CMD_NEW_VALUE) begin
+        busy = 1'b1;
         load_shift_out_reg = 1'b1;
         nextState = program_adc;
       end else begin
@@ -305,6 +302,7 @@ always @ (*) begin
     program_adc: begin
       cs = 1'b0;  //remember, control signal is /not/ clocked
       shift_out = 1'b1; //shifts data out to ADC
+      busy = 1'b1;
       inc_adc_clocktick_counter = 1'b1;
       reset_current_command = 1'b1;
       nextState = program_adc;
@@ -333,7 +331,9 @@ for (i = 0; i < 8; i = i+1) begin : sample_rate_registers
       sequence_number[i] <= 0;
       fast_clk_counter[i] <= 1;
     end else
-      if (fast_clk_counter[i] >= overflow_register[i]) begin   //fast counter overflows, select sample rate.
+      if (!time_running) 
+ 	fast_clk_counter[i] <= 1;
+      else if (fast_clk_counter[i] >= overflow_register[i]) begin   //fast counter overflows, select sample rate.
         fast_clk_counter[i] <= 1;
         sample_register[i] <= tmp_register[i];
         sequence_number[i] <= sequence_number[i] + 1;

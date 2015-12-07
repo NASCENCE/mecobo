@@ -29,7 +29,7 @@ module sample_collector (
 
   /*Memory writing interface exposed to the mem-subsystem of the controllers. */
   input [31:0] sample_data,
-
+  input global_clock_running,
   /*This interface is exposed to allow reading out data from FIFO */
   input sample_fifo_rd_en,
   output [15:0] sample_data_out,
@@ -129,14 +129,16 @@ always @ (*) begin
   case (state)
     idle: begin
       nextState = idle;
-      if(command == CMD_START_SAMPLING) begin
-        res_cmd_reg = 1'b1;
-        nextState = fetch;
-      end else if (command == CMD_RESET) begin
-        res_sampling = 1'b1;
-      end else if (command == CMD_RES_SAMPLE_FIFO) begin
-        res_fifo = 1'b1;
-      end 
+    if(command == CMD_START_SAMPLING) begin
+      if(global_clock_running) begin
+	      res_cmd_reg = 1'b1;
+	      nextState = fetch;
+	end
+    end else if (command == CMD_RESET) begin
+      res_sampling = 1'b1;
+    end else if (command == CMD_RES_SAMPLE_FIFO) begin
+      res_fifo = 1'b1;
+    end 
     end
 
     /*instruct adc to output new sample data */

@@ -1,4 +1,3 @@
-
 `timescale 1ns / 10ps
 
 module toplevel_tb;
@@ -58,32 +57,45 @@ always @(posedge uc_clk) begin
   if (!$feof(data_file)) begin
     //use captured_data as you would any other wire or reg value;
  
-    ebi_rd <= 1'b0;
-    ebi_wr <= 1'b0;
-    ebi_cs <= 1'b0;
+    ebi_rd = 1'b0;
+    ebi_wr = 1'b0;
+    ebi_cs = 1'b0;
    
     case(oper)
     "s": begin
       $display("RESET set to %x\n", file_ebi_addr);
-      reset <= file_ebi_addr;
+      reset = file_ebi_addr;
     end
     "r": begin
-      $display("READ from %x", file_ebi_addr);
-      ebi_addr <= file_ebi_addr;
-      ebi_data <= 16'hZ;
-      ebi_captured_data <= ebi_data_wires;
-      ebi_rd <= 1'b1;
-      ebi_wr <= 1'b0;
-      ebi_cs <= 1'b1;
+      ebi_addr = file_ebi_addr;
+      ebi_data = 16'hZ;
+      ebi_rd = 1'b1;
+      ebi_wr = 1'b0;
+      ebi_cs = 1'b1;
+      #100;
+      ebi_captured_data = ebi_data_wires;
+      ebi_rd = 1'b0;
+      ebi_wr = 1'b0;
+      ebi_cs = 1'b0;
+      #10;
+      if (ebi_captured_data == file_ebi_data) 
+         $display("[OK]   READ from %x: %x", file_ebi_addr, ebi_captured_data);
+      else
+         $display("[FAIL] READ from %x: %x supposed to read %x", file_ebi_addr, ebi_captured_data, file_ebi_data);
     end 
 
     "w": begin
-      $display("WRITE %x to %x", file_ebi_data, file_ebi_addr);
-      ebi_addr <= file_ebi_addr;
-      ebi_data <= file_ebi_data;
-      ebi_wr <= 1'b1;
-      ebi_rd <= 1'b0;
-      ebi_cs <= 1'b1;
+      $display("WRITE %x to %x", file_ebi_addr, file_ebi_data);
+      ebi_addr = file_ebi_addr;
+      ebi_data = file_ebi_data;
+      ebi_wr = 1'b1;
+      ebi_rd = 1'b0;
+      ebi_cs = 1'b1;
+      #100;
+      ebi_rd = 1'b0;
+      ebi_wr = 1'b0;
+      ebi_cs = 1'b0;
+      #10;
     end
 
     "h": begin
@@ -98,7 +110,6 @@ always @(posedge uc_clk) begin
 
      default: begin
       $display("Unknown operation: %d", oper);
-      $finish;
       end
     endcase
   end
@@ -107,6 +118,8 @@ end
 
 assign ebi_data_wires = ebi_data;
 
+
+//100MHz clock (10ns)
 always begin
   #10 clk = ~clk;
 end

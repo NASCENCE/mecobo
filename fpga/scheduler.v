@@ -3,6 +3,9 @@ input 			rst,
 
 //interface to timer.
 input 	[31:0]		current_time,
+input 			dac_busy,
+input			adc_busy,
+input			xbar_busy,
 
 //cmd fifo
 input [79:0]		cmd_fifo_dout,
@@ -23,6 +26,34 @@ output	reg		cmd_bus_wr
 );
 
 
+
+//wire [2:0] address_h = command[ADDR_H:ADDR_L+13];
+//wire address_l        = command[ADDR_L];
+//wire mux_address = {address_h,address_l})
+
+wire [1:0] mux_address = command[ADDR_H:ADDR_L+14];
+/*
+reg addressed_unit_busy;
+
+always @ ( * ) begin
+	case (mux_address) 
+		2'b01: addressed_unit_busy = adc_busy;
+		2'b10: addressed_unit_busy = dac_busy;
+		2'b11: addressed_unit_busy = xbar_busy;
+		default: addressed_unit_busy = 1'b0;
+	endcase
+end
+*/
+wire addressed_unit_busy = ( mux_address[1] | mux_address[0] ) & ( adc_busy | dac_busy | xbar_busy);
+
+
+
+/*
+wire addressed_unit_busy = (  ((address & 8'b01100000) & adc_busy ) | 
+			      ((address & 8'b11110000) & dac_busy ) | 
+                              ((address & 8'b11110001) & xbar_busy) );
+
+*/
 localparam [4:0] fetch 		= 5'b00010,
 	         fifo_wait	= 5'b00100,
 	         exec		= 5'b01000,
@@ -89,15 +120,18 @@ always @ (posedge clk or posedge rst)
         nextState = exec; 
 	//Command time 0 is a special sentinent value that allows the item to be executed no matter
 	//the current time of the system. It's used for things like setting up recording items, etc.
-        if ((current_time >= command[TIME_H:TIME_L]) | (command[TIME_H:TIME_L] == 0)) begin
-          cmd_bus_wr = 1'b1;
-          cmd_bus_en = 1'b1;
-          nextState = exec_wait;	
-        end
+	if (addressed_unit_busy == 1'b0) begin
+		if ((current_time >= command[TIME_H:TIME_L]) || (command[TIME_H:TIME_L] == 0)) begin
+		  cmd_bus_wr = 1'b1;
+		  cmd_bus_en = 1'b1;
+		  nextState = exec_wait;	
+		end
+	end
       end
 
       exec_wait: begin
         nextState = fetch; 
+		  
         //We will keep signals high here to allow capture of data in the 
         //pincontrol modules AND allow a command-reset.
         //See also comment in pincontrol.v

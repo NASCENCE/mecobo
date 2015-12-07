@@ -7,6 +7,7 @@ input re,
 input cmd_bus_wr,
 input [31:0]cmd_bus_data,
 output reg [15:0] data_out,
+output reg busy,
 input [15:0] cmd_bus_addr,
 //facing the DAC
 output reg xbar_clock, //clock going to xbar
@@ -21,17 +22,12 @@ assign cs = (cmd_bus_enable & (cmd_bus_addr[15:8] == POSITION));
 
 localparam [7:0] 
   ADDR_CMD_REG = 8'h20,
-  OVERFLOW = 8'h01,
-  DIVIDE   = 8'h02,
-  SAMPLE   = 8'h03,
-  ID_REG   = 8'h09,
-  BUSY     = 8'h0A;
+  ID_REG   = 8'h09;
 
 //EBIcmd_bus_data capture
 reg [31:0] xbar_config_reg [0:15];   //16 * 32 = 512 bits in total to program XBAR
 reg [31:0] command = 0;
 reg reset_cmd_reg;
-reg busy;
 
 
 integer i;
@@ -56,17 +52,12 @@ begin
     end
 
     if (cs & re) begin
-      if(cmd_bus_addr[7:0] == BUSY) 
-       data_out <= {15'b0,  busy};
       if(cmd_bus_addr[7:0] == ID_REG)
        data_out <= 16'h7ba2; //kinda looks like 'XbaR'... no?
     end else begin
      data_out <= 0;
     end
 
-    if (busy) begin
-      command <= 0;
-    end
   end
 end
 
@@ -106,7 +97,7 @@ always @ (*) begin
   xbar_clock = 1'b0;
   pclk = 1'b1;
   load_shift_reg = 1'b0;
-  busy = 1'b1;
+  busy = 1'b0;
   reset_cmd_reg = 1'b0;
 
   case (state)
@@ -114,11 +105,11 @@ always @ (*) begin
     init: begin
       nextState = init;
       count_res = 1'b1;
-      busy = 1'b0;
 
       if (command != 0) begin
         nextState = load;
         load_shift_reg = 1'b1;
+      	busy = 1'b1;
       end
     end
 
@@ -128,6 +119,7 @@ always @ (*) begin
       shift_out_cmd_bus_enable = 1'b1;  //shift next bit next flank
       count_up = 1'b1; 
       xbar_clock = 1'b1;  //clock out the current topmost bit.
+      busy = 1'b1;
 
       if (counter == 511) begin
         reset_cmd_reg = 1'b1;
@@ -137,15 +129,18 @@ always @ (*) begin
     end
 
     load: begin
+      busy = 1'b1;
       nextState = pulse_xbar_clk;
     end
 
     load_shift: begin
+      busy = 1'b1;
       load_shift_reg = 1'b1;
       nextState = load;
     end
 
     pulse_pclk: begin
+      busy = 1'b1;
       nextState = init;
       pclk = 1'b0; //give a pulse.
       count_res = 1'b1;
