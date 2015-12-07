@@ -89,14 +89,14 @@
 #define SAMPLE_COLLECTOR_CMD_RES_SAMPLE_FIFO 3
 #define SAMPLE_COLLECTOR_CMD_RESET 5
 
-#define XBAR_CONTROLLER_ADDR 241
+#define XBAR_CONTROLLER_ADDR 240
 #define XBAR_REG_LOCAL_CMD 0x20
 
-#define DAC_CONTROLLER_ADDR 240
+#define DAC_CONTROLLER_ADDR 128
 #define DAC_REG_LOAD_VALUE 0x0
 
 #define AD_REG_PROGRAM 0x4
-#define AD_REG_OVERFLOW 0x1
+#define AD_REG_OVERFLOW 0xD
 #define AD_REG_SAMPLE 0x7
 #define AD_REG_DIVIDE 0x2
 #define AD_REG_ENDTIME 0x3
@@ -235,8 +235,11 @@ void resetXbar();
 void runTime();
 void resetTime();
 void checkStatusReg();
-uint16_t sampleFifoDataCount();
+int sampleFifoDataCount();
 uint16_t cmdFifoDataCount();
+
+void ebiw(uint32_t addr, uint16_t data);
+uint16_t ebir(uint32_t addr);
 
 #endif //__MECOBO_H_
 

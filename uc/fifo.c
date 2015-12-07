@@ -44,11 +44,12 @@ int fifoInit(struct fifo * ff, uint32_t size, uint32_t elementSize, uint8_t * da
   ff->head = 0;
   ff->tail = 0;
 
+  /*
   printf("Fifo init with %u elements of %u size. Data at %p\n",
         (unsigned int)ff->size,
         (unsigned int)ff->elementSize,
         ff->data);
-
+    */
   return 0;
 }
 
