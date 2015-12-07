@@ -121,6 +121,10 @@ localparam ADC_CMD_NEW_VALUE = 1;
 //Data capture from EBI
 //--------------------------------------------------------------------
 integer c;
+
+wire end_condition = current_time > end_time[chan_idx];
+wire start_condition = rec_start_time[chan_idx] <= current_time;
+
 reg[31:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
     if (reset)  begin
@@ -135,7 +139,7 @@ always @ (posedge clk) begin
     end else begin
         if (output_sample & channels_selected) begin
             //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-            if ((rec_start_time[chan_idx] != 0) && (rec_start_time[chan_idx] <= current_time) && (current_time <= end_time[chan_idx]))
+            if ((rec_start_time[chan_idx] != 0) && start_condition && !end_condition)
                 sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
             else
                 sample_data <= 0;
