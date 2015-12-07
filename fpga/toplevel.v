@@ -250,13 +250,13 @@ generate
             .data_in(cmd_bus_data_in),
             .data_rd(),
             .data_out(),
-	    .busy(),
+            .busy(),
             .pin(HW[(i*2)+1]),
             .output_sample(sample_enable_output),
             .channel_select(sample_channel_select),
             .sample_data(sample_data_bus),
             .current_time(global_clock),
-	    .global_clock_running(global_clock_running)
+            .global_clock_running(global_clock_running)
         );
         //end
     end //for end
@@ -264,7 +264,7 @@ generate
     adc_control #(
         .MIN_CHANNEL(64),   //note: these are addresses on the command bus for this unit as well. 
         .MAX_CHANNEL(71))
-	//addresses 01xx_xxxx
+        //addresses 01xx_xxxx
         adc0 (
             .clk(sys_clk),
             .sclk(ad_clk),
@@ -275,7 +275,7 @@ generate
             .addr(cmd_bus_addr),
             .data_in(cmd_bus_data_in),
             .data_out(),
-	    .busy(adc_busy),
+            .busy(adc_busy),
             //interface to the world
             .cs(HN[48]),
             .adc_din(HN[32]),
@@ -287,7 +287,7 @@ generate
             .time_running(global_clock_running)
         );
 
-	//addresses 10xx_xxxx
+        //addresses 10xx_xxxx
         dac_control #(.POSITION(128))
         dac0 (
             .ebi_clk(sys_clk),
@@ -298,13 +298,13 @@ generate
             .re(),
             .cmd_bus_wr(cmd_bus_wr),
             .cmd_bus_data(cmd_bus_data_in),
-	    .busy(dac_busy),
+            .busy(dac_busy),
             .out_data(),
             .nLdac(HN[24]),
             .nSync(HN[16]),
         .dac_din(HN[8]));
 
-	//addresses 1111_xxxx
+        //addresses 1111_xxxx
         xbar_control #(.POSITION(240))
         xbar0 (
             .ebi_clk(sys_clk),
@@ -323,9 +323,9 @@ generate
 
     `else
         //tie off
-	assign adc_busy = 1'b0;
-	assign dac_busy = 1'b0;
-	assign xbar_busy = 1'b0;
+        assign adc_busy = 1'b0;
+        assign dac_busy = 1'b0;
+        assign xbar_busy = 1'b0;
         for (i = 0; i < 50; i = i + 1) begin: pinControl 
             pincontrol #(.POSITION(i))
             pc (
@@ -361,7 +361,7 @@ generate
         .sample_data(sample_data_bus),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
-    	.global_clock_running(global_clock_running),
+        .global_clock_running(global_clock_running),
 
         .sample_fifo_rd_en(sample_collector_rd_en),
         .sample_data_out(sample_collector_data),
