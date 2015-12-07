@@ -52,19 +52,6 @@
 
 #include "fifo.h"
 
-
-
-#define INFO_PRINT 0
-#define CMD_TRACE 1
-#define DEBUG_PRINT 0
-
-#define trace(...) do { if (CMD_TRACE)   fprintf(stdout, ##__VA_ARGS__); } while (0)
-#define infop(...) do { if (INFO_PRINT)  fprintf(stdout, ##__VA_ARGS__); } while (0)
-#define debug(...) do { if (DEBUG_PRINT) fprintf(stdout, ##__VA_ARGS__); } while (0)
-
-
-#define min(a,b) ({ a < b ? a : b; })
-
 /* USB STRUCTS */
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -146,12 +133,13 @@ int fpgaConfigured = 0;
 uint32_t bitfileOffset = 0;
 uint32_t lastPackSize = 0;
 
+static int firstSampleDiscarded = 0;
 
 #define MAX_INPUT_CHANNELS 50
 static int fpgaTableIndex = 0;
 static uint16_t fpgaTableToChannel[MAX_INPUT_CHANNELS];
 
-static uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
+static volatile uint16_t * cmdInterfaceAddr = (uint16_t*)EBI_ADDR_BASE;
 
 #define NUM_DAC_REGS 4
 uint16_t DACreg[NUM_DAC_REGS];
@@ -205,6 +193,7 @@ int main(void)
     uint8_t * int8 = (uint8_t*)&integer;
     if(int8[0] == 0xDE) infop("Arch is BIG ENDIAN\n");
     if(int8[0] == 0xBE) infop("Arch is LITTLE ENDIAN\n");
+
 
     //Turn on front led 1 to indicate we are setting up the system.
     led(FRONT_LED_0, 1);
@@ -311,29 +300,36 @@ int main(void)
         //Check how many samples are in the FIFO, we have to get them anyway
         //so no need to check until we've gotten them anyway.
 
-        if(timeStarted & (samplesToGet <= 0)) {
+        if(timeStarted && (samplesToGet <= 0)) {
             samplesToGet = sampleFifoDataCount();
         }
 
 
         //sampleFifoDataCount();
-        if ((samplesToGet>0) & timeStarted & !fifoFull(&ucSampleFifo)) {
+        if ((samplesToGet>0) && timeStarted && !fifoFull(&ucSampleFifo)) {
+
+
             debug("samplesToget: %d\n", samplesToGet);
             //Push samples into fifo
             //sample.sampleNum = numSamples++;
             //for(int i = 0; i < samplesToGet; i++) {
 
              //   if(!fifoFull(&ucSampleFifo)) {
-                    data = ebir(6);
+                    if(!firstSampleDiscarded) {
+                        firstSampleDiscarded = 1;
+                        ebir(6);
+                    } else {
+                        data = ebir(6);
+                        
+                        int tableIndexShift = has_daughterboard ? 13 : 1;   //the 1 is for just looking at the controller ID
+                        tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
 
-                    int tableIndexShift = has_daughterboard ? 13 : 1;   //the 1 is for just looking at the controller ID
-                    tableIndex = (data >> tableIndexShift); //top 3 bits of word is index in fpga controller fetch table
-
-                    sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
-                    sample.value = (int16_t)data;
-                    fifoInsert(&ucSampleFifo, &sample);  
-                    samplesToGet--;
-              //  }
+                        sample.channel = has_daughterboard ? fpgaTableToChannel[tableIndex] : tableIndex;
+                        sample.value = (int16_t)data;
+                        fifoInsert(&ucSampleFifo, &sample);  
+                        samplesToGet--;
+                    }
+                  //  }
             //}
             debug("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
 
@@ -468,12 +464,12 @@ void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 
 }
 
-inline void ebiw(uint32_t addr, uint16_t data) {
+void ebiw(uint32_t addr, uint16_t data) {
     *(cmdInterfaceAddr + addr) = data;
     trace("w %x %x\n", (uint32_t)(addr), data);
 }
 
-inline uint16_t ebir(uint32_t addr) {
+uint16_t ebir(uint32_t addr) {
     uint16_t d = cmdInterfaceAddr[addr];
     trace("r %x %x\n", addr, d);
     return d;
@@ -518,21 +514,16 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             debug("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
             command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
-            command(0, 255, 0, 0);
             command(0, channel, AD_REG_ENDTIME, (uint32_t)endtime);
-            command(0, 255, 0, 0);
             command(0, channel, AD_REG_REC_START_TIME, (uint32_t)startTime);
-            command(0, 255, 0, 0);
             //command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
 
             command(0, channel, AD_REG_PROGRAM, 0x10000|(uint32_t)adcSequence[0]);
-            command(0, 255, 0, 0);
 
             //Program the ADC to use this channel as well now. Result in two comp, internal ref.
             //sequencer on.
             //Control register
             command(0, channel, AD_REG_PROGRAM, 0x18014);
-            command(0, 255, 0, 0);
 
             debug("ADC programmed to new sequences\n");
         }
@@ -542,13 +533,9 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     else {
         debug("Recording dig ch: %x\n", channel);
         command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controller to put it in idle
-            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
-            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_END_TIME, (uint32_t)endtime);
-            command(0, 255, 0, 0);
         command(0, channel, PINCONTROL_REG_REC_START_TIME, (uint32_t)startTime);
-            command(0, 255, 0, 0);
     }
 
 
@@ -591,14 +578,13 @@ void execCurrentPack()
             item.sampleRate = d[PINCONFIG_DATA_SAMPLE_RATE];
             item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
-            infop("ADDING A PIN CONFIG PIN %u\n", item.pin);
             //Hack to avoid starting this if time is set to 0.
             if (item.startTime == 0) item.startTime = 1;
 
             fifoInsert(&ucCmdFifo, &item);
 
 
-            debug("Item %d added to ucFifo, chan %d, starting at %x, ending at %x, samplerate %d\n", 0, (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime, (unsigned int)item.sampleRate);
+            debug("Item added to ucFifo, chan %d, starting at %d, ending at %d\n", (unsigned int)item.pin, (unsigned int)item.startTime, (unsigned int)item.endTime);
         } else {
             debug("Curr data NULL\n");
         }
@@ -654,7 +640,7 @@ void execCurrentPack()
 
         //We need to wait here until the XBAR is configured. 
         //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
-        USBTIMER_DelayMs(1);
+        USBTIMER_DelayMs(10);
 
         infop("\nXBAR configured\n");
 
@@ -687,10 +673,9 @@ void execCurrentPack()
             has_daughterboard = 1;
 
             if(!ad_and_da_configured) {
-                setupADC();
-                setupDAC();
-                resetXbar();
-                ad_and_da_configured = 1;
+               setupDAC();
+               setupADC();
+               ad_and_da_configured = 1;
             }
 
         } else {
@@ -708,18 +693,8 @@ void execCurrentPack()
         resetTime();
         softReset();   //This will clear the command fifo, etc.
 
-        /*
-           if(has_daughterboard) {
-           setupDAC();
-           setupADC();
-           }
-           */
-
-        //USBTIMER_DelayMs(10);
         startInput();  //start sample collector
-        //command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_LOCAL_CMD, SAMPLE_COLLECTOR_CMD_RESET);  
-        //Reset state
-        //numSamples = 0;
+
         adcSequence[0] = 0;
 
 
@@ -739,6 +714,7 @@ void execCurrentPack()
             }
         }
 
+        firstSampleDiscarded = 0;
         timeStarted = 0;
         xbarProgrammed = 0;
         setupFinished = 0;
@@ -759,7 +735,6 @@ void execCurrentPack()
 
         *retSamples = min(ucSampleFifo.numElements, USB_MAX_SAMPLES);
 
-        //debug("%u smpl uC q\n", (unsigned int)*retSamples);
         sendPacket(4, USB_CMD_GET_INPUT_BUFFER_SIZE, (uint8_t*)(retSamples));
     }
 
@@ -898,9 +873,7 @@ void resetAllPins()
 {
     infop("Reseting all digital pin controllers\n");
     for(int j = 0; j < 50; j++) {
-        command(0, 255, 0, 0);
         command(0, j, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
-        command(0, 255, 0, 0);
     }
 }
 
@@ -1012,6 +985,7 @@ void programFPGA()
             debug("Last byte programmed: %x\n", bait);
             if(!GPIO_PinInGet(gpioPortD, 15)) {
                 infop("CRC error during config, INITB went high!\n");
+                return;
             } else {
                 debug("BYTE OK\n");
             }
@@ -1340,7 +1314,6 @@ void pushToCmdFifo(struct pinItem * item)
             //setVoltage(item->pin, item->constantValue);
             uint32_t wrd = getDACword(item->pin, item->constantValue);
             command(item->startTime, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
-            command(0, 255, 0, 0);
             break;
 
 

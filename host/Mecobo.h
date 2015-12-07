@@ -40,6 +40,7 @@ class Mecobo
         int collectSamples();
 
         int lastSequenceItemEnd;
+        bool firstItemDropped;
 
     public:
         Mecobo (bool daughterboard);

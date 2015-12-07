@@ -28,6 +28,8 @@ Mecobo::Mecobo (bool daughterboard)
     hasRecording = false;
     this->lastSequenceItemEnd = 0;
     this->maxSampleRate = 0;
+    //first item read in fpga fifo 
+    this->firstItemDropped = false;
 }
 
 Mecobo::~Mecobo ()
@@ -64,7 +66,7 @@ void Mecobo::scheduleConstantVoltage(std::vector<int> pins, int start, int end, 
     struct mecoPack p;
     createMecoPack(&p, (uint8_t *)data, USB_PACK_SIZE_BYTES, USB_CMD_CONFIG_PIN);
     this->usbSendQueue.push(p);
-    std::cout << "ITEM SCHEDULED ON MECOBO" << std::endl;
+    std::cout << "Constant output pin " << channel << "start" << start << "end " << end << std::endl;
 }
 
 

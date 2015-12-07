@@ -13,16 +13,12 @@ void setupADC()
 
     //Set up mode for all channels (we use 8 single ended inputs.)
     for(uint32_t i = 0; i < 8; i++) {
-        //   //                ad[2:0]
         uint32_t ctrlWord = 0x18014 | (i << 10);
         command(0, AD_CHANNELS_START, AD_REG_PROGRAM, ctrlWord);
-        command(0, 255, 0, 0);
     }
 
     command(0, AD_CHANNELS_START, AD_REG_PROGRAM, 0x1AAA0);
-    command(0, 255, 0, 0);
     command(0, AD_CHANNELS_START, AD_REG_PROGRAM, 0x1CAA0);
-    command(0, 255, 0, 0);
 
     //Range register 1
     //uint16_t data = 0;

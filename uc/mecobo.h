@@ -17,7 +17,22 @@
 #include "../mecoprot.h"
 #include "pinItem.h"
 
-#define SRAM1_START 0x84000000
+
+#define INFO_PRINT 0
+#define CMD_TRACE 0
+#define DEBUG_PRINT 0
+
+#define trace(...) do { if (CMD_TRACE)   fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define infop(...) do { if (INFO_PRINT)  fprintf(stdout, ##__VA_ARGS__); } while (0)
+#define debug(...) do { if (DEBUG_PRINT) fprintf(stdout, ##__VA_ARGS__); } while (0)
+
+
+#define min(a,b) ({ a < b ? a : b; })
+
+
+
+#define EBI_ADDR_BASE 0x80000000
+#define SRAM1_START   0x84000000
 #define SRAM1_BYTES 256*1024  //16Mbit = 256KB
 
 #define SRAM2_START 0x88000000
@@ -48,7 +63,6 @@
 //#define BULK_EP_SIZE   USB_FS_BULK_EP_MAXSIZE /* This is the max. ep size.    */
 
 
-#define EBI_ADDR_BASE 0x80000000
 
 //Address offsets for the config of a pin controller
 #define PINCONFIG_GLOBAL_CMD 0
