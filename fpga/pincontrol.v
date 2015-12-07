@@ -11,7 +11,9 @@ output_sample,
 channel_select,
 sample_data,
   current_time, 
-global_clock_running);
+global_clock_running,
+busy
+);
 
 
 
@@ -33,6 +35,7 @@ global_clock_running);
   input output_sample;
   input [7:0] channel_select;
   output reg [31:0] sample_data;
+  output reg busy;
 
 
   parameter [14:0] POSITION = 0;
@@ -46,7 +49,7 @@ global_clock_running);
 
 
   wire pin_input;
-  wire enable_in = (enable & (addr[15:8] == POSITION[7:0]));
+  wire enable_in = (enable && (addr[15:8] == POSITION[7:0]));
   /*Input, output: PWM, SGEN, CONST */
 
 
@@ -113,7 +116,7 @@ global_clock_running);
           end else
               data_out <= 16'b0;
 
-          if (output_sample & (channel_select == POSITION)) 
+          if (output_sample && (channel_select == POSITION)) 
               sample_data <= {sample_cnt, POSITION, sample_register};
           else 
               sample_data <= 0;
@@ -196,6 +199,7 @@ wire start_condition = rec_start_time <= current_time;
       reset_cmd = 1'b0;
       reset_rec_time_register = 1'b0;
       reset_sample_registers = 1'b0;
+      busy = 1'b0;
 
       case (state)
           idle: begin
@@ -207,18 +211,23 @@ wire start_condition = rec_start_time <= current_time;
                   nextState = idle;
               end 
               else if (rec_start_time != 0) begin
+      		  busy = 1'b1;
                   reset_cmd = 1'b1;
                   nextState = input_stream;
               end else if (command == CMD_INPUT_STREAM) begin
+      		  busy = 1'b1;
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = input_stream;
               end else if (command == CMD_SQUARE_WAVE) begin
+      		  busy = 1'b1;
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = enable_out;
               end else if (command == CMD_CONST) begin
+      		  busy = 1'b1;
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = const;
               end else if (command == CMD_RESET) begin
+      		  busy = 1'b1;
                   reset_cmd = 1'b1;
                   nextState = idle;
               end 
@@ -231,7 +240,7 @@ wire start_condition = rec_start_time <= current_time;
               if (command == CMD_RESET) begin
                   reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                   nextState = idle;
-              end else if ((end_time != 0) & (end_condition)) begin
+              end else if ((end_time != 0) && (end_condition)) begin
                   reset_cmd = 1'b1; //we are done. no more output.
                   const_output_null = 1'b1;
                   nextState = idle;
@@ -277,7 +286,7 @@ wire start_condition = rec_start_time <= current_time;
                   reset_rec_time_register = 1'b1;
                   reset_sample_registers = 1'b1;
                   nextState = idle;
-              end else if ((end_time != 0) & end_condition) begin
+              end else if ((end_time != 0) && end_condition) begin
                   reset_rec_time_register = 1'b1; //set some registers to zero as well.
                   reset_sample_registers = 1'b1;
                   nextState = idle;

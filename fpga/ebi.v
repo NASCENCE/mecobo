@@ -49,7 +49,6 @@ localparam EBI_ADDR_READBACK = 12;
 localparam EBI_ADDR_READ_CMD_FIFO_DATA_COUNT = 13;
 localparam EBI_ADDR_DB_PRESENT = 14;
 
-localparam EBI_ADDR_CMD_FIFO_MASK = 18'h5;
 
 
 localparam TIME_CMD_RUN   = 'hDEAD;
@@ -208,10 +207,11 @@ always @ (posedge clk) begin
             end else if (addr[7:0] == EBI_ADDR_DB_PRESENT) begin
                 `ifdef WITH_DB
                     data_out <= 1;
-            `else   
-                data_out <= 0;
-            `endif
-            end
+            	`else   
+                    data_out <= 0;
+            	`endif
+            end else
+		data_out <= 0;
         end
 
         //Write to ebi register banks
@@ -285,9 +285,9 @@ reg time_running = 1'b0;
 reg time_reset = 1'b0;
 
 always @ (posedge clk) begin
-	if (rst) begin
+	if (rst|softy_reset) begin
 		time_running <= 1'b0;
-		time_reset <= 1'b0;
+		time_reset <= 1'b1;
 	end else if (reset_time) begin
 		time_running <= 1'b0;
 		time_reset <= 1'b1;
@@ -299,13 +299,15 @@ end
 
 //this is the up-counting thing.
 always @ (posedge global_clock_clk) begin
-    if(rst) begin
+    if(rst|softy_reset) begin
         clock_reg <= 0; 
     end else begin
-	if (time_reset)
-		clock_reg <= 0;
-	else if (time_running)
+	if (time_running)
         	clock_reg <= clock_reg + 1;
+	else if (time_reset)
+		clock_reg <= 0;
+	else 
+		clock_reg <= 0;
     end
 end
 

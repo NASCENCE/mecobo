@@ -208,6 +208,10 @@ command_fifo cmd_fifo (
 
 //SCHEDULER
 
+wire adc_busy;
+wire dac_busy;
+wire xbar_busy;
+
 scheduler sched(
     .clk(sys_clk),
     .rst(mecobo_reset),
@@ -216,6 +220,10 @@ scheduler sched(
     .cmd_fifo_empty(ebi_fifo_empty),
     .cmd_fifo_valid(sched_fifo_valid),
     .cmd_fifo_rd_en(sched_fifo_rd),
+
+    .adc_busy(adc_busy),
+    .dac_busy(dac_busy),
+    .xbar_busy(xbar_busy),
 
     .cmd_bus_addr(cmd_bus_addr),
     .cmd_bus_data(cmd_bus_data_in),
@@ -230,6 +238,7 @@ scheduler sched(
 genvar i;
 generate
 `ifdef WITH_DB
+    //addresses 00xx_xxxx
     for (i = 0; i < 16; i = i + 1) begin: pinControl 
         pincontrol #(.POSITION(i))
         pc (
@@ -241,6 +250,7 @@ generate
             .data_in(cmd_bus_data_in),
             .data_rd(),
             .data_out(),
+	    .busy(),
             .pin(HW[(i*2)+1]),
             .output_sample(sample_enable_output),
             .channel_select(sample_channel_select),
@@ -252,8 +262,9 @@ generate
     end //for end
 
     adc_control #(
-        .MIN_CHANNEL(100),   //note: these are addresses on the command bus for this unit as well. 
-        .MAX_CHANNEL(107))
+        .MIN_CHANNEL(64),   //note: these are addresses on the command bus for this unit as well. 
+        .MAX_CHANNEL(71))
+	//addresses 01xx_xxxx
         adc0 (
             .clk(sys_clk),
             .sclk(ad_clk),
@@ -264,6 +275,7 @@ generate
             .addr(cmd_bus_addr),
             .data_in(cmd_bus_data_in),
             .data_out(),
+	    .busy(adc_busy),
             //interface to the world
             .cs(HN[48]),
             .adc_din(HN[32]),
@@ -271,10 +283,12 @@ generate
             .output_sample(sample_enable_output),
             .channel_select(sample_channel_select),
             .sample_data(sample_data_bus),
-            .current_time(global_clock)
+            .current_time(global_clock),
+            .time_running(global_clock_running)
         );
 
-        dac_control #(.POSITION(240))
+	//addresses 10xx_xxxx
+        dac_control #(.POSITION(128))
         dac0 (
             .ebi_clk(sys_clk),
             .sclk(da_clk),
@@ -284,18 +298,21 @@ generate
             .re(),
             .cmd_bus_wr(cmd_bus_wr),
             .cmd_bus_data(cmd_bus_data_in),
+	    .busy(dac_busy),
             .out_data(),
             .nLdac(HN[24]),
             .nSync(HN[16]),
         .dac_din(HN[8]));
 
-        xbar_control #(.POSITION(241))
+	//addresses 1111_xxxx
+        xbar_control #(.POSITION(240))
         xbar0 (
             .ebi_clk(sys_clk),
             .sclk(xbar_clk),
             .reset(mecobo_reset),
             .cmd_bus_enable(cmd_bus_en),
             .re(),
+            .busy(xbar_busy),
             .cmd_bus_wr(cmd_bus_wr),
             .data_out(),
             .cmd_bus_data(cmd_bus_data_in),
@@ -305,6 +322,10 @@ generate
         .sin(HN[9]));
 
     `else
+        //tie off
+	assign adc_busy = 1'b0;
+	assign dac_busy = 1'b0;
+	assign xbar_busy = 1'b0;
         for (i = 0; i < 50; i = i + 1) begin: pinControl 
             pincontrol #(.POSITION(i))
             pc (
@@ -340,6 +361,7 @@ generate
         .sample_data(sample_data_bus),
         .output_sample(sample_enable_output),
         .channel_select(sample_channel_select),
+    	.global_clock_running(global_clock_running),
 
         .sample_fifo_rd_en(sample_collector_rd_en),
         .sample_data_out(sample_collector_data),
