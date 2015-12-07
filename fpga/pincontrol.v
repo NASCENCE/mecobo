@@ -217,6 +217,8 @@ always @ (*) begin
             end else if (command == CMD_INPUT_STREAM) begin
                 busy = 1'b1;
                 reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+                update_data_out = 1'b1; 
+                res_sample_counter = 1'b1;
                 nextState = input_stream;
             end else if (command == CMD_SQUARE_WAVE) begin
                 busy = 1'b1;
@@ -225,6 +227,8 @@ always @ (*) begin
             end else if (command == CMD_CONST) begin
                 busy = 1'b1;
                 reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+                enable_pin_output = 1'b1;
+                const_output_one = 1'b1;
                 nextState = const;
             end else if (command == CMD_RESET) begin
                 busy = 1'b1;
@@ -256,7 +260,7 @@ always @ (*) begin
             if (command == CMD_RESET) begin
                 reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                 nextState = idle;
-            end else if (end_condition) begin
+            end else if ((end_time != 0) && end_condition) begin
                 reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                 const_output_null = 1'b1;
                 nextState = idle;
@@ -312,15 +316,16 @@ always @ (posedge clk) begin
             sample_register <= 0;
             cnt_sample_rate <= 0;
         end else begin
+            if (global_clock_running) begin
+                if (res_sample_counter) 
+                    cnt_sample_rate <= sample_rate;
+                else if (dec_sample_counter) 
+                    cnt_sample_rate <= (cnt_sample_rate - 1);
 
-            if (res_sample_counter) 
-                cnt_sample_rate <= sample_rate;
-            else if (dec_sample_counter) 
-                cnt_sample_rate <= (cnt_sample_rate - 1);
-
-            if (update_data_out)  begin
-                sample_register <= pin_input;
-                sample_cnt <= (sample_cnt + 1);
+                if (update_data_out)  begin
+                    sample_register <= pin_input;
+                    sample_cnt <= (sample_cnt + 1);
+                end
             end
         end
     end
