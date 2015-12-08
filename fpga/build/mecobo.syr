@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.06 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.06 secs
+Total CPU time to Xst completion: 0.08 secs
  
 --> 
 Reading design: mecobo.prj
@@ -225,8 +225,8 @@ WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 332: Res
 
 Elaborating module <adc_control(MIN_CHANNEL=64,MAX_CHANNEL=71)>.
 WARNING:HDLCompiler:872 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 75: Using initial value of last_executed_command since it is never assigned
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 344: Result of 17-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 365: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 340: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 361: Result of 5-bit expression is truncated to fit in 4-bit target.
 
 Elaborating module <dac_control(POSITION=128)>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/dac_control.v" Line 149: Result of 5-bit expression is truncated to fit in 4-bit target.
@@ -1649,43 +1649,43 @@ Synthesizing Unit <adc_control>.
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 16-bit adder for signal <sequence_number[0][15]_GND_61_o_add_142_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[0][31]_GND_61_o_add_143_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[1][15]_GND_61_o_add_146_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[1][31]_GND_61_o_add_147_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[2][15]_GND_61_o_add_150_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[2][31]_GND_61_o_add_151_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[3][15]_GND_61_o_add_154_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[3][31]_GND_61_o_add_155_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[4][15]_GND_61_o_add_158_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[4][31]_GND_61_o_add_159_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[5][15]_GND_61_o_add_162_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[5][31]_GND_61_o_add_163_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[6][15]_GND_61_o_add_166_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[6][31]_GND_61_o_add_167_OUT> created at line 346.
-    Found 16-bit adder for signal <sequence_number[7][15]_GND_61_o_add_170_OUT> created at line 344.
-    Found 32-bit adder for signal <fast_clk_counter[7][31]_GND_61_o_add_171_OUT> created at line 346.
-    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_61_o_add_173_OUT> created at line 365.
+    Found 16-bit adder for signal <sequence_number[0][15]_GND_61_o_add_140_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[0][31]_GND_61_o_add_141_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[1][15]_GND_61_o_add_144_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[1][31]_GND_61_o_add_145_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[2][15]_GND_61_o_add_148_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[2][31]_GND_61_o_add_149_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[3][15]_GND_61_o_add_152_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[3][31]_GND_61_o_add_153_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[4][15]_GND_61_o_add_156_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[4][31]_GND_61_o_add_157_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[5][15]_GND_61_o_add_160_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[5][31]_GND_61_o_add_161_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[6][15]_GND_61_o_add_164_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[6][31]_GND_61_o_add_165_OUT> created at line 342.
+    Found 16-bit adder for signal <sequence_number[7][15]_GND_61_o_add_168_OUT> created at line 340.
+    Found 32-bit adder for signal <fast_clk_counter[7][31]_GND_61_o_add_169_OUT> created at line 342.
+    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_61_o_add_171_OUT> created at line 361.
     Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_end_time[7][31]_wide_mux_34_OUT> created at line 125.
     Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_rec_start_time[7][31]_wide_mux_39_OUT> created at line 143.
     Found 32-bit 8-to-1 multiplexer for signal <n2385> created at line 146.
     Found 32-bit comparator greater for signal <end_condition> created at line 125
     Found 32-bit comparator greater for signal <start_condition> created at line 126
-    Found 4-bit comparator lessequal for signal <n0053> created at line 189
-    Found 32-bit comparator greater for signal <n0135> created at line 341
-    Found 32-bit comparator greater for signal <n0395> created at line 341
-    Found 32-bit comparator greater for signal <n0655> created at line 341
-    Found 32-bit comparator greater for signal <n0915> created at line 341
-    Found 32-bit comparator greater for signal <n1175> created at line 341
-    Found 32-bit comparator greater for signal <n1435> created at line 341
-    Found 32-bit comparator greater for signal <n1695> created at line 341
-    Found 32-bit comparator greater for signal <n1955> created at line 341
+    Found 4-bit comparator lessequal for signal <n0053> created at line 185
+    Found 32-bit comparator greater for signal <n0135> created at line 337
+    Found 32-bit comparator greater for signal <n0395> created at line 337
+    Found 32-bit comparator greater for signal <n0655> created at line 337
+    Found 32-bit comparator greater for signal <n0915> created at line 337
+    Found 32-bit comparator greater for signal <n1175> created at line 337
+    Found 32-bit comparator greater for signal <n1435> created at line 337
+    Found 32-bit comparator greater for signal <n1695> created at line 337
+    Found 32-bit comparator greater for signal <n1955> created at line 337
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <adc_control>.
     Summary:
 	inferred  17 Adder/Subtractor(s).
 	inferred 1508 D-type flip-flop(s).
 	inferred  11 Comparator(s).
-	inferred 303 Multiplexer(s).
+	inferred 302 Multiplexer(s).
 	inferred   1 Finite State Machine(s).
 Unit <adc_control> synthesized.
 
@@ -4400,11 +4400,11 @@ Macro Statistics
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
  8-bit comparator lessequal                            : 1
-# Multiplexers                                         : 1207
+# Multiplexers                                         : 1206
  1-bit 2-to-1 multiplexer                              : 1091
  16-bit 2-to-1 multiplexer                             : 33
  32-bit 16-to-1 multiplexer                            : 1
- 32-bit 2-to-1 multiplexer                             : 77
+ 32-bit 2-to-1 multiplexer                             : 76
  32-bit 64-to-1 multiplexer                            : 1
  32-bit 8-to-1 multiplexer                             : 3
  8-bit 64-to-1 multiplexer                             : 1
@@ -4692,12 +4692,12 @@ Macro Statistics
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
  8-bit comparator lessequal                            : 1
-# Multiplexers                                         : 2728
+# Multiplexers                                         : 2727
  1-bit 16-to-1 multiplexer                             : 32
  1-bit 2-to-1 multiplexer                              : 2579
  1-bit 8-to-1 multiplexer                              : 96
  16-bit 2-to-1 multiplexer                             : 15
- 32-bit 2-to-1 multiplexer                             : 4
+ 32-bit 2-to-1 multiplexer                             : 3
  32-bit 64-to-1 multiplexer                            : 1
  8-bit 64-to-1 multiplexer                             : 1
 # FSMs                                                 : 22
@@ -5209,8 +5209,8 @@ WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_registe
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_153> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_134> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_144> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_145> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_136> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_146> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_137> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/tmp_register_7_14> <adc0/tmp_register_7_13> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_31> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_30> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_47> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_45> 
@@ -5219,11 +5219,11 @@ INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_78> in Unit <mecobo> is equiva
 Mapping all equations...
 Building and optimizing final netlist ...
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_143> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_133> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_155> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_135> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_147> <adc0/sample_register_137> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_156> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_146> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_156> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_136> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_155> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_145> <adc0/sample_register_135> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_147> 
 Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 57.
-FlipFlop sample_collector0/current_id_idx_0 has been replicated 20 time(s)
+FlipFlop sample_collector0/current_id_idx_0 has been replicated 3 time(s)
 FlipFlop sample_collector0/current_id_idx_1 has been replicated 3 time(s)
 FlipFlop sample_collector0/current_id_idx_2 has been replicated 1 time(s)
 FlipFlop sample_collector0/current_id_idx_3 has been replicated 1 time(s)
@@ -5234,8 +5234,8 @@ Final Macro Processing ...
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 9233
- Flip-Flops                                            : 9233
+# Registers                                            : 9216
+ Flip-Flops                                            : 9216
 
 =========================================================================
 
@@ -5258,27 +5258,27 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 16687
+# BELS                             : 16614
 #      GND                         : 1
 #      INV                         : 46
 #      LUT1                        : 642
-#      LUT2                        : 709
-#      LUT3                        : 1743
-#      LUT4                        : 2818
-#      LUT5                        : 1580
-#      LUT6                        : 4889
-#      MUXCY                       : 2332
+#      LUT2                        : 677
+#      LUT3                        : 171
+#      LUT4                        : 2962
+#      LUT5                        : 2466
+#      LUT6                        : 5363
+#      MUXCY                       : 2359
 #      MUXF7                       : 162
 #      MUXF8                       : 32
 #      VCC                         : 1
 #      XORCY                       : 1732
-# FlipFlops/Latches                : 9235
-#      FD                          : 1525
+# FlipFlops/Latches                : 9218
+#      FD                          : 1557
 #      FDC                         : 2
 #      FDE                         : 127
 #      FDE_1                       : 16
-#      FDR                         : 1212
-#      FDRE                        : 5818
+#      FDR                         : 1180
+#      FDRE                        : 5801
 #      FDS                         : 158
 #      FDSE                        : 375
 #      ODDR2                       : 2
@@ -5303,16 +5303,16 @@ Selected Device : 6slx45csg324-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:            9235  out of  54576    16%  
- Number of Slice LUTs:                12427  out of  27288    45%  
-    Number used as Logic:             12427  out of  27288    45%  
+ Number of Slice Registers:            9218  out of  54576    16%  
+ Number of Slice LUTs:                12327  out of  27288    45%  
+    Number used as Logic:             12327  out of  27288    45%  
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:  15324
-   Number with an unused Flip Flop:    6089  out of  15324    39%  
-   Number with an unused LUT:          2897  out of  15324    18%  
-   Number of fully used LUT-FF pairs:  6338  out of  15324    41%  
-   Number of unique control sets:       258
+ Number of LUT Flip Flop pairs used:  15211
+   Number with an unused Flip Flop:    5993  out of  15211    39%  
+   Number with an unused LUT:          2884  out of  15211    18%  
+   Number of fully used LUT-FF pairs:  6334  out of  15211    41%  
+   Number of unique control sets:       202
 
 IO Utilization: 
  Number of IOs:                         162
@@ -5343,7 +5343,7 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-main_clocks_u/pll_base_inst/CLKOUT0| BUFG                   | 8984  |
+main_clocks_u/pll_base_inst/CLKOUT0| BUFG                   | 8967  |
 main_clocks_u/pll_base_inst/CLKOUT2| BUFG                   | 151   |
 main_clocks_u/pll_base_inst/CLKOUT3| BUFG                   | 24    |
 main_clocks_u/pll_base_inst/CLKOUT1| DCM_SP:CLKDV           | 78    |
@@ -5357,10 +5357,10 @@ Timing Summary:
 ---------------
 Speed Grade: -3
 
-   Minimum period: 10.470ns (Maximum Frequency: 95.508MHz)
-   Minimum input arrival time before clock: 7.716ns
-   Maximum output required time after clock: 7.831ns
-   Maximum combinational path delay: 6.317ns
+   Minimum period: 10.637ns (Maximum Frequency: 94.010MHz)
+   Minimum input arrival time before clock: 7.655ns
+   Maximum output required time after clock: 8.759ns
+   Maximum combinational path delay: 6.316ns
 
 Timing Details:
 ---------------
@@ -5368,23 +5368,23 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
-  Clock period: 10.470ns (frequency: 95.508MHz)
-  Total number of paths / destination ports: 24475458 / 21960
+  Clock period: 10.637ns (frequency: 94.010MHz)
+  Total number of paths / destination ports: 24520077 / 21877
 -------------------------------------------------------------------------
-Delay:               10.470ns (Levels of Logic = 22)
+Delay:               10.637ns (Levels of Logic = 22)
   Source:            sample_collector0/current_id_idx_0_2 (FF)
-  Destination:       adc0/sample_data_24 (FF)
+  Destination:       adc0/sample_data_31 (FF)
   Source Clock:      main_clocks_u/pll_base_inst/CLKOUT0 rising
   Destination Clock: main_clocks_u/pll_base_inst/CLKOUT0 rising
 
-  Data Path: sample_collector0/current_id_idx_0_2 to adc0/sample_data_24
+  Data Path: sample_collector0/current_id_idx_0_2 to adc0/sample_data_31
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
      FDRE:C->Q            15   0.447   1.086  sample_collector0/current_id_idx_0_2 (sample_collector0/current_id_idx_0_2)
-     LUT6:I4->O            1   0.203   0.827  sample_collector0/Mmux_channel_select_121 (sample_collector0/Mmux_channel_select_121)
-     LUT6:I2->O           10   0.203   1.104  sample_collector0/Mmux_channel_select_7 (sample_collector0/Mmux_channel_select_7)
-     LUT6:I2->O           11   0.203   0.987  sample_collector0/current_id_idx<5>351_3 (sample_collector0/current_id_idx<5>3512)
+     LUT6:I4->O            1   0.203   0.827  sample_collector0/Mmux_channel_select_127 (sample_collector0/Mmux_channel_select_127)
+     LUT6:I2->O            9   0.203   1.077  sample_collector0/Mmux_channel_select_72 (sample_collector0/Mmux_channel_select_72)
+     LUT6:I2->O           11   0.203   0.987  sample_collector0/current_id_idx<5>11_3 (sample_collector0/current_id_idx<5>112)
      LUT6:I4->O            1   0.203   0.000  adc0/mux794_4 (adc0/mux794_4)
      MUXF7:I0->O           2   0.131   0.845  adc0/mux794_2_f7 (adc0/chan_idx[2]_end_time[7][31]_wide_mux_34_OUT<4>)
      LUT4:I1->O            1   0.205   0.000  adc0/Mcompar_end_condition_lut<2> (adc0/Mcompar_end_condition_lut<2>)
@@ -5401,13 +5401,13 @@ Delay:               10.470ns (Levels of Logic = 22)
      MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_end_condition_cy<12> (adc0/Mcompar_end_condition_cy<12>)
      MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_end_condition_cy<13> (adc0/Mcompar_end_condition_cy<13>)
      MUXCY:CI->O           1   0.019   0.000  adc0/Mcompar_end_condition_cy<14> (adc0/Mcompar_end_condition_cy<14>)
-     MUXCY:CI->O         258   0.019   2.067  adc0/Mcompar_end_condition_cy<15> (adc0/Mcompar_end_condition_cy<15>)
-     LUT6:I5->O           17   0.205   1.028  adc0/chan_idx[2]_end_condition_AND_198_o7_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy_cy (adc0/chan_idx[2]_end_condition_AND_198_o)
-     LUT2:I1->O            1   0.205   0.000  adc0/Mmux_GND_61_o_chan_idx[2]_mux_43_OUT110 (adc0/GND_61_o_chan_idx[2]_mux_43_OUT<0>)
-     FDR:D                     0.102          adc0/sample_data_0
+     MUXCY:CI->O         258   0.213   2.067  adc0/Mcompar_end_condition_cy<15> (adc0/Mcompar_end_condition_cy<15>)
+     LUT6:I5->O           17   0.205   1.028  adc0/Reset_OR_DriverANDClockEnable2889 (adc0/Reset_OR_DriverANDClockEnable288)
+     LUT4:I3->O            1   0.205   0.000  adc0/sample_data_31_rstpot (adc0/sample_data_31_rstpot)
+     FD:D                      0.102          adc0/sample_data_31
     ----------------------------------------
-    Total                     10.470ns (2.526ns logic, 7.944ns route)
-                                       (24.1% logic, 75.9% route)
+    Total                     10.637ns (2.720ns logic, 7.917ns route)
+                                       (25.6% logic, 74.4% route)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT1'
@@ -5436,7 +5436,7 @@ Delay:               4.394ns (Levels of Logic = 4)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'main_clocks_u/pll_base_inst/CLKOUT2'
-  Clock period: 8.299ns (frequency: 120.493MHz)
+  Clock period: 8.299ns (frequency: 120.496MHz)
   Total number of paths / destination ports: 942 / 299
 -------------------------------------------------------------------------
 Delay:               4.150ns (Levels of Logic = 1)
@@ -5449,7 +5449,7 @@ Delay:               4.150ns (Levels of Logic = 1)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDR:C->Q            282   0.447   2.174  adc0/state_FSM_FFd2 (adc0/state_FSM_FFd2)
+     FDR:C->Q            281   0.447   2.174  adc0/state_FSM_FFd2 (adc0/state_FSM_FFd2)
      LUT2:I0->O           16   0.203   1.004  adc0/state_shift_in1 (adc0/shift_in)
      FDE_1:CE                  0.322          adc0/shift_in_register_0
     ----------------------------------------
@@ -5480,30 +5480,31 @@ Delay:               3.399ns (Levels of Logic = 1)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 11517 / 9909
+  Total number of paths / destination ports: 11481 / 9875
 -------------------------------------------------------------------------
-Offset:              7.716ns (Levels of Logic = 3)
+Offset:              7.655ns (Levels of Logic = 4)
   Source:            reset (PAD)
-  Destination:       adc0/sample_data_31 (FF)
+  Destination:       dac0/command_bus_data_31 (FF)
   Destination Clock: main_clocks_u/pll_base_inst/CLKOUT0 rising
 
-  Data Path: reset to adc0/sample_data_31
+  Data Path: reset to dac0/command_bus_data_31
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           939   1.222   2.297  reset_IBUF (reset_IBUF)
-     LUT2:I0->O          258   0.203   2.067  mecobo_reset1_5 (mecobo_reset1_4)
-     LUT6:I5->O           32   0.205   1.291  adc0/output_sample_channels_selected_AND_196_o_inv_0 (adc0/output_sample_channels_selected_AND_196_o_inv_0)
-     FDR:R                     0.430          adc0/sample_data_0
+     IBUF:I->O           938   1.222   2.297  reset_IBUF (reset_IBUF)
+     LUT2:I0->O          673   0.203   2.129  mecobo_reset1_4 (mecobo_reset1_21)
+     LUT6:I5->O           32   0.205   1.292  dac0/Reset_OR_DriverANDClockEnable321 (dac0/Reset_OR_DriverANDClockEnable)
+     LUT4:I3->O            1   0.205   0.000  dac0/command_bus_data_31_rstpot (dac0/command_bus_data_31_rstpot)
+     FD:D                      0.102          dac0/command_bus_data_31
     ----------------------------------------
-    Total                      7.716ns (2.060ns logic, 5.656ns route)
-                                       (26.7% logic, 73.3% route)
+    Total                      7.655ns (1.937ns logic, 5.718ns route)
+                                       (25.3% logic, 74.7% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT1'
   Total number of paths / destination ports: 87 / 87
 -------------------------------------------------------------------------
-Offset:              6.179ns (Levels of Logic = 2)
+Offset:              6.178ns (Levels of Logic = 2)
   Source:            reset (PAD)
   Destination:       ebi_if/clock_reg_31 (FF)
   Destination Clock: main_clocks_u/pll_base_inst/CLKOUT1 rising 0.2X
@@ -5512,11 +5513,11 @@ Offset:              6.179ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           939   1.222   2.297  reset_IBUF (reset_IBUF)
+     IBUF:I->O           938   1.222   2.297  reset_IBUF (reset_IBUF)
      LUT2:I0->O          171   0.203   2.027  mecobo_reset1 (mecobo_reset)
      FDRE:R                    0.430          xbar0/shift_out_register_0
     ----------------------------------------
-    Total                      6.179ns (1.855ns logic, 4.324ns route)
+    Total                      6.178ns (1.855ns logic, 4.323ns route)
                                        (30.0% logic, 70.0% route)
 
 =========================================================================
@@ -5532,7 +5533,7 @@ Offset:              7.429ns (Levels of Logic = 3)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           939   1.222   2.297  reset_IBUF (reset_IBUF)
+     IBUF:I->O           938   1.222   2.297  reset_IBUF (reset_IBUF)
      LUT2:I0->O          171   0.203   2.392  mecobo_reset1 (mecobo_reset)
      LUT6:I0->O            4   0.203   0.683  adc0/_n2537 (adc0/_n2537)
      FDRE:R                    0.430          adc0/adc_clocktick_counter_0
@@ -5544,7 +5545,7 @@ Offset:              7.429ns (Levels of Logic = 3)
 Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT3'
   Total number of paths / destination ports: 26 / 26
 -------------------------------------------------------------------------
-Offset:              6.179ns (Levels of Logic = 2)
+Offset:              6.178ns (Levels of Logic = 2)
   Source:            reset (PAD)
   Destination:       dac0/shift_out_register_15 (FF)
   Destination Clock: main_clocks_u/pll_base_inst/CLKOUT3 rising
@@ -5553,35 +5554,37 @@ Offset:              6.179ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           939   1.222   2.297  reset_IBUF (reset_IBUF)
+     IBUF:I->O           938   1.222   2.297  reset_IBUF (reset_IBUF)
      LUT2:I0->O          171   0.203   2.027  mecobo_reset1 (mecobo_reset)
      FDRE:R                    0.430          dac0/shift_out_register_0
     ----------------------------------------
-    Total                      6.179ns (1.855ns logic, 4.324ns route)
+    Total                      6.178ns (1.855ns logic, 4.323ns route)
                                        (30.0% logic, 70.0% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
   Total number of paths / destination ports: 5097 / 137
 -------------------------------------------------------------------------
-Offset:              7.831ns (Levels of Logic = 5)
-  Source:            pinControl[15].pc/rec_start_time_13 (FF)
-  Destination:       HW<31> (PAD)
+Offset:              8.759ns (Levels of Logic = 6)
+  Source:            ebi_if/ebi_captured_data_10_54 (FF)
+  Destination:       sample_collector0/sample_fifo_0:rst (PAD)
   Source Clock:      main_clocks_u/pll_base_inst/CLKOUT0 rising
 
-  Data Path: pinControl[15].pc/rec_start_time_13 to HW<31>
+  Data Path: ebi_if/ebi_captured_data_10_54 to sample_collector0/sample_fifo_0:rst
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q               4   0.447   1.048  pinControl[15].pc/rec_start_time_13 (pinControl[15].pc/rec_start_time_13)
-     LUT6:I0->O            1   0.203   0.944  pinControl[15].pc/n0061<31>1 (pinControl[15].pc/n0061<31>)
-     LUT6:I0->O            6   0.203   0.849  pinControl[15].pc/n0061<31>7 (pinControl[15].pc/n0061)
-     LUT3:I1->O            1   0.203   0.580  pinControl[15].pc/enable_pin_output_inv_SW0 (N101)
-     LUT6:I5->O            1   0.205   0.579  pinControl[15].pc/enable_pin_output_inv (pinControl[15].pc/enable_pin_output_inv)
-     IOBUF:T->IO               2.571          HW_31_IOBUF (HW<31>)
+     FDRE:C->Q             3   0.447   0.755  ebi_if/ebi_captured_data_10_54 (ebi_if/ebi_captured_data_10_54)
+     LUT2:I0->O            1   0.203   0.580  ebi_if/Mmux_softy_reset11_SW0 (N233)
+     LUT6:I5->O            2   0.205   0.617  ebi_if/Mmux_softy_reset11 (ebi_if/Mmux_softy_reset11)
+     LUT2:I1->O            1   0.205   0.580  ebi_if/Mmux_softy_reset1_SW0 (N241)
+     LUT6:I5->O          809   0.205   2.162  ebi_if/Mmux_softy_reset1 (soft_reset)
+     LUT2:I1->O          171   0.205   2.392  mecobo_reset1 (mecobo_reset)
+     LUT6:I0->O            0   0.203   0.000  sample_collector0/res_fifo_rst_OR_308_o (sample_collector0/res_fifo_rst_OR_308_o)
+    sample_fifo:rst            0.000          sample_collector0/sample_fifo_0
     ----------------------------------------
-    Total                      7.831ns (3.832ns logic, 3.999ns route)
-                                       (48.9% logic, 51.1% route)
+    Total                      8.759ns (1.673ns logic, 7.086ns route)
+                                       (19.1% logic, 80.9% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'main_clocks_u/pll_base_inst/CLKOUT2'
@@ -5596,8 +5599,8 @@ Offset:              5.872ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDR:C->Q            284   0.447   2.069  adc0/state_FSM_FFd1 (adc0/state_FSM_FFd1)
-     INV:I->O              1   0.206   0.579  adc0/_n30651_INV_0 (HN_48_OBUF)
+     FDR:C->Q            283   0.447   2.069  adc0/state_FSM_FFd1 (adc0/state_FSM_FFd1)
+     INV:I->O              1   0.206   0.579  adc0/_n30671_INV_0 (HN_48_OBUF)
      OBUF:I->O                 2.571          HN_48_OBUF (HN<48>)
     ----------------------------------------
     Total                      5.872ns (3.224ns logic, 2.648ns route)
@@ -5647,7 +5650,7 @@ Offset:              4.517ns (Levels of Logic = 2)
 Timing constraint: Default path analysis
   Total number of paths / destination ports: 35 / 19
 -------------------------------------------------------------------------
-Delay:               6.317ns (Levels of Logic = 3)
+Delay:               6.316ns (Levels of Logic = 3)
   Source:            reset (PAD)
   Destination:       sample_collector0/sample_fifo_0:rst (PAD)
 
@@ -5655,12 +5658,12 @@ Delay:               6.317ns (Levels of Logic = 3)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O           939   1.222   2.297  reset_IBUF (reset_IBUF)
+     IBUF:I->O           938   1.222   2.297  reset_IBUF (reset_IBUF)
      LUT2:I0->O          171   0.203   2.392  mecobo_reset1 (mecobo_reset)
      LUT6:I0->O            0   0.203   0.000  sample_collector0/res_fifo_rst_OR_308_o (sample_collector0/res_fifo_rst_OR_308_o)
     sample_fifo:rst            0.000          sample_collector0/sample_fifo_0
     ----------------------------------------
-    Total                      6.317ns (1.628ns logic, 4.689ns route)
+    Total                      6.316ns (1.628ns logic, 4.688ns route)
                                        (25.8% logic, 74.2% route)
 
 =========================================================================
@@ -5673,10 +5676,10 @@ Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT0
                                    | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 -----------------------------------+---------+---------+---------+---------+
-main_clocks_u/pll_base_inst/CLKOUT0|   10.470|         |         |         |
-main_clocks_u/pll_base_inst/CLKOUT1|    9.602|         |         |         |
-main_clocks_u/pll_base_inst/CLKOUT2|    9.116|         |         |         |
-main_clocks_u/pll_base_inst/CLKOUT3|    8.336|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT0|   10.637|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT1|   10.101|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT2|    9.157|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT3|    8.377|         |         |         |
 -----------------------------------+---------+---------+---------+---------+
 
 Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT1
@@ -5684,7 +5687,7 @@ Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT1
                                    | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 -----------------------------------+---------+---------+---------+---------+
-main_clocks_u/pll_base_inst/CLKOUT0|    7.688|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT0|    8.621|         |         |         |
 main_clocks_u/pll_base_inst/CLKOUT1|    4.394|         |         |         |
 -----------------------------------+---------+---------+---------+---------+
 
@@ -5693,7 +5696,7 @@ Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT2
                                    | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 -----------------------------------+---------+---------+---------+---------+
-main_clocks_u/pll_base_inst/CLKOUT0|    8.364|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT0|    9.871|         |         |         |
 main_clocks_u/pll_base_inst/CLKOUT2|    5.051|    2.908|    4.150|         |
 -----------------------------------+---------+---------+---------+---------+
 
@@ -5702,20 +5705,20 @@ Clock to Setup on destination clock main_clocks_u/pll_base_inst/CLKOUT3
                                    | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock                       |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 -----------------------------------+---------+---------+---------+---------+
-main_clocks_u/pll_base_inst/CLKOUT0|    7.542|         |         |         |
+main_clocks_u/pll_base_inst/CLKOUT0|    8.621|         |         |         |
 main_clocks_u/pll_base_inst/CLKOUT3|    3.399|         |         |         |
 -----------------------------------+---------+---------+---------+---------+
 
 =========================================================================
 
 
-Total REAL time to Xst completion: 160.00 secs
-Total CPU time to Xst completion: 159.32 secs
+Total REAL time to Xst completion: 124.00 secs
+Total CPU time to Xst completion: 123.23 secs
  
 --> 
 
 
-Total memory usage is 538364 kilobytes
+Total memory usage is 539148 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  430 (   0 filtered)

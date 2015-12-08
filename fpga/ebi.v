@@ -311,7 +311,7 @@ always @ (posedge global_clock_clk) begin
     end
 end
 
-assign global_clock_running = time_running;
+assign global_clock_running = time_running & (clock_reg > 0);
 assign global_clock = clock_reg;
 
 

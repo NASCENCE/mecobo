@@ -144,12 +144,8 @@ always @ (posedge clk) begin
                 sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
             else
                 sample_data <= 0;
-
-        end else begin
-            sample_data <= 0;
         end
-
-
+ 
         //As per protocol, there will be at least one cycle after a new command 
         //comes in to give the controller time to enter the correct state AND 
         //reset the incomming command register.
