@@ -120,8 +120,10 @@ always @ (posedge clk or posedge rst)
         nextState = exec; 
 	//Command time 0 is a special sentinent value that allows the item to be executed no matter
 	//the current time of the system. It's used for things like setting up recording items, etc.
+	//TODO: This creates a horribly long timing path-- the ADDRESS goes into a comparator that
+	//if 1 then feeds the greater-than >= comparator. This is evil.
 	if (addressed_unit_busy == 1'b0) begin
-		if ((current_time >= command[TIME_H:TIME_L]) || (command[TIME_H:TIME_L] == 0)) begin
+		if ((current_time >= command[TIME_H:TIME_L]) | (command[TIME_H:TIME_L] == 0)) begin
 		  cmd_bus_wr = 1'b1;
 		  cmd_bus_en = 1'b1;
 		  nextState = exec_wait;	

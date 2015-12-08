@@ -116,7 +116,7 @@ always @ (posedge clk) begin
         end else
             data_out <= 16'b0;
 
-        if (output_sample & (channel_select == POSITION)) 
+        if (data_out_valid & output_sample & (channel_select == POSITION)) 
             sample_data <= {sample_cnt, POSITION, sample_register};
         else 
             sample_data <= 0;
@@ -183,6 +183,7 @@ end
 //we're good.
 wire end_condition = current_time > end_time;
 wire start_condition = rec_start_time < current_time;
+wire data_out_valid = sample_cnt != 0;
 
 
 /* CONTROL LOGIC STATE MACHINE */
