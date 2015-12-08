@@ -122,7 +122,7 @@ localparam ADC_CMD_NEW_VALUE = 1;
 //--------------------------------------------------------------------
 integer c;
 
-wire end_condition = current_time > end_time[chan_idx];
+wire end_condition = end_time[chan_idx] < current_time; 
 wire start_condition = rec_start_time[chan_idx] < current_time;
 
 reg[31:0] ebi_capture_reg = 0;
@@ -139,7 +139,8 @@ always @ (posedge clk) begin
     end else begin
         if (output_sample & channels_selected) begin
             //sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
-            if ((rec_start_time[chan_idx] != 0) && start_condition && !end_condition)
+	    //note: not logical comparison
+            if ((rec_start_time[chan_idx] != 0) & start_condition & !end_condition)
                 sample_data <= {sequence_number[chan_idx], sample_register[chan_idx]};
             else
                 sample_data <= 0;
@@ -287,7 +288,7 @@ always @ (*) begin
             copy_to_tmp = 1'b1;  //16 ticks have been se..een... next flank, copy.
             //we are done, so reset the rec time so that
             //no new samples are collected
-            if (end_time[chan_idx] < current_time)
+            if (end_condition)
                 reset_rec_time = 1'b1;
 
             nextState = init;
