@@ -18,7 +18,7 @@
 #include "pinItem.h"
 
 
-#define INFO_PRINT 0
+#define INFO_PRINT 1
 #define CMD_TRACE 0
 #define DEBUG_PRINT 0
 

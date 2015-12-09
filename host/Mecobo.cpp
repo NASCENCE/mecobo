@@ -420,7 +420,7 @@ void Mecobo::reset()
 {
     this->finished = false;
     this->lastSequenceItemEnd = 0;
-
+    xbar.reset();
     //clear queue because reset, just in case
     std::queue<struct mecoPack> empty;
     std::swap(usbSendQueue, empty);
@@ -605,13 +605,9 @@ void Mecobo::loadSetup()
 
     if(hasDaughterboard){
         std::vector<uint8_t> xbarBytes = xbar.getXbarConfigBytes();
-        if(std::equal(xbarBytes.begin(),xbarBytes.end(), channelMapBytes.begin())) {
-            std::cout << "Skipping XBAR setup because channelmap has not changed." << std::endl;
-        } else {
-            std::cout << "Setting up XBAR because channelmap has changed." << std::endl;
-            this->setXbar(xbarBytes);
-            channelMapBytes = xbarBytes;
-        }
+        std::cout << "Setting up XBAR because channelmap has changed." << std::endl;
+        this->setXbar(xbarBytes);
+        channelMapBytes = xbarBytes;
     }
 
     while(!usbSetupQueue.empty()) {

@@ -108,7 +108,6 @@ static uint8_t mecoboStatus = MECOBO_STATUS_READY;
 
 /*** Typedef's and defines. ***/
 
-static int ad_and_da_configured = 0;
 static int has_daughterboard = 0;
 static int xbarProgrammed = 0;
 static int setupFinished = 0;
@@ -637,11 +636,9 @@ void execCurrentPack()
         }
 
         command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
-//        USBTIMER_DelayMs(1); //TODO: Investigate if XBAR sets busy quickly enough to aboid th is busywait.
         uint16_t stat = 0;
-        printf("ebir: %x\n", ebir(0));
         while((stat = ebir(0)) & STATUS_REG_XBAR_BUSY) {
-            printf("XBAR BUSY: %x\n", stat);
+            debug("XBAR BUSY: %x\n", stat);
         }
         //We need to wait here until the XBAR is configured. 
 
@@ -669,24 +666,30 @@ void execCurrentPack()
     }
 
     else if(currentPack.command == USB_CMD_RESET_ALL) {
-        //mecoboStatus = MECOBO_STATUS_BUSY;
+        infop("----------------- RESETING MECOBO ------------------\n");
+
+        resetTime();  //stop and reset time
+        softReset();   //This will clear the command fifo, etc.
+
+        //Set all DAC outputs to 0V
+        if(has_daughterboard){
+            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
+                uint32_t wrd = getDACword(i, 128);
+                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+            }
+        }
 
         uint32_t * d = (uint32_t *)(currentPack.data);
         if(*d >= 1) {
             has_daughterboard = 1;
-
-            if(!ad_and_da_configured) {
-               setupDAC();
-               setupADC();
-               ad_and_da_configured = 1;
-            }
-
         } else {
             has_daughterboard = 0;
         }
+        
+        setupDAC();
+        setupADC();
+        //resetXbar();
 
-
-        infop("----------------- RESETING MECOBO ------------------\n");
         if(has_daughterboard) 
         {
             infop("DAUGHTERBOARD: PRESENT\n");
@@ -709,14 +712,7 @@ void execCurrentPack()
             fpgaTableToChannel[q] = 0;
         }
 
-        //Set all DAC outputs to 0V
-        if(has_daughterboard){
-            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
-                uint32_t wrd = getDACword(i, 128);
-                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
-            }
-        }
-
+        
         firstSampleDiscarded = 0;
         timeStarted = 0;
         xbarProgrammed = 0;
@@ -726,6 +722,11 @@ void execCurrentPack()
         sampleFifoEmpty = 1;
 
         samplesToGet = 0;
+
+        //finally reset XBAR and check if it's done. This sorta acts like a
+        //barrier, because we have a signal to check if XBAR is reset.
+
+        USBTIMER_DelayMs(50);
 
         infop("\n\n---------------- MECOBO RESET DONE ------------------\n\n");
         mecoboStatus = MECOBO_STATUS_RESET_COMPLETE;
@@ -1301,7 +1302,6 @@ void pushToCmdFifo(struct pinItem * item)
             command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
             command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
             command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_START_OUTPUT);
-
             break;
 
         case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
@@ -1325,13 +1325,17 @@ void pushToCmdFifo(struct pinItem * item)
 }
 
 
-//XBAR
+//XBAR reset
 void resetXbar()
 {
     for(int i = 0; i < 16; i++) {
         command(0, XBAR_CONTROLLER_ADDR, i, 0);
     }
     command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
+    uint16_t stat = 0;
+    while((stat = ebir(0)) & STATUS_REG_XBAR_BUSY) {
+        infop("XBAR BUSY: %x\n", stat);
+    }
 }
 
 
