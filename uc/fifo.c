@@ -1,22 +1,23 @@
 #include "fifo.h"
 #include "efm32.h"
 #include "em_int.h"
+#include "mecobo.h"
 
 void fifoPrintError(int err)
 {
   switch(err) {
     case ERR_NO_ERR:
-      printf("OK\n");
+      infop("OK\n");
       break;
 
     case ERR_INIT_FAILED:
-      printf("FIFO init failed. Possible bad malloc OR you did not give a initialized struct fifo\n");
+      infop("FIFO init failed. Possible bad malloc OR you did not give a initialized struct fifo\n");
       break;
     case ERR_FULL:
-      printf("FIFO full\n");
+      infop("FIFO full\n");
       break;
     default:
-      printf("Unknown error %d", err);
+      infop("Unknown error %d", err);
       break;
   }
 }
@@ -45,7 +46,7 @@ int fifoInit(struct fifo * ff, uint32_t size, uint32_t elementSize, uint8_t * da
   ff->tail = 0;
 
   /*
-  printf("Fifo init with %u elements of %u size. Data at %p\n",
+  infop("Fifo init with %u elements of %u size. Data at %p\n",
         (unsigned int)ff->size,
         (unsigned int)ff->elementSize,
         ff->data);
@@ -95,7 +96,7 @@ int fifoGet(struct fifo * ff, void ** element) {
   ff->numElements -= 1;
   unlock_mutex(ff);
 
-  //printf("FIFO STATUS numElm: %u tail at: %u head at: %u\n", ff->numElements, ff->tail, ff->head);
+  //infop("FIFO STATUS numElm: %u tail at: %u head at: %u\n", ff->numElements, ff->tail, ff->head);
   return ERR_NO_ERR;
 }
 

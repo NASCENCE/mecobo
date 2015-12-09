@@ -25,11 +25,13 @@ Mecobo::Mecobo (bool daughterboard)
         std::cout << "Mecobo initialized without daughterboard" << std::endl;
     }
 
-    hasRecording = false;
+    this->hasRecording = false;
     this->lastSequenceItemEnd = 0;
     this->maxSampleRate = 0;
     //first item read in fpga fifo 
     this->firstItemDropped = false;
+    //Default program the map first time
+    channelMapBytes.push_back(0);
 }
 
 Mecobo::~Mecobo ()
@@ -371,7 +373,7 @@ int Mecobo::collectSamples()
             for (auto p : pin) {
                 //Cast from 13 bit to 32 bit two's complement int.
                 int v = signextend<signed int, 13>(0x00001FFF & (int32_t)s.value);
-//                std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
+                //                std::cout << "Val: " << s.value << "signex: "<< v << std::endl;
                 pinRecordings[(int)p].push_back(v);
             }
         } else {
@@ -418,12 +420,6 @@ void Mecobo::reset()
 {
     this->finished = false;
     this->lastSequenceItemEnd = 0;
-
-    if (hasDaughterboard) {
-        std::cout << "Reseting XBAR..."; 
-        xbar.reset();
-        std::cout << "DONE." << std::endl;
-    }
 
     //clear queue because reset, just in case
     std::queue<struct mecoPack> empty;
@@ -608,9 +604,14 @@ void Mecobo::loadSetup()
 {
 
     if(hasDaughterboard){
-        std::cout << "Setting up XBAR" << std::endl;
         std::vector<uint8_t> xbarBytes = xbar.getXbarConfigBytes();
-        this->setXbar(xbarBytes);
+        if(std::equal(xbarBytes.begin(),xbarBytes.end(), channelMapBytes.begin())) {
+            std::cout << "Skipping XBAR setup because channelmap has not changed." << std::endl;
+        } else {
+            std::cout << "Setting up XBAR because channelmap has changed." << std::endl;
+            this->setXbar(xbarBytes);
+            channelMapBytes = xbarBytes;
+        }
     }
 
     while(!usbSetupQueue.empty()) {
@@ -659,8 +660,7 @@ void Mecobo::preloadCmdFifo() {
 }
 
 
-    void
-Mecobo::runSchedule ()
+void Mecobo::runSchedule ()
 {
     this->resetBoard();
 
@@ -724,55 +724,53 @@ Mecobo::runSchedule ()
     }
     std::cout << "Scheduled run complete\n";
     return;
-    }
+}
 
-    void
-        Mecobo::setXbar(std::vector<uint8_t> & bytes)
-        {
-            if(hasDaughterboard) {
-                std::cout << "Sending bytes to program xbar\n";
-                struct mecoPack p;
-                createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
-                sendPacket(&p);
-                while(status().state != MECOBO_STATUS_XBAR_CONFIGURED);
-            } else {
-                std::cout << "Tried to set XBAR without daughterboard" << std::endl;
-            }
-        }
-
-    void
-        Mecobo::clearSchedule ()
-        {
-            throw std::runtime_error("clearSchedule() not implemented yet");
-        }
-
-    void Mecobo::setLed(int led, int mode) {
+void Mecobo::setXbar(std::vector<uint8_t> & bytes)
+{
+    if(hasDaughterboard) {
+        std::cout << "Sending bytes to program xbar\n";
         struct mecoPack p;
-        uint32_t dat[2];
-        dat[LED_SELECT] = (uint32_t)led;
-        dat[LED_MODE] = (uint32_t)mode;
-        createMecoPack(&p, (uint8_t*)dat, 8, USB_CMD_LED);
+        createMecoPack(&p, bytes.data(), 64, USB_CMD_PROGRAM_XBAR);
         sendPacket(&p);
+        while(status().state != MECOBO_STATUS_XBAR_CONFIGURED);
+    } else {
+        std::cout << "Tried to set XBAR without daughterboard" << std::endl;
     }
+}
 
-    void Mecobo::updateRegister(int index, int value)
+void Mecobo::clearSchedule ()
+{
+    throw std::runtime_error("clearSchedule() not implemented yet");
+}
+
+void Mecobo::setLed(int led, int mode) {
+    struct mecoPack p;
+    uint32_t dat[2];
+    dat[LED_SELECT] = (uint32_t)led;
+    dat[LED_MODE] = (uint32_t)mode;
+    createMecoPack(&p, (uint8_t*)dat, 8, USB_CMD_LED);
+    sendPacket(&p);
+}
+
+void Mecobo::updateRegister(int index, int value)
+{
+    struct mecoPack p;
+    int32_t data[2];
+    data[0] = index;
+    data[1] = value;
+    createMecoPack(&p, (uint8_t*)data, 8, USB_CMD_UPDATE_REGISTER);
+    sendPacket(&p);
+}
+
+int
+    Mecobo::getPort()
     {
-        struct mecoPack p;
-        int32_t data[2];
-        data[0] = index;
-        data[1] = value;
-        createMecoPack(&p, (uint8_t*)data, 8, USB_CMD_UPDATE_REGISTER);
-        sendPacket(&p);
+        return 9090 + this->usb.getUsbAddress();
     }
 
-    int
-        Mecobo::getPort()
-        {
-            return 9090 + this->usb.getUsbAddress();
-        }
-
-    void 
-        Mecobo::finish()
-        {
-            this->finished = true;
-        }
+void 
+    Mecobo::finish()
+    {
+        this->finished = true;
+    }

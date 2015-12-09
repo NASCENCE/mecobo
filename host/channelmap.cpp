@@ -90,13 +90,6 @@ bool channelMap::isADChannel(FPGA_IO_Pins_TypeDef chan)
 
 void channelMap::mapDAPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
-    /*
-       if(pinToChannel.count(pin)) {
-       }*/
-    //Check if we record from the same pin twice
-
-    //auto chan = pinToChannel[pin];
-
     std::cout << "Mapped DA/Digital channel " << channel << " to pin " << pin << std::endl;
     pinToDAChannel[pin] = channel;
     channelToPin[channel].push_back(pin);
@@ -105,13 +98,6 @@ void channelMap::mapDAPin(int pin, FPGA_IO_Pins_TypeDef channel)
 
 void channelMap::mapADPin(int pin, FPGA_IO_Pins_TypeDef channel) 
 {
-    /*
-       if(pinToChannel.count(pin)) {
-       }*/
-    //Check if we record from the same pin twice
-
-    //auto chan = pinToChannel[pin];
-
     std::cout << "Mapped AD channel " << channel << " to pin " << pin << std::endl;
     pinToADChannel[pin] = channel;
     channelToPin[channel].push_back(pin);

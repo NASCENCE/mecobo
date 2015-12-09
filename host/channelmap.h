@@ -46,6 +46,7 @@ class channelMap {
 
     channelMap();
     ~channelMap();
+
 };
 #endif
 

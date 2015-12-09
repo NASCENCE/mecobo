@@ -42,6 +42,8 @@ class Mecobo
         int lastSequenceItemEnd;
         bool firstItemDropped;
 
+        std::vector<uint8_t> channelMapBytes;
+
     public:
         Mecobo (bool daughterboard);
         virtual
@@ -87,6 +89,7 @@ class Mecobo
         void preloadCmdFifo();
 
         int getPort();
+
 
 };
 

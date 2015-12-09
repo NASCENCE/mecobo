@@ -5,8 +5,6 @@
 
 void setupADC()
 {
-    //uint16_t * ad = ((uint16_t*)EBI_ADDR_BASE) + (ADC0_POSITION * 0x100);
-    //uint16_t * ad = getChannelAddress(AD_CHANNELS_START);  //((uint16_t*)EBI_ADDR_BASE) + (ADC0_POSITION * 0x100);
     //uint16_t CTRL = 0x8000;   //100 .
     //ad[0x01] = 0; //overflow
     //ad[0x02] = 1; //divide

@@ -190,7 +190,7 @@ def check_digital_input_digital_freq(freq):
         plt.title("FAIL: %d Hz, MSE %s" % (freq, mse))
         plt.plot(result, 'r-', label="result")
         plt.plot(expected, 'g-', label="expected")
-        plt.ylim(-0.5, 1.5)
+        plt.ylim(-0.5, 1.2)
         plt.legend()
         plt.show()
 

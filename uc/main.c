@@ -637,10 +637,13 @@ void execCurrentPack()
         }
 
         command(0, XBAR_CONTROLLER_ADDR, XBAR_REG_LOCAL_CMD, 0x1);
-
+//        USBTIMER_DelayMs(1); //TODO: Investigate if XBAR sets busy quickly enough to aboid th is busywait.
+        uint16_t stat = 0;
+        printf("ebir: %x\n", ebir(0));
+        while((stat = ebir(0)) & STATUS_REG_XBAR_BUSY) {
+            printf("XBAR BUSY: %x\n", stat);
+        }
         //We need to wait here until the XBAR is configured. 
-        //TODO: GET THE READ BUS BACK SO WE CAN WAIT HERE UNTIL CONFIG IS DONE
-        USBTIMER_DelayMs(10);
 
         infop("\nXBAR configured\n");
 
@@ -1008,7 +1011,6 @@ void eraseNorChip()
     nor[0x2AA] = 0x35;
     nor[0x555] = 0x10;
 
-    //while(NORPollData(1, 0));
     NORBusy();
 
     infop("Done\n");
@@ -1114,8 +1116,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
 
     //Wait until we no longer toggle
     while(NORToggling());
-
-    //NORError();
+    NORError();
 
     debug("Wrote bytes\n");
 }

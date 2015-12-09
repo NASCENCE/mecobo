@@ -15,13 +15,13 @@ void testRam()
   ram[105] = 0x5555;
   ram[106] = 0xAAAA;
 
-  printf("ram: %x\n", ram[100]);
-  printf("ram: %x\n", ram[101]);
-  printf("ram: %x\n", ram[102]);
-  printf("ram: %x\n", ram[103]);
-  printf("ram: %x\n", ram[104]);
-  printf("ram: %x\n", ram[105]);
-  printf("ram: %x\n", ram[106]);
+  infop("ram: %x\n", ram[100]);
+  infop("ram: %x\n", ram[101]);
+  infop("ram: %x\n", ram[102]);
+  infop("ram: %x\n", ram[103]);
+  infop("ram: %x\n", ram[104]);
+  infop("ram: %x\n", ram[105]);
+  infop("ram: %x\n", ram[106]);
 
   /*
   for(uint16_t i = 0; i < 40000; i++) {
@@ -31,13 +31,13 @@ void testRam()
 
   for(uint16_t i = 0; i < 40000; i++) {
     if (ram[i] != i) {
-      printf("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
+      infop("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
     }
   }
 
   */
   ram = (uint16_t*)SRAM2_START;
-  printf("SRAM 2 TEST\n");
+  infop("SRAM 2 TEST\n");
 
   ram[100] = 0xff42;
   ram[101] = 0xff43;
@@ -47,13 +47,13 @@ void testRam()
   ram[105] = 0x5555;
   ram[106] = 0xAAAA;
 
-  printf("ram: %x\n", ram[100]);
-  printf("ram: %x\n", ram[101]);
-  printf("ram: %x\n", ram[102]);
-  printf("ram: %x\n", ram[103]);
-  printf("ram: %x\n", ram[104]);
-  printf("ram: %x\n", ram[105]);
-  printf("ram: %x\n", ram[106]);
+  infop("ram: %x\n", ram[100]);
+  infop("ram: %x\n", ram[101]);
+  infop("ram: %x\n", ram[102]);
+  infop("ram: %x\n", ram[103]);
+  infop("ram: %x\n", ram[104]);
+  infop("ram: %x\n", ram[105]);
+  infop("ram: %x\n", ram[106]);
     
   /*
   for(uint16_t i = 0; i < 40000; i++) {
@@ -63,7 +63,7 @@ void testRam()
 
   for(uint16_t i = 0; i < 40000; i++) {
     if (ram[i] != i) {
-      printf("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
+      infop("FAIL 1 at %p got value %x wanted %x\n", &ram[i], ram[i], i);
     }
   }
     */
