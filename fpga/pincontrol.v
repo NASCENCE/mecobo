@@ -49,7 +49,7 @@ reg [31:0] rec_start_time = 0;
 
 
 wire pin_input;
-wire enable_in = (enable && (addr[15:8] == POSITION[7:0]));
+wire enable_in = (enable & (addr[15:8] == POSITION[7:0]));
 /*Input, output: PWM, SGEN, CONST */
 
 
@@ -116,7 +116,7 @@ always @ (posedge clk) begin
         end else
             data_out <= 16'b0;
 
-        if (output_sample && (channel_select == POSITION)) 
+        if (data_out_valid & output_sample & (channel_select == POSITION)) 
             sample_data <= {sample_cnt, POSITION, sample_register};
         else 
             sample_data <= 0;
@@ -183,6 +183,7 @@ end
 //we're good.
 wire end_condition = current_time > end_time;
 wire start_condition = rec_start_time < current_time;
+wire data_out_valid = sample_cnt != 0;
 
 
 /* CONTROL LOGIC STATE MACHINE */
@@ -249,7 +250,7 @@ always @ (*) begin
             if (command == CMD_RESET) begin
                 reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                 nextState = idle;
-            end else if ((end_time != 0) && (end_condition)) begin
+            end else if ((end_time != 0) & (end_condition)) begin
                 reset_cmd = 1'b1; //we are done. no more output.
                 const_output_null = 1'b1;
                 nextState = idle;
@@ -265,7 +266,7 @@ always @ (*) begin
             if (command == CMD_RESET) begin
                 reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
                 nextState = idle;
-            end else if ((end_time != 0) && end_condition) begin
+            end else if ((end_time != 0) & end_condition) begin
                 reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                 const_output_null = 1'b1;
                 nextState = idle;
@@ -276,7 +277,7 @@ always @ (*) begin
         input_stream: begin
 
             nextState = input_stream;
-            if(start_condition) begin 
+            if(start_condition & !end_condition) begin 
                 if (cnt_sample_rate == 0) begin
                     update_data_out = 1'b1; 
                     res_sample_counter = 1'b1;
@@ -295,7 +296,7 @@ always @ (*) begin
                 reset_rec_time_register = 1'b1;
                 reset_sample_registers = 1'b1;
                 nextState = idle;
-            end else if ((end_time != 0) && end_condition) begin
+            end else if ((end_time != 0) & end_condition) begin
                 reset_rec_time_register = 1'b1; //set some registers to zero as well.
                 reset_sample_registers = 1'b1;
                 nextState = idle;

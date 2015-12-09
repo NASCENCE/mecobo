@@ -1,40 +1,42 @@
-module ebi(	input clk,
-input rst,
-output reg softy_reset,
+module ebi(	
+input           clk,
+input           rst,
+output reg      softy_reset,
 //External interface to the world
-input [15:0] data_in,
+input [15:0]    data_in,
 output reg [15:0] data_out,
-input [18:0] addr,
-input rd,
-input wr,
-input cs,
-input global_clock_clk,
-output [31:0] global_clock,
-output        global_clock_running,
+input [18:0]    addr,
+input           rd,
+input           wr,
+input           cs,
+input           global_clock_clk,
+output [31:0]   global_clock,
+output          global_clock_running,
 //Interface to CMD fifo
 output [79:0] 	cmd_fifo_data_in,   // input into cmd FIFO
-output reg	cmd_fifo_wr_en,
-input  		cmd_fifo_almost_full, 
-input  		cmd_fifo_full,
-input  		cmd_fifo_almost_empty,
-input  		cmd_fifo_empty,
+output reg      cmd_fifo_wr_en,
+input           cmd_fifo_almost_full, 
+input           cmd_fifo_full,
+input           cmd_fifo_almost_empty,
+input           cmd_fifo_empty,
 input	[9:0]	cmd_fifo_data_count,
 //Interace from SAMPLE DATA fifo
 input 	[15:0] 	sample_fifo_data_out,   //data FROM sample fifo
 output reg	    sample_fifo_rd_en,
-input 		      sample_fifo_almost_full,
-input		        sample_fifo_full,
-input 		      sample_fifo_almost_empty,
-input		        sample_fifo_empty,
+input 		    sample_fifo_almost_full,
+input		    sample_fifo_full,
+input 		    sample_fifo_almost_empty,
+input		    sample_fifo_empty,
 input	[15:0]	sample_fifo_data_count,
 //TODO: DAC buffers.
-output          reg irq
-
+output reg      irq,
+//various status lines
+input           xbar_busy
 );	
 
 // ------------- EBI INTERFACE -----------------
 
-localparam EBI_ADDR_STATUS_REG 		  = 0;
+localparam EBI_ADDR_STATUS_REG 		= 0;
 localparam EBI_ADDR_CMD_FIFO_WRD_1 	= 1;
 localparam EBI_ADDR_CMD_FIFO_WRD_2 	= 2;
 localparam EBI_ADDR_CMD_FIFO_WRD_3 	= 3;
@@ -75,7 +77,7 @@ time_cmd            			= 6'b100000;
 reg [5:0] state, nextState;
 
 initial begin
-	state = fetch;
+    state = fetch;
 end
 
 always @ (posedge clk) begin
@@ -182,7 +184,8 @@ always @ (posedge clk) begin
         sample_fifo_full,  //10
         sample_fifo_empty,  //9
         sample_fifo_almost_empty,  //8
-        8'h00
+        xbar_busy,
+        7'h00
         };
 
         irq <= status_register[14] | status_register[10];
@@ -207,11 +210,11 @@ always @ (posedge clk) begin
             end else if (addr[7:0] == EBI_ADDR_DB_PRESENT) begin
                 `ifdef WITH_DB
                     data_out <= 1;
-            	`else   
-                    data_out <= 0;
-            	`endif
+            `else   
+                data_out <= 0;
+            `endif
             end else
-		data_out <= 0;
+                data_out <= 0;
         end
 
         //Write to ebi register banks
@@ -285,16 +288,16 @@ reg time_running = 1'b0;
 reg time_reset = 1'b0;
 
 always @ (posedge clk) begin
-	if (rst|softy_reset) begin
-		time_running <= 1'b0;
-		time_reset <= 1'b1;
-	end else if (reset_time) begin
-		time_running <= 1'b0;
-		time_reset <= 1'b1;
-	end else if (run_time) begin
-		time_running <= 1'b1;
-		time_reset <= 1'b0;
-	end
+    if (rst|softy_reset) begin
+        time_running <= 1'b0;
+        time_reset <= 1'b1;
+    end else if (reset_time) begin
+        time_running <= 1'b0;
+        time_reset <= 1'b1;
+    end else if (run_time) begin
+        time_running <= 1'b1;
+        time_reset <= 1'b0;
+    end
 end		
 
 //this is the up-counting thing.
@@ -302,16 +305,16 @@ always @ (posedge global_clock_clk) begin
     if(rst|softy_reset) begin
         clock_reg <= 0; 
     end else begin
-	if (time_running)
-        	clock_reg <= clock_reg + 1;
-	else if (time_reset)
-		clock_reg <= 0;
-	else 
-		clock_reg <= 0;
+        if (time_running)
+            clock_reg <= clock_reg + 1;
+        else if (time_reset)
+            clock_reg <= 0;
+        else 
+            clock_reg <= 0;
     end
 end
 
-assign global_clock_running = time_running;
+assign global_clock_running = time_running & (clock_reg > 0);
 assign global_clock = clock_reg;
 
 

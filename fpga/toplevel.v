@@ -182,7 +182,8 @@ ebi ebi_if(
     .sample_fifo_full(sample_fifo_full),
     .sample_fifo_almost_full(sample_fifo_almost_full),
     .sample_fifo_data_count(sample_fifo_data_count),
-    .irq(ebi_irq)
+    .irq(ebi_irq),
+    .xbar_busy(xbar_busy)
 );
 
 
