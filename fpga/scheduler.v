@@ -20,9 +20,9 @@ output			dac_fifo_rd_en,
 //External bus interface to all the chippies.
 output 	[15:0] 		cmd_bus_addr,
 output 	[31:0] 		cmd_bus_data,
-output	reg		cmd_bus_en,
-output	reg		cmd_bus_rd,
-output	reg		cmd_bus_wr
+output	reg		        cmd_bus_en,
+output	reg		        cmd_bus_rd,
+output	reg		        cmd_bus_wr
 );
 
 

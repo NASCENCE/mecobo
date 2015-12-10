@@ -25,7 +25,7 @@ module sample_collector (
     input wr,
 
     output reg output_sample,
-    output [7:0] channel_select,
+    output reg [7:0] channel_select,
 
     /*Memory writing interface exposed to the mem-subsystem of the controllers. */
     input [31:0] sample_data,
@@ -180,7 +180,6 @@ always @ (*) begin
     endcase
 end
 
-assign channel_select = collection_channels[current_id_idx];
 
 /* DATA PATH */
 
@@ -194,6 +193,7 @@ always @ (posedge clk) begin
         end
         command <= 0;
         num_units <= 0;
+        channel_select <= 0;
 
     end else begin
 
@@ -224,7 +224,7 @@ always @ (posedge clk) begin
             //unit
             if(fifo_write_enable) last_fetched[current_id_idx] <= sample_data;
             //Increment number of units when add unit command comes in
-            if (addr[7:0] == ADDR_NEW_UNIT & wr_transaction_done) num_units <= num_units + 1;
+            if ((addr[7:0] == ADDR_NEW_UNIT) & wr_transaction_done) num_units <= num_units + 1;
 
             /*only increment mod num_units-1 (0-indexed) */
             if (inc_curr_id_idx) begin
@@ -233,8 +233,11 @@ always @ (posedge clk) begin
                 else
                     current_id_idx <= (current_id_idx + 1);
             end
-        end 
 
+        end 
+       
+        //this will probably break it all but we might meet timing?
+        channel_select <= collection_channels[current_id_idx];
     end //res_cmd
 end
 

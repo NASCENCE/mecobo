@@ -122,8 +122,8 @@ localparam ADC_CMD_NEW_VALUE = 1;
 //--------------------------------------------------------------------
 integer c;
 
-wire end_condition = end_time[chan_idx] < current_time; 
-wire start_condition = rec_start_time[chan_idx] < current_time;
+wire end_condition = end_time[chan_idx] == current_time; 
+wire start_condition = rec_start_time[chan_idx] == current_time;
 
 reg[31:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
