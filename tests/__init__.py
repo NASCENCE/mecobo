@@ -2,6 +2,7 @@ import sys
 import os
 import numpy as np
 import scipy.signal
+import matplotlib.pyplot as plt
 
 test_dir = os.path.dirname(os.path.abspath(__file__))
 api_dir = os.path.join(test_dir, '../Thrift interface/gen-py/NascenseAPI_v01e/')
@@ -30,6 +31,11 @@ def setup():
 def teardown():
     print "package teardown()"
     transport.close()
+
+N_PINS = 16
+N_PINS_ADC = 8
+N_PINS_DAC = 8
+ALL_PINS = range(N_PINS)
 
 SAMPLE_CLK = 75e6
 def real_sample_freq(f):
@@ -80,3 +86,35 @@ def digital_samples(d):
 DIGITAL_THRESHOLD_VOLTAGE = 1.5
 def digital_threshold(a):
     return (a > DIGITAL_THRESHOLD_VOLTAGE).astype(int)
+
+def check_expected_result(expected, result, label="result", mse_pass=0.1, signal=None, lag_limit=0.1):
+    """ Check result against expected signal """
+    # Zero pad expected
+    if len(expected) < len(result):
+        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
+
+    # Calculate lag
+    lag = signal_lag(expected, result)
+    print "Lag:", lag
+
+    # Shift signals
+    if abs(lag) <= lag_limit * len(expected):
+        expected, result = signal_shift(expected, result, lag)
+    else:
+        print "WARNING: Lag too high (%d), no signal alignment performed" % lag
+
+    mse = np.mean((result - expected) ** 2)
+    print "MSE:", mse
+
+    if mse > mse_pass:
+        plt.title("%s failed, MSE %.4f > %.4f" % (label, mse, mse_pass))
+        plt.plot(expected, 'g-', label="expected")
+        if signal is not None:
+            plt.plot(signal, 'b-', label="signal")
+        plt.plot(result, 'r-', label="result")
+        ymin, ymax = plt.ylim()
+        plt.ylim(ymin - .5, ymax + .5)
+        plt.legend()
+        plt.show()
+
+    assert mse <= mse_pass, "MSE %.4f too high (>%.4f) for %s" % (mse, mse_pass, label)

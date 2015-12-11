@@ -59,7 +59,6 @@ def check_analog_input_digital_constant(bit):
 
 
 
-
 def test_analog_input_analog_constant():
     # Analog read of constant analog output
     voltages = [-5.0, -2.5, 0.0, 2.5, 5.0]
@@ -122,9 +121,6 @@ def check_analog_input_digital_freq(freq):
     # Test passes if MSE <= 2.2
     mse_pass = 2.2
 
-    # Signal lag cannot be more than 10% of the samples
-    lag_limit = 0.1 * n_samples
-
     print "freq", freq, "sample_time", sample_time, "n_periods", n_periods, \
           "sample_freq", sample_freq, "n_samples", n_samples
 
@@ -162,33 +158,7 @@ def check_analog_input_digital_freq(freq):
     expected = scipy.signal.square(t - np.pi)
     expected = (expected + 1) * 3.3 / 2
 
-    # Zero pad expected
-    if len(expected) < len(result):
-        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
-
-    print "expected (%d): %r" % (len(expected), expected)
-
-    # Calculate lag
-    lag = signal_lag(expected, result)
-    print "Lag:", lag
-
-    # Shift signals
-    if abs(lag) <= lag_limit:
-        expected, result = signal_shift(expected, result, lag)
-    else:
-        print "WARNING: Lag unexpectedly high (%d)" % lag
-
-    mse = np.mean((result - expected) ** 2)
-    print "MSE:", mse
-
-    if mse > mse_pass:
-        plt.title("FAIL: %d Hz, MSE %s" % (freq, mse))
-        plt.plot(result, 'r-', label="result")
-        plt.plot(expected, 'g-', label="expected")
-        plt.legend()
-        plt.show()
-
-    assert mse <= mse_pass, "MSE %s too high (>%s) for %d Hz" % (mse, mse_pass, freq)
+    check_expected_result(expected, result, "%d Hz" % freq, mse_pass)
 
 
 
@@ -245,9 +215,6 @@ def check_analog_input_analog_signal(index, signal, mse_pass=0.1):
     sample_freq = 10e3
     n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
 
-    # Signal lag cannot be more than 10% of the samples
-    lag_limit = 0.1 * n_samples
-
     print "signal #%d (%d): %s" % (index, len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
 
@@ -285,31 +252,75 @@ def check_analog_input_analog_signal(index, signal, mse_pass=0.1):
     expected = np.repeat(expected, 10)
     print "expected: %r" % (expected)
 
-    # Zero pad expected
-    if len(expected) < len(result):
-        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
+    check_expected_result(expected, result, "signal #%d" % index, mse_pass)
 
-    # Calculate lag
-    lag = signal_lag(expected, result)
-    print "Lag:", lag
 
-    # Shift signals
-    if abs(lag) <= lag_limit:
-        expected, result = signal_shift(expected, result, lag)
-    else:
-        print "WARNING: Lag unexpectedly high (%d)" % lag
 
-    mse = np.mean((result - expected) ** 2)
-    print "MSE:", mse
+def test_analog_input_multiple():
+    pins = []
+    for n in range(1, N_PINS_ADC + 1):
+        # Randomly select n ADC pins and 1 output pin
+        p = np.random.choice(N_PINS_ADC + 1, n + 1, replace=False)
+        pins.append(list(p))
 
-    if mse > mse_pass:
-        plt.title("FAIL: MSE %s" % (mse))
-        plt.plot(expected, 'g-', label="expected")
-        plt.plot(result, 'r-', label="result")
-        plt.legend()
-        plt.show()
+    # Generate a nice input signal
+    t = np.linspace(0, 2 * np.pi, 100)
+    signal = 5 * (np.sin(t) * np.cos(3 * t))
 
-    assert mse <= mse_pass, "MSE %s too high (>%s) for signal #%d" % (mse, mse_pass, index)
+    for p in pins:
+        out_pins = p[:1]
+        rec_pins = p[1:]
+        yield check_analog_input_multiple, signal, out_pins, rec_pins
+
+@with_setup(setup, teardown)
+def check_analog_input_multiple(signal, out_pins, rec_pins, mse_pass=0.1):
+    # Each input signal sample is held for 1ms
+    sample_time = 1000 * len(signal)
+
+    # 10 samples per 1ms
+    sample_freq = 10e3
+    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
+
+    print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
+
+    # Generate signal as analog out on out_pins
+    for out_pin in out_pins:
+        for t, s in enumerate(signal):
+            it = emSequenceItem()
+            it.pin = [out_pin]
+            it.operationType = emSequenceOperationType().CONSTANT
+            it.startTime = t * 1000
+            it.endTime = t * 1000 + 1000
+            it.amplitude = voltage_to_dac(s)
+            cli.appendSequenceAction(it)
+
+    # Set up analog recordings
+    for rec_pin in rec_pins:
+        it = emSequenceItem()
+        it.pin = [rec_pin]
+        it.startTime = 0
+        it.endTime = sample_time
+        it.frequency = sample_freq
+        it.operationType = emSequenceOperationType().RECORD   #implies analogue
+        cli.appendSequenceAction(it)
+
+    cli.runSequences()
+    cli.joinSequences()
+
+    # Generate reference signal
+    expected = dac_to_voltage(voltage_to_dac(signal))
+    expected = np.repeat(expected, 10)
+    print "expected: %r" % (expected)
+
+    for rec_pin in rec_pins:
+        result = np.array(cli.getRecording(rec_pin).Samples, dtype=float)
+        result = adc_voltage(result)
+        print "Got %d samples on pin %d: %r" % (len(result), rec_pin, result)
+
+        assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s)" % \
+                (len(result), n_samples)
+
+        check_expected_result(expected, result, "pin %d" % rec_pin, mse_pass)
 
 
 

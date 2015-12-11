@@ -125,9 +125,6 @@ def check_digital_input_digital_freq(freq):
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
 
-    # Signal lag cannot be more than 10% of the samples
-    lag_limit = 0.1 * n_samples
-
     print "freq", freq, "sample_time", sample_time, "n_periods", n_periods, \
           "sample_freq", sample_freq, "n_samples", n_samples
 
@@ -166,35 +163,7 @@ def check_digital_input_digital_freq(freq):
     expected = scipy.signal.square(t - np.pi)
     expected = (expected + 1) / 2
 
-    # Zero pad expected
-    if len(expected) < len(result):
-        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
-
-    print "expected (%d): %r" % (len(expected), expected)
-
-    # Calculate lag
-    lag = signal_lag(expected, result)
-    print "Lag:", lag
-
-    # Shift signals
-    if abs(lag) <= lag_limit:
-        expected, result = signal_shift(expected, result, lag)
-    else:
-        print "WARNING: Lag unexpectedly high (%d)" % lag
-
-    mse = np.mean((result - expected) ** 2)
-    print "MSE:", mse
-
-    if mse > mse_pass:
-        # TODO: Make this automatic on any assertion
-        plt.title("FAIL: %d Hz, MSE %s" % (freq, mse))
-        plt.plot(result, 'r-', label="result")
-        plt.plot(expected, 'g-', label="expected")
-        plt.ylim(-0.5, 1.5)
-        plt.legend()
-        plt.show()
-
-    assert mse <= mse_pass, "MSE %s too high (>%s)" % (mse, mse_pass)
+    check_expected_result(expected, result, "%d Hz" % freq, mse_pass)
 
 
 
@@ -292,22 +261,7 @@ def check_digital_input_analog_signal(signal):
     signal = np.repeat(signal, 10)
     expected = digital_threshold(dac_to_voltage(voltage_to_dac(signal)))
 
-    # Zero pad expected
-    if len(expected) < len(result):
-        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
-
-    mse = np.mean((result - expected) ** 2)
-    print "MSE:", mse
-
-    if mse > mse_pass:
-        plt.title("FAIL: MSE %s" % (mse))
-        plt.plot(signal, 'b-', label="signal")
-        plt.plot(expected, 'g-', label="expected")
-        plt.plot(result, 'r-', label="result")
-        plt.legend()
-        plt.show()
-
-    assert mse <= mse_pass, "MSE %s too high (>%s) for signal: %s" % (mse, mse_pass, signal)
+    check_expected_result(expected, result, "signal", mse_pass, signal)
 
 
 
