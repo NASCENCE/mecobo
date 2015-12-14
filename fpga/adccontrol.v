@@ -131,7 +131,7 @@ always @ (posedge clk) begin
         data_out <= 0;
         sample_data <= 0;
         for (c = 0; c < 8; c = c+1) begin
-            overflow_register[c] <= 0;
+            overflow_register[c] <= 1;
             end_time[c] <= 0;
             rec_start_time[c] <= 0;
         end

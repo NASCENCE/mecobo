@@ -154,6 +154,11 @@ wire [79:0] ebi_fifo_din;
 wire [15:0] sample_collector_data;
 wire [15:0] sample_fifo_data_count;
 wire [9:0]  cmd_fifo_data_count;
+wire adc_busy;
+wire dac_busy;
+wire xbar_busy;
+
+
 //EBI
 ebi ebi_if(
     .clk(sys_clk),
@@ -208,10 +213,6 @@ command_fifo cmd_fifo (
 );
 
 //SCHEDULER
-
-wire adc_busy;
-wire dac_busy;
-wire xbar_busy;
 
 scheduler sched(
     .clk(sys_clk),

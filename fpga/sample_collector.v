@@ -25,7 +25,7 @@ module sample_collector (
     input wr,
 
     output reg output_sample,
-    output [7:0] channel_select,
+    output reg [7:0] channel_select,
 
     /*Memory writing interface exposed to the mem-subsystem of the controllers. */
     input [31:0] sample_data,
@@ -81,14 +81,15 @@ state machine that runs across all collection_channels and fetches a sample,
 and then stores it in a fifo
 */
 
-parameter idle = 5'b00001;
-parameter store = 5'b00010;
-parameter increment = 5'b00100;
-parameter fetch = 5'b01000;
-parameter fetch_wait = 5'b10000;
+parameter idle          = 5'b00001;
+parameter store         = 5'b00010;
+parameter increment     = 5'b00100;
+parameter fetch         = 5'b01000;
+parameter fetch_wait    = 5'b10000;
 reg [4:0] state, nextState;
 
 /* control path signals */
+reg output_sample_signal;
 reg inc_curr_id_idx;
 reg fifo_write_enable;
 reg en_read;
@@ -118,7 +119,7 @@ always @ (posedge clk) begin
 end
 
 always @ (*) begin
-    output_sample = 0;
+    output_sample_signal = 0;
     inc_curr_id_idx = 0;
     fifo_write_enable = 0;
     res_cmd_reg = 0;
@@ -143,17 +144,27 @@ always @ (*) begin
 
         /*instruct adc to output new sample data */
         fetch: begin
-            output_sample = 1'b1;
+            output_sample_signal = 1'b1;  //on next flank, output sample will go high (registered)
             nextState = fetch_wait;
         end
 
-        /*give the adc 1 cycle time to set up the new sample data  */
+        /*output sample goes high here, the addressed unit will on the next
+        * flank and output it's sample_data 
+        *
+        * we wait here to let the data arrive (timing constraints...)
+        * */
+
         fetch_wait: begin
-            output_sample = 1'b1;
             nextState = store;
         end
 
-        /* now the data has propagated to this module, capture it if the data is new */
+        /* one flank later, the data should be available on the input pins here.
+        * we store it only if it's not the same as the previosuly fetched data.
+        *
+        * this comparison can be quite long, and potentially we could 
+        * add a cycle here to only capture the sample_data no matter what
+        * and then compare it one cycle later.
+        * */
         store: begin
             if (last_fetched[current_id_idx] != sample_data) begin
                 fifo_write_enable = 1'b1;
@@ -162,8 +173,6 @@ always @ (*) begin
         end
 
         /*increment index counters for fetching from more units. */
-        /* Increment happens on next cycle, so we'll write the value to the fifo
-        * here as well */
         increment: begin
             inc_curr_id_idx = 1'b1;
 
@@ -180,7 +189,6 @@ always @ (*) begin
     endcase
 end
 
-assign channel_select = collection_channels[current_id_idx];
 
 /* DATA PATH */
 
@@ -194,6 +202,8 @@ always @ (posedge clk) begin
         end
         command <= 0;
         num_units <= 0;
+        channel_select <= 0;
+        output_sample <= 0;
 
     end else begin
 
@@ -218,22 +228,37 @@ always @ (posedge clk) begin
                 if (addr[7:0] == ADDR_LOCAL_COMMAND) begin
                     command <= cmd_data_in;
                 end
+
+                if (addr[7:0] == ADDR_NUM_UNITS) begin
+                    num_units <= cmd_data_in[5:0];
+                end
             end       
 
             //Write to last fetched to compare against old value fetched from same
             //unit
-            if(fifo_write_enable) last_fetched[current_id_idx] <= sample_data;
+            if(fifo_write_enable) 
+                last_fetched[current_id_idx] <= sample_data;
             //Increment number of units when add unit command comes in
-            if (addr[7:0] == ADDR_NEW_UNIT & wr_transaction_done) num_units <= num_units + 1;
+            //if ((addr[7:0] == ADDR_NEW_UNIT) & wr_transaction_done) 
+            //    num_units <= num_units + 1;
 
             /*only increment mod num_units-1 (0-indexed) */
             if (inc_curr_id_idx) begin
-                if(current_id_idx == (num_units-1)) 
+                if((current_id_idx == (num_units-1)) & (num_units != 0)) 
                     current_id_idx <= 0;
                 else
                     current_id_idx <= (current_id_idx + 1);
             end
+
         end 
+      
+        if(output_sample_signal) begin
+            channel_select <= collection_channels[current_id_idx];
+            output_sample <= 1'b1;
+        end else begin
+            channel_select <= 0;
+            output_sample <= 1'b0;
+        end
 
     end //res_cmd
 end
