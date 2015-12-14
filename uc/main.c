@@ -478,13 +478,16 @@ uint16_t ebir(uint32_t addr) {
 }
 
 
-void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime, uint32_t endtime)
+void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime, uint32_t endTime)
 {
     mecoboStatus = MECOBO_STATUS_BUSY;
 
     //Hack to avoid start time 0 which is a special sentinent value that indicates 
     //that no recording has been scheduled on that pin.
-    if(startTime == 0) { startTime = 1; }
+    if(startTime == 0) {
+        startTime = 1;
+        endTime++;
+    }
     //We are in setup phase. maybe ok.
 
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
@@ -518,7 +521,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             debug("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
 
             command(0, channel, AD_REG_OVERFLOW, (uint32_t)overflow);
-            command(0, channel, AD_REG_ENDTIME, (uint32_t)endtime);
+            command(0, channel, AD_REG_ENDTIME, (uint32_t)endTime);
             command(0, channel, AD_REG_REC_START_TIME, (uint32_t)startTime);
             //command(0, channel, AD_REG_DIVIDE, (uint32_t)1);
 
@@ -538,7 +541,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
         debug("Recording dig ch: %x\n", channel);
         command(0, channel, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);  //reset pin controller to put it in idle
         command(0, channel, PINCONTROL_REG_SAMPLE_RATE, (uint32_t)overflow);
-        command(0, channel, PINCONTROL_REG_END_TIME, (uint32_t)endtime);
+        command(0, channel, PINCONTROL_REG_END_TIME, (uint32_t)endTime);
         command(0, channel, PINCONTROL_REG_REC_START_TIME, (uint32_t)startTime);
     }
 
@@ -583,7 +586,10 @@ void execCurrentPack()
             item.nocCounter = d[PINCONFIG_DATA_NOC_COUNTER];
 
             //Hack to avoid starting this if time is set to 0.
-            if (item.startTime == 0) item.startTime = 1;
+            if (item.startTime == 0) {
+                item.startTime = 1;
+                item.endTime++;
+            }
 
             fifoInsert(&ucCmdFifo, &item);
 

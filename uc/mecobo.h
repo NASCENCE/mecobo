@@ -18,9 +18,9 @@
 #include "pinItem.h"
 
 
-#define INFO_PRINT 1
+#define INFO_PRINT 0
 #define CMD_TRACE 0
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 
 #define trace(...) do { if (CMD_TRACE)   fprintf(stdout, ##__VA_ARGS__); } while (0)
 #define infop(...) do { if (INFO_PRINT)  fprintf(stdout, ##__VA_ARGS__); } while (0)
