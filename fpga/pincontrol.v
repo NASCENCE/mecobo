@@ -181,8 +181,8 @@ end
 //Since we test for end time MORE than end time, end condition will happen at 5.
 //but start condition happens at 3. 5-3 = 2. So we have the same period and
 //we're good.
-wire end_condition = current_time == end_time;
-wire start_condition = rec_start_time == current_time;
+wire end_condition = current_time > end_time;
+wire start_condition = rec_start_time < current_time;
 wire data_out_valid = sample_cnt != 0;
 
 
@@ -278,7 +278,7 @@ always @ (*) begin
 
             nextState = input_stream;
             if(start_condition & !end_condition) begin 
-                if (cnt_sample_rate == 0) begin
+                if (cnt_sample_rate == 1) begin
                     update_data_out = 1'b1; 
                     res_sample_counter = 1'b1;
                 end else begin
@@ -320,7 +320,7 @@ always @ (posedge clk) begin
         if (reset_sample_registers)  begin
             sample_cnt <= 0;
             sample_register <= 0;
-            cnt_sample_rate <= 0;
+            cnt_sample_rate <= 1;
         end else begin
             if (global_clock_running) begin
                 if (res_sample_counter) 

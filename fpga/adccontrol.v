@@ -122,8 +122,8 @@ localparam ADC_CMD_NEW_VALUE = 1;
 //--------------------------------------------------------------------
 integer c;
 
-wire end_condition = end_time[chan_idx] == current_time; 
-wire start_condition = rec_start_time[chan_idx] == current_time;
+wire end_condition = end_time[chan_idx] < current_time; 
+wire start_condition = rec_start_time[chan_idx] < current_time;
 
 reg[31:0] ebi_capture_reg = 0;
 always @ (posedge clk) begin
@@ -131,7 +131,7 @@ always @ (posedge clk) begin
         data_out <= 0;
         sample_data <= 0;
         for (c = 0; c < 8; c = c+1) begin
-            overflow_register[c] <= 0;
+            overflow_register[c] <= 1;
             end_time[c] <= 0;
             rec_start_time[c] <= 0;
         end
