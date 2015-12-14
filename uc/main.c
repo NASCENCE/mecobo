@@ -112,6 +112,9 @@ static int has_daughterboard = 0;
 static int xbarProgrammed = 0;
 static int setupFinished = 0;
 
+
+//Keeps track of number of recording units on FPGA
+static int numUnits = 0;
 //USB Variables
 
 static uint32_t inBufferTop;
@@ -485,12 +488,14 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     //We are in setup phase. maybe ok.
 
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
+    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NUM_UNITS, ++numUnits);  //set up the sample collector to this channel
     fpgaTableToChannel[fpgaTableIndex] = (uint16_t)channel;
     debug("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint16_t)fpgaTableToChannel[fpgaTableIndex]);
 
     //How many samples?
     //The overflow register is what decides this.
-    
+   
+    infop("sampleRate in: %d\n", sampleRate);
     double overflow = 0;
     if (sampleRate != 0) {
         overflow = (float)FPGA_SYSTEM_CLK_RATE/(float)sampleRate;   //this is the period length of the 100MHz sample rate counter clock
@@ -722,6 +727,7 @@ void execCurrentPack()
         sampleFifoEmpty = 1;
 
         samplesToGet = 0;
+        numUnits = 0;
 
         //finally reset XBAR and check if it's done. This sorta acts like a
         //barrier, because we have a signal to check if XBAR is reset.

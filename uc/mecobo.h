@@ -20,7 +20,7 @@
 
 #define INFO_PRINT 1
 #define CMD_TRACE 0
-#define DEBUG_PRINT 0
+#define DEBUG_PRINT 1
 
 #define trace(...) do { if (CMD_TRACE)   fprintf(stdout, ##__VA_ARGS__); } while (0)
 #define infop(...) do { if (INFO_PRINT)  fprintf(stdout, ##__VA_ARGS__); } while (0)
@@ -97,6 +97,7 @@
 #define SAMPLE_COLLECTOR_ADDR 242
 #define SAMPLE_COLLECTOR_REG_NEW_UNIT 4
 #define SAMPLE_COLLECTOR_REG_LOCAL_CMD 5
+#define SAMPLE_COLLECTOR_REG_NUM_UNITS 6
 
 #define SAMPLE_COLLECTOR_CMD_START_SAMPLING 1
 #define SAMPLE_COLLECTOR_CMD_STOP_SAMPLING 2
