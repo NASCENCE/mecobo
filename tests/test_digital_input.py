@@ -103,24 +103,36 @@ def check_digital_input_analog_constant(voltage):
 
 def test_digital_input_digital_freq():
     # Digital read of digital frequency output
-    # TODO: Increase max frequency once we can sample <1ms
-    freqs = np.linspace(1e3, 1e6, 10).astype(int)
+    # Max sample rate is SAMPLE_CLK/4 and we want 10 samples per period,
+    # so max frequency we can reliably test is SAMPLE_CLK/40
+    freqs = np.linspace(1e3, SAMPLE_CLK/40, 50).astype(int)
+    #freqs = [459938]
+    #freqs = [1645530]
 
     for freq in freqs:
         yield check_digital_input_digital_freq, freq
 
 @with_setup(setup, teardown)
 def check_digital_input_digital_freq(freq):
-    # Calculate sample time based on frequency to sample at least 4 periods
+    # Calculate sample time based on frequency to sample at least 10 periods
     freq = int(freq)
-    sample_time = np.ceil(max(4e6 / freq, 1))
+    sample_time = max(10e6 / freq, 1)
 
-    # Calculate the number of periods expected based on (rounded up) sample time
+    # Calculate the number of periods expected based on sample time
     n_periods = sample_time * freq / 1e6
 
-    # Aim for 10 samples per period, or maximum 75MHz
-    sample_freq = min(freq * 10, 75e6)
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
+    # Aim for 10 samples per period, or maximum SAMPLE_CLK/4
+    sample_freq = real_sample_freq(min(freq * 10, SAMPLE_CLK/4))
+    n_samples = sample_freq * sample_time / 1e6
+
+    print "freq", freq, "sample_time", sample_time, \
+          "sample_freq", sample_freq, "n_samples", n_samples
+
+    # Round up sample time to make sure we get enough samples
+    sample_time = np.ceil(sample_time)
+
+    # Round down the number of expected samples since we might miss the last period
+    n_samples = np.floor(n_samples)
 
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
@@ -219,8 +231,8 @@ def check_digital_input_analog_signal(signal):
     sample_time = 1000 * len(signal)
 
     # 10 samples per 1ms
-    sample_freq = 10e3
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
+    sample_freq = real_sample_freq(10e3)
+    n_samples = int(sample_freq * sample_time / 1e6)
 
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
@@ -266,24 +278,36 @@ def check_digital_input_analog_signal(signal):
 
 
 def test_digital_input_sample_freq():
-    # TODO: Increase max frequency once we can sample <1ms
-    sample_freqs = np.linspace(10, 1e6, 10).astype(int)
+    # Max sample rate is SAMPLE_CLK/(4*n) where n is number of pins
+    sample_freqs = list(np.linspace(10, 500e3, 25).astype(int))
+    sample_freqs += list(np.linspace(10, SAMPLE_CLK/4.0, 25).astype(int))
+    sample_freqs += [2343758]
+    sample_freqs += [2419354]
+    sample_freqs += [6250006]
 
     for sample_freq in sample_freqs:
         yield check_digital_input_sample_freq, sample_freq
 
 @with_setup(setup, teardown)
 def check_digital_input_sample_freq(sample_freq):
-    sample_time = int(min(1e6, max(10e6 / sample_freq, 1)))
-    n_samples = int(real_sample_freq(sample_freq) * sample_time / 1e6)
+    sample_time = min(1e6, max(100e6 / sample_freq, 1))
+    n_samples = real_sample_freq(sample_freq) * sample_time / 1e6
 
     print "sample_freq", sample_freq, "sample_time", sample_time, "n_samples", n_samples
+    print "real sample_freq", real_sample_freq(sample_freq)
+
+    # Round up sample time to make sure we get enough samples
+    sample_time = np.ceil(sample_time)
+    # Round down the number of expected samples since we might miss the last period
+    n_samples = np.floor(n_samples)
+
+    print "adjusted sample_freq", sample_freq, "sample_time", sample_time, "n_samples", n_samples
 
     # Digital recording at pin 0
     it = emSequenceItem()
     it.pin = [0]
-    it.startTime = 0
-    it.endTime = sample_time
+    it.startTime = 2   # BUG? Fudge this in UC?
+    it.endTime = sample_time + 2
     it.frequency = sample_freq
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD
@@ -295,6 +319,6 @@ def check_digital_input_sample_freq(sample_freq):
     result = np.array(cli.getRecording(0).Samples, dtype=int)
     print "%d Hz: got %d samples" % (sample_freq, len(result))
 
-    assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s) when sampling at %d Hz for %d ms" % (len(result), n_samples, sample_freq, sample_time)
-    assert len(result) <= n_samples + 10, "Got more samples (%d) than expected (%s) when sampling at %d Hz for %d ms" % (len(result), n_samples, sample_freq, sample_time)
+    assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s) when sampling at %d Hz for %d us" % (len(result), n_samples, sample_freq, sample_time)
+    assert len(result) <= n_samples + 20, "Got more samples (%d) than expected (%s) when sampling at %d Hz for %d us" % (len(result), n_samples, sample_freq, sample_time)
 

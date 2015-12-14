@@ -89,9 +89,9 @@ def digital_threshold(a):
 
 def check_expected_result(expected, result, label="result", mse_pass=0.1, signal=None, lag_limit=0.1):
     """ Check result against expected signal """
-    # Zero pad expected
-    if len(expected) < len(result):
-        expected = np.concatenate([expected, np.zeros(len(result) - len(expected))])
+    # Discard extra samples
+    if len(result) > len(expected):
+        result = result[:len(expected)]
 
     # Calculate lag
     lag = signal_lag(expected, result)
