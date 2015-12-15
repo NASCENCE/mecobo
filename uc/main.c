@@ -330,10 +330,10 @@ int main(void)
                         sample.value = (int16_t)data;
                         fifoInsert(&ucSampleFifo, &sample);  
                         samplesToGet--;
+                        debug("d %x s %x, ch %x, v %d i %u sh %d\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex, tableIndexShift);
                     }
                   //  }
             //}
-            debug("d %x s %x, ch %x, v %d i %u\n", data, sample.sampleNum, sample.channel, sample.value, tableIndex);
 
 
 
@@ -491,10 +491,10 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
     //We are in setup phase. maybe ok.
 
     command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NEW_UNIT, channel);  //set up the sample collector to this channel
-    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NUM_UNITS, ++numUnits);  //set up the sample collector to this channel
     fpgaTableToChannel[fpgaTableIndex] = (uint16_t)channel;
     debug("Rec Channel %u added, index %u, table entry %d\n", channel, fpgaTableIndex, (uint16_t)fpgaTableToChannel[fpgaTableIndex]);
 
+    command(0, SAMPLE_COLLECTOR_ADDR, SAMPLE_COLLECTOR_REG_NUM_UNITS, ++numUnits);  //set up the sample collector to this channel
     //How many samples?
     //The overflow register is what decides this.
    
@@ -1035,8 +1035,8 @@ void NORBusy() {
 
     uint16_t * nor = (uint16_t *)NOR_START;
 #define TOGGLE_BIT 0x20
-    uint8_t status = 0;
-    uint8_t done = 0;
+    volatile uint8_t status = 0;
+    volatile uint8_t done = 0;
     int counter = 0;
     int toggle = 1;
     while(!done) {
@@ -1047,6 +1047,7 @@ void NORBusy() {
         }
         if (((counter++)%100000) == 0) {
             debug("NOR busy... %x\n", status);
+            USBTIMER_DelayMs(1);
             led(BOARD_LED_U2, toggle);
             toggle = !toggle;
         }

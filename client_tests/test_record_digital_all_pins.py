@@ -19,38 +19,39 @@ prot = TBinaryProtocol.TBinaryProtocol(transport)
 cli = emEvolvableMotherboard.Client(prot);
 transport.open();
 
-recChannels = range(1,2)
+recChannels = range(1,8)
+cli.reset()
+cli.clearSequences()
+ 
+it = emSequenceItem()
+it.pin = [0]
+it.startTime = 5
+it.endTime = 9
+it.frequency = 1000000
+it.operationType = emSequenceOperationType().DIGITAL
+cli.appendSequenceAction(it)
+ 
 for r in recChannels:
-    cli.reset()
-    cli.clearSequences()
-    it = emSequenceItem()
-    it.pin = [0]
-    it.startTime = 5
-    it.endTime = 25
-    it.frequency = 10000
-    it.operationType = emSequenceOperationType().DIGITAL
-    cli.appendSequenceAction(it)
-  
     it = emSequenceItem()
     it.pin = [r]
-    it.startTime = 0
-    it.endTime = 30
-    it.frequency = 100000
+    it.startTime = 2
+    it.endTime = 12
+    it.frequency = 1000000
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD   
     cli.appendSequenceAction(it)
 
-    cli.runSequences()
-    cli.joinSequences()
+cli.runSequences()
+cli.joinSequences()
 
+for c in recChannels:
     res = []
-    sams = cli.getRecording(r).Samples;
+    sams = cli.getRecording(c).Samples;
     print "len", len(sams)
     for i in sams:
-        #res.append(i)
-        print i
+        res.append(i&1)
 
-    plt.plot(res, label=str(r))
+    plt.plot(res, label=str(c))
 
 plt.ylim(-1,2)
 plt.legend()
