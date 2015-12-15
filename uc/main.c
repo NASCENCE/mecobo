@@ -1304,7 +1304,7 @@ void pushToCmdFifo(struct pinItem * item)
                 command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_REC_START_TIME, 0);
                 command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_NCO_COUNTER, (uint32_t)item->nocCounter);
                 command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_END_TIME, (uint32_t)item->endTime);
-                command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_RESET);
+                command(item->startTime, (uint8_t)item->pin, PINCONTROL_REG_LOCAL_CMD, PINCONTROL_CMD_CONST_NULL);
             }
             break;
 

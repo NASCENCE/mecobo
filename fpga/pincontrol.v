@@ -70,6 +70,7 @@ ADDR_LAST_DATA = 9;
 
 localparam
 CMD_CONST = 2,
+CMD_CONST_NULL = 6,
 CMD_SQUARE_WAVE = 3,
 CMD_INPUT_STREAM = 4,
 CMD_RESET = 5;
@@ -88,13 +89,14 @@ reg enable_pin_output = 0;
 reg const_output_null = 0;
 reg const_output_one = 0;
 
-localparam [3:0] 
-idle =            4'b0001,
-const =           4'b0010,
-input_stream =    4'b0100,
-enable_out =      4'b1000;
+localparam [4:0] 
+idle =            5'b00001,
+const =           5'b00010,
+input_stream =    5'b00100,
+enable_out =      5'b01000,
+const_null =      5'b10000;
 
-reg [3:0] state, nextState;
+reg [4:0] state, nextState;
 
 
 /* Command bus data output */
@@ -236,6 +238,12 @@ always @ (*) begin
                 enable_pin_output = 1'b1;
                 const_output_one = 1'b1;
                 nextState = const;
+            end else if (command == CMD_CONST_NULL) begin
+                busy = 1'b1;
+                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+                enable_pin_output = 1'b1;
+                const_output_null = 1'b1;
+                nextState = const_null;
             end else if (command == CMD_RESET) begin
                 busy = 1'b1;
                 reset_cmd = 1'b1;
@@ -269,6 +277,21 @@ always @ (*) begin
             end else if ((end_time != 0) & end_condition) begin
                 reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                 const_output_null = 1'b1;
+                nextState = idle;
+            end
+        end
+
+        const_null: begin
+            enable_pin_output = 1'b1;
+            const_output_null = 1'b1;
+
+            nextState = const_null;
+
+            if (command == CMD_RESET) begin
+                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+                nextState = idle;
+            end else if ((end_time != 0) & end_condition) begin
+                reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                 nextState = idle;
             end
         end
