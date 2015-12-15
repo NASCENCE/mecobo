@@ -101,6 +101,75 @@ def check_digital_input_analog_constant(voltage):
 
 
 
+def test_digital_input_digital_signal():
+    # Digital read of variable digital output
+    signals = [ np.random.randint(2, size=10),
+                np.random.randint(2, size=50),
+                np.random.randint(2, size=100),
+                np.random.randint(2, size=250),
+                np.random.randint(2, size=333),
+                ]
+
+    for i, signal in enumerate(signals):
+        yield check_digital_input_digital_signal, i, signal
+
+@with_setup(setup, teardown)
+def check_digital_input_digital_signal(index, signal):
+    # Each input signal sample is held for 10us
+    dt = 10
+    sample_time = dt * len(signal)
+
+    # 10 samples per signal sample
+    sample_freq = real_sample_freq(10e6 / dt)
+    n_samples = int(sample_freq * sample_time / 1e6)
+    sample_time += 1 # fudge
+
+    print "signal #%d (%d): %s" % (index, len(signal), signal)
+    print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
+
+    # Generate signal as digital out on pin 15
+    for (t, s) in enumerate(signal):
+        it = emSequenceItem()
+        it.pin = [15]
+        it.operationType = emSequenceOperationType().DIGITAL
+        it.startTime = 10 + t * dt
+        it.endTime = 10 + t * dt + dt
+        it.frequency = s
+        it.cycleTime = 100
+        #print t,s,it
+        cli.appendSequenceAction(it)
+
+    # Digital recording at pin 0
+    it = emSequenceItem()
+    it.pin = [0]
+    it.startTime = 10
+    it.endTime = sample_time + 10
+    it.frequency = sample_freq
+    it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
+    it.operationType = emSequenceOperationType().RECORD
+    cli.appendSequenceAction(it)
+
+    cli.runSequences()
+    cli.joinSequences()
+
+    result = np.array(cli.getRecording(0).Samples, dtype=int)
+    result = digital_samples(result)
+    #result = np.array(cli.getRecording(0).Samples, dtype=float)
+    #result = adc_voltage(result)
+    print "Got %d samples: %r" % (len(result), result)
+
+    assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s)" % \
+            (len(result), n_samples)
+
+    # Generate reference signal
+    expected = np.repeat(signal, 10)
+    print "expected: %r" % (expected)
+
+    check_expected_result(expected, result, "signal #%d" % index)
+    assert len(result) >= 1, "No samples!"
+
+
+
 def test_digital_input_digital_freq():
     # Digital read of digital frequency output
     # Max sample rate is SAMPLE_CLK/4 and we want 10 samples per period,
