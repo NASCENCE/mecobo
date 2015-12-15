@@ -33,9 +33,8 @@ def teardown():
     transport.close()
 
 N_PINS = 16
-N_PINS_ADC = 8
-N_PINS_DAC = 8
-ALL_PINS = range(N_PINS)
+N_REC_ANALOG = 8
+N_REC_DIGITAL = 8
 
 SAMPLE_CLK = 75e6
 def real_sample_freq(f):
