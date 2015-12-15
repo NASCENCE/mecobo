@@ -161,8 +161,8 @@ WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/xbar_clock.v" Line 130: As
 Elaborating module <ODDR2>.
 
 Elaborating module <ebi>.
-"/home/lykkebo/mecobo/fpga/ebi.v" Line 144. $display ebi: 0\n
-WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/ebi.v" Line 168: Assignment to status_register_old ignored, since the identifier is never used
+"/home/lykkebo/mecobo/fpga/ebi.v" Line 145. $display ebi: 0\n
+WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/ebi.v" Line 169: Assignment to status_register_old ignored, since the identifier is never used
 
 Elaborating module <command_fifo>.
 WARNING:HDLCompiler:1499 - "/home/lykkebo/mecobo/fpga/cmd_fifo/command_fifo.v" Line 39: Empty module <command_fifo> remains a black box.
@@ -347,7 +347,7 @@ Synthesizing Unit <ebi>.
 WARNING:Xst:647 - Input <addr<18:8>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
     Found 16-bit register for signal <status_register>.
     Found 16-bit register for signal <fifo_captured_data>.
-    Found 176-bit register for signal <n0133[175:0]>.
+    Found 176-bit register for signal <n0135[175:0]>.
     Found 1-bit register for signal <irq>.
     Found 16-bit register for signal <data_out>.
     Found 16-bit register for signal <ebi_last_word>.
@@ -372,14 +372,14 @@ WARNING:Xst:647 - Input <addr<18:8>> is never used. This port will be preserved 
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 32-bit adder for signal <clock_reg[31]_GND_25_o_add_85_OUT> created at line 309.
-    Found 8-bit comparator lessequal for signal <n0052> created at line 222
-    Found 32-bit comparator greater for signal <GND_25_o_clock_reg[31]_LessThan_90_o> created at line 317
+    Found 32-bit adder for signal <clock_reg[31]_GND_25_o_add_86_OUT> created at line 310.
+    Found 8-bit comparator lessequal for signal <n0054> created at line 223
+    Found 32-bit comparator greater for signal <GND_25_o_clock_reg[31]_LessThan_91_o> created at line 318
     Summary:
 	inferred   1 Adder/Subtractor(s).
 	inferred 278 D-type flip-flop(s).
 	inferred   2 Comparator(s).
-	inferred  35 Multiplexer(s).
+	inferred  23 Multiplexer(s).
 	inferred   1 Finite State Machine(s).
 Unit <ebi> synthesized.
 
@@ -706,7 +706,6 @@ Unit <pincontrol_7> synthesized.
 Synthesizing Unit <pincontrol_8>.
     Related source file is "/home/lykkebo/mecobo/fpga/pincontrol.v".
         POSITION = 15'b000000000000111
-    Found 16-bit register for signal <data_out>.
     Found 32-bit register for signal <nco_counter>.
     Found 32-bit register for signal <sample_rate>.
     Found 32-bit register for signal <end_time>.
@@ -737,6 +736,7 @@ Synthesizing Unit <pincontrol_8>.
     Found 1-bit tristate buffer for signal <pin> created at line 129
     Found 32-bit comparator greater for signal <end_condition> created at line 184
     Found 32-bit comparator greater for signal <start_condition> created at line 185
+    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
 	inferred 273 D-type flip-flop(s).
@@ -921,7 +921,6 @@ Unit <pincontrol_12> synthesized.
 Synthesizing Unit <pincontrol_13>.
     Related source file is "/home/lykkebo/mecobo/fpga/pincontrol.v".
         POSITION = 15'b000000000001100
-    Found 16-bit register for signal <data_out>.
     Found 32-bit register for signal <nco_counter>.
     Found 32-bit register for signal <sample_rate>.
     Found 32-bit register for signal <end_time>.
@@ -952,6 +951,7 @@ Synthesizing Unit <pincontrol_13>.
     Found 1-bit tristate buffer for signal <pin> created at line 129
     Found 32-bit comparator greater for signal <end_condition> created at line 184
     Found 32-bit comparator greater for signal <start_condition> created at line 185
+    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_13>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
 	inferred 273 D-type flip-flop(s).
@@ -964,7 +964,6 @@ Unit <pincontrol_13> synthesized.
 Synthesizing Unit <pincontrol_14>.
     Related source file is "/home/lykkebo/mecobo/fpga/pincontrol.v".
         POSITION = 15'b000000000001101
-    Found 16-bit register for signal <data_out>.
     Found 32-bit register for signal <nco_counter>.
     Found 32-bit register for signal <sample_rate>.
     Found 32-bit register for signal <end_time>.
@@ -995,6 +994,7 @@ Synthesizing Unit <pincontrol_14>.
     Found 1-bit tristate buffer for signal <pin> created at line 129
     Found 32-bit comparator greater for signal <end_condition> created at line 184
     Found 32-bit comparator greater for signal <start_condition> created at line 185
+    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_14>.
     Summary:
 	inferred   3 Adder/Subtractor(s).
 	inferred 273 D-type flip-flop(s).
@@ -4386,9 +4386,9 @@ Macro Statistics
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
  8-bit comparator lessequal                            : 1
-# Multiplexers                                         : 1205
+# Multiplexers                                         : 1193
  1-bit 2-to-1 multiplexer                              : 1089
- 16-bit 2-to-1 multiplexer                             : 33
+ 16-bit 2-to-1 multiplexer                             : 21
  32-bit 16-to-1 multiplexer                            : 1
  32-bit 2-to-1 multiplexer                             : 76
  32-bit 64-to-1 multiplexer                            : 1
@@ -4680,11 +4680,11 @@ Macro Statistics
  32-bit comparator not equal                           : 1
  4-bit comparator lessequal                            : 1
  8-bit comparator lessequal                            : 1
-# Multiplexers                                         : 2726
+# Multiplexers                                         : 2714
  1-bit 16-to-1 multiplexer                             : 32
  1-bit 2-to-1 multiplexer                              : 2577
  1-bit 8-to-1 multiplexer                              : 96
- 16-bit 2-to-1 multiplexer                             : 15
+ 16-bit 2-to-1 multiplexer                             : 3
  32-bit 2-to-1 multiplexer                             : 3
  32-bit 64-to-1 multiplexer                            : 1
  8-bit 64-to-1 multiplexer                             : 1
@@ -5188,11 +5188,11 @@ WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_registe
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_151> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_132> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_152> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_153> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_134> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_144> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_145> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_156> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_137> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_136> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/tmp_register_7_14> <adc0/tmp_register_7_13> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_31> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_30> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_47> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_45> 
@@ -5200,10 +5200,10 @@ INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_78> in Unit <mecobo> is equiva
 
 Mapping all equations...
 Building and optimizing final netlist ...
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_146> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_136> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_143> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_133> 
 INFO:Xst:2261 - The FF/Latch <adc0/sample_register_155> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_135> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_153> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_143> <adc0/sample_register_133> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_147> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_147> <adc0/sample_register_137> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_156> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_146> 
 Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 57.
 FlipFlop sample_collector0/current_id_idx_0 has been replicated 52 time(s)
 FlipFlop sample_collector0/current_id_idx_1 has been replicated 52 time(s)
@@ -5240,17 +5240,17 @@ Top Level Output File Name         : mecobo.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 15793
+# BELS                             : 15791
 #      GND                         : 1
 #      INV                         : 44
 #      LUT1                        : 642
 #      LUT2                        : 891
-#      LUT3                        : 1697
-#      LUT4                        : 2902
-#      LUT5                        : 1002
-#      LUT6                        : 4302
+#      LUT3                        : 1696
+#      LUT4                        : 2895
+#      LUT5                        : 1007
+#      LUT6                        : 4305
 #      MUXCY                       : 2369
-#      MUXF7                       : 178
+#      MUXF7                       : 176
 #      MUXF8                       : 32
 #      VCC                         : 1
 #      XORCY                       : 1732
@@ -5291,10 +5291,10 @@ Slice Logic Utilization:
     Number used as Logic:             11480  out of  27288    42%  
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:  15338
-   Number with an unused Flip Flop:    5950  out of  15338    38%  
-   Number with an unused LUT:          3858  out of  15338    25%  
-   Number of fully used LUT-FF pairs:  5530  out of  15338    36%  
+ Number of LUT Flip Flop pairs used:  15339
+   Number with an unused Flip Flop:    5951  out of  15339    38%  
+   Number with an unused LUT:          3859  out of  15339    25%  
+   Number of fully used LUT-FF pairs:  5529  out of  15339    36%  
    Number of unique control sets:       241
 
 IO Utilization: 
@@ -5380,7 +5380,7 @@ Delay:               8.705ns (Levels of Logic = 16)
      MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_10_o_cy<8> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_10_o_cy<8>)
      MUXCY:CI->O           1   0.019   0.000  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_10_o_cy<9> (sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_10_o_cy<9>)
      MUXCY:CI->O          97   0.019   1.858  sample_collector0/Mcompar_current_id_idx[5]_sample_data[31]_not_equal_10_o_cy<10> (sample_collector0/current_id_idx[5]_sample_data[31]_not_equal_10_o)
-     LUT6:I5->O           32   0.205   1.291  sample_collector0/state__n40448_inv11 (sample_collector0/_n40448_inv1)
+     LUT6:I5->O           32   0.205   1.291  sample_collector0/state__n40449_inv11 (sample_collector0/_n40449_inv1)
      FDRE:CE                   0.322          sample_collector0/last_fetched_0
     ----------------------------------------
     Total                      8.705ns (2.150ns logic, 6.555ns route)
@@ -5457,7 +5457,7 @@ Delay:               3.379ns (Levels of Logic = 1)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'main_clocks_u/pll_base_inst/CLKOUT0'
-  Total number of paths / destination ports: 11861 / 10128
+  Total number of paths / destination ports: 11897 / 10128
 -------------------------------------------------------------------------
 Offset:              7.208ns (Levels of Logic = 4)
   Source:            reset (PAD)
@@ -5552,14 +5552,14 @@ Offset:              10.709ns (Levels of Logic = 11)
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
      FDR:C->Q             73   0.447   2.044  ebi_if/clock_reg_0 (ebi_if/clock_reg_0)
-     LUT5:I0->O            1   0.203   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_lut<0> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_lut<0>)
-     MUXCY:S->O            1   0.172   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<0> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<0>)
-     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<1> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<1>)
-     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<2> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<2>)
-     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<3> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<3>)
-     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<4> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<4>)
-     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<5> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<5>)
-     MUXCY:CI->O          66   0.213   1.758  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<6> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_90_o_cy<6>)
+     LUT5:I0->O            1   0.203   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_lut<0> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_lut<0>)
+     MUXCY:S->O            1   0.172   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<0> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<0>)
+     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<1> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<1>)
+     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<2> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<2>)
+     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<3> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<3>)
+     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<4> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<4>)
+     MUXCY:CI->O           1   0.019   0.000  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<5> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<5>)
+     MUXCY:CI->O          66   0.213   1.758  ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<6> (ebi_if/Mcompar_GND_25_o_clock_reg[31]_LessThan_91_o_cy<6>)
      LUT2:I0->O          100   0.203   2.222  ebi_if/global_clock_running1 (led_1_OBUF)
      LUT6:I1->O            1   0.203   0.579  pinControl[0].pc/enable_pin_output_inv (pinControl[0].pc/enable_pin_output_inv)
      IOBUF:T->IO               2.571          HW_1_IOBUF (HW<1>)
@@ -5694,15 +5694,15 @@ main_clocks_u/pll_base_inst/CLKOUT3|    3.379|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 117.00 secs
-Total CPU time to Xst completion: 116.44 secs
+Total REAL time to Xst completion: 119.00 secs
+Total CPU time to Xst completion: 118.13 secs
  
 --> 
 
 
-Total memory usage is 535000 kilobytes
+Total memory usage is 538056 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  432 (   0 filtered)
+Number of warnings :  435 (   0 filtered)
 Number of infos    :   94 (   0 filtered)
 

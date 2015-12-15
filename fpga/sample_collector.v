@@ -13,7 +13,7 @@
 *
 *
 */
-
+`define WITH_DB
 module sample_collector (
     input clk,
     input rst,
