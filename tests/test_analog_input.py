@@ -267,9 +267,9 @@ def check_analog_input_analog_signal(index, signal, mse_pass=0.1):
 
 def test_analog_input_multiple():
     pins = []
-    for n in range(1, N_PINS_ADC + 1):
+    for n in range(1, N_REC_ANALOG + 1):
         # Randomly select n ADC pins and 1 output pin
-        p = np.random.choice(N_PINS_ADC + 1, n + 1, replace=False)
+        p = np.random.choice(N_PINS, n + 1, replace=False)
         pins.append(list(p))
 
     # Generate a nice input signal
