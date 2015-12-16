@@ -247,6 +247,8 @@ always @ (*) begin
             end else if (command == CMD_RESET) begin
                 busy = 1'b1;
                 reset_cmd = 1'b1;
+                reset_rec_time_register = 1'b1; //set some registers to zero as well.
+                reset_sample_registers = 1'b1;
                 nextState = idle;
             end 
         end //end idle state
@@ -255,11 +257,9 @@ always @ (*) begin
             enable_pin_output = 1'b1;
             nextState = enable_out;
 
-            if (command == CMD_RESET) begin
-                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+            if (command != 0) begin
                 nextState = idle;
             end else if ((end_time != 0) & (end_condition)) begin
-                reset_cmd = 1'b1; //we are done. no more output.
                 const_output_null = 1'b1;
                 nextState = idle;
             end
@@ -270,12 +270,11 @@ always @ (*) begin
             const_output_one = 1'b1;
 
             nextState = const;
-
-            if (command == CMD_RESET) begin
-                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+            
+            if (command != 0) begin
                 nextState = idle;
-            end else if ((end_time != 0) & end_condition) begin
-                reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
+            end
+            else if ((end_time != 0) & end_condition) begin
                 const_output_null = 1'b1;
                 nextState = idle;
             end
@@ -287,11 +286,9 @@ always @ (*) begin
 
             nextState = const_null;
 
-            if (command == CMD_RESET) begin
-                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
+             if (command != 0) begin
                 nextState = idle;
             end else if ((end_time != 0) & end_condition) begin
-                reset_cmd = 1'b1; //command is finished to we can probably get a new one now.
                 nextState = idle;
             end
         end
@@ -314,10 +311,9 @@ always @ (*) begin
             at a certain rate, and will never leave this state
             unless reset is called.
             */
-            if (command == CMD_RESET) begin
-                reset_cmd = 1'b1; //we got a new command, so reset the register for more stuff to come!
-                reset_rec_time_register = 1'b1;
-                reset_sample_registers = 1'b1;
+
+
+            if (command != 0) begin
                 nextState = idle;
             end else if ((end_time != 0) & end_condition) begin
                 reset_rec_time_register = 1'b1; //set some registers to zero as well.

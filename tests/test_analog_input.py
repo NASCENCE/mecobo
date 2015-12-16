@@ -279,10 +279,10 @@ def test_analog_input_multiple():
     for p in pins:
         out_pins = p[:1]
         rec_pins = p[1:]
-        yield check_analog_input_multiple, signal, out_pins, rec_pins
+        yield check_analog_input_multiple, out_pins, rec_pins, signal
 
 @with_setup(setup, teardown)
-def check_analog_input_multiple(signal, out_pins, rec_pins, mse_pass=0.1):
+def check_analog_input_multiple(out_pins, rec_pins, signal, mse_pass=0.1):
     # Each input signal sample is held for 1ms
     sample_time = 1000 * len(signal)
 
