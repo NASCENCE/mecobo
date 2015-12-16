@@ -98,9 +98,10 @@ int _write_r(void *reent, int fd, char *ptr, size_t len)
     return len;
 }
 
-static const int FPGA_CMD_FIFO_SIZE = 1024;
+static const int FPGA_CMD_FIFO_SIZE = 1010; //actually 1024, but we'll just be conservative
 static const int UC_CMD_FIFO_SIZE = 2048;
 
+static uint16_t roomInFpgaCmdFifo = 0;
 uint16_t statusReg = 0;
 
 int timeStarted = 0; 
@@ -274,8 +275,8 @@ int main(void)
     /* MAIN LOOP */
     resetTime();
 
-    int roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
 
+    roomInFpgaCmdFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
 
     struct sampleValue sample; 
     uint16_t tableIndex;
@@ -283,20 +284,19 @@ int main(void)
 
     for (;;) {
 
-        //feed if fifo is more than half empty
-        if(roomInFifo < 200) {
-            roomInFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
+        //feed if fifo is more than 3/5 empty
+        if(roomInFpgaCmdFifo < 800) {
+            roomInFpgaCmdFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
         }
         //We want to be able to feed the fifo even if the sequenc run is not started
-        if (setupFinished && (roomInFifo > 0) && (ucCmdFifo.numElements > 0)) {
+        if (setupFinished && (roomInFpgaCmdFifo > 10) && (ucCmdFifo.numElements > 0)) {
             //mecoboStatus = MECOBO_STATUS_BUSY;
             // while(ucCmdFifo.numElements > 0) {
+            debug("fifo feed: %u\n", roomInFpgaCmdFifo);
             void * item = NULL;
             fifoGet(&ucCmdFifo, &item);
             struct pinItem * it = (struct pinItem *)item;
             pushToCmdFifo(it);
-
-            roomInFifo--;
         }
 
         //Check how many samples are in the FIFO, we have to get them anyway
@@ -847,7 +847,9 @@ void execCurrentPack()
     } else if (currentPack.command == USB_CMD_PRELOAD_FIFO) {
 
         //preload the fifo with commands as well
-        while(ucCmdFifo.numElements > 0) {
+        roomInFpgaCmdFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
+
+        while((roomInFpgaCmdFifo > 10) && (ucCmdFifo.numElements > 0)) {
             void * item = NULL;
             fifoGet(&ucCmdFifo, &item);
             struct pinItem * it = (struct pinItem *)item;
@@ -856,7 +858,7 @@ void execCurrentPack()
 
 
         mecoboStatus = MECOBO_STATUS_FIFO_PRELOADED;
-        infop("---- SETUP FINISHED -----\n");
+        infop("---- SETUP FINISHED, loaded %u commands -----\n", FPGA_CMD_FIFO_SIZE - roomInFpgaCmdFifo);
 
         setupFinished = 1;
     }
@@ -1185,7 +1187,7 @@ int sampleFifoDataCount()
 
 inline uint16_t cmdFifoDataCount()
 {
-    return (int)ebir(EBI_CMD_FIFO_DATA_COUNT);
+    return (uint16_t)ebir(EBI_CMD_FIFO_DATA_COUNT);
 }
 
 
@@ -1213,6 +1215,8 @@ void checkStatusReg()
 
 inline void putInFifo(struct fifoCmd * cmd) 
 {
+
+    roomInFpgaCmdFifo--;
 
     uint16_t * serialCmd = (uint16_t *)cmd;
     //This will be funked up when splitting the uint32 into 16 bits,
@@ -1293,6 +1297,7 @@ void pushToCmdFifo(struct pinItem * item)
     //struct fifoCmd cmd = makeCommand(item->startTime, (uint8_t)item->pin, 0x0, 0x0);
 
     debug("fifo: %u, pin %u\n", (unsigned int)item->startTime, (unsigned int)item->pin);
+    debug("t: %u\n", cmdInterfaceAddr[9]);
     switch(item->type) {
 
         case PINCONFIG_DATA_TYPE_DIGITAL_CONST:
