@@ -61,7 +61,7 @@ def check_digital_input_digital_constant(bit):
 
 def test_digital_input_analog_constant():
     # Digital read of constant analog output
-    voltages = np.linspace(-5.0, 5.0, 21)
+    voltages = np.linspace(-5.0, 5.0, 20)
 
     for voltage in voltages:
         yield check_digital_input_analog_constant, voltage
