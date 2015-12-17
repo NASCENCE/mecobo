@@ -30,6 +30,7 @@ channelMap::channelMap()
     channelToXbar[FPGA_DAC_0_G] = 6;
     channelToXbar[FPGA_DAC_0_H] = 7;
 
+    /*
     channelToXbar[FPGA_ADC_0_A] = 8;
     channelToXbar[FPGA_ADC_0_B] = 9;
     channelToXbar[FPGA_ADC_0_C] = 10;   
@@ -38,7 +39,16 @@ channelMap::channelMap()
     channelToXbar[FPGA_ADC_0_F] = 13;
     channelToXbar[FPGA_ADC_0_G] = 14;
     channelToXbar[FPGA_ADC_0_H] = 15;
-
+    */
+    channelToXbar[FPGA_ADC_0_A] = 8;
+    channelToXbar[FPGA_ADC_0_B] = 9;
+    channelToXbar[FPGA_ADC_0_C] = 15;      //channel 'C' (2) is attached to pin X15
+    channelToXbar[FPGA_ADC_0_D] = 14;
+    channelToXbar[FPGA_ADC_0_E] = 10;
+    channelToXbar[FPGA_ADC_0_F] = 11;
+    channelToXbar[FPGA_ADC_0_G] = 13;
+    channelToXbar[FPGA_ADC_0_H] = 12;
+ 
     //Second crossbar. the channel to XBAR maps a channel to a X-index on the
     //crossbar. 
     channelToXbar[FPGA_DIGI_0] = 0;  

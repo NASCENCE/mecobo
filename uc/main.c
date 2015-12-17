@@ -98,7 +98,7 @@ int _write_r(void *reent, int fd, char *ptr, size_t len)
     return len;
 }
 
-static const int FPGA_CMD_FIFO_SIZE = 1010; //actually 1024, but we'll just be conservative
+static const int FPGA_CMD_FIFO_SIZE = 2000; //actually 1024, but we'll just be conservative
 static const int UC_CMD_FIFO_SIZE = 2048;
 
 static uint16_t roomInFpgaCmdFifo = 0;
@@ -285,7 +285,7 @@ int main(void)
     for (;;) {
 
         //feed if fifo is more than 3/5 empty
-        if(roomInFpgaCmdFifo < 800) {
+        if(roomInFpgaCmdFifo < 1750) {
             roomInFpgaCmdFifo = FPGA_CMD_FIFO_SIZE - cmdFifoDataCount();
         }
         //We want to be able to feed the fifo even if the sequenc run is not started
@@ -515,7 +515,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
         //find the ADC's internal number for the channel to program it.
         uint16_t boardChan = channel - AD_CHANNELS_START;
         //board 0
-        if(boardChan < 16) {
+//        if(boardChan < 16) {
             //Program sequence register with channel.
             adcSequence[0] |= 0xE000 | (1 << (12 - boardChan));
             debug("ADCregister write channel %x, %x\n", boardChan, adcSequence[0]);
@@ -533,7 +533,7 @@ void setupInput(FPGA_IO_Pins_TypeDef channel, int sampleRate, uint32_t startTime
             command(0, channel, AD_REG_PROGRAM, 0x18014);
 
             debug("ADC programmed to new sequences\n");
-        }
+ //       }
     }
 
     //Digital channel.
@@ -712,7 +712,11 @@ void execCurrentPack()
 
         startInput();  //start sample collector
 
-        adcSequence[0] = 0;
+        //adcSequence[0] = 0;
+        adcSequence[0] = 0xE000;
+        adcSequence[1] = 0xE000;
+        adcSequence[2] = 0xE000;
+        adcSequence[3] = 0xE000;
 
 
         fifoReset(&ucCmdFifo);

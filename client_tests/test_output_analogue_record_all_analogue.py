@@ -25,7 +25,7 @@ cli.clearSequences()
 it = emSequenceItem()
 it.pin = [0]
 it.startTime = 0
-it.endTime = 10000
+it.endTime = 10000000
 it.amplitude = 222
 it.operationType = emSequenceOperationType().CONSTANT   #implies analogue 
 cli.appendSequenceAction(it)
