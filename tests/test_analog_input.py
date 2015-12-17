@@ -122,7 +122,7 @@ def check_analog_input_digital_freq(freq):
           "sample_freq", sample_freq, "n_samples", n_samples
 
     # Round up sample time to make sure we get enough samples
-    sample_time = np.ceil(sample_time)
+    sample_time = np.ceil(sample_time) + 1
 
     # Round down the number of expected samples since we might miss the last period
     n_samples = np.floor(n_samples)
@@ -224,6 +224,9 @@ def check_analog_input_analog_signal(index, signal, mse_pass=0.1):
     sample_freq = real_sample_freq(10e3)
     n_samples = int(sample_freq * sample_time / 1e6)
 
+    # Make sure we get enough samples
+    sample_time += 1
+
     print "signal #%d (%d): %s" % (index, len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
 
@@ -289,6 +292,9 @@ def check_analog_input_multiple(out_pins, rec_pins, signal, mse_pass=0.1):
     # 10 samples per 1ms
     sample_freq = real_sample_freq(10e3)
     n_samples = int(sample_freq * sample_time / 1e6)
+
+    # Make sure we get enough samples
+    sample_time += 1
 
     print "out_pins", out_pins, "rec_pins", rec_pins
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples

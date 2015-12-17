@@ -122,7 +122,9 @@ def check_digital_input_digital_signal(index, signal):
     # 10 samples per signal sample
     sample_freq = real_sample_freq(10e6 / dt)
     n_samples = int(sample_freq * sample_time / 1e6)
-    sample_time += 1 # fudge
+
+    # Make sure we get enough samples
+    sample_time += 1
 
     print "signal #%d (%d): %s" % (index, len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
@@ -132,8 +134,8 @@ def check_digital_input_digital_signal(index, signal):
         it = emSequenceItem()
         it.pin = [15]
         it.operationType = emSequenceOperationType().DIGITAL
-        it.startTime = 10 + t * dt
-        it.endTime = 10 + t * dt + dt
+        it.startTime = t * dt
+        it.endTime = t * dt + dt
         it.frequency = s
         it.cycleTime = 100
         #print t,s,it
@@ -142,8 +144,8 @@ def check_digital_input_digital_signal(index, signal):
     # Digital recording at pin 0
     it = emSequenceItem()
     it.pin = [0]
-    it.startTime = 10
-    it.endTime = sample_time + 10
+    it.startTime = 0
+    it.endTime = sample_time
     it.frequency = sample_freq
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD
@@ -198,7 +200,7 @@ def check_digital_input_digital_freq(freq):
           "sample_freq", sample_freq, "n_samples", n_samples
 
     # Round up sample time to make sure we get enough samples
-    sample_time = np.ceil(sample_time)
+    sample_time = np.ceil(sample_time) + 1
 
     # Round down the number of expected samples since we might miss the last period
     n_samples = np.floor(n_samples)
@@ -302,6 +304,9 @@ def check_digital_input_analog_signal(signal):
     # 10 samples per 1ms
     sample_freq = real_sample_freq(10e3)
     n_samples = int(sample_freq * sample_time / 1e6)
+
+    # Make sure we get enough samples
+    sample_time += 1
 
     # Test passes if MSE <= 0.1
     mse_pass = 0.1
