@@ -108,6 +108,7 @@ def test_digital_input_digital_signal():
                 np.random.randint(2, size=100),
                 np.random.randint(2, size=250),
                 np.random.randint(2, size=333),
+                np.random.randint(2, size=1024),
                 ]
 
     for i, signal in enumerate(signals):
@@ -115,8 +116,8 @@ def test_digital_input_digital_signal():
 
 @with_setup(setup, teardown)
 def check_digital_input_digital_signal(index, signal):
-    # Each input signal sample is held for 10us
-    dt = 10
+    # Each input signal sample is held for 50us
+    dt = 50
     sample_time = dt * len(signal)
 
     # 10 samples per signal sample
