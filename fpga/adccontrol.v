@@ -239,6 +239,9 @@ reg [NUM_STATES - 1:0] state, nextState;
 //The slow clocked control logic that controls the shift registers
 //and times when to copy data into the temporary registers.
 
+initial begin
+    state <= init;
+end
 
 always @ (posedge sclk) begin
     if (reset) state <= init; 

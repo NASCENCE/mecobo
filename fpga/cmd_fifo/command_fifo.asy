@@ -26,6 +26,10 @@ LINE Normal 0 496 32 496
 PIN 0 496 LEFT 36
 PINATTR PinName almost_full
 PINATTR Polarity OUT
+LINE Normal 0 528 32 528
+PIN 0 528 LEFT 36
+PINATTR PinName prog_full
+PINATTR Polarity OUT
 LINE Normal 0 560 32 560
 PIN 0 560 LEFT 36
 PINATTR PinName wr_ack
@@ -56,6 +60,6 @@ PINATTR PinName valid
 PINATTR Polarity OUT
 LINE Wide 832 688 800 688
 PIN 832 688 RIGHT 36
-PINATTR PinName data_count[9:0]
+PINATTR PinName data_count[10:0]
 PINATTR Polarity OUT
 

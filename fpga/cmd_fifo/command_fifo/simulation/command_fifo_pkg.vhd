@@ -198,12 +198,13 @@ PACKAGE command_fifo_pkg IS
  COMPONENT command_fifo_exdes IS
    PORT (
            CLK                       : IN  std_logic;
-     	   DATA_COUNT                : OUT std_logic_vector(10-1 DOWNTO 0);
+     	   DATA_COUNT                : OUT std_logic_vector(11-1 DOWNTO 0);
            WR_ACK                    : OUT std_logic;
            VALID                     : OUT std_logic;
            ALMOST_FULL               : OUT std_logic;
            ALMOST_EMPTY              : OUT std_logic;
            RST                       : IN  std_logic;
+           PROG_FULL                 : OUT std_logic;
            PROG_EMPTY                : OUT std_logic;
            WR_EN 		     : IN  std_logic;
            RD_EN                     : IN  std_logic;

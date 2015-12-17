@@ -4,15 +4,15 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.07 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.09 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.08 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.09 secs
  
 --> 
 Reading design: mecobo.prj
@@ -138,7 +138,7 @@ Parsing module <glbl>.
 =========================================================================
 *                            HDL Elaboration                            *
 =========================================================================
-WARNING:HDLCompiler:1016 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 199: Port prog_empty is not connected to this instance
+WARNING:HDLCompiler:1016 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 199: Port prog_full is not connected to this instance
 WARNING:HDLCompiler:1016 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 217: Port dac_fifo_dout is not connected to this instance
 
 Elaborating module <mecobo>.
@@ -166,6 +166,7 @@ WARNING:HDLCompiler:1127 - "/home/lykkebo/mecobo/fpga/ebi.v" Line 169: Assignmen
 
 Elaborating module <command_fifo>.
 WARNING:HDLCompiler:1499 - "/home/lykkebo/mecobo/fpga/cmd_fifo/command_fifo.v" Line 39: Empty module <command_fifo> remains a black box.
+WARNING:HDLCompiler:189 - "/home/lykkebo/mecobo/fpga/toplevel.v" Line 212: Size mismatch in connection of port <data_count>. Formal port size is 11-bit while actual signal size is 10-bit.
 
 Elaborating module <scheduler>.
 
@@ -219,8 +220,8 @@ WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/pincontrol.v" Line 352: Res
 
 Elaborating module <adc_control(MIN_CHANNEL=64,MAX_CHANNEL=71)>.
 WARNING:HDLCompiler:872 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 75: Using initial value of last_executed_command since it is never assigned
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 340: Result of 17-bit expression is truncated to fit in 16-bit target.
-WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 361: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 343: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/adccontrol.v" Line 364: Result of 5-bit expression is truncated to fit in 4-bit target.
 
 Elaborating module <dac_control(POSITION=128)>.
 WARNING:HDLCompiler:413 - "/home/lykkebo/mecobo/fpga/dac_control.v" Line 149: Result of 5-bit expression is truncated to fit in 4-bit target.
@@ -268,6 +269,7 @@ WARNING:Xst:2898 - Port 're', unconnected in block instance 'adc0', is tied to G
 WARNING:Xst:2898 - Port 're', unconnected in block instance 'dac0', is tied to GND.
 WARNING:Xst:2898 - Port 're', unconnected in block instance 'xbar0', is tied to GND.
 INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/toplevel.v" line 199: Output port <wr_ack> of the instance <cmd_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/toplevel.v" line 199: Output port <prog_full> of the instance <cmd_fifo> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/toplevel.v" line 199: Output port <prog_empty> of the instance <cmd_fifo> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/toplevel.v" line 217: Output port <dac_fifo_rd_en> of the instance <sched> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "/home/lykkebo/mecobo/fpga/toplevel.v" line 217: Output port <cmd_bus_rd> of the instance <sched> is unconnected or connected to loadless signal.
@@ -622,7 +624,6 @@ Unit <pincontrol_7> synthesized.
 Synthesizing Unit <pincontrol_8>.
     Related source file is "/home/lykkebo/mecobo/fpga/pincontrol.v".
         POSITION = 15'b000000000000111
-    Found 16-bit register for signal <data_out>.
     Found 32-bit register for signal <nco_counter>.
     Found 32-bit register for signal <sample_rate>.
     Found 32-bit register for signal <end_time>.
@@ -641,6 +642,7 @@ Synthesizing Unit <pincontrol_8>.
     Found 1-bit tristate buffer for signal <pin> created at line 131
     Found 32-bit comparator greater for signal <end_condition> created at line 186
     Found 32-bit comparator greater for signal <start_condition> created at line 187
+    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_8>.
     Summary:
 	inferred   1 RAM(s).
 	inferred   3 Adder/Subtractor(s).
@@ -715,6 +717,7 @@ Unit <pincontrol_10> synthesized.
 Synthesizing Unit <pincontrol_11>.
     Related source file is "/home/lykkebo/mecobo/fpga/pincontrol.v".
         POSITION = 15'b000000000001010
+    Found 16-bit register for signal <data_out>.
     Found 32-bit register for signal <nco_counter>.
     Found 32-bit register for signal <sample_rate>.
     Found 32-bit register for signal <end_time>.
@@ -733,7 +736,6 @@ Synthesizing Unit <pincontrol_11>.
     Found 1-bit tristate buffer for signal <pin> created at line 131
     Found 32-bit comparator greater for signal <end_condition> created at line 186
     Found 32-bit comparator greater for signal <start_condition> created at line 187
-    WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <pincontrol_11>.
     Summary:
 	inferred   1 RAM(s).
 	inferred   3 Adder/Subtractor(s).
@@ -1440,40 +1442,41 @@ Synthesizing Unit <adc_control>.
     | Reset              | reset (positive)                               |
     | Reset type         | synchronous                                    |
     | Reset State        | 00001                                          |
+    | Power Up State     | 00001                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 16-bit adder for signal <sequence_number[0][15]_GND_61_o_add_140_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[0][31]_GND_61_o_add_141_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[1][15]_GND_61_o_add_144_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[1][31]_GND_61_o_add_145_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[2][15]_GND_61_o_add_148_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[2][31]_GND_61_o_add_149_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[3][15]_GND_61_o_add_152_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[3][31]_GND_61_o_add_153_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[4][15]_GND_61_o_add_156_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[4][31]_GND_61_o_add_157_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[5][15]_GND_61_o_add_160_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[5][31]_GND_61_o_add_161_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[6][15]_GND_61_o_add_164_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[6][31]_GND_61_o_add_165_OUT> created at line 342.
-    Found 16-bit adder for signal <sequence_number[7][15]_GND_61_o_add_168_OUT> created at line 340.
-    Found 32-bit adder for signal <fast_clk_counter[7][31]_GND_61_o_add_169_OUT> created at line 342.
-    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_61_o_add_171_OUT> created at line 361.
+    Found 16-bit adder for signal <sequence_number[0][15]_GND_61_o_add_140_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[0][31]_GND_61_o_add_141_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[1][15]_GND_61_o_add_144_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[1][31]_GND_61_o_add_145_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[2][15]_GND_61_o_add_148_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[2][31]_GND_61_o_add_149_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[3][15]_GND_61_o_add_152_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[3][31]_GND_61_o_add_153_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[4][15]_GND_61_o_add_156_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[4][31]_GND_61_o_add_157_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[5][15]_GND_61_o_add_160_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[5][31]_GND_61_o_add_161_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[6][15]_GND_61_o_add_164_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[6][31]_GND_61_o_add_165_OUT> created at line 345.
+    Found 16-bit adder for signal <sequence_number[7][15]_GND_61_o_add_168_OUT> created at line 343.
+    Found 32-bit adder for signal <fast_clk_counter[7][31]_GND_61_o_add_169_OUT> created at line 345.
+    Found 4-bit adder for signal <adc_clocktick_counter[3]_GND_61_o_add_171_OUT> created at line 364.
     Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_end_time[7][31]_wide_mux_34_OUT> created at line 125.
     Found 32-bit 8-to-1 multiplexer for signal <chan_idx[2]_rec_start_time[7][31]_wide_mux_39_OUT> created at line 143.
     Found 32-bit 8-to-1 multiplexer for signal <n2385> created at line 146.
     Found 32-bit comparator greater for signal <end_condition> created at line 125
     Found 32-bit comparator greater for signal <start_condition> created at line 126
     Found 4-bit comparator lessequal for signal <n0053> created at line 185
-    Found 32-bit comparator greater for signal <n0135> created at line 337
-    Found 32-bit comparator greater for signal <n0395> created at line 337
-    Found 32-bit comparator greater for signal <n0655> created at line 337
-    Found 32-bit comparator greater for signal <n0915> created at line 337
-    Found 32-bit comparator greater for signal <n1175> created at line 337
-    Found 32-bit comparator greater for signal <n1435> created at line 337
-    Found 32-bit comparator greater for signal <n1695> created at line 337
-    Found 32-bit comparator greater for signal <n1955> created at line 337
+    Found 32-bit comparator greater for signal <n0135> created at line 340
+    Found 32-bit comparator greater for signal <n0395> created at line 340
+    Found 32-bit comparator greater for signal <n0655> created at line 340
+    Found 32-bit comparator greater for signal <n0915> created at line 340
+    Found 32-bit comparator greater for signal <n1175> created at line 340
+    Found 32-bit comparator greater for signal <n1435> created at line 340
+    Found 32-bit comparator greater for signal <n1695> created at line 340
+    Found 32-bit comparator greater for signal <n1955> created at line 340
     WARNING:Xst:2404 -  FFs/Latches <data_out<15:0>> (without init value) have a constant value of 0 in block <adc_control>.
     Summary:
 	inferred  17 Adder/Subtractor(s).
@@ -5014,16 +5017,16 @@ WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_126> has a constant value of 0 
 WARNING:Xst:1293 - FF/Latch <adc0/tmp_register_7_127> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_13> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_14> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_141> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_15> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_142> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_152> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_133> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_134> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_144> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_143> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_154> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_135> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_145> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_155> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_136> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_156> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <adc0/sample_register_137> has a constant value of 0 in block <mecobo>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_15> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/tmp_register_7_14> <adc0/tmp_register_7_13> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_31> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_30> 
 INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_47> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/tmp_register_7_45> 
@@ -5031,10 +5034,10 @@ INFO:Xst:2261 - The FF/Latch <adc0/tmp_register_7_78> in Unit <mecobo> is equiva
 
 Mapping all equations...
 Building and optimizing final netlist ...
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_146> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_136> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_151> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_131> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_147> <adc0/sample_register_137> 
-INFO:Xst:2261 - The FF/Latch <adc0/sample_register_153> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_143> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_144> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_134> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_152> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_132> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_151> in Unit <mecobo> is equivalent to the following 2 FFs/Latches, which will be removed : <adc0/sample_register_141> <adc0/sample_register_131> 
+INFO:Xst:2261 - The FF/Latch <adc0/sample_register_157> in Unit <mecobo> is equivalent to the following FF/Latch, which will be removed : <adc0/sample_register_147> 
 Found area constraint ratio of 100 (+ 5) on block mecobo, actual ratio is 59.
 FlipFlop sample_collector0/current_id_idx_0 has been replicated 19 time(s)
 FlipFlop sample_collector0/current_id_idx_1 has been replicated 19 time(s)
@@ -5522,15 +5525,15 @@ main_clocks_u/pll_base_inst/CLKOUT3|    3.621|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 126.00 secs
-Total CPU time to Xst completion: 124.74 secs
+Total REAL time to Xst completion: 125.00 secs
+Total CPU time to Xst completion: 123.06 secs
  
 --> 
 
 
-Total memory usage is 544516 kilobytes
+Total memory usage is 539292 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  433 (   0 filtered)
-Number of infos    :  110 (   0 filtered)
+Number of warnings :  434 (   0 filtered)
+Number of infos    :  111 (   0 filtered)
 

@@ -70,7 +70,8 @@ command_fifo your_instance_name (
   .empty(empty), // output empty
   .almost_empty(almost_empty), // output almost_empty
   .valid(valid), // output valid
-  .data_count(data_count), // output [9 : 0] data_count
+  .data_count(data_count), // output [10 : 0] data_count
+  .prog_full(prog_full), // output prog_full
   .prog_empty(prog_empty) // output prog_empty
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------

@@ -95,12 +95,13 @@ ARCHITECTURE simulation_arch OF command_fifo_synth IS
 
     -- FIFO interface signal declarations
     SIGNAL clk_i	                  :   STD_LOGIC;
-    SIGNAL data_count                     :   STD_LOGIC_VECTOR(10-1 DOWNTO 0);
+    SIGNAL data_count                     :   STD_LOGIC_VECTOR(11-1 DOWNTO 0);
     SIGNAL wr_ack                         :   STD_LOGIC;
     SIGNAL valid                          :   STD_LOGIC;
     SIGNAL almost_full                    :   STD_LOGIC;
     SIGNAL almost_empty                   :   STD_LOGIC;
     SIGNAL rst	                          :   STD_LOGIC;
+    SIGNAL prog_full                      :   STD_LOGIC;
     SIGNAL prog_empty                     :   STD_LOGIC;
     SIGNAL wr_en                          :   STD_LOGIC;
     SIGNAL rd_en                          :   STD_LOGIC;
@@ -227,8 +228,8 @@ ARCHITECTURE simulation_arch OF command_fifo_synth IS
               C_APPLICATION_TYPE  => 0,
 	      C_DOUT_WIDTH        => 80,
 	      C_DIN_WIDTH         => 80,
-	      C_WR_PNTR_WIDTH     => 10,
-    	      C_RD_PNTR_WIDTH     => 10,
+	      C_WR_PNTR_WIDTH     => 11,
+    	      C_RD_PNTR_WIDTH     => 11,
  	      C_CH_TYPE           => 0,
               FREEZEON_ERROR      => FREEZEON_ERROR,
 	      TB_SEED             => TB_SEED, 
@@ -266,6 +267,7 @@ ARCHITECTURE simulation_arch OF command_fifo_synth IS
            ALMOST_FULL               => almost_full,
            ALMOST_EMPTY              => almost_empty,
            RST                       => rst,
+           PROG_FULL                 => prog_full,
            PROG_EMPTY                => prog_empty,
            WR_EN 		     => wr_en,
            RD_EN                     => rd_en,
