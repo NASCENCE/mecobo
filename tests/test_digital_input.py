@@ -26,9 +26,9 @@ def test_digital_input_digital_constant():
 
 @with_setup(setup, teardown)
 def check_digital_input_digital_constant(bit):
-    # Digital out on pin 15
+    # Digital out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().DIGITAL
     it.startTime = 0
     it.endTime = 10000
@@ -68,9 +68,9 @@ def test_digital_input_analog_constant():
 
 @with_setup(setup, teardown)
 def check_digital_input_analog_constant(voltage):
-    # Analog out on pin 15
+    # Analog out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().CONSTANT
     it.startTime = 0
     it.endTime = 10000
@@ -130,10 +130,10 @@ def check_digital_input_digital_signal(index, signal):
     print "signal #%d (%d): %s" % (index, len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
 
-    # Generate signal as digital out on pin 15
+    # Generate signal as digital out on pin 8
     for (t, s) in enumerate(signal):
         it = emSequenceItem()
-        it.pin = [15]
+        it.pin = [8]
         it.operationType = emSequenceOperationType().DIGITAL
         it.startTime = t * dt
         it.endTime = t * dt + dt
@@ -212,9 +212,9 @@ def check_digital_input_digital_freq(freq):
     print "freq", freq, "sample_time", sample_time, "n_periods", n_periods, \
           "sample_freq", sample_freq, "n_samples", n_samples
 
-    # Digital out on pin 15
+    # Digital out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().DIGITAL
     it.startTime = 0
     it.endTime = sample_time
@@ -315,10 +315,10 @@ def check_digital_input_analog_signal(signal):
     print "signal (%d): %s" % (len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
 
-    # Generate signal as analog out on pin 15
+    # Generate signal as analog out on pin 8
     for t, s in enumerate(signal):
         it = emSequenceItem()
-        it.pin = [15]
+        it.pin = [8]
         it.operationType = emSequenceOperationType().CONSTANT
         it.startTime = t * 1000
         it.endTime = t * 1000 + 1000
@@ -356,7 +356,7 @@ def test_digital_input_multiple():
     pins = []
     for n in range(1, N_REC_DIGITAL + 1):
         # Randomly select n digital input pins and 1 output pin
-        p = np.random.choice(N_PINS, n + 1, replace=False)
+        p = np.random.choice(TEST_SLIDE_PINS_LEFT, n + 1, replace=False)
         print n, p
         pins.append(list(p))
 
@@ -370,6 +370,23 @@ def test_digital_input_multiple():
         rec_pins = p[1:]
         print 'out', out_pins, 'rec', rec_pins
 
+        yield check_digital_input_multiple, freq, out_pins, rec_pins
+
+def test_digital_output_multiple():
+    pins = []
+    for n in range(8):
+        # Randomly select 1 digital input pin and 1 output pin from LEFT
+        pl1, pl2 = np.random.choice(TEST_SLIDE_PINS_LEFT, 2, replace=False)
+        # Randomly select 1 digital input pin and 1 output pin from RIGHT
+        pr1, pr2 = np.random.choice(TEST_SLIDE_PINS_RIGHT, 2, replace=False)
+        pins.append(([pl1, pr1], [pl2, pr2]))
+
+    # Generate a frequency input signal
+    freq = 10e3
+
+    for p in pins:
+        rec_pins = p[0]
+        out_pins = p[1]
         yield check_digital_input_multiple, freq, out_pins, rec_pins
 
 @with_setup(setup, teardown)
@@ -429,6 +446,79 @@ def check_digital_input_multiple(freq, out_pins, rec_pins, mse_pass=0.1):
     t = np.linspace(0, 2 * n_periods * np.pi, n_samples, endpoint=False)
     expected = scipy.signal.square(t - np.pi)
     expected = (expected + 1) / 2
+
+    for rec_pin in rec_pins:
+        result = np.array(cli.getRecording(rec_pin).Samples, dtype=int)
+        result = digital_samples(result)
+        print "Got %d samples on pin %d" % (len(result), rec_pin)
+
+        assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s)" % \
+                (len(result), n_samples)
+
+        check_expected_result(expected, result, "pin %d" % rec_pin, mse_pass)
+
+
+
+def test_digital_output_multiple_combined():
+    pins = []
+    for n in range(1):
+        # Randomly select 1 digital input pin and 1 output pin from LEFT
+        pl1, pl2 = np.random.choice(TEST_SLIDE_PINS_LEFT, 2, replace=False)
+        # Randomly select 1 digital input pin and 1 output pin from RIGHT
+        pr1, pr2 = np.random.choice(TEST_SLIDE_PINS_RIGHT, 2, replace=False)
+        pins.append(([pl1, pr1], [pl2, pr2]))
+
+    # Generate a random input signal
+    signal = np.random.choice([0, 1], 100)
+
+    for p in pins:
+        rec_pins = p[0]
+        out_pins = p[1]
+        yield check_digital_output_multiple_combined, signal, out_pins, rec_pins
+
+@with_setup(setup, teardown)
+def check_digital_output_multiple_combined(signal, out_pins, rec_pins, mse_pass=0.1):
+    # Each input signal sample is held for 10us
+    dt = 10
+    sample_time = dt * len(signal)
+
+    # 10 samples per signal sample
+    sample_freq = real_sample_freq(10e6 / dt)
+    n_samples = int(sample_freq * sample_time / 1e6)
+
+    # Make sure we get enough samples
+    sample_time += 1
+
+    print "out_pins", out_pins, "rec_pins", rec_pins
+    print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
+
+    # Generate signal as digital out on out_pins as single sequence items
+    for t, s in enumerate(signal):
+        it = emSequenceItem()
+        it.pin = out_pins
+        it.operationType = emSequenceOperationType().DIGITAL
+        it.startTime = t * dt
+        it.endTime = t * dt + dt
+        it.frequency = s
+        it.cycleTime = 100
+        cli.appendSequenceAction(it)
+
+    # Set up digital recordings
+    for rec_pin in rec_pins:
+        it = emSequenceItem()
+        it.pin = [rec_pin]
+        it.startTime = 0
+        it.endTime = sample_time
+        it.frequency = sample_freq
+        it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
+        it.operationType = emSequenceOperationType().RECORD
+        cli.appendSequenceAction(it)
+
+    cli.runSequences()
+    cli.joinSequences()
+
+    # Generate ideal reference signal
+    expected = np.repeat(signal, 10)
 
     for rec_pin in rec_pins:
         result = np.array(cli.getRecording(rec_pin).Samples, dtype=int)

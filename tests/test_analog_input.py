@@ -26,9 +26,9 @@ def test_analog_input_digital_constant():
 
 @with_setup(setup, teardown)
 def check_analog_input_digital_constant(bit):
-    # Digital out on pin 15
+    # Digital out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().DIGITAL
     it.startTime = 0
     it.endTime = 10000
@@ -68,9 +68,9 @@ def test_analog_input_analog_constant():
 
 @with_setup(setup, teardown)
 def check_analog_input_analog_constant(voltage):
-    # Analog out on pin 15
+    # Analog out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().CONSTANT
     it.startTime = 0
     it.endTime = 10000
@@ -133,9 +133,9 @@ def check_analog_input_digital_freq(freq):
     print "freq", freq, "sample_time", sample_time, "n_periods", n_periods, \
           "sample_freq", sample_freq, "n_samples", n_samples
 
-    # Digital out on pin 15
+    # Digital out on pin 8
     it = emSequenceItem()
-    it.pin = [15]
+    it.pin = [8]
     it.operationType = emSequenceOperationType().DIGITAL
     it.startTime = 0
     it.endTime = sample_time
@@ -230,10 +230,10 @@ def check_analog_input_analog_signal(index, signal, mse_pass=0.1):
     print "signal #%d (%d): %s" % (index, len(signal), signal)
     print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
 
-    # Generate signal as analog out on pin 15
+    # Generate signal as analog out on pin 8
     for t, s in enumerate(signal):
         it = emSequenceItem()
-        it.pin = [15]
+        it.pin = [8]
         it.operationType = emSequenceOperationType().CONSTANT
         it.startTime = t * 1000
         it.endTime = t * 1000 + 1000
@@ -272,7 +272,7 @@ def test_analog_input_multiple():
     pins = []
     for n in range(1, N_REC_ANALOG + 1):
         # Randomly select n ADC pins and 1 output pin
-        p = np.random.choice(N_PINS, n + 1, replace=False)
+        p = np.random.choice(TEST_SLIDE_PINS_LEFT, n + 1, replace=False)
         pins.append(list(p))
 
     # Generate a nice input signal
@@ -282,6 +282,24 @@ def test_analog_input_multiple():
     for p in pins:
         out_pins = p[:1]
         rec_pins = p[1:]
+        yield check_analog_input_multiple, out_pins, rec_pins, signal
+
+def test_analog_output_multiple():
+    pins = []
+    for n in range(8):
+        # Randomly select 1 ADC pin and 1 output pin from LEFT
+        pl1, pl2 = np.random.choice(TEST_SLIDE_PINS_LEFT, 2, replace=False)
+        # Randomly select 1 ADC pin and 1 output pin from RIGHT
+        pr1, pr2 = np.random.choice(TEST_SLIDE_PINS_RIGHT, 2, replace=False)
+        pins.append(([pl1, pr1], [pl2, pr2]))
+
+    # Generate a nice input signal
+    t = np.linspace(0, 2 * np.pi, 100)
+    signal = 5 * (np.sin(t) * np.cos(3 * t))
+
+    for p in pins:
+        rec_pins = p[0]
+        out_pins = p[1]
         yield check_analog_input_multiple, out_pins, rec_pins, signal
 
 @with_setup(setup, teardown)
@@ -309,6 +327,79 @@ def check_analog_input_multiple(out_pins, rec_pins, signal, mse_pass=0.1):
             it.endTime = t * 1000 + 1000
             it.amplitude = voltage_to_dac(s)
             cli.appendSequenceAction(it)
+
+    # Set up analog recordings
+    for rec_pin in rec_pins:
+        it = emSequenceItem()
+        it.pin = [rec_pin]
+        it.startTime = 0
+        it.endTime = sample_time
+        it.frequency = sample_freq
+        it.operationType = emSequenceOperationType().RECORD   #implies analogue
+        cli.appendSequenceAction(it)
+
+    cli.runSequences()
+    cli.joinSequences()
+
+    # Generate reference signal
+    expected = dac_to_voltage(voltage_to_dac(signal))
+    expected = np.repeat(expected, 10)
+    #print "expected: %r" % (expected)
+
+    for rec_pin in rec_pins:
+        result = np.array(cli.getRecording(rec_pin).Samples, dtype=float)
+        result = adc_voltage(result)
+        print "Got %d samples on pin %d" % (len(result), rec_pin)
+
+        assert len(result) >= n_samples, "Got fewer samples (%d) than expected (%s)" % \
+                (len(result), n_samples)
+
+        check_expected_result(expected, result, "pin %d" % rec_pin, mse_pass)
+
+
+
+def test_analog_output_multiple_combined():
+    pins = []
+    for n in range(8):
+        # Randomly select 1 ADC pin and 1 output pin from LEFT
+        pl1, pl2 = np.random.choice(TEST_SLIDE_PINS_LEFT, 2, replace=False)
+        # Randomly select 1 ADC pin and 1 output pin from RIGHT
+        pr1, pr2 = np.random.choice(TEST_SLIDE_PINS_RIGHT, 2, replace=False)
+        pins.append(([pl1, pr1], [pl2, pr2]))
+
+    # Generate a nice input signal
+    t = np.linspace(0, 2 * np.pi, 100)
+    signal = 5 * (np.sin(t) * np.cos(3 * t))
+
+    for p in pins:
+        rec_pins = p[0]
+        out_pins = p[1]
+        yield check_analog_output_multiple_combined, out_pins, rec_pins, signal
+
+@with_setup(setup, teardown)
+def check_analog_output_multiple_combined(out_pins, rec_pins, signal, mse_pass=0.1):
+    # Each input signal sample is held for 1ms
+    sample_time = 1000 * len(signal)
+
+    # 10 samples per 1ms
+    sample_freq = real_sample_freq(10e3)
+    n_samples = int(sample_freq * sample_time / 1e6)
+
+    # Make sure we get enough samples
+    sample_time += 1
+
+    print "out_pins", out_pins, "rec_pins", rec_pins
+    print "sample_time", sample_time, "sample_freq", sample_freq, "n_samples", n_samples
+
+    # Generate signal as analog out on out_pins as single sequence item
+    for t, s in enumerate(signal):
+        it = emSequenceItem()
+        it.pin = out_pins
+        it.operationType = emSequenceOperationType().CONSTANT
+        it.startTime = t * 1000
+        it.endTime = t * 1000 + 1000
+        it.amplitude = voltage_to_dac(s)
+        cli.appendSequenceAction(it)
 
     # Set up analog recordings
     for rec_pin in rec_pins:
