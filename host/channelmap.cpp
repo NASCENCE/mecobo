@@ -139,7 +139,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
         throw e;
     }
     if (numIOchannels == (maxIOchannels * numCards)) {
-        e.Reason = "Maximum number of IO channels reached";
+        e.Reason = "Maximum number of IO channels reached" + std::to_string(numIOchannels);
         throw e;
     }
 
@@ -177,7 +177,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
             case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
                 //check if there is a mapping
                 chanPin = pinToDAChannel[p];
-                //Pin has already been mapped
+                //Pin has already been mapped, just return the channel
                 if(chanPin != FPGA_IO_Pins_TypeDef::INVALID) {
                     return chanPin;
                 }
@@ -188,8 +188,9 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
                 break;
 
             default:
-                if(pinToDAChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
-                    channel = pinToDAChannel[pin[0]];
+                if(pinToDAChannel[p] != FPGA_IO_Pins_TypeDef::INVALID) {
+                    channel = pinToDAChannel[p];
+                    return channel;
                 } else {
                     std::cout << "IO channel added to DA pin map\n"; 
                     channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
