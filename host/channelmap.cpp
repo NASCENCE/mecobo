@@ -201,25 +201,24 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
                 //By default we give a Digital channel -- these can be both recording and analogue,
                 //depending on the command given.
         }
+    }
 
+    switch(pinconfigDataType) {
+        case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+            numADchannels++;
+            break;
+        case PINCONFIG_DATA_TYPE_DAC_CONST:
+        case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+            numDAchannels++;
+            break;
 
-        switch(pinconfigDataType) {
-            case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
-                numADchannels++;
-                break;
-            case PINCONFIG_DATA_TYPE_DAC_CONST:
-            case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
-                numDAchannels++;
-                break;
-
-            default:
-                numIOchannels++;
-                break;
-
-        }
-
+        default:
+            numIOchannels++;
+            break;
 
     }
+
+
     return channel;
 }
 
