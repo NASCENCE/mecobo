@@ -130,6 +130,7 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
         throw e;
     }
 
+    bool channelAssigned = false;
     FPGA_IO_Pins_TypeDef channel = FPGA_IO_Pins_TypeDef::INVALID;
     //we could get a list of pins to assign to a single channel here
     //since one channel can be sent to many pins 
@@ -152,7 +153,10 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
                     channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
                     mapADPin(p, channel);
                     //or not...
-                    numADchannels++;
+                    if(!channelAssigned) {
+                        numADchannels++;
+                        channelAssigned = true;
+                    }
                 }
                 else {
                     std::cout << "All out of AD channels" << std::endl;
@@ -176,7 +180,12 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
                 if (numDAchannels < maxDAchannels) {
                     channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
                     mapDAPin(p, channel);
-                    numDAchannels++;
+
+                    if(!channelAssigned) {
+                        numDAchannels++;
+                        channelAssigned = true;
+                    }
+
                     std::cout << "Mapped DA pin " << p << " to channel " << channel << std::endl;
                 } else {
                     std::cout << "All out of DA channels" << std::endl;
@@ -196,7 +205,10 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
                     std::cout << "IO channel added to DA pin map\n"; 
                     channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
                     mapDAPin(p, channel);
-                    numIOchannels++;
+                    if(!channelAssigned) {
+                        numIOchannels++;
+                        channelAssigned = true;
+                    }
                 }
 
                 break;

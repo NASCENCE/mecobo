@@ -682,14 +682,6 @@ void execCurrentPack()
         resetTime();  //stop and reset time
         softReset();   //This will clear the command fifo, etc.
 
-        //Set all DAC outputs to 0V
-        if(has_daughterboard){
-            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
-                uint32_t wrd = getDACword(i, 128);
-                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
-            }
-        }
-
         uint32_t * d = (uint32_t *)(currentPack.data);
         if(*d >= 1) {
             has_daughterboard = 1;
@@ -697,12 +689,16 @@ void execCurrentPack()
             has_daughterboard = 0;
         }
         
-        setupDAC();
-        setupADC();
-        //resetXbar();
-
-        if(has_daughterboard) 
-        {
+        
+        //Set all DAC outputs to 0V
+        if(has_daughterboard){
+            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
+                uint32_t wrd = getDACword(i, 128);
+                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+            }
+            setupDAC();
+            setupADC();
+            //resetXbar();
             infop("DAUGHTERBOARD: PRESENT\n");
         } else {
             infop("DAUGHTERBOARD: NONE\n");
@@ -1134,6 +1130,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
 
     nor[bad] = 0x49;
 
+    USBTIMER_DelayMs(1);
     //Wait until we no longer toggle
     while(NORToggling());
     NORError();

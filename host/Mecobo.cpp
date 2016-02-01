@@ -685,8 +685,10 @@ void Mecobo::runSchedule ()
             if(delta >= this->lastSequenceItemEnd) {
                 //If there are no more samples in the buffer to fetch AND
                 //the last time has passed, we should be done...
-                if (status().samplesInBuffer == 0)
+                if (status().samplesInBuffer == 0) {
+                    std::cout << "Mecobo::runSequences(): No more samples to get and time has passed. Assuming finished" << std::endl;
                     this->finished = true;
+                }
             }
 
         } 
