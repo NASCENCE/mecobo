@@ -1,4 +1,5 @@
 `define WITH_DB
+
 module ebi(	
 input           clk,
 input           rst,

@@ -9,9 +9,8 @@
 //[currentTick] -- read only
 //[lastValue]
 
-
-
 `define WITH_DB
+
 
 module mecobo   
 (               osc, 
@@ -331,20 +330,22 @@ generate
         for (i = 0; i < 50; i = i + 1) begin: pinControl 
             pincontrol #(.POSITION(i))
             pc (
-                .clk(sys_clk),
-                .reset(mecobo_reset),
-                .enable(cmd_bus_en),
-                .addr(cmd_bus_addr),
-                .data_wr(cmd_bus_wr),
-                .data_in(cmd_bus_data_in),
-                .data_rd(),
-                .data_out(),
-                .pin(HN[i+1]),
-                .output_sample(sample_enable_output),
-                .channel_select(sample_channel_select),
-                .sample_data(sample_data_bus),
-                .current_time(global_clock)
-            );
+            .clk(sys_clk),
+            .reset(mecobo_reset),
+            .enable(cmd_bus_en),
+            .addr(cmd_bus_addr),
+            .data_wr(cmd_bus_wr),
+            .data_in(cmd_bus_data_in),
+            .data_rd(),
+            .data_out(),
+            .busy(),
+            .pin(HN[i+1]),
+            .output_sample(sample_enable_output),
+            .channel_select(sample_channel_select),
+            .sample_data(sample_data_bus),
+            .current_time(global_clock),
+            .global_clock_running(global_clock_running)
+        );
 
 
 

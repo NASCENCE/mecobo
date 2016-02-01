@@ -13,6 +13,8 @@
 *
 *
 */
+
+
 `define WITH_DB
 module sample_collector (
     input clk,
@@ -272,27 +274,27 @@ wire [15:0] fifo_data_in;
 `ifdef WITH_DB
     /* 3 bits of ID, 13 bits of sample data*/
     assign fifo_data_in = {current_id_idx[2:0], sample_data[12:0]}; /*last_fetched[current_id_idx][15:0]; */
-            `else
-                assign fifo_data_in = sample_data[15:0];
-            `endif
+`else
+    assign fifo_data_in = sample_data[15:0];
+`endif
 
-            sample_fifo sample_fifo_0 (
-                .clk(clk),
-                .rst(res_fifo | res_sampling | rst),
-                .din(fifo_data_in),
-                .wr_en(fifo_write_enable),
-                .rd_en(sample_fifo_rd_en),
-                .dout(sample_data_out),
-                .full(sample_fifo_full),
-                .almost_full(sample_fifo_almost_full),
-                .wr_ack(),
-                .overflow(),
-                .underflow(),
-                .empty(sample_fifo_empty),
-                .almost_empty(sample_fifo_almost_empty),
-                .valid(),
-                .data_count(sample_fifo_data_count)
-            );
+sample_fifo sample_fifo_0 (
+    .clk(clk),
+    .rst(res_fifo | res_sampling | rst),
+    .din(fifo_data_in),
+    .wr_en(fifo_write_enable),
+    .rd_en(sample_fifo_rd_en),
+    .dout(sample_data_out),
+    .full(sample_fifo_full),
+    .almost_full(sample_fifo_almost_full),
+    .wr_ack(),
+    .overflow(),
+    .underflow(),
+    .empty(sample_fifo_empty),
+    .almost_empty(sample_fifo_almost_empty),
+    .valid(),
+    .data_count(sample_fifo_data_count)
+);
 
             //-----------------------------------------------------------------------------------
             //rd falling edge detection to see if a transaction has finished

@@ -1,4 +1,9 @@
 all: synth map par bitgen trace
+db: synth_db map par bitgen trace
+
+synth_db:
+	mkdir -p xst/projnav.tmp/
+	xst -intstyle xflow -ifn "mecobo.xst" -ofn "mecobo.syr" -define {WITH_DB}
 
 synth:
 	mkdir -p xst/projnav.tmp/

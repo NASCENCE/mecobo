@@ -112,7 +112,7 @@ always @ ( * ) begin
             nextState = fifo_wait;
             if(cmd_fifo_valid) begin
                 writeCommandReg = 1'b1;   //fetch data on the coming flank.
-                nextState = exec;
+                nextState = unit_busy;
             end
         end
 
