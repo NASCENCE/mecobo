@@ -1048,7 +1048,7 @@ void NORBusy() {
             done = 1;
         }
         if (((counter++)%100000) == 0) {
-            debug("NOR busy... %x\n", status);
+            printf("NOR busy... %x\n", status);
             USBTIMER_DelayMs(1);
             led(BOARD_LED_U2, toggle);
             toggle = !toggle;
@@ -1092,7 +1092,7 @@ void autoSelectNor()
 
 void enterEnhancedMode()
 {
-    debug("NOR: Entering enhanced mode\n");
+    printf("NOR: Entering enhanced mode\n");
     uint16_t * nor = (uint16_t *)NOR_START;
     //Enter enhanced mode
     nor[0x555] = 0xCA;
@@ -1118,7 +1118,8 @@ void write256Buffer(uint16_t * data, uint32_t offset)
     //autoSelectNor();
 
     uint32_t bad = offset & 0xFFFFFF00;
-    debug("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
+    printf("writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
+    //debug("writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
 
     //Now start command
     nor[bad] = 0x53;
