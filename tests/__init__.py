@@ -36,6 +36,10 @@ N_PINS = 16
 N_REC_ANALOG = 8
 N_REC_DIGITAL = 8
 
+ALL_PINS = range(N_PINS)
+TEST_SLIDE_PINS_LEFT = ALL_PINS[:9]
+TEST_SLIDE_PINS_RIGHT = ALL_PINS[9:]
+
 SAMPLE_CLK = 75e6
 def real_sample_freq(f):
     overflow = np.floor(SAMPLE_CLK / f)

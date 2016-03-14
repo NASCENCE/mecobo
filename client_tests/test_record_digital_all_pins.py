@@ -19,24 +19,26 @@ prot = TBinaryProtocol.TBinaryProtocol(transport)
 cli = emEvolvableMotherboard.Client(prot);
 transport.open();
 
-recChannels = range(1,8)
+recChannels = range(0,50)
 cli.reset()
 cli.clearSequences()
+recChannels.remove(20)
  
 it = emSequenceItem()
-it.pin = [0]
-it.startTime = 5
-it.endTime = 9
+it.pin = [20]
+it.startTime = 0
+it.endTime = 1000
 it.frequency = 1000000
+it.cycleTime = 50
 it.operationType = emSequenceOperationType().DIGITAL
 cli.appendSequenceAction(it)
  
 for r in recChannels:
     it = emSequenceItem()
     it.pin = [r]
-    it.startTime = 2
-    it.endTime = 12
-    it.frequency = 1000000
+    it.startTime = 0
+    it.endTime = 1002
+    it.frequency = 200000
     it.waveFormType = emWaveFormType().PWM  #makes it into a digital recording
     it.operationType = emSequenceOperationType().RECORD   
     cli.appendSequenceAction(it)

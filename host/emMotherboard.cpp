@@ -145,7 +145,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
     //Reset board?
     //mecobo->reset();
     //Sort the sequence before we submit the items to the board.
-    std::cout << "Scheduling sequences on board." << std::endl;
+    std::cout << "Server.runSequences(): Scheduling sequences on board." << std::endl;
     std::sort(seqItems.begin(), seqItems.end(), 
         [](emSequenceItem const & a, emSequenceItem const & b) { return a.startTime < b.startTime; });
     
@@ -157,7 +157,7 @@ class emEvolvableMotherboardHandler : virtual public emEvolvableMotherboardIf {
       setupItem(item);
     }
 
-    std::cout << "Instructing Mecobo to run scheduled sequence items." << std::endl;
+    std::cout << "Server.runSequences(). Instructing Mecobo to run scheduled sequence items (spawning thead)" << std::endl;
     this->runScheduleThread = new std::thread(&Mecobo::runSchedule, mecobo);
     sequenceRunStart = steady_clock::now();
   } 

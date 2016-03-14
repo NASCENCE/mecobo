@@ -116,17 +116,37 @@ void channelMap::mapADPin(int pin, FPGA_IO_Pins_TypeDef channel)
 
 
 
-//We allow the same channel to drive multiple pins.
+/* One channel can drive multiple pins, but one pin can only have 1 driver */
 FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pinconfigDataType) 
 {
+
+    /* Error checking. The last time this function was called, me might've
+     * incremented the numXXchannels to an invalid value. Since the channels
+     * are counted from 0, if they are at some point incremented to max then we
+     * can't allow this since mapping it would use an invalid channel number.
+     *
+     * Example: last valid DA channel is 7. At the bottom of this fun,
+     * numADchannels is incremented to 8 which is the MAX. 
+     * */
+    emException e;
+    e.Source = "channelMap::getchannelForPins()";
+    if (numADchannels == (maxADchannels * numCards)) {
+        e.Reason = "Maximum number of AD channels reached";
+        throw e;
+    }
+    if (numDAchannels == (maxDAchannels * numCards)) {
+        e.Reason = "Maximum number of DA channels reached";
+        throw e;
+    }
+    if (numIOchannels == (maxIOchannels * numCards)) {
+        e.Reason = "Maximum number of IO channels reached" + std::to_string(numIOchannels);
+        throw e;
+    }
+
     if((numADchannels + numIOchannels + numDAchannels) >= (16 * numCards)) {
-
-        //TODO:It's possible that we should be able to reuse a channel here, if it's already assigned to a
-        //given channel type and we want to keep using it as such.
         emException e;
-        e.Reason = "Maximum channels in one sequence used. 16 for 1 daughterboard. ";
-        e.Source = "channelMap::mapItem()";
-
+        e.Reason = "Maximum channels in one sequence used. 16 for 1 daughterboard.";
+        e.Source = "channelMap::getchannelForPins()";
         throw e;
     }
 
@@ -135,76 +155,70 @@ FPGA_IO_Pins_TypeDef channelMap::getChannelForPins(std::vector<int> pin, int pin
     //since one channel can be sent to many pins 
     for (auto p: pin) {
 
-        FPGA_IO_Pins_TypeDef chan = FPGA_IO_Pins_TypeDef::INVALID;
+        FPGA_IO_Pins_TypeDef chanPin = FPGA_IO_Pins_TypeDef::INVALID;
 
         switch(pinconfigDataType) {
             case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
 
                 //check if there is a mapping
-                chan = pinToADChannel[p];
-                if(isADChannel(chan)) {
+                chanPin = pinToADChannel[p];
+                if(isADChannel(chanPin)) {
                     emException e;
                     e.Reason = "Can't record the same pin twice, ignored.";
                     throw e;
                 }
 
-                if (numADchannels < maxADchannels) {
-                    channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
-                    mapADPin(p, channel);
-                    //or not...
-                    numADchannels++;
-                }
-                else {
-                    std::cout << "All out of AD channels" << std::endl;
-                    emException e;
-                    e.Reason = "All out of AD channels.";
-                    e.Source = "channelMap::mapItem()";
-                    throw e;
-                }
+                channel = (FPGA_IO_Pins_TypeDef)(AD_CHANNELS_START + (numADchannels));
+                mapADPin(p, channel);
+                std::cout << "Mapped AD (recording) pin " << p << " to channel " << channel << std::endl;
                 break;
 
             case PINCONFIG_DATA_TYPE_DAC_CONST:
             case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
                 //check if there is a mapping
-                chan = pinToDAChannel[p];
-                //Pin has already been mapped
-                if(chan != FPGA_IO_Pins_TypeDef::INVALID) {
-                    return chan;
+                chanPin = pinToDAChannel[p];
+                //Pin has already been mapped, just return the channel
+                if(chanPin != FPGA_IO_Pins_TypeDef::INVALID) {
+                    return chanPin;
                 }
 
-                //Try to map to a analogue pin.
-                if (numDAchannels < maxDAchannels) {
-                    channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
-                    mapDAPin(p, channel);
-                    numDAchannels++;
-                    std::cout << "Mapped DA pin " << p << " to channel " << channel << std::endl;
-                } else {
-                    std::cout << "All out of DA channels" << std::endl;
-                    emException e;
-                    e.Reason = "All out of DA channels.";
-                    e.Source = "channelMap::mapItem()";
-                    throw e;
-                }
+                channel = (FPGA_IO_Pins_TypeDef)(DA_CHANNELS_START + (numDAchannels));
+                mapDAPin(p, channel);
+                std::cout << "Mapped DA pin " << p << " to channel " << channel << std::endl;
                 break;
 
             default:
-                //      case PINCONFIG_DATA_TYPE_DIGITAL_OUT:
-                //     case PINCONFIG_DATA_TYPE_RECORD:
-                if(pinToDAChannel[pin[0]] != FPGA_IO_Pins_TypeDef::INVALID) {
-                    channel = pinToDAChannel[pin[0]];
+                if(pinToDAChannel[p] != FPGA_IO_Pins_TypeDef::INVALID) {
+                    channel = pinToDAChannel[p];
+                    return channel;
                 } else {
                     std::cout << "IO channel added to DA pin map\n"; 
                     channel = (FPGA_IO_Pins_TypeDef)(IO_CHANNELS_START + (numIOchannels));
                     mapDAPin(p, channel);
-                    numIOchannels++;
                 }
-
                 break;
 
-                //By default we give a Digital channel -- these can be both recording and analogue,
-                //depending on the command given.
         }
     }
+
+    /* Since we are here, we have used the channel and should increase by one 
+     * to get the next available for the next item that needs a channel */
+    switch(pinconfigDataType) {
+        case PINCONFIG_DATA_TYPE_RECORD_ANALOGUE:
+            numADchannels++;
+            break;
+        case PINCONFIG_DATA_TYPE_DAC_CONST:
+        case PINCONFIG_DATA_TYPE_PREDEFINED_PWM:
+            numDAchannels++;
+            break;
+
+        default:
+            numIOchannels++;
+            break;
+
+    }
+
+
     return channel;
 }
 

@@ -682,14 +682,6 @@ void execCurrentPack()
         resetTime();  //stop and reset time
         softReset();   //This will clear the command fifo, etc.
 
-        //Set all DAC outputs to 0V
-        if(has_daughterboard){
-            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
-                uint32_t wrd = getDACword(i, 128);
-                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
-            }
-        }
-
         uint32_t * d = (uint32_t *)(currentPack.data);
         if(*d >= 1) {
             has_daughterboard = 1;
@@ -697,12 +689,16 @@ void execCurrentPack()
             has_daughterboard = 0;
         }
         
-        setupDAC();
-        setupADC();
-        //resetXbar();
-
-        if(has_daughterboard) 
-        {
+        
+        //Set all DAC outputs to 0V
+        if(has_daughterboard){
+            for(int i = DA_CHANNELS_START; i < DA_CHANNELS_START + 8; i++) {
+                uint32_t wrd = getDACword(i, 128);
+                command(0, DAC_CONTROLLER_ADDR, DAC_REG_LOAD_VALUE, wrd);
+            }
+            setupDAC();
+            setupADC();
+            //resetXbar();
             infop("DAUGHTERBOARD: PRESENT\n");
         } else {
             infop("DAUGHTERBOARD: NONE\n");
@@ -1052,7 +1048,7 @@ void NORBusy() {
             done = 1;
         }
         if (((counter++)%100000) == 0) {
-            debug("NOR busy... %x\n", status);
+            printf("NOR busy... %x\n", status);
             USBTIMER_DelayMs(1);
             led(BOARD_LED_U2, toggle);
             toggle = !toggle;
@@ -1096,7 +1092,7 @@ void autoSelectNor()
 
 void enterEnhancedMode()
 {
-    debug("NOR: Entering enhanced mode\n");
+    printf("NOR: Entering enhanced mode\n");
     uint16_t * nor = (uint16_t *)NOR_START;
     //Enter enhanced mode
     nor[0x555] = 0xCA;
@@ -1122,7 +1118,8 @@ void write256Buffer(uint16_t * data, uint32_t offset)
     //autoSelectNor();
 
     uint32_t bad = offset & 0xFFFFFF00;
-    debug("Writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
+    printf("writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
+    //debug("writing 512 bytes from data %p at offset 0x%x, block address %x\n", data, (unsigned int)offset, (unsigned int)bad);
 
     //Now start command
     nor[bad] = 0x53;
@@ -1134,6 +1131,7 @@ void write256Buffer(uint16_t * data, uint32_t offset)
 
     nor[bad] = 0x49;
 
+    USBTIMER_DelayMs(1);
     //Wait until we no longer toggle
     while(NORToggling());
     NORError();
